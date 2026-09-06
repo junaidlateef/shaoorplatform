@@ -911,6 +911,118 @@
       background:var(--cream); overflow-y:auto;
     }
     .admin-dash.open { display:block; }
+
+    /* ════════════════════════════════════════════════════════════════════ */
+    /* PHASE 2: MEMBER DASHBOARD STYLES */
+    /* ════════════════════════════════════════════════════════════════════ */
+    .member-dashboard {
+      position:fixed; inset:0; background:var(--cream); z-index:195; display:none; overflow-y:auto;
+    }
+    .member-dashboard.open { display:block; }
+    .member-dash-header {
+      background:linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); color:#fff;
+      padding:1.5rem 0; position:sticky; top:0; z-index:50; box-shadow:0 4px 20px rgba(11,29,53,.15);
+    }
+    .member-dash-header-inner {
+      display:flex; align-items:center; justify-content:space-between; max-width:1200px;
+      margin:0 auto; padding:0 1.5rem; flex-wrap:wrap; gap:1rem;
+    }
+    .member-dash-brand {
+      display:flex; align-items:center; gap:1rem;
+    }
+    .member-dash-brand .icon {
+      width:44px; height:44px; background:rgba(200,146,42,.2); border-radius:50%;
+      display:flex; align-items:center; justify-content:center; color:var(--gold3); font-size:1.3rem;
+    }
+    .member-dash-brand .text { display:flex; flex-direction:column; }
+    .member-dash-brand .title {
+      font-family:var(--ff-display); font-size:1.2rem; font-weight:800; color:var(--gold3);
+    }
+    .member-dash-user {
+      display:flex; align-items:center; gap:1rem;
+    }
+    .member-dash-info { text-align:right; }
+    .member-dash-name { font-weight:700; font-size:0.95rem; }
+    .member-dash-role { font-size:0.8rem; color:rgba(255,255,255,.7); }
+    .member-dash-avatar {
+      width:44px; height:44px; border-radius:50%; border:2px solid var(--gold3);
+      display:flex; align-items:center; justify-content:center; background:rgba(200,146,42,.2); color:var(--gold3);
+    }
+    .member-dash-logout {
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+      color:#fff; padding:0.5rem 1rem; border-radius:6px; cursor:pointer;
+      font-weight:600; font-size:0.85rem; transition:all var(--trans);
+    }
+    .member-dash-logout:hover {
+      background:rgba(200,146,42,.3); border-color:var(--gold3);
+    }
+    .member-dash-container {
+      max-width:1200px; margin:0 auto; padding:2rem 1.5rem;
+    }
+    .member-dash-nav {
+      display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:2rem;
+    }
+    .member-dash-nav-btn {
+      padding:0.75rem 1.5rem; border-radius:8px; border:2px solid var(--border);
+      background:var(--card); color:var(--ink); cursor:pointer; font-weight:600; transition:all var(--trans);
+    }
+    .member-dash-nav-btn:hover {
+      border-color:var(--gold); color:var(--gold);
+    }
+    .member-dash-nav-btn.active {
+      background:var(--gold); color:var(--navy); border-color:var(--gold);
+    }
+    .member-dash-welcome {
+      background:linear-gradient(135deg, var(--gold-soft) 0%, rgba(230,175,58,.06) 100%);
+      border:1px solid var(--border); border-radius:var(--radius); padding:2rem; margin-bottom:2rem;
+    }
+    .member-dash-grid {
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1.5rem; margin-bottom:2rem;
+    }
+    .member-dash-card {
+      background:var(--card); border-radius:var(--radius); padding:1.5rem;
+      box-shadow:var(--shadow); border:1px solid var(--border);
+    }
+    .member-dash-card h4 {
+      font-size:0.9rem; font-weight:700; color:var(--muted); text-transform:uppercase;
+      letter-spacing:0.05em; margin-bottom:0.8rem;
+    }
+    .status-badge {
+      display:inline-block; padding:0.4rem 0.8rem; border-radius:6px;
+      font-size:0.8rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    }
+    .status-active { background:rgba(22,163,74,.1); color:#16a34a; }
+    .status-pending { background:rgba(249,115,22,.1); color:#ea580c; }
+    .status-suspended { background:rgba(239,68,68,.1); color:#dc2626; }
+    .status-revoked { background:rgba(107,114,128,.1); color:#374151; }
+    .member-section {
+      background:var(--card); border-radius:var(--radius); padding:2rem;
+      box-shadow:var(--shadow); border:1px solid var(--border); margin-bottom:2rem;
+    }
+    .member-section h3 {
+      font-family:var(--ff-display); font-size:1.5rem; margin-bottom:1.5rem; color:var(--ink);
+    }
+    .member-section-empty {
+      text-align:center; padding:3rem 2rem;
+    }
+    .member-section-empty-icon {
+      font-size:3rem; color:var(--gold); margin-bottom:1rem;
+    }
+    .member-section-empty p {
+      color:var(--muted); font-size:1.1rem;
+    }
+    .mainPage.blurred {
+      filter:blur(3px); pointer-events:none;
+    }
+    @media (max-width:768px) {
+      .member-dash-header-inner { flex-direction:column; gap:0.5rem; text-align:center; }
+      .member-dash-user { justify-content:center; }
+      .member-dash-info { text-align:center; }
+      .member-dash-nav { justify-content:center; }
+      .member-dash-grid { grid-template-columns:1fr; }
+      .member-dash-container { padding:1.5rem 1rem; }
+    }
+
     .dash-top {
       background:var(--navy); padding:1rem 1.5rem;
       display:flex; align-items:center; justify-content:space-between;
@@ -2393,6 +2505,157 @@ body{font-family:var(--ff-body);}
     </div>
   </section>
 
+  <!-- ═════════════════════════════════════════════════════════════════ -->
+  <!-- PHASE 2: MEMBER DASHBOARD -->
+  <!-- ═════════════════════════════════════════════════════════════════ -->
+  <div class="member-dashboard" id="memberDashboard">
+    <!-- Header -->
+    <div class="member-dash-header">
+      <div class="member-dash-header-inner">
+        <div class="member-dash-brand">
+          <div class="icon"><i class="fas fa-user-circle"></i></div>
+          <div class="text">
+            <div class="title">SHAOOR</div>
+            <div class="status-text">Member Dashboard</div>
+          </div>
+        </div>
+        
+        <div class="member-dash-user">
+          <div class="member-dash-info">
+            <div class="member-dash-name" id="memberHeaderName">Loading...</div>
+            <div class="member-dash-role" id="memberHeaderRole">member</div>
+          </div>
+          <div class="member-dash-avatar" id="memberHeaderAvatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <button class="member-dash-logout" onclick="memberLogout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="member-dash-container">
+
+      <!-- Welcome Section -->
+      <div class="member-dash-welcome" id="memberWelcomeText">
+        <h2 style="font-family: var(--ff-display); font-size: 2rem; margin-bottom: 0.5rem; color: var(--ink);">
+          خوش آمدید
+        </h2>
+        <p style="color: var(--muted); font-size: 1.05rem;">
+          آپ کا SHAOOR membership profile تیار ہے۔
+        </p>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="member-dash-grid">
+        <div class="member-dash-card" id="memberStatusBadge">
+          <h4>Membership Status</h4>
+          <div style="margin-top: 0.5rem;">
+            <span class="status-badge status-active">ACTIVE</span>
+          </div>
+        </div>
+        
+        <div class="member-dash-card" id="memberIdDisplay">
+          <h4>Member ID</h4>
+          <div style="margin-top: 0.5rem; font-family: 'Courier New', monospace; font-weight: 600; font-size: 1.1rem;">
+            SHR-MBR-YYYY-XXXXXX
+          </div>
+        </div>
+
+        <div class="member-dash-card" id="memberRoleDisplay">
+          <h4>Role</h4>
+          <div style="margin-top: 0.5rem;">
+            Member
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="member-dash-nav" style="margin-bottom: 2rem;">
+        <button class="member-dash-nav-btn active" onclick="switchMemberTab('profile', this)">
+          <i class="fas fa-user"></i> My Profile
+        </button>
+        <button class="member-dash-nav-btn" onclick="switchMemberTab('digital-id', this)">
+          <i class="fas fa-id-card"></i> Digital Member ID
+        </button>
+        <button class="member-dash-nav-btn" onclick="switchMemberTab('certificates', this)">
+          <i class="fas fa-certificate"></i> Certificates
+        </button>
+        <button class="member-dash-nav-btn" onclick="switchMemberTab('applications', this)">
+          <i class="fas fa-file-alt"></i> Applications
+        </button>
+        <button class="member-dash-nav-btn" onclick="switchMemberTab('artwork', this)">
+          <i class="fas fa-palette"></i> Artwork
+        </button>
+      </div>
+
+      <!-- Profile Section -->
+      <div id="member-tab-profile" class="member-tab-content">
+        <div class="member-section">
+          <h3>Your Profile</h3>
+          <div id="profileCardContainer" style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+            <div style="text-align: center;">Loading profile...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Digital Member ID Section -->
+      <div id="member-tab-digital-id" class="member-tab-content" style="display: none;">
+        <div class="member-section">
+          <h3>Digital Member ID Card</h3>
+          <div id="digitalIdContainer" style="margin-bottom: 2rem;">
+            Loading ID...
+          </div>
+        </div>
+      </div>
+
+      <!-- Certificates Section -->
+      <div id="member-tab-certificates" class="member-tab-content" style="display: none;">
+        <div class="member-section member-section-empty">
+          <div class="member-section-empty-icon">
+            <i class="fas fa-certificate"></i>
+          </div>
+          <h3 style="text-align: center;">My Certificates</h3>
+          <p style="margin-top: 1rem;">کوئی سرٹیفکیٹ ابھی تک جاری نہیں کیا گیا۔</p>
+          <p style="font-size: 0.9rem; color: var(--muted); margin-top: 1rem;">
+            جب SHAOOR ورکشاپ یا تربیتی پروگرام مکمل کریں گے تو سرٹیفکیٹ یہاں دکھائی دیں گے۔
+          </p>
+        </div>
+      </div>
+
+      <!-- Applications Section -->
+      <div id="member-tab-applications" class="member-tab-content" style="display: none;">
+        <div class="member-section member-section-empty">
+          <div class="member-section-empty-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3 style="text-align: center;">My Applications</h3>
+          <p style="margin-top: 1rem;">کوئی درخواست نہیں۔</p>
+          <p style="font-size: 0.9rem; color: var(--muted); margin-top: 1rem;">
+            جب آپ کسی SHAOOR پروگرام یا مقابلے میں درخواست دیں گے تو اس کی معلومات یہاں دکھائی دے گی۔
+          </p>
+        </div>
+      </div>
+
+      <!-- Artwork Section -->
+      <div id="member-tab-artwork" class="member-tab-content" style="display: none;">
+        <div class="member-section member-section-empty">
+          <div class="member-section-empty-icon">
+            <i class="fas fa-palette"></i>
+          </div>
+          <h3 style="text-align: center;">My Artwork</h3>
+          <p style="margin-top: 1rem;">کوئی فنکاری ابھی اپ لوڈ نہیں کی۔</p>
+          <p style="font-size: 0.9rem; color: var(--muted); margin-top: 1rem;">
+            اپنی تخلیقات کو SHAOOR کے ساتھ شیئر کریں اور دنیا کو دکھائیں۔
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ═══ ADMIN LOGIN ═══ -->
   <div class="admin-page" id="adminPage">
     <button class="admin-close-btn" onclick="closeAdmin()" aria-label="Close"><i class="fas fa-times"></i></button>
@@ -3323,6 +3586,513 @@ body{font-family:var(--ff-body);}
     const panel = document.getElementById('dp-' + id);
     if (panel) panel.classList.add('active');
     btn.classList.add('active');
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════════════════ */
+  /* PHASE 2: MEMBER DASHBOARD INITIALIZATION & AUTHENTICATION HANDLERS */
+  /* ════════════════════════════════════════════════════════════════════════════════════ */
+
+  let currentMemberProfile = null;
+  let isEditingProfile = false;
+
+  /* Switch Member Dashboard Tabs */
+  function switchMemberTab(tabId, btn) {
+    document.querySelectorAll('.member-tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.member-dash-nav-btn').forEach(el => el.classList.remove('active'));
+    
+    const tab = document.getElementById('member-tab-' + tabId);
+    if (tab) tab.style.display = 'block';
+    btn.classList.add('active');
+  }
+
+  /* Initialize auth state listener for dashboard */
+  sb.auth.onAuthStateChanged(async (event, session) => {
+    const user = session?.user;
+    
+    if (user) {
+      /* User is authenticated — fetch their profile */
+      const { data: profile, error } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profile && profile.role === 'member') {
+        /* This is a normal member — show their dashboard */
+        currentMemberProfile = { ...profile, email: user.email };
+        showMemberDashboard();
+        renderMemberDashboardContent();
+      } else if (profile && ['admin', 'founder', 'general_secretary', 'treasurer', 'media_coordinator', 'verification_officer'].includes(profile.role)) {
+        /* Admin/founder logged in through member dashboard — redirect to admin */
+        closeMemberDashboard();
+        openAdmin();
+      }
+    } else {
+      /* No authenticated user — ensure dashboard is hidden */
+      closeMemberDashboard();
+    }
+  });
+
+  /* Show Member Dashboard */
+  function showMemberDashboard() {
+    const dashMember = document.getElementById('memberDashboard');
+    const page = document.getElementById('mainPage');
+    const admin = document.getElementById('adminPage');
+    const adminDash = document.getElementById('adminDash');
+
+    if (dashMember) {
+      dashMember.classList.add('open');
+      if (page) page.classList.add('blurred');
+      if (admin) admin.classList.remove('open');
+      if (adminDash) adminDash.classList.remove('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  /* Close Member Dashboard */
+  function closeMemberDashboard() {
+    const dashMember = document.getElementById('memberDashboard');
+    const page = document.getElementById('mainPage');
+
+    if (dashMember) {
+      dashMember.classList.remove('open');
+      if (page) page.classList.remove('blurred');
+      document.body.style.overflow = '';
+    }
+  }
+
+  /* Render Member Dashboard Content */
+  function renderMemberDashboardContent() {
+    if (!currentMemberProfile) return;
+
+    const p = currentMemberProfile;
+    const memberId = p.member_id || 'SHR-MBR-YYYY-XXXXXX';
+    const fullName = p.full_name || 'Member';
+    const status = p.status || 'active';
+    const role = p.role || 'member';
+    const email = p.email || 'Not available';
+    const phone = p.phone || 'Not added yet';
+    const bio = p.bio || 'No bio added yet';
+    const avatar = p.avatar_url || null;
+
+    /* Update header */
+    const headerName = document.getElementById('memberHeaderName');
+    const headerRole = document.getElementById('memberHeaderRole');
+    if (headerName) headerName.textContent = fullName;
+    if (headerRole) headerRole.textContent = capitalizeRole(role);
+
+    /* Update Welcome Section */
+    const welcomeText = document.getElementById('memberWelcomeText');
+    if (welcomeText) {
+      welcomeText.innerHTML = `
+        <h2 style="font-family: var(--ff-display); font-size: 2rem; margin-bottom: 0.5rem; color: var(--ink);">
+          خوش آمدید، ${sanitize(fullName)}
+        </h2>
+        <p style="color: var(--muted); font-size: 1.05rem;">
+          آپ کا SHAOOR membership profile تیار ہے۔
+        </p>
+      `;
+    }
+
+    /* Update Quick Stats */
+    const statusBadge = document.getElementById('memberStatusBadge');
+    if (statusBadge) {
+      statusBadge.innerHTML = `
+        <h4>Membership Status</h4>
+        <div style="margin-top: 0.5rem;">
+          <span class="status-badge status-${status}">${status.toUpperCase()}</span>
+        </div>
+      `;
+    }
+
+    const memberIdDisplay = document.getElementById('memberIdDisplay');
+    if (memberIdDisplay) {
+      memberIdDisplay.innerHTML = `
+        <h4>Member ID</h4>
+        <div style="margin-top: 0.5rem; font-family: 'Courier New', monospace; font-weight: 600; font-size: 1.1rem;">
+          ${sanitize(memberId)}
+        </div>
+      `;
+    }
+
+    const roleDisplay = document.getElementById('memberRoleDisplay');
+    if (roleDisplay) {
+      roleDisplay.innerHTML = `
+        <h4>Role</h4>
+        <div style="margin-top: 0.5rem;">
+          ${capitalizeRole(role)}
+        </div>
+      `;
+    }
+
+    /* Update Profile Card */
+    updateProfileCard(p);
+
+    /* Update Digital ID */
+    updateDigitalMemberId(p);
+  }
+
+  /* Update Profile Card */
+  function updateProfileCard(profile) {
+    const container = document.getElementById('profileCardContainer');
+    if (!container) return;
+
+    const avatar = profile.avatar_url ? `<img src="${profile.avatar_url}" alt="${sanitize(profile.full_name)}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold);" />` : `<div style="width: 120px; height: 120px; border-radius: 50%; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; border: 3px solid var(--gold);"><i class="fas fa-user" style="font-size: 3rem; color: var(--gold);"></i></div>`;
+
+    container.innerHTML = `
+      <div style="text-align: center; padding: 2rem; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); max-width: 400px;">
+        <div style="margin-bottom: 1.5rem;">
+          ${avatar}
+        </div>
+        
+        <h3 style="font-family: var(--ff-display); font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--ink);">
+          ${sanitize(profile.full_name || 'Member')}
+        </h3>
+        
+        <div style="font-family: 'Courier New', monospace; font-weight: 600; color: var(--gold); margin-bottom: 1rem;">
+          ${sanitize(profile.member_id || 'SHR-MBR-YYYY-XXXXXX')}
+        </div>
+
+        <div style="text-align: left; color: var(--muted); font-size: 0.95rem;">
+          <div style="margin-bottom: 0.8rem;">
+            <strong>Email:</strong><br>
+            <span style="color: var(--ink);">${sanitize(profile.email || 'Not available')}</span>
+          </div>
+          <div style="margin-bottom: 0.8rem;">
+            <strong>Phone:</strong><br>
+            <span style="color: var(--ink);">${sanitize(profile.phone || 'Not added yet')}</span>
+          </div>
+          <div style="margin-bottom: 0.8rem;">
+            <strong>Bio:</strong><br>
+            <span style="color: var(--ink); display: block; max-height: 100px; overflow-y: auto; padding: 0.5rem; background: var(--cream2); border-radius: 6px;">
+              ${sanitize(profile.bio || 'No bio added yet')}
+            </span>
+          </div>
+          <div style="margin-bottom: 0.8rem;">
+            <strong>Status:</strong><br>
+            <span class="status-badge status-${profile.status || 'active'}" style="display: inline-block; margin-top: 0.5rem;">
+              ${(profile.status || 'active').toUpperCase()}
+            </span>
+          </div>
+        </div>
+
+        <button class="btn btn-gold" onclick="toggleProfileEdit()" style="width: 100%; margin-top: 1.5rem;">
+          <i class="fas fa-edit"></i> Edit Profile
+        </button>
+      </div>
+    `;
+  }
+
+  /* Toggle Profile Edit Mode */
+  function toggleProfileEdit() {
+    if (!currentMemberProfile) return;
+    isEditingProfile = !isEditingProfile;
+    
+    if (isEditingProfile) {
+      showProfileEditForm();
+    } else {
+      updateProfileCard(currentMemberProfile);
+    }
+  }
+
+  /* Show Profile Edit Form */
+  function showProfileEditForm() {
+    const container = document.getElementById('profileCardContainer');
+    if (!container) return;
+
+    const p = currentMemberProfile;
+
+    container.innerHTML = `
+      <div style="padding: 2rem; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); max-width: 400px;">
+        <h3 style="font-family: var(--ff-display); font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--ink);">
+          Edit Your Profile
+        </h3>
+
+        <form id="profileEditForm" onsubmit="saveMemberProfile(event)">
+          
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Full Name *</label>
+            <input type="text" id="editFullName" value="${sanitize(p.full_name || '')}" 
+              required maxlength="100"
+              style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; font-family: var(--ff-body);">
+          </div>
+
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Phone</label>
+            <input type="tel" id="editPhone" value="${sanitize(p.phone || '')}" 
+              maxlength="20"
+              style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; font-family: var(--ff-body);">
+          </div>
+
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Bio</label>
+            <textarea id="editBio" maxlength="500" 
+              style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; font-family: var(--ff-body); resize: vertical; min-height: 100px;">${sanitize(p.bio || '')}</textarea>
+            <small style="color: var(--muted); display: block; margin-top: 0.3rem;">500 characters max</small>
+          </div>
+
+          <div style="display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-gold" style="flex: 1;">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+            <button type="button" class="btn btn-outline" style="flex: 1;" onclick="toggleProfileEdit()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+
+          <div id="profileEditStatus" style="margin-top: 1rem; display: none;"></div>
+        </form>
+      </div>
+    `;
+  }
+
+  /* Save Member Profile */
+  async function saveMemberProfile(event) {
+    event.preventDefault();
+
+    if (!currentMemberProfile) {
+      showToast('Not authenticated', 'error');
+      return;
+    }
+
+    const fullName = document.getElementById('editFullName').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    const bio = document.getElementById('editBio').value.trim();
+
+    if (!fullName) {
+      showToast('Full name is required', 'error');
+      return;
+    }
+
+    const statusDiv = document.getElementById('profileEditStatus');
+    if (statusDiv) {
+      statusDiv.innerHTML = `<div style="color: var(--muted);"><i class="fas fa-spinner fa-spin"></i> Saving profile...</div>`;
+      statusDiv.style.display = 'block';
+    }
+
+    try {
+      const { data, error } = await sb
+        .from('profiles')
+        .update({
+          full_name: fullName,
+          phone: phone,
+          bio: bio,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', currentMemberProfile.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      /* Update current profile */
+      currentMemberProfile = { ...currentMemberProfile, ...data };
+      isEditingProfile = false;
+      
+      if (statusDiv) statusDiv.style.display = 'none';
+      updateProfileCard(currentMemberProfile);
+      renderMemberDashboardContent();
+      showToast('Profile updated successfully! ✓', 'success');
+
+    } catch (err) {
+      console.error('Profile save error:', err);
+      if (statusDiv) {
+        statusDiv.innerHTML = `<div style="color: var(--ruby);">Error: ${sanitize(err.message || 'Could not save profile')}</div>`;
+      }
+      showToast('Could not save profile', 'error');
+    }
+  }
+
+  /* Update Digital Member ID */
+  function updateDigitalMemberId(profile) {
+    const container = document.getElementById('digitalIdContainer');
+    if (!container) return;
+
+    const avatar = profile.avatar_url ? `<img src="${profile.avatar_url}" alt="${sanitize(profile.full_name)}" style="width: 80px; height: 80px; border-radius: 6px; object-fit: cover;" />` : `<div style="width: 80px; height: 80px; border-radius: 6px; background: var(--gold-soft); display: flex; align-items: center; justify-content: center;"><i class="fas fa-user" style="font-size: 2rem; color: var(--gold);"></i></div>`;
+
+    const memberId = profile.member_id || 'SHR-MBR-YYYY-XXXXXX';
+    const qrCodeURL = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://shaoor.vercel.app/verify.html?id=' + memberId)}`;
+
+    container.innerHTML = `
+      <div style="background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); color: #fff; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-lg); max-width: 100%; aspect-ratio: 1.6 / 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;">
+        
+        <!-- Decorative background -->
+        <div style="position: absolute; top: -50%; right: -10%; width: 300px; height: 300px; background: rgba(200,146,42,.08); border-radius: 50%; z-index: 0;"></div>
+        <div style="position: absolute; bottom: -30%; left: 10%; width: 250px; height: 250px; background: rgba(200,146,42,.06); border-radius: 50%; z-index: 0;"></div>
+
+        <div style="position: relative; z-index: 1;">
+          <div style="font-family: var(--ff-display); font-size: 1.8rem; font-weight: 900; color: var(--gold3); margin-bottom: 0.5rem; letter-spacing: 2px;">
+            SHAOOR
+          </div>
+          <div style="font-size: 0.85rem; color: rgba(255,255,255,.7); letter-spacing: 1px;">
+            Arts & Culture Platform
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1;">
+          <div style="flex: 1;">
+            <div style="margin-bottom: 1rem;">
+              ${avatar}
+            </div>
+            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem;">
+              ${sanitize(profile.full_name || 'Member')}
+            </div>
+            <div style="font-family: 'Courier New', monospace; font-size: 0.9rem; color: rgba(255,255,255,.8);">
+              ${sanitize(memberId)}
+            </div>
+            <div style="font-size: 0.8rem; color: rgba(255,255,255,.6); margin-top: 0.5rem;">
+              <strong>Role:</strong> Member
+            </div>
+            <div style="font-size: 0.8rem; color: rgba(255,255,255,.6);">
+              <strong>Status:</strong> ${(profile.status || 'active').toUpperCase()}
+            </div>
+          </div>
+
+          <div style="text-align: center;">
+            <img src="${qrCodeURL}" alt="QR Code" style="width: 120px; height: 120px; background: #fff; padding: 8px; border-radius: 6px;" />
+            <div style="font-size: 0.7rem; color: rgba(255,255,255,.5); margin-top: 0.3rem;">Scan to verify</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+        <button class="btn btn-navy" onclick="downloadDigitalId()" style="flex: 1; min-width: 150px;">
+          <i class="fas fa-download"></i> Download ID
+        </button>
+        <button class="btn btn-outline" onclick="printDigitalId()" style="flex: 1; min-width: 150px;">
+          <i class="fas fa-print"></i> Print ID
+        </button>
+      </div>
+    `;
+  }
+
+  /* Download Digital ID */
+  function downloadDigitalId() {
+    const container = document.getElementById('digitalIdContainer');
+    if (!container) return;
+
+    const element = container.querySelector('[style*="linear-gradient"]');
+    if (!element) return;
+
+    /* Use html2canvas if available, otherwise offer print as alternative */
+    if (typeof html2canvas !== 'undefined') {
+      html2canvas(element, { scale: 2, backgroundColor: '#FAF7F2' }).then(canvas => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = `SHAOOR-Digital-ID-${currentMemberProfile.member_id || 'member'}.png`;
+        link.click();
+        showToast('Digital ID downloaded!', 'success');
+      });
+    } else {
+      showToast('Use Print > Save as PDF for download', 'info');
+      printDigitalId();
+    }
+  }
+
+  /* Print Digital ID */
+  function printDigitalId() {
+    const container = document.getElementById('digitalIdContainer');
+    if (!container) return;
+
+    const printWindow = window.open('', '', 'width=800,height=600');
+    const element = container.querySelector('[style*="linear-gradient"]');
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SHAOOR Digital Member ID</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Inter', sans-serif; background: #FAF7F2; padding: 1rem; }
+          .print-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+          .id-card { 
+            width: 100%; max-width: 600px; aspect-ratio: 1.6 / 1;
+            background: linear-gradient(135deg, #0B1D35 0%, #14305A 100%);
+            color: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 12px 48px rgba(11,29,53,.18);
+            display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;
+          }
+          .bg-deco { position: absolute; border-radius: 50%; background: rgba(200,146,42,.08); }
+          .deco1 { top: -50%; right: -10%; width: 300px; height: 300px; }
+          .deco2 { bottom: -30%; left: 10%; width: 250px; height: 250px; }
+          .content { position: relative; z-index: 1; }
+          .header { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: #F5CC60; margin-bottom: 0.5rem; letter-spacing: 2px; }
+          .subheader { font-size: 0.85rem; color: rgba(255,255,255,.7); letter-spacing: 1px; }
+          .body { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+          .left { flex: 1; }
+          .avatar { width: 80px; height: 80px; border-radius: 6px; background: rgba(200,146,42,.2); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+          .name { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem; }
+          .id { font-family: 'Courier New', monospace; font-size: 0.9rem; color: rgba(255,255,255,.8); }
+          .detail { font-size: 0.8rem; color: rgba(255,255,255,.6); margin-top: 0.5rem; }
+          .detail strong { display: inline-block; width: 60px; }
+          .qr { text-align: center; }
+          .qr-img { width: 120px; height: 120px; background: #fff; padding: 8px; border-radius: 6px; }
+          .qr-text { font-size: 0.7rem; color: rgba(255,255,255,.5); margin-top: 0.3rem; }
+          @media print { body { background: white; padding: 0; } .print-container { min-height: auto; } }
+        </style>
+      </head>
+      <body>
+        <div class="print-container">
+          <div class="id-card">
+            <div class="bg-deco deco1"></div>
+            <div class="bg-deco deco2"></div>
+            <div class="content">
+              <div class="header">SHAOOR</div>
+              <div class="subheader">Arts & Culture Platform</div>
+            </div>
+            <div class="body">
+              <div class="left">
+                <div class="avatar"><i class="fas fa-user" style="font-size: 2rem; color: #C8922A;"></i></div>
+                <div class="name">${sanitize(currentMemberProfile.full_name || 'Member')}</div>
+                <div class="id">${sanitize(currentMemberProfile.member_id || 'SHR-MBR-YYYY-XXXXXX')}</div>
+                <div class="detail"><strong>Role:</strong> Member</div>
+                <div class="detail"><strong>Status:</strong> ${(currentMemberProfile.status || 'active').toUpperCase()}</div>
+              </div>
+              <div class="qr">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent('https://shaoor.vercel.app/verify.html?id=' + (currentMemberProfile.member_id || 'SHR-MBR-YYYY-XXXXXX'))}" alt="QR Code" class="qr-img" />
+                <div class="qr-text">Scan to verify</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
+  }
+
+  /* Member Logout */
+  async function memberLogout() {
+    const confirmed = confirm('کیا آپ کو یقین ہے؟ (Are you sure?)');
+    if (!confirmed) return;
+
+    try {
+      await sb.auth.signOut();
+      currentMemberProfile = null;
+      isEditingProfile = false;
+      closeMemberDashboard();
+      showToast('Logged out successfully', 'success');
+    } catch (err) {
+      console.error('Logout error:', err);
+      showToast('Logout error', 'error');
+    }
+  }
+
+  /* Helper: Capitalize Role */
+  function capitalizeRole(role) {
+    const roleMap = {
+      'member': 'Member',
+      'admin': 'Admin',
+      'founder': 'Founder',
+      'general_secretary': 'General Secretary',
+      'treasurer': 'Treasurer',
+      'media_coordinator': 'Media Coordinator',
+      'verification_officer': 'Verification Officer'
+    };
+    return roleMap[role] || role;
   }
 
   /* Admin form */
