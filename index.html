@@ -2627,7 +2627,27 @@ body{font-family:var(--ff-body);}
         </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">Log In</button>
       </form>
-      <p class="modal-hint">New to SHAOOR? <a href="#membership" onclick="closeModal('loginModal')">Register as a member →</a></p>
+      <p class="modal-hint">New to SHAOOR? <a href="#" onclick="closeModal('loginModal');openModal('signupModal');return false;">Register as a member →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- Signup (real account creation) -->
+<div class="modal" id="signupModal" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="signupTitle">Create Member Account</h3>
+      <button class="modal-close" onclick="closeModal('signupModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="admin-error" id="signupError"><i class="fas fa-exclamation-circle"></i> <span id="signupErrMsg">Something went wrong</span></div>
+      <form class="modal-form" id="signupForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
+        <div class="form-group"><label for="sName">Full Name</label><input type="text" id="sName" class="form-input" required placeholder="Your full name" /></div>
+        <div class="form-group"><label for="sEmail">Email Address</label><input type="email" id="sEmail" class="form-input" required placeholder="your@email.com" /></div>
+        <div class="form-group"><label for="sPass">Password</label><input type="password" id="sPass" class="form-input" required minlength="6" placeholder="At least 6 characters" /></div>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;">Create Account</button>
+      </form>
+      <p class="modal-hint">Already a member? <a href="#" onclick="closeModal('signupModal');openModal('loginModal');return false;">Sign in →</a></p>
     </div>
   </div>
 </div>
@@ -3047,19 +3067,59 @@ body{font-family:var(--ff-body);}
   }
 
   // ── Apply secure handlers to all forms ──
-  secureSubmit('loginForm', () => {
-    showToast('لاگ ان کامیاب! ڈیش بورڈ کی طرف جا رہے ہیں…');
+  secureSubmit('loginForm', async frm => {
+    const email = frm.querySelector('#lEmail').value.trim();
+    const password = frm.querySelector('#lPass').value;
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) {
+      showToast('غلط ای میل یا پاس ورڈ', 'error');
+      return;
+    }
+    showToast('لاگ ان کامیاب! خوش آمدید۔');
     closeModal('loginModal');
   });
 
-  secureSubmit('forgotForm', frm => {
-    const em = frm.querySelector('input[type="email"]');
-    if (em && isValidEmail(em.value)) {
-      showToast('پاس ورڈ ری سیٹ لنک بھیج دیا گیا!');
-      closeModal('forgotModal');
-    } else {
-      showToast('درست ای میل درج کریں', 'error');
+  secureSubmit('signupForm', async frm => {
+    const full_name = frm.querySelector('#sName').value.trim();
+    const email = frm.querySelector('#sEmail').value.trim();
+    const password = frm.querySelector('#sPass').value;
+    const err = document.getElementById('signupError');
+
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name } }
+    });
+
+    if (error) {
+      document.getElementById('signupErrMsg').textContent = error.message;
+      err.style.display = 'flex'; err.style.alignItems = 'center'; err.style.gap = '.5rem';
+      return;
     }
+
+    err.style.display = 'none';
+    if (data.session) {
+      showToast('اکاؤنٹ بن گیا! خوش آمدید، ' + full_name);
+      closeModal('signupModal');
+    } else {
+      showToast('اکاؤنٹ بن گیا! اپنا ای میل چیک کر کے تصدیق کریں۔');
+      closeModal('signupModal');
+    }
+  });
+
+  secureSubmit('forgotForm', async frm => {
+    const em = frm.querySelector('input[type="email"]');
+    if (!em || !isValidEmail(em.value)) {
+      showToast('درست ای میل درج کریں', 'error');
+      return;
+    }
+    const { error } = await sb.auth.resetPasswordForEmail(em.value.trim());
+    if (error) {
+      showToast('لنک بھیجنے میں مسئلہ: ' + error.message, 'error');
+      return;
+    }
+    showToast('پاس ورڈ ری سیٹ لنک بھیج دیا گیا!');
+    closeModal('forgotModal');
   });
 
   secureSubmit('applyForm', () => {
@@ -3080,7 +3140,7 @@ body{font-family:var(--ff-body);}
 
   // ── Signup flow opener ──
   function openSignupFlow() {
-    document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+    openModal('signupModal');
   }
 
   // ── Verify functions secured ──
