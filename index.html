@@ -2644,7 +2644,13 @@ body{font-family:var(--ff-body);}
       <form class="modal-form" id="signupForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
         <div class="form-group"><label for="sName">Full Name</label><input type="text" id="sName" class="form-input" required placeholder="Your full name" /></div>
         <div class="form-group"><label for="sEmail">Email Address</label><input type="email" id="sEmail" class="form-input" required placeholder="your@email.com" /></div>
-        <div class="form-group"><label for="sPass">Password</label><input type="password" id="sPass" class="form-input" required minlength="6" placeholder="At least 6 characters" /></div>
+        <div class="form-group">
+          <label for="sPass">Password</label>
+          <input type="password" id="sPass" class="form-input" required minlength="8" placeholder="At least 8 characters" />
+          <small style="display:block;margin-top:.4rem;color:var(--muted);font-size:.78rem;line-height:1.4;">
+            Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character (!@#$%^&* etc.)
+          </small>
+        </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">Create Account</button>
       </form>
       <p class="modal-hint">Already a member? <a href="#" onclick="closeModal('signupModal');openModal('loginModal');return false;">Sign in →</a></p>
@@ -3084,6 +3090,19 @@ body{font-family:var(--ff-body);}
     const email = frm.querySelector('#sEmail').value.trim();
     const password = frm.querySelector('#sPass').value;
     const err = document.getElementById('signupError');
+
+    /* Password policy: at least one lowercase, one uppercase, one digit, one special char */
+    const hasLower = /[a-z]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasDigit = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|<>?,./`~]/.test(password);
+
+    if (password.length < 8 || !hasLower || !hasUpper || !hasDigit || !hasSpecial) {
+      document.getElementById('signupErrMsg').textContent =
+        'Password must be at least 8 characters and include lowercase, uppercase, a number, and a special character.';
+      err.style.display = 'flex'; err.style.alignItems = 'center'; err.style.gap = '.5rem';
+      return;
+    }
 
     const { data, error } = await sb.auth.signUp({
       email,
