@@ -2726,6 +2726,95 @@ body{font-family:var(--ff-body);}
   </div>
 </div>
 
+<!-- Create/Edit Society Modal (Admin) -->
+<div class="modal" id="societyModal" role="dialog" aria-modal="true" aria-labelledby="societyModalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="societyModalTitle">نئی Society</h3>
+      <button class="modal-close" onclick="closeModal('societyModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="societyForm">
+        <input type="hidden" id="societyEditId" value="" />
+        <div class="form-group">
+          <label for="societyName">Society کا نام</label>
+          <input type="text" id="societyName" class="form-input" required placeholder="e.g., Calligraphy Society" />
+        </div>
+        <div class="form-group">
+          <label for="societyPresident">صدر (President)</label>
+          <select id="societyPresident" class="form-input">
+            <option value="">-- منتخب کریں (اختیاری) --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="societySecretary">جنرل سیکرٹری</label>
+          <select id="societySecretary" class="form-input">
+            <option value="">-- منتخب کریں (اختیاری) --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="societyStatus">Status</label>
+          <select id="societyStatus" class="form-input" required>
+            <option value="active">فعال</option>
+            <option value="inactive">محفوظ</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Chapter Modal (Admin) -->
+<div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-labelledby="chapterModalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="chapterModalTitle">نیا Chapter</h3>
+      <button class="modal-close" onclick="closeModal('chapterModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="chapterForm">
+        <input type="hidden" id="chapterEditId" value="" />
+        <div class="form-group">
+          <label for="chapterName">Chapter کا نام</label>
+          <input type="text" id="chapterName" class="form-input" required placeholder="e.g., Punjab Chapter" />
+        </div>
+        <div class="form-group">
+          <label for="chapterProvince">صوبہ (Province)</label>
+          <select id="chapterProvince" class="form-input" required>
+            <option value="">-- منتخب کریں --</option>
+            <option value="punjab">Punjab</option>
+            <option value="kpk">KPK</option>
+            <option value="sindh">Sindh</option>
+            <option value="balochistan">Balochistan</option>
+            <option value="kashmir">Kashmir</option>
+            <option value="gilgit">Gilgit-Baltistan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="chapterHqCity">ہیڈ کوارٹرز شہر</label>
+          <input type="text" id="chapterHqCity" class="form-input" placeholder="e.g., Lahore" />
+        </div>
+        <div class="form-group">
+          <label for="chapterHead">Chapter Head</label>
+          <select id="chapterHead" class="form-input">
+            <option value="">-- منتخب کریں (اختیاری) --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="chapterStatus">Status</label>
+          <select id="chapterStatus" class="form-input" required>
+            <option value="active">فعال</option>
+            <option value="forming">تشکیل</option>
+            <option value="inactive">محفوظ</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
@@ -3136,7 +3225,7 @@ body{font-family:var(--ff-body);}
         const statusLabel = c.status === 'active' ? 'فعال' : c.status === 'forming' ? 'تشکیل' : 'محفوظ';
 
         return `<tr>
-          <td><strong>${sanitize(c.name)}</strong></td>
+          <td><strong>${sanitize(c.name)}</strong><br><span style="font-size:.75rem;color:var(--muted);text-transform:capitalize;">${sanitize(c.province || '—')}</span></td>
           <td>${sanitize(c.hq_city || '—')}</td>
           <td>${sanitize(headName)}</td>
           <td>${memberCount}</td>
@@ -3153,31 +3242,130 @@ body{font-family:var(--ff-body);}
     }
   }
 
-  /* ── Placeholder functions for CRUD ── */
-  function openCreateSocietyModal() {
-    showToast('نئی Society بنانے کی سہولت جلد آئے گی۔');
+  /* ── Populate member dropdowns (president / secretary / chapter head) ── */
+  async function populatePeopleSelect(selectEl, currentValue) {
+    selectEl.innerHTML = '<option value="">-- منتخب کریں (اختیاری) --</option>';
+    const { data: profs, error } = await sb.from('profiles').select('id, full_name, member_id').order('full_name');
+    if (error || !profs) return;
+    profs.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.full_name + ' (' + p.member_id + ')';
+      selectEl.appendChild(opt);
+    });
+    if (currentValue) selectEl.value = currentValue;
   }
 
-  function openCreateChapterModal() {
-    showToast('نیا Chapter بنانے کی سہولت جلد آئے گی۔');
+  /* ── SOCIETY: create / edit ── */
+  async function openCreateSocietyModal() {
+    document.getElementById('societyForm').reset();
+    document.getElementById('societyEditId').value = '';
+    document.getElementById('societyModalTitle').textContent = 'نئی Society';
+    await populatePeopleSelect(document.getElementById('societyPresident'));
+    await populatePeopleSelect(document.getElementById('societySecretary'));
+    openModal('societyModal');
   }
 
-  function editSociety(id) {
-    showToast('Society edit کی سہولت جلد آئے گی۔');
+  async function editSociety(id) {
+    const { data: s, error } = await sb.from('societies').select('*').eq('id', id).single();
+    if (error || !s) { showToast('Society نہیں ملی: ' + (error?.message || ''), 'error'); return; }
+    document.getElementById('societyForm').reset();
+    document.getElementById('societyEditId').value = s.id;
+    document.getElementById('societyModalTitle').textContent = 'Society میں ترمیم';
+    document.getElementById('societyName').value = s.name || '';
+    document.getElementById('societyStatus').value = s.status || 'active';
+    await populatePeopleSelect(document.getElementById('societyPresident'), s.president_id);
+    await populatePeopleSelect(document.getElementById('societySecretary'), s.general_secretary_id);
+    openModal('societyModal');
   }
 
-  function editChapter(id) {
-    showToast('Chapter edit کی سہولت جلد آئے گی۔');
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('societyForm', async frm => {
+    const editId = frm.querySelector('#societyEditId').value;
+    const name = frm.querySelector('#societyName').value.trim();
+    const president_id = frm.querySelector('#societyPresident').value || null;
+    const general_secretary_id = frm.querySelector('#societySecretary').value || null;
+    const status = frm.querySelector('#societyStatus').value;
+
+    if (!name) { showToast('براہ کرم Society کا نام درج کریں', 'error'); return; }
+
+    const payload = { name, president_id, general_secretary_id, status };
+    let error;
+    if (editId) {
+      ({ error } = await sb.from('societies').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await sb.from('societies').insert(payload));
+    }
+
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    showToast('✓ Society محفوظ ہو گئی!');
+    closeModal('societyModal');
+    loadSocietiesAdmin();
+  }));
+
+  async function deleteSociety(id) {
+    if (!confirm('کیا یہ Society حذف کرنا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('societies').delete().eq('id', id);
+    if (error) { showToast('حذف نہیں ہو سکی: ' + error.message, 'error'); return; }
+    showToast('Society حذف کر دی گئی۔');
+    loadSocietiesAdmin();
   }
 
-  function deleteSociety(id) {
-    if (!confirm('کیا یہ Society حذف کرنا چاہتے ہیں?')) return;
-    showToast('Society حذف کی سہولت جلد آئے گی۔');
+  /* ── CHAPTER: create / edit ── */
+  async function openCreateChapterModal() {
+    document.getElementById('chapterForm').reset();
+    document.getElementById('chapterEditId').value = '';
+    document.getElementById('chapterModalTitle').textContent = 'نیا Chapter';
+    await populatePeopleSelect(document.getElementById('chapterHead'));
+    openModal('chapterModal');
   }
 
-  function deleteChapter(id) {
-    if (!confirm('کیا یہ Chapter حذف کرنا چاہتے ہیں?')) return;
-    showToast('Chapter حذف کی سہولت جلد آئے گی۔');
+  async function editChapter(id) {
+    const { data: c, error } = await sb.from('chapters').select('*').eq('id', id).single();
+    if (error || !c) { showToast('Chapter نہیں ملا: ' + (error?.message || ''), 'error'); return; }
+    document.getElementById('chapterForm').reset();
+    document.getElementById('chapterEditId').value = c.id;
+    document.getElementById('chapterModalTitle').textContent = 'Chapter میں ترمیم';
+    document.getElementById('chapterName').value = c.name || '';
+    document.getElementById('chapterProvince').value = c.province || '';
+    document.getElementById('chapterHqCity').value = c.hq_city || '';
+    document.getElementById('chapterStatus').value = c.status || 'active';
+    await populatePeopleSelect(document.getElementById('chapterHead'), c.chapter_head_id);
+    openModal('chapterModal');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('chapterForm', async frm => {
+    const editId = frm.querySelector('#chapterEditId').value;
+    const name = frm.querySelector('#chapterName').value.trim();
+    const province = frm.querySelector('#chapterProvince').value;
+    const hq_city = frm.querySelector('#chapterHqCity').value.trim() || null;
+    const chapter_head_id = frm.querySelector('#chapterHead').value || null;
+    const status = frm.querySelector('#chapterStatus').value;
+
+    if (!name) { showToast('براہ کرم Chapter کا نام درج کریں', 'error'); return; }
+    if (!province) { showToast('براہ کرم صوبہ منتخب کریں', 'error'); return; }
+
+    const payload = { name, province, hq_city, chapter_head_id, status };
+    let error;
+    if (editId) {
+      ({ error } = await sb.from('chapters').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await sb.from('chapters').insert(payload));
+    }
+
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    showToast('✓ Chapter محفوظ ہو گیا!');
+    closeModal('chapterModal');
+    loadChaptersAdmin();
+  }));
+
+  async function deleteChapter(id) {
+    if (!confirm('کیا یہ Chapter حذف کرنا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('chapters').delete().eq('id', id);
+    if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('Chapter حذف کر دیا گیا۔');
+    loadChaptersAdmin();
   }
 </script>
 
