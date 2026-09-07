@@ -2361,12 +2361,22 @@ body{font-family:var(--ff-body);}
       <div class="dash-panel" id="dp-gallery">
         <h3 style="font-weight:700;margin-bottom:1rem;">Gallery — SHAOOR کی سرگرمیاں</h3>
 
-        <form onsubmit="addGalleryItem(event)" style="background:#faf8f3;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;display:grid;gap:.75rem;max-width:480px;">
+        <form onsubmit="saveGalleryItem(event)" style="background:#faf8f3;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;display:grid;gap:.75rem;max-width:480px;">
+          <input type="hidden" id="gEditId" value="" />
+          <h4 id="gFormTitle" style="font-weight:700;margin:0;">نئی Entry شامل کریں</h4>
           <div class="form-group"><label>عنوان (Title)</label><input type="text" id="gTitle" class="form-input" required placeholder="مثلا: Calligraphy Workshop 2026" /></div>
           <div class="form-group"><label>تاریخ (Date)</label><input type="date" id="gDate" class="form-input" required /></div>
           <div class="form-group"><label>مختصر تفصیل (Description)</label><textarea id="gDesc" class="form-input" rows="2" placeholder="اختیاری"></textarea></div>
-          <div class="form-group"><label>تصویر (Image)</label><input type="file" id="gImage" class="form-input" accept="image/png,image/jpeg,image/webp" required /></div>
-          <button type="submit" class="btn btn-gold" style="justify-content:center;"><i class="fas fa-plus"></i> Gallery میں شامل کریں</button>
+          <div class="form-group">
+            <label>تصویر (Image)</label>
+            <input type="file" id="gImage" class="form-input" accept="image/png,image/jpeg,image/webp" onchange="previewGalleryImage(this)" />
+            <small id="gImageHint" style="color:var(--muted);font-size:.75rem;"></small>
+            <img id="gImagePreview" src="" alt="" style="display:none;margin-top:.5rem;width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid #eee;" />
+          </div>
+          <div style="display:flex;gap:.5rem;">
+            <button type="submit" id="gSubmitBtn" class="btn btn-gold" style="justify-content:center;flex:1;"><i class="fas fa-plus"></i> Gallery میں شامل کریں</button>
+            <button type="button" id="gCancelBtn" class="btn" style="display:none;background:#eee;color:#333;" onclick="cancelGalleryEdit()">Cancel</button>
+          </div>
         </form>
 
         <div style="overflow-x:auto;">
@@ -4626,6 +4636,8 @@ body{font-family:var(--ff-body);}
   loadPublicGallery();
 
   /* ── ADMIN: GALLERY MANAGEMENT ── */
+  let galleryItemsCache = [];
+
   async function loadGalleryAdmin() {
     const panel = document.getElementById('dp-gallery');
     if (!panel) return;
@@ -4641,6 +4653,9 @@ body{font-family:var(--ff-body);}
       tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">لوڈ نہیں ہو سکا</td></tr>';
       return;
     }
+
+    galleryItemsCache = items;
+
     if (items.length === 0) {
       tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی entry موجود نہیں</td></tr>';
       return;
@@ -4652,14 +4667,64 @@ body{font-family:var(--ff-body);}
         <td>${sanitize(it.title)}</td>
         <td>${new Date(it.event_date).toLocaleDateString('en-GB')}</td>
         <td>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="editGalleryItem('${it.id}')"><i class="fas fa-edit"></i> Edit</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="deleteGalleryItem('${it.id}')"><i class="fas fa-trash"></i> Delete</button>
         </td>
       </tr>
     `).join('');
   }
 
-  async function addGalleryItem(e) {
+  /* Show a preview of the newly chosen image before upload */
+  function previewGalleryImage(input) {
+    const file = input.files[0];
+    const img = document.getElementById('gImagePreview');
+    if (!file) { img.style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.src = e.target.result;
+      img.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* Populate the form with an existing item's data for editing */
+  function editGalleryItem(id) {
+    const item = galleryItemsCache.find(it => it.id === id);
+    if (!item) return;
+
+    document.getElementById('gEditId').value = item.id;
+    document.getElementById('gTitle').value = item.title;
+    document.getElementById('gDate').value = item.event_date;
+    document.getElementById('gDesc').value = item.description || '';
+    document.getElementById('gImage').removeAttribute('required');
+    document.getElementById('gImageHint').textContent = 'نئی تصویر منتخب نہ کریں تو پرانی تصویر ہی رہے گی';
+    document.getElementById('gImagePreview').src = item.image_url;
+    document.getElementById('gImagePreview').style.display = 'block';
+    document.getElementById('gFormTitle').textContent = 'Entry میں ترمیم کریں';
+    document.getElementById('gSubmitBtn').innerHTML = '<i class="fas fa-save"></i> تبدیلی محفوظ کریں';
+    document.getElementById('gCancelBtn').style.display = 'block';
+
+    document.getElementById('dp-gallery').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function cancelGalleryEdit() {
+    document.getElementById('gEditId').value = '';
+    document.getElementById('gTitle').value = '';
+    document.getElementById('gDate').value = '';
+    document.getElementById('gDesc').value = '';
+    document.getElementById('gImage').value = '';
+    document.getElementById('gImage').setAttribute('required', 'required');
+    document.getElementById('gImageHint').textContent = '';
+    document.getElementById('gImagePreview').style.display = 'none';
+    document.getElementById('gFormTitle').textContent = 'نئی Entry شامل کریں';
+    document.getElementById('gSubmitBtn').innerHTML = '<i class="fas fa-plus"></i> Gallery میں شامل کریں';
+    document.getElementById('gCancelBtn').style.display = 'none';
+  }
+
+  /* Handles BOTH adding a new item and saving edits to an existing one */
+  async function saveGalleryItem(e) {
     e.preventDefault();
+    const editId = document.getElementById('gEditId').value;
     const titleEl = document.getElementById('gTitle');
     const dateEl = document.getElementById('gDate');
     const descEl = document.getElementById('gDesc');
@@ -4670,46 +4735,58 @@ body{font-family:var(--ff-body);}
     const description = descEl.value.trim();
     const file = fileEl.files[0];
 
-    if (!title || !event_date || !file) {
+    if (!title || !event_date || (!editId && !file)) {
       showToast('عنوان، تاریخ، اور تصویر ضروری ہیں', 'error');
       return;
     }
-    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-      showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('تصویر 5MB سے چھوٹی ہونی چاہیے', 'error');
-      return;
-    }
-
-    const { data: userData } = await sb.auth.getUser();
-    const userId = userData?.user?.id;
-
-    const ext = file.name.split('.').pop();
-    const filePath = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
-
-    const { error: uploadError } = await sb.storage.from('gallery-images').upload(filePath, file);
-    if (uploadError) {
-      showToast('اپلوڈ ناکام: ' + uploadError.message, 'error');
-      return;
+    if (file) {
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+        showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('تصویر 5MB سے چھوٹی ہونی چاہیے', 'error');
+        return;
+      }
     }
 
-    const { data: publicUrlData } = sb.storage.from('gallery-images').getPublicUrl(filePath);
-
-    const { error: insertError } = await sb.from('gallery').insert({
-      title, event_date, description,
-      image_url: publicUrlData.publicUrl,
-      created_by: userId
-    });
-
-    if (insertError) {
-      showToast('محفوظ کرنے میں ناکامی: ' + insertError.message, 'error');
-      return;
+    let image_url = null;
+    if (file) {
+      const ext = file.name.split('.').pop();
+      const filePath = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+      const { error: uploadError } = await sb.storage.from('gallery-images').upload(filePath, file);
+      if (uploadError) {
+        showToast('اپلوڈ ناکام: ' + uploadError.message, 'error');
+        return;
+      }
+      const { data: publicUrlData } = sb.storage.from('gallery-images').getPublicUrl(filePath);
+      image_url = publicUrlData.publicUrl;
     }
 
-    showToast('Gallery میں شامل ہو گیا!');
-    titleEl.value = ''; dateEl.value = ''; descEl.value = ''; fileEl.value = '';
+    if (editId) {
+      const payload = { title, event_date, description };
+      if (image_url) payload.image_url = image_url;
+      const { error } = await sb.from('gallery').update(payload).eq('id', editId);
+      if (error) {
+        showToast('اپڈیٹ ناکام: ' + error.message, 'error');
+        return;
+      }
+      showToast('Entry اپڈیٹ ہو گئی!');
+    } else {
+      const { data: userData } = await sb.auth.getUser();
+      const { error } = await sb.from('gallery').insert({
+        title, event_date, description,
+        image_url,
+        created_by: userData?.user?.id
+      });
+      if (error) {
+        showToast('محفوظ کرنے میں ناکامی: ' + error.message, 'error');
+        return;
+      }
+      showToast('Gallery میں شامل ہو گیا!');
+    }
+
+    cancelGalleryEdit();
     loadGalleryAdmin();
     loadPublicGallery();
   }
