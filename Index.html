@@ -2573,6 +2573,17 @@ body{font-family:var(--ff-body);}
   <div class="container" style="padding:2.5rem 1.5rem;max-width:640px;">
     <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
       <h3 style="font-weight:700;margin-bottom:1.5rem;color:var(--navy);"><i class="fas fa-id-card" style="color:var(--gold);margin-right:.5rem;"></i> My Profile</h3>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.75rem;margin-bottom:1.5rem;">
+        <img id="mdAvatarImg" src="" alt="Profile picture" style="width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);display:none;background:#eee;" />
+        <div id="mdAvatarPlaceholder" style="width:110px;height:110px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.2rem;"><i class="fas fa-user"></i></div>
+        <label class="btn btn-gold" style="cursor:pointer;font-size:.85rem;padding:.5rem 1rem;">
+          <i class="fas fa-camera"></i> Change Photo
+          <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+        </label>
+        <small id="avatarStatus" style="color:var(--muted);font-size:.78rem;"></small>
+      </div>
+
       <div style="display:grid;gap:1rem;">
         <div><small style="color:var(--muted);">Full Name</small><div id="mdName" style="font-weight:600;font-size:1.05rem;">—</div></div>
         <div><small style="color:var(--muted);">SHAOOR Member ID</small><div id="mdMemberId" style="font-weight:600;font-size:1.05rem;letter-spacing:.5px;">—</div></div>
@@ -3114,7 +3125,7 @@ body{font-family:var(--ff-body);}
   async function openMemberDashboard(userId) {
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status')
+      .select('full_name, member_id, role, status, avatar_url')
       .eq('id', userId)
       .single();
 
@@ -3134,9 +3145,84 @@ body{font-family:var(--ff-body);}
     document.getElementById('mdRole').textContent = profile.role || '—';
     document.getElementById('mdStatus').textContent = profile.status || '—';
 
+    /* Show avatar if one is already set */
+    const avatarImg = document.getElementById('mdAvatarImg');
+    const avatarPlaceholder = document.getElementById('mdAvatarPlaceholder');
+    if (profile.avatar_url) {
+      avatarImg.src = profile.avatar_url;
+      avatarImg.style.display = 'block';
+      avatarPlaceholder.style.display = 'none';
+    } else {
+      avatarImg.style.display = 'none';
+      avatarPlaceholder.style.display = 'flex';
+    }
+
     document.getElementById('memberDash').classList.add('open');
     document.body.style.overflow = 'hidden';
     showToast('خوش آمدید، ' + (profile.full_name || 'Member') + '!');
+  }
+
+  /* ── Avatar upload ── */
+  const avatarInput = document.getElementById('avatarInput');
+  if (avatarInput) {
+    avatarInput.addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById('avatarStatus');
+
+      // Validate type and size (max 3MB)
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
+        return;
+      }
+      if (file.size > 3 * 1024 * 1024) {
+        showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
+        return;
+      }
+
+      const { data: userData } = await sb.auth.getUser();
+      const userId = userData?.user?.id;
+      if (!userId) return;
+
+      statusEl.textContent = 'اپلوڈ ہو رہا ہے…';
+
+      const ext = file.name.split('.').pop();
+      const filePath = `${userId}/avatar.${ext}`;
+
+      const { error: uploadError } = await sb.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true, cacheControl: '3600' });
+
+      if (uploadError) {
+        console.error('Avatar upload failed:', uploadError);
+        statusEl.textContent = '';
+        showToast('اپلوڈ ناکام: ' + uploadError.message, 'error');
+        return;
+      }
+
+      const { data: publicUrlData } = sb.storage.from('avatars').getPublicUrl(filePath);
+      const publicUrl = publicUrlData.publicUrl + '?t=' + Date.now(); // cache-bust
+
+      const { error: updateError } = await sb
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', userId);
+
+      if (updateError) {
+        console.error('Profile update failed:', updateError);
+        statusEl.textContent = '';
+        showToast('پروفائل اپڈیٹ ناکام: ' + updateError.message, 'error');
+        return;
+      }
+
+      document.getElementById('mdAvatarImg').src = publicUrl;
+      document.getElementById('mdAvatarImg').style.display = 'block';
+      document.getElementById('mdAvatarPlaceholder').style.display = 'none';
+      statusEl.textContent = '';
+      showToast('پروفائل تصویر کامیابی سے اپڈیٹ ہو گئی!');
+    });
   }
 
   async function memberLogout() {
