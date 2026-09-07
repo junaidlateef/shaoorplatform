@@ -2493,13 +2493,12 @@ body{font-family:var(--ff-body);}
 
       <!-- Applications Panel -->
       <div class="dash-panel" id="dp-applications">
-        <h3 style="font-weight:700;margin-bottom:1rem;">Pending Applications</h3>
+        <h3 style="font-weight:700;margin-bottom:1rem;">درخواستیں</h3>
         <div style="overflow-x:auto;">
           <table class="admin-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Society</th><th>Tier</th><th>Date</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr><td>Ali Hassan</td><td>ali@example.com</td><td>Heritage</td><td>Student</td><td>Sep 1, 2026</td><td style="display:flex;gap:.5rem;"><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="showToast('Application approved!')">Approve</button><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="showToast('Application rejected.')">Reject</button></td></tr>
-              <tr><td>Sana Butt</td><td>sana@example.com</td><td>Photography</td><td>Individual</td><td>Sep 2, 2026</td><td style="display:flex;gap:.5rem;"><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="showToast('Application approved!')">Approve</button><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="showToast('Application rejected.')">Reject</button></td></tr>
+            <thead><tr><th>نام</th><th>Email</th><th>فون</th><th>سوسائٹی</th><th>تاریخ</th><th>ایکشن</th></tr></thead>
+            <tbody id="applicationsBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">درخواستیں لوڈ ہو رہی ہیں…</td></tr>
             </tbody>
           </table>
         </div>
@@ -2837,26 +2836,23 @@ body{font-family:var(--ff-body);}
     </div>
     <div class="modal-body">
       <form class="modal-form" id="applyForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
-        <div class="form-group"><label>Full Name</label><input type="text" class="form-input" required placeholder="Your full name" /></div>
-        <div class="form-group"><label>Email</label><input type="email" class="form-input" required placeholder="your@email.com" /></div>
-        <div class="form-group"><label>Membership Tier</label>
-          <select class="form-select">
-            <option>Student Member</option>
-            <option>Individual Member</option>
-            <option>Mentor / Artist</option>
-          </select>
-        </div>
+        <div class="form-group"><label>Full Name</label><input type="text" name="full_name" class="form-input" required placeholder="Your full name" /></div>
+        <div class="form-group"><label>Email</label><input type="email" name="email" class="form-input" required placeholder="your@email.com" /></div>
+        <div class="form-group"><label>Phone</label><input type="tel" name="phone" class="form-input" required placeholder="+92 300 1234567" /></div>
         <div class="form-group"><label>Society of Interest</label>
-          <select class="form-select">
-            <option>Calligraphy Society</option>
-            <option>Fine Arts Society</option>
-            <option>Textile Art Society</option>
-            <option>Islamic Art Society</option>
-            <option>Heritage Society</option>
-            <option>Photography Society</option>
-            <option>Digital Art Society</option>
+          <select name="society_interest" class="form-select" required>
+            <option value="">Select a Society</option>
+            <option value="Calligraphy Society">Calligraphy Society</option>
+            <option value="Fine Arts Society">Fine Arts Society</option>
+            <option value="Textile Art Society">Textile Art Society</option>
+            <option value="Islamic Art Society">Islamic Art Society</option>
+            <option value="Heritage Society">Heritage Society</option>
+            <option value="Photography Society">Photography Society</option>
+            <option value="Digital Art Society">Digital Art Society</option>
+            <option value="Literary Society">Literary Society</option>
           </select>
         </div>
+        <div class="form-group"><label>Why do you want to join? (Optional)</label><textarea name="motivation_text" class="form-input" style="min-height:100px;" placeholder="Tell us about your interest in SHAOOR..."></textarea></div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;"><i class="fas fa-paper-plane"></i> Submit Application</button>
       </form>
     </div>
@@ -3460,6 +3456,111 @@ body{font-family:var(--ff-body);}
     }).join('');
   }
 
+  /* ── Load Applications for Admin Panel ── */
+  async function loadApplicationsAdmin() {
+    const tbody = document.getElementById('applicationsBody');
+    if (!tbody) return; // Panel doesn't exist yet
+    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">درخواستیں لوڈ ہو رہی ہیں…</td></tr>';
+
+    // Fetch pending applications first, then rejected/approved
+    const { data: apps, error } = await sb
+      .from('applications')
+      .select('id, email, full_name, phone, society_interest, status, applied_at, motivation_text')
+      .order('status', { ascending: false })
+      .order('applied_at', { ascending: false });
+
+    if (error) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">Load fail: ' + sanitize(error.message) + '</td></tr>';
+      return;
+    }
+
+    if (!apps || apps.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی درخواست نہیں۔</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = apps.map(app => {
+      const statusBg = app.status === 'pending' ? '#fbbf24' 
+                     : app.status === 'approved' ? '#16a34a'
+                     : '#ef4444';
+      const statusLabel = app.status === 'pending' ? 'زیرِ التوا'
+                        : app.status === 'approved' ? 'منظور' 
+                        : 'مسترد';
+      const appliedDate = new Date(app.applied_at).toLocaleDateString('ur-PK');
+      
+      return `<tr>
+        <td><strong>${sanitize(app.full_name)}</strong></td>
+        <td>${sanitize(app.email)}</td>
+        <td>${sanitize(app.phone)}</td>
+        <td>${sanitize(app.society_interest)}</td>
+        <td>${appliedDate}</td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          <span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span>
+          ${app.status === 'pending' ? `
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="approveApplication('${app.id}')">منظور کریں</button>
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="rejectApplication('${app.id}')">مسترد کریں</button>
+          ` : ''}
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="viewApplication('${app.id}')">دیکھیں</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ── Approve Application ── */
+  async function approveApplication(appId) {
+    const { data: app, error: fetchError } = await sb
+      .from('applications')
+      .select('email, full_name, phone')
+      .eq('id', appId)
+      .single();
+
+    if (fetchError || !app) {
+      showToast('درخواست تلاش نہیں ہوئی', 'error');
+      return;
+    }
+
+    // Update application status
+    const { error: updateError } = await sb
+      .from('applications')
+      .update({ status: 'approved', reviewed_at: new Date().toISOString() })
+      .eq('id', appId);
+
+    if (updateError) {
+      showToast('خرابی: ' + updateError.message, 'error');
+      return;
+    }
+
+    // Now try to create or link a member profile if it doesn't exist
+    // (This is optional — they can sign up normally too)
+    showToast('✅ درخواست منظور کر دی گئی!');
+    loadApplicationsAdmin();
+  }
+
+  /* ── Reject Application ── */
+  async function rejectApplication(appId) {
+    if (!confirm('کیا یہ درخواست مسترد کرنا چاہتے ہیں?')) return;
+
+    const { error } = await sb
+      .from('applications')
+      .update({ status: 'rejected', reviewed_at: new Date().toISOString() })
+      .eq('id', appId);
+
+    if (error) {
+      showToast('خرابی: ' + error.message, 'error');
+      return;
+    }
+
+    showToast('درخواست مسترد کر دی گئی۔');
+    loadApplicationsAdmin();
+  }
+
+  /* ── View Application Details ── */
+  function viewApplication(appId) {
+    showToast('تفصیلات کو modal میں دکھانے کی سہولت جلد آئے گی۔');
+    // TODO: Create a modal to show full application details
+  }
+
   /* ── Admin: populate the member dropdown in the Issue Certificate modal ── */
   async function populateCertMemberSelect() {
     const sel = document.getElementById('certMemberSelect');
@@ -3703,9 +3804,68 @@ body{font-family:var(--ff-body);}
     closeModal('forgotModal');
   });
 
-  secureSubmit('applyForm', () => {
-    showToast('درخواست موصول! ۳–۵ دنوں میں رابطہ کریں گے۔');
-    closeModal('applyModal');
+  // ── Apply for Membership Handler ──
+  document.getElementById('applyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    // Get form values
+    const full_name = formData.get('full_name')?.trim();
+    const email = formData.get('email')?.trim().toLowerCase();
+    const phone = formData.get('phone')?.trim();
+    const society_interest = formData.get('society_interest')?.trim();
+    const motivation_text = formData.get('motivation_text')?.trim() || '';
+    
+    // Validate
+    if (!full_name || !email || !phone || !society_interest) {
+      showToast('تمام ضروری فیلڈ بھریں', 'error');
+      return;
+    }
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast('صحیح email لکھیں', 'error');
+      return;
+    }
+    
+    // Show loading
+    const btn = form.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> درخواست بھیجی جا رہی ہے...';
+    
+    try {
+      // Insert into applications table
+      const { data, error } = await sb
+        .from('applications')
+        .insert([{
+          full_name,
+          email,
+          phone,
+          society_interest,
+          motivation_text,
+          status: 'pending'
+        }]);
+      
+      if (error) {
+        if (error.message.includes('duplicate')) {
+          showToast('یہ email پہلے سے apply کر چکا ہے', 'error');
+        } else {
+          showToast('Error: ' + error.message, 'error');
+        }
+      } else {
+        showToast('✅ درخواست موصول! ۳–۵ دنوں میں رابطہ کریں گے۔');
+        form.reset();
+        closeModal('applyModal');
+      }
+    } catch (err) {
+      showToast('کوئی مسئلہ پیش آیا۔ دوبارہ کوشش کریں۔', 'error');
+      console.error('Apply error:', err);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }
   });
 
   secureSubmit('contactForm', () => {
@@ -3961,6 +4121,7 @@ body{font-family:var(--ff-body);}
     btn.classList.add('active');
     if (id === 'certificates') loadCertificatesAdmin();
     if (id === 'members') loadMembersAdmin();
+    if (id === 'applications') loadApplicationsAdmin();
   }
 
   /* Admin form */
