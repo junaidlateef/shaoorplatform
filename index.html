@@ -2815,6 +2815,45 @@ body{font-family:var(--ff-body);}
   </div>
 </div>
 
+<!-- Manage Chapter: Societies + Cabinet Modal (Admin) -->
+<div class="modal" id="chapterManageModal" role="dialog" aria-modal="true" aria-labelledby="chapterManageTitle">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-head">
+      <h3 id="chapterManageTitle">Chapter Manage</h3>
+      <button class="modal-close" onclick="closeModal('chapterManageModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cmChapterId" value="" />
+
+      <h4 style="margin-bottom:.5rem;">Societies اس Chapter میں</h4>
+      <div id="cmSocietiesList" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem;">
+        <div style="color:var(--muted);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <select id="cmAddSocietySelect" class="form-input" style="flex:1;min-width:180px;">
+          <option value="">-- Society منتخب کریں --</option>
+        </select>
+        <button type="button" class="btn btn-gold" style="padding:.5rem 1rem;font-size:.85rem;" onclick="addSocietyToChapter()">شامل کریں</button>
+      </div>
+
+      <h4 style="margin-bottom:.5rem;">Cabinet نشستیں</h4>
+      <div id="cmCabinetList" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.75rem;">
+        <div style="color:var(--muted);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+        <select id="cmCabinetSociety" class="form-input">
+          <option value="">-- Society --</option>
+        </select>
+        <input type="text" id="cmCabinetRole" class="form-input" placeholder="عہدہ e.g. President" />
+        <select id="cmCabinetMember" class="form-input" style="grid-column:1/-1;">
+          <option value="">-- Member منتخب کریں --</option>
+        </select>
+        <button type="button" class="btn btn-gold" style="grid-column:1/-1;justify-content:center;font-size:.9rem;" onclick="addCabinetSeat()">نشست شامل کریں</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
@@ -3231,6 +3270,7 @@ body{font-family:var(--ff-body);}
           <td>${memberCount}</td>
           <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
           <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openChapterManage('${c.id}', '${sanitize(c.name).replace(/'/g,"\\'")}')">Manage</button>
             <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editChapter('${c.id}')">Edit</button>
             <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteChapter('${c.id}')">حذف</button>
           </td>
@@ -3366,6 +3406,136 @@ body{font-family:var(--ff-body);}
     if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
     showToast('Chapter حذف کر دیا گیا۔');
     loadChaptersAdmin();
+  }
+
+  /* ══════════════ CHAPTER MANAGE: societies + cabinet ══════════════ */
+  async function openChapterManage(chapterId, chapterName) {
+    document.getElementById('cmChapterId').value = chapterId;
+    document.getElementById('chapterManageTitle').textContent = 'Chapter Manage — ' + chapterName;
+    openModal('chapterManageModal');
+    await loadChapterSocieties(chapterId);
+    await loadChapterCabinet(chapterId);
+  }
+
+  /* -- Societies in this chapter -- */
+  async function loadChapterSocieties(chapterId) {
+    const list = document.getElementById('cmSocietiesList');
+    const addSel = document.getElementById('cmAddSocietySelect');
+    const cabinetSocietySel = document.getElementById('cmCabinetSociety');
+    list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">لوڈ ہو رہا ہے…</div>';
+
+    const { data: links, error } = await sb
+      .from('chapter_societies')
+      .select('id, society_id, societies(name)')
+      .eq('chapter_id', chapterId);
+
+    if (error) { list.innerHTML = '<div style="color:var(--ruby);font-size:.85rem;">خرابی: ' + sanitize(error.message) + '</div>'; return; }
+
+    if (!links || links.length === 0) {
+      list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">ابھی کوئی society شامل نہیں۔</div>';
+    } else {
+      list.innerHTML = links.map(l => `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--cream2);padding:.5rem .75rem;border-radius:8px;">
+          <span style="font-size:.9rem;">${sanitize(l.societies?.name || 'Unknown')}</span>
+          <button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--ruby);" onclick="removeSocietyFromChapter('${l.id}', '${chapterId}')">ہٹائیں</button>
+        </div>`).join('');
+    }
+
+    // populate "add society" dropdown with societies not yet linked
+    const { data: allSocieties } = await sb.from('societies').select('id, name').order('name');
+    const linkedIds = new Set((links || []).map(l => l.society_id));
+    addSel.innerHTML = '<option value="">-- Society منتخب کریں --</option>';
+    cabinetSocietySel.innerHTML = '<option value="">-- Society --</option>';
+    (allSocieties || []).forEach(s => {
+      if (!linkedIds.has(s.id)) {
+        const opt = document.createElement('option');
+        opt.value = s.id; opt.textContent = s.name;
+        addSel.appendChild(opt);
+      }
+      // cabinet dropdown should only offer societies already active in this chapter
+      if (linkedIds.has(s.id)) {
+        const opt2 = document.createElement('option');
+        opt2.value = s.id; opt2.textContent = s.name;
+        cabinetSocietySel.appendChild(opt2);
+      }
+    });
+  }
+
+  async function addSocietyToChapter() {
+    const chapterId = document.getElementById('cmChapterId').value;
+    const societyId = document.getElementById('cmAddSocietySelect').value;
+    if (!societyId) { showToast('براہ کرم ایک Society منتخب کریں', 'error'); return; }
+
+    const { error } = await sb.from('chapter_societies').insert({ chapter_id: chapterId, society_id: societyId, status: 'active' });
+    if (error) { showToast('شامل نہیں ہو سکی: ' + error.message, 'error'); return; }
+
+    showToast('✓ Society شامل کر دی گئی!');
+    await loadChapterSocieties(chapterId);
+    loadChaptersAdmin();
+  }
+
+  async function removeSocietyFromChapter(linkId, chapterId) {
+    if (!confirm('کیا اس Society کو اس Chapter سے ہٹانا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('chapter_societies').delete().eq('id', linkId);
+    if (error) { showToast('ہٹا نہیں سکے: ' + error.message, 'error'); return; }
+    showToast('Society ہٹا دی گئی۔');
+    await loadChapterSocieties(chapterId);
+    await loadChapterCabinet(chapterId);
+    loadChaptersAdmin();
+  }
+
+  /* -- Cabinet seats -- */
+  async function loadChapterCabinet(chapterId) {
+    const list = document.getElementById('cmCabinetList');
+    const memberSel = document.getElementById('cmCabinetMember');
+    list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">لوڈ ہو رہا ہے…</div>';
+
+    const { data: seats, error } = await sb
+      .from('chapter_society_cabinet')
+      .select('id, role, status, societies(name), profiles(full_name)')
+      .eq('chapter_id', chapterId)
+      .order('role');
+
+    if (error) { list.innerHTML = '<div style="color:var(--ruby);font-size:.85rem;">خرابی: ' + sanitize(error.message) + '</div>'; return; }
+
+    if (!seats || seats.length === 0) {
+      list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">ابھی کوئی cabinet نشست نہیں۔</div>';
+    } else {
+      list.innerHTML = seats.map(s => `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--cream2);padding:.5rem .75rem;border-radius:8px;">
+          <span style="font-size:.85rem;"><strong>${sanitize(s.societies?.name || '—')}</strong> — ${sanitize(s.role)}: ${sanitize(s.profiles?.full_name || 'خالی نشست')}</span>
+          <button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--ruby);" onclick="removeCabinetSeat('${s.id}', '${chapterId}')">ہٹائیں</button>
+        </div>`).join('');
+    }
+
+    await populatePeopleSelect(memberSel);
+  }
+
+  async function addCabinetSeat() {
+    const chapterId = document.getElementById('cmChapterId').value;
+    const societyId = document.getElementById('cmCabinetSociety').value;
+    const role = document.getElementById('cmCabinetRole').value.trim();
+    const memberId = document.getElementById('cmCabinetMember').value || null;
+
+    if (!societyId) { showToast('پہلے Society منتخب کریں', 'error'); return; }
+    if (!role) { showToast('عہدہ درج کریں', 'error'); return; }
+
+    const { error } = await sb.from('chapter_society_cabinet').insert({
+      chapter_id: chapterId, society_id: societyId, role, member_id: memberId, status: 'active'
+    });
+    if (error) { showToast('نشست شامل نہیں ہو سکی: ' + error.message, 'error'); return; }
+
+    showToast('✓ کابینہ نشست شامل ہو گئی!');
+    document.getElementById('cmCabinetRole').value = '';
+    await loadChapterCabinet(chapterId);
+  }
+
+  async function removeCabinetSeat(seatId, chapterId) {
+    if (!confirm('کیا یہ نشست ہٹانا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('chapter_society_cabinet').delete().eq('id', seatId);
+    if (error) { showToast('ہٹا نہیں سکے: ' + error.message, 'error'); return; }
+    showToast('نشست ہٹا دی گئی۔');
+    await loadChapterCabinet(chapterId);
   }
 </script>
 
