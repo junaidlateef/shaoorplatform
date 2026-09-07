@@ -2115,14 +2115,46 @@ body{font-family:var(--ff-body);}
     <div class="container">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem;" class="reveal">
         <div>
-          <p class="sec-label">Our Activities</p>
-          <h2 class="sec-title">Events, Exhibitions & Workshops</h2>
-          <p class="sec-sub" style="max-width:480px;">A glimpse into SHAOOR's own events, exhibitions, workshops, and webinars.</p>
+          <p class="sec-label">Creative Gallery</p>
+          <h2 class="sec-title">Art, Culture & Community</h2>
+          <p class="sec-sub" style="max-width:480px;">A living gallery of SHAOOR members' work — updated as our community grows.</p>
+        </div>
+        <div class="gallery-actions">
+          <label class="btn btn-gold" style="cursor:pointer;" title="Upload artwork (members only)">
+            <i class="fas fa-cloud-upload-alt"></i> Add Artwork
+            <input type="file" id="galleryUpload" accept="image/*" multiple style="display:none;" onchange="addGalleryImages(this)" />
+          </label>
         </div>
       </div>
       <div class="gallery-grid" id="galleryGrid">
-        <p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">Gallery لوڈ ہو رہی ہے…</p>
+        <div class="gallery-item reveal" data-gcat="calligraphy">
+          <div class="gallery-head" style="background:linear-gradient(135deg,var(--navy),#C8922A44);display:flex;align-items:center;justify-content:center;font-size:3rem;">🖋️</div>
+          <div class="gallery-caption"><strong>Surah Al-Fatiha — Naskh</strong><span>Ahmad Raza · Punjab</span></div>
+        </div>
+        <div class="gallery-item reveal anim-d1" data-gcat="painting">
+          <div class="gallery-head" style="background:linear-gradient(135deg,#1A6B6B,#E6AF3A33);display:flex;align-items:center;justify-content:center;font-size:3rem;">🎨</div>
+          <div class="gallery-caption"><strong>Indus Valley at Dusk</strong><span>Nadia Shah · Sindh</span></div>
+        </div>
+        <div class="gallery-item reveal anim-d2" data-gcat="textile">
+          <div class="gallery-head" style="background:linear-gradient(135deg,#9B2335,#F5CC6033);display:flex;align-items:center;justify-content:center;font-size:3rem;">🧵</div>
+          <div class="gallery-caption"><strong>Phulkari Motif Series</strong><span>Zara Malik · Punjab</span></div>
+        </div>
+        <div class="gallery-item reveal anim-d3" data-gcat="islamic">
+          <div class="gallery-head" style="background:linear-gradient(135deg,#2D3A8C,#C8922A33);display:flex;align-items:center;justify-content:center;font-size:3rem;">☪️</div>
+          <div class="gallery-caption"><strong>Geometric Star Pattern</strong><span>Bilal Khan · KPK</span></div>
+        </div>
+        <div class="gallery-item reveal anim-d4" data-gcat="photography">
+          <div class="gallery-head" style="background:linear-gradient(135deg,#1C2E4A,#D4700A55);display:flex;align-items:center;justify-content:center;font-size:3rem;">📸</div>
+          <div class="gallery-caption"><strong>Badshahi Mosque at Dawn</strong><span>Omar Tariq · Punjab</span></div>
+        </div>
+        <div class="gallery-item reveal anim-d5" data-gcat="digital">
+          <div class="gallery-head" style="background:linear-gradient(135deg,#160F08,#E6AF3A55);display:flex;align-items:center;justify-content:center;font-size:3rem;">💻</div>
+          <div class="gallery-caption"><strong>Digital Heritage Series</strong><span>Sara Qureshi · Sindh</span></div>
+        </div>
       </div>
+      <p style="text-align:center;margin-top:2rem;font-size:.82rem;color:var(--muted);">
+        <i class="fas fa-info-circle"></i> Members can upload their artwork after logging in. Images shown here are placeholders.
+      </p>
     </div>
   </section>
 
@@ -2357,36 +2389,20 @@ body{font-family:var(--ff-body);}
         </div>
       </div>
 
-      <!-- Gallery Panel -->
-      <div class="dash-panel" id="dp-gallery">
-        <h3 style="font-weight:700;margin-bottom:1rem;">Gallery — SHAOOR کی سرگرمیاں</h3>
-
-        <form onsubmit="saveGalleryItem(event)" style="background:#faf8f3;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;display:grid;gap:.75rem;max-width:480px;">
-          <input type="hidden" id="gEditId" value="" />
-          <h4 id="gFormTitle" style="font-weight:700;margin:0;">نئی Entry شامل کریں</h4>
-          <div class="form-group"><label>عنوان (Title)</label><input type="text" id="gTitle" class="form-input" required placeholder="مثلا: Calligraphy Workshop 2026" /></div>
-          <div class="form-group"><label>تاریخ (Date)</label><input type="date" id="gDate" class="form-input" required /></div>
-          <div class="form-group"><label>مختصر تفصیل (Description)</label><textarea id="gDesc" class="form-input" rows="2" placeholder="اختیاری"></textarea></div>
-          <div class="form-group">
-            <label>تصویر (Image)</label>
-            <input type="file" id="gImage" class="form-input" accept="image/png,image/jpeg,image/webp" onchange="previewGalleryImage(this)" />
-            <small id="gImageHint" style="color:var(--muted);font-size:.75rem;"></small>
-            <img id="gImagePreview" src="" alt="" style="display:none;margin-top:.5rem;width:120px;height:120px;object-fit:cover;border-radius:8px;border:1px solid #eee;" />
-          </div>
-          <div style="display:flex;gap:.5rem;">
-            <button type="submit" id="gSubmitBtn" class="btn btn-gold" style="justify-content:center;flex:1;"><i class="fas fa-plus"></i> Gallery میں شامل کریں</button>
-            <button type="button" id="gCancelBtn" class="btn" style="display:none;background:#eee;color:#333;" onclick="cancelGalleryEdit()">Cancel</button>
-          </div>
-        </form>
-
+      <!-- Market Panel -->
+      <div class="dash-panel" id="dp-market">
+        <h3 style="font-weight:700;margin-bottom:1rem;">Market Listings</h3>
         <div style="overflow-x:auto;">
           <table class="admin-table">
-            <thead><tr><th>تصویر</th><th>عنوان</th><th>تاریخ</th><th>ایکشن</th></tr></thead>
-            <tbody id="galleryAdminBody">
-              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">Gallery لوڈ ہو رہی ہے…</td></tr>
+            <thead><tr><th>Title</th><th>Artist</th><th>Category</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>بسم اللہ Thuluth</td><td>Ahmed Raza</td><td>Calligraphy</td><td>Rs 4,500</td><td><span class="status-pill sp-listed">Listed</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">Edit</button></td></tr>
+              <tr><td>Indus Valley Sunrise</td><td>Nadia Shah</td><td>Painting</td><td>Rs 18,000</td><td><span class="status-pill sp-sold">Sold</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">View</button></td></tr>
+              <tr><td>Phulkari Heritage</td><td>Zara Malik</td><td>Textile</td><td>Rs 7,500</td><td><span class="status-pill sp-listed">Listed</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">Edit</button></td></tr>
             </tbody>
           </table>
         </div>
+        <button class="btn btn-gold" style="margin-top:1rem;" onclick="showToast('Add listing feature coming soon!')"><i class="fas fa-plus"></i> Add New Listing</button>
       </div>
 
       <!-- Chapters Panel -->
@@ -4385,6 +4401,26 @@ body{font-family:var(--ff-body);}
     btn.classList.add('active');
   }
 
+  /* ── MARKET FILTER ── */
+  function filterMarket(cat, btn) {
+    document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.art-card').forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  /* ── BUY ART ── */
+  function buyArt(btn, title) {
+    const clean = sanitize(title);
+    const wa = 'https://wa.me/923102774666?text=' +
+      encodeURIComponent('السلام علیکم! میں SHAOOR Market پر "' + clean + '" کے بارے میں معلومات چاہتا ہوں۔');
+    window.open(wa, '_blank');
+  }
 
   /* ══════════════ MEMBERS (Admin) ══════════════ */
 
@@ -4507,7 +4543,6 @@ body{font-family:var(--ff-body);}
     if (id === 'applications') loadApplicationsAdmin();
     if (id === 'societies') loadSocietiesAdmin();
     if (id === 'chapters') loadChaptersAdmin();
-    if (id === 'gallery') loadGalleryAdmin();
   }
 
   /* Admin form */
@@ -4600,209 +4635,428 @@ body{font-family:var(--ff-body);}
   }, { threshold: 0.5 });
   statNums.forEach(el => heroObs.observe(el));
 
-  /* ── PUBLIC GALLERY (SHAOOR's own events/exhibitions/workshops/webinars) ── */
-  async function loadPublicGallery() {
+
+  /* ── GALLERY UPLOAD ── */
+  function addGalleryImages(input) {
+    const rl = rateLimiter.check('gallery_upload', 20, 3600000);
+    if (!rl.allowed) { showToast('Upload limit reached', 'error'); return; }
     const grid = document.getElementById('galleryGrid');
-    if (!grid) return;
-
-    const { data: items, error } = await sb
-      .from('gallery')
-      .select('title, event_date, description, image_url')
-      .order('event_date', { ascending: false });
-
-    if (error) {
-      console.error('Gallery load failed:', error);
-      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">Gallery ابھی دستیاب نہیں۔</p>';
-      return;
-    }
-
-    if (!items || items.length === 0) {
-      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">ابھی کوئی تصاویر شامل نہیں کی گئیں۔</p>';
-      return;
-    }
-
-    grid.innerHTML = items.map(item => `
-      <div class="gallery-item reveal">
-        <div class="gallery-head" style="background-image:url('${item.image_url}');background-size:cover;background-position:center;"></div>
-        <div class="gallery-caption">
-          <strong>${sanitize(item.title)}</strong>
-          <span>${new Date(item.event_date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}${item.description ? ' · ' + sanitize(item.description) : ''}</span>
-        </div>
-      </div>
-    `).join('');
-
-    initReveal();
-  }
-  loadPublicGallery();
-
-  /* ── ADMIN: GALLERY MANAGEMENT ── */
-  let galleryItemsCache = [];
-
-  async function loadGalleryAdmin() {
-    const panel = document.getElementById('dp-gallery');
-    if (!panel) return;
-    const tbody = document.getElementById('galleryAdminBody');
-    if (!tbody) return;
-
-    const { data: items, error } = await sb
-      .from('gallery')
-      .select('id, title, event_date, description, image_url')
-      .order('event_date', { ascending: false });
-
-    if (error || !items) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">لوڈ نہیں ہو سکا</td></tr>';
-      return;
-    }
-
-    galleryItemsCache = items;
-
-    if (items.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی entry موجود نہیں</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = items.map(it => `
-      <tr>
-        <td><img src="${it.image_url}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;" /></td>
-        <td>${sanitize(it.title)}</td>
-        <td>${new Date(it.event_date).toLocaleDateString('en-GB')}</td>
-        <td>
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="editGalleryItem('${it.id}')"><i class="fas fa-edit"></i> Edit</button>
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="deleteGalleryItem('${it.id}')"><i class="fas fa-trash"></i> Delete</button>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  /* Show a preview of the newly chosen image before upload */
-  function previewGalleryImage(input) {
-    const file = input.files[0];
-    const img = document.getElementById('gImagePreview');
-    if (!file) { img.style.display = 'none'; return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-      img.src = e.target.result;
-      img.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  }
-
-  /* Populate the form with an existing item's data for editing */
-  function editGalleryItem(id) {
-    const item = galleryItemsCache.find(it => it.id === id);
-    if (!item) return;
-
-    document.getElementById('gEditId').value = item.id;
-    document.getElementById('gTitle').value = item.title;
-    document.getElementById('gDate').value = item.event_date;
-    document.getElementById('gDesc').value = item.description || '';
-    document.getElementById('gImage').removeAttribute('required');
-    document.getElementById('gImageHint').textContent = 'نئی تصویر منتخب نہ کریں تو پرانی تصویر ہی رہے گی';
-    document.getElementById('gImagePreview').src = item.image_url;
-    document.getElementById('gImagePreview').style.display = 'block';
-    document.getElementById('gFormTitle').textContent = 'Entry میں ترمیم کریں';
-    document.getElementById('gSubmitBtn').innerHTML = '<i class="fas fa-save"></i> تبدیلی محفوظ کریں';
-    document.getElementById('gCancelBtn').style.display = 'block';
-
-    document.getElementById('dp-gallery').scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function cancelGalleryEdit() {
-    document.getElementById('gEditId').value = '';
-    document.getElementById('gTitle').value = '';
-    document.getElementById('gDate').value = '';
-    document.getElementById('gDesc').value = '';
-    document.getElementById('gImage').value = '';
-    document.getElementById('gImage').setAttribute('required', 'required');
-    document.getElementById('gImageHint').textContent = '';
-    document.getElementById('gImagePreview').style.display = 'none';
-    document.getElementById('gFormTitle').textContent = 'نئی Entry شامل کریں';
-    document.getElementById('gSubmitBtn').innerHTML = '<i class="fas fa-plus"></i> Gallery میں شامل کریں';
-    document.getElementById('gCancelBtn').style.display = 'none';
-  }
-
-  /* Handles BOTH adding a new item and saving edits to an existing one */
-  async function saveGalleryItem(e) {
-    e.preventDefault();
-    const editId = document.getElementById('gEditId').value;
-    const titleEl = document.getElementById('gTitle');
-    const dateEl = document.getElementById('gDate');
-    const descEl = document.getElementById('gDesc');
-    const fileEl = document.getElementById('gImage');
-
-    const title = titleEl.value.trim();
-    const event_date = dateEl.value;
-    const description = descEl.value.trim();
-    const file = fileEl.files[0];
-
-    if (!title || !event_date || (!editId && !file)) {
-      showToast('عنوان، تاریخ، اور تصویر ضروری ہیں', 'error');
-      return;
-    }
-    if (file) {
-      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-        showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('تصویر 5MB سے چھوٹی ہونی چاہیے', 'error');
-        return;
-      }
-    }
-
-    let image_url = null;
-    if (file) {
-      const ext = file.name.split('.').pop();
-      const filePath = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
-      const { error: uploadError } = await sb.storage.from('gallery-images').upload(filePath, file);
-      if (uploadError) {
-        showToast('اپلوڈ ناکام: ' + uploadError.message, 'error');
-        return;
-      }
-      const { data: publicUrlData } = sb.storage.from('gallery-images').getPublicUrl(filePath);
-      image_url = publicUrlData.publicUrl;
-    }
-
-    if (editId) {
-      const payload = { title, event_date, description };
-      if (image_url) payload.image_url = image_url;
-      const { error } = await sb.from('gallery').update(payload).eq('id', editId);
-      if (error) {
-        showToast('اپڈیٹ ناکام: ' + error.message, 'error');
-        return;
-      }
-      showToast('Entry اپڈیٹ ہو گئی!');
-    } else {
-      const { data: userData } = await sb.auth.getUser();
-      const { error } = await sb.from('gallery').insert({
-        title, event_date, description,
-        image_url,
-        created_by: userData?.user?.id
-      });
-      if (error) {
-        showToast('محفوظ کرنے میں ناکامی: ' + error.message, 'error');
-        return;
-      }
-      showToast('Gallery میں شامل ہو گیا!');
-    }
-
-    cancelGalleryEdit();
-    loadGalleryAdmin();
-    loadPublicGallery();
-  }
-
-  async function deleteGalleryItem(id) {
-    const { error } = await sb.from('gallery').delete().eq('id', id);
-    if (error) {
-      showToast('حذف کرنے میں ناکامی: ' + error.message, 'error');
-      return;
-    }
-    showToast('حذف ہو گیا');
-    loadGalleryAdmin();
-    loadPublicGallery();
+    Array.from(input.files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.innerHTML = `
+          <div class="gallery-head" style="position:relative;">
+            <img src="${e.target.result}" alt="Member artwork" loading="lazy" />
+            <button class="gallery-remove" onclick="this.closest('.gallery-item').remove();showToast('Artwork removed')" title="Remove"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="gallery-caption">
+            <strong>${sanitize(file.name.replace(/\.[^.]+$/,''))}</strong>
+            <span>Uploaded by member</span>
+          </div>`;
+        grid.appendChild(item);
+        showToast('Artwork added to gallery!');
+        initReveal();
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value = '';
   }
 
   console.log('🎨 SHAOOR Platform — Secured & Ready!');
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SHAOOR PROFESSIONAL ENHANCEMENT LAYER
+     Keeps the existing HTML structure and IDs intact.
+     Adds visual polish, live dashboard stats, admin search/filter,
+     member structure visualization, certificate UX, and accessibility.
+     ═══════════════════════════════════════════════════════════════ -->
+<style id="shaoor-professional-enhancements">
+  :root{
+    --sp-gold:#c8922a;
+    --sp-gold2:#f2c15b;
+    --sp-navy:#0d1b3d;
+    --sp-ink:#111827;
+    --sp-muted:#64748b;
+    --sp-border:rgba(13,27,61,.10);
+    --sp-card:#fff;
+    --sp-shadow:0 18px 45px rgba(13,27,61,.08);
+  }
+
+  html{scroll-behavior:smooth}
+  body{background:#f7f8fb}
+  button,input,select,textarea{font:inherit}
+  .btn,.art-buy,.dtab,.admin-nav-btn,.dash-logout{transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease,color .2s ease}
+  .btn:hover,.art-buy:hover{transform:translateY(-2px)}
+
+  /* Existing public site: polish only, no section restructuring */
+  .navbar{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .nav-inner{min-height:70px}
+  .nav-brand{letter-spacing:.08em}
+  .hero::after{pointer-events:none}
+  .section,.policy-section,.market-section,.gallery-section{position:relative}
+  .feature-card,.stat-box,.chapter-card,.market-card,.gallery-item,.society-card{box-shadow:0 10px 30px rgba(13,27,61,.055)}
+  .feature-card:hover,.chapter-card:hover,.market-card:hover,.society-card:hover{box-shadow:0 18px 40px rgba(13,27,61,.10)}
+
+  /* Admin dashboard */
+  #adminDash.open{animation:spDashIn .35s ease both}
+  @keyframes spDashIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .admin-dash .dash-top{box-shadow:0 8px 24px rgba(0,0,0,.10)}
+  .admin-shell{min-height:calc(100vh - 72px)}
+  .admin-side{box-shadow:inset -1px 0 rgba(255,255,255,.06)}
+  .admin-main{background:linear-gradient(180deg,#f8fafc 0%,#f3f5f9 100%)}
+  .admin-side-logo{font-weight:900;letter-spacing:.06em}
+  .admin-nav-btn.active{box-shadow:inset 3px 0 var(--gold2),0 8px 20px rgba(200,146,42,.08)}
+  .dash-body{max-width:1380px}
+  .ds-card{position:relative;overflow:hidden;border-radius:16px!important;box-shadow:var(--sp-shadow)!important;transition:transform .22s ease,box-shadow .22s ease}
+  .ds-card:hover{transform:translateY(-4px);box-shadow:0 24px 50px rgba(13,27,61,.12)!important}
+  .ds-card::after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;right:-30px;bottom:-35px;background:rgba(200,146,42,.07)}
+  .ds-num{position:relative;z-index:1}
+  .ds-lbl{position:relative;z-index:1}
+  .dash-tabs{position:sticky;top:0;z-index:20;padding:.65rem;background:rgba(248,250,252,.88);backdrop-filter:blur(12px);border:1px solid var(--sp-border);border-radius:14px;margin-bottom:1rem}
+  .dtab{border-radius:10px!important}
+  .dtab:hover{transform:translateY(-1px)}
+  .admin-table-wrap{border:1px solid var(--sp-border);border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 12px 32px rgba(13,27,61,.06)}
+  .admin-table{background:#fff;border-collapse:separate;border-spacing:0}
+  .admin-table thead th{position:sticky;top:0;z-index:2;background:#f8fafc!important;color:#475569!important;font-size:.72rem!important;text-transform:uppercase;letter-spacing:.05em}
+  .admin-table tbody tr{transition:background .16s ease}
+  .admin-table tbody tr:hover{background:#fbfcfe}
+  .status-pill{font-weight:800!important;letter-spacing:.02em}
+
+  /* Enhancement toolbar injected into existing panels */
+  .sp-toolbar{display:flex;gap:.65rem;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 1rem}
+  .sp-toolbar-left,.sp-toolbar-right{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap}
+  .sp-search{min-width:240px;border:1px solid #d8dee9;border-radius:10px;background:#fff;padding:.68rem .85rem;outline:none;transition:border-color .2s,box-shadow .2s}
+  .sp-search:focus{border-color:var(--sp-gold);box-shadow:0 0 0 3px rgba(200,146,42,.12)}
+  .sp-filter{border:1px solid #d8dee9;border-radius:10px;background:#fff;padding:.68rem .8rem;color:#334155;outline:none}
+  .sp-mini{font-size:.75rem;color:var(--sp-muted)}
+  .sp-empty{padding:2rem;text-align:center;color:var(--sp-muted);border:1px dashed #cbd5e1;border-radius:14px;background:#fff}
+  .sp-live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.10);margin-right:.35rem}
+
+  /* Member hierarchy */
+  .sp-structure{display:grid;gap:1rem;margin:1rem 0 1.5rem}
+  .sp-structure-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  .sp-structure-title{margin:0;color:var(--sp-navy);font-weight:850}
+  .sp-structure-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.85rem}
+  .sp-role-card{background:#fff;border:1px solid var(--sp-border);border-radius:14px;padding:1rem;box-shadow:0 8px 24px rgba(13,27,61,.055);position:relative;overflow:hidden}
+  .sp-role-card::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--sp-gold)}
+  .sp-role-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(200,146,42,.12);color:#9a6b11;margin-bottom:.65rem}
+  .sp-role-name{font-weight:800;color:var(--sp-navy);font-size:.9rem}
+  .sp-role-count{font-size:1.45rem;font-weight:900;margin-top:.25rem;color:var(--sp-ink)}
+  .sp-role-note{font-size:.72rem;color:var(--sp-muted)}
+
+  /* Certificate UX */
+  #issueCertificateModal .modal-box,#viewCertificateModal .modal-box{border-radius:18px;box-shadow:0 28px 80px rgba(0,0,0,.22)}
+  #issueCertificateForm .form-input{border-radius:10px}
+  .sp-cert-preview{margin-top:1rem;border:1px solid var(--sp-border);border-radius:14px;background:linear-gradient(135deg,#fff,#fbfaf5);padding:1.25rem;text-align:center}
+  .sp-cert-preview .sp-cert-id{font-size:.72rem;letter-spacing:.12em;color:#8a6419;font-weight:800}
+  .sp-cert-preview h4{margin:.5rem 0 .35rem;color:var(--sp-navy);font-size:1.15rem}
+  .sp-cert-preview p{margin:0;color:#64748b;font-size:.8rem}
+  .sp-cert-actions{display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap;margin-top:1rem}
+  .sp-verify-card{background:#fff;border:1px solid var(--sp-border);border-radius:16px;padding:1.25rem;box-shadow:0 12px 32px rgba(13,27,61,.06);margin-top:1rem}
+  .sp-verify-row{display:grid;grid-template-columns:150px 1fr;gap:.5rem;padding:.55rem 0;border-bottom:1px solid #eef2f7;font-size:.86rem}
+  .sp-verify-row:last-child{border-bottom:0}
+  .sp-verify-label{color:#64748b}.sp-verify-value{font-weight:700;color:#172033}
+
+  /* Activity / quick access */
+  .sp-quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;margin-bottom:1rem}
+  .sp-quick{display:flex;align-items:center;gap:.75rem;text-align:left;border:1px solid var(--sp-border);background:#fff;border-radius:14px;padding:.9rem;cursor:pointer;box-shadow:0 8px 22px rgba(13,27,61,.045)}
+  .sp-quick:hover{transform:translateY(-2px);box-shadow:0 15px 30px rgba(13,27,61,.08)}
+  .sp-quick i{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#f5f7fb;color:var(--sp-gold)}
+  .sp-quick strong{display:block;font-size:.83rem;color:var(--sp-navy)}
+  .sp-quick span{display:block;font-size:.7rem;color:var(--sp-muted);margin-top:.15rem}
+
+  /* Member dashboard */
+  #memberDash .container>div{box-shadow:0 20px 55px rgba(13,27,61,.10)!important;border:1px solid var(--sp-border)}
+  .sp-member-cert-card{border:1px solid var(--sp-border);border-radius:12px;padding:.9rem;background:#fbfcfe;margin-top:.65rem}
+
+  /* Toast polish */
+  .toast{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 18px 45px rgba(0,0,0,.18)!important}
+
+  @media(max-width:1000px){
+    .sp-structure-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sp-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media(max-width:640px){
+    .sp-search{min-width:100%;width:100%}
+    .sp-structure-grid,.sp-quick-grid{grid-template-columns:1fr}
+    .sp-toolbar-left,.sp-toolbar-right{width:100%}
+    .sp-filter{flex:1}
+    .sp-verify-row{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  }
+</style>
+
+<script id="shaoor-professional-enhancements-script">
+(function(){
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const esc = (v) => {
+    if (typeof sanitize === 'function') return sanitize(v == null ? '' : String(v));
+    return String(v == null ? '' : v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  };
+
+  function toast(msg,type){
+    if(typeof showToast === 'function') showToast(msg,type);
+  }
+
+  function today(){ return new Date().toISOString().slice(0,10); }
+
+  /* ── Dashboard: replace static cards with live Supabase counts when available ── */
+  async function refreshLiveStats(){
+    if(typeof sb === 'undefined') return;
+    const queries = [
+      ['profiles','active'],
+      ['applications','pending'],
+      ['artworks','all'],
+      ['chapters','active']
+    ];
+    const nums = $$('.ds-num');
+    if(!nums.length) return;
+    for(let i=0;i<queries.length;i++){
+      const [table,mode] = queries[i];
+      try{
+        let q = sb.from(table).select('*',{count:'exact',head:true});
+        if(table==='profiles' && mode==='active') q=q.eq('status','active');
+        if(table==='applications' && mode==='pending') q=q.eq('status','pending');
+        if(table==='chapters' && mode==='active') q=q.eq('status','active');
+        const {count,error}=await q;
+        if(!error && typeof count==='number') nums[i].dataset.target=count;
+      }catch(e){ /* preserve existing fallback number */ }
+    }
+    nums.forEach((el)=>{
+      if(!el.dataset.target) return;
+      const n=Number(el.dataset.target)||0;
+      el.textContent=n.toLocaleString();
+    });
+  }
+
+  /* ── Add quick actions without changing existing dashboard structure ── */
+  function installQuickActions(){
+    const body=document.querySelector('#adminDash .dash-body');
+    if(!body || body.querySelector('.sp-quick-grid')) return;
+    const grid=document.createElement('div');
+    grid.className='sp-quick-grid';
+    grid.innerHTML=`
+      <button class="sp-quick" type="button" data-sp-tab="members"><i class="fas fa-users"></i><span><strong>Manage Members</strong><span>Search and review members</span></span></button>
+      <button class="sp-quick" type="button" data-sp-tab="applications"><i class="fas fa-inbox"></i><span><strong>Applications</strong><span>Review pending requests</span></span></button>
+      <button class="sp-quick" type="button" data-sp-tab="events"><i class="fas fa-calendar-alt"></i><span><strong>Events</strong><span>Manage society activities</span></span></button>
+      <button class="sp-quick" type="button" data-sp-tab="certificates"><i class="fas fa-certificate"></i><span><strong>Certificates</strong><span>Issue and verify certificates</span></span></button>`;
+    const stats=body.querySelector('.dash-stats');
+    if(stats) stats.insertAdjacentElement('afterend',grid); else body.prepend(grid);
+    $$('.sp-quick',grid).forEach(btn=>btn.addEventListener('click',()=>{
+      const id=btn.dataset.spTab;
+      const nav=$$('.admin-nav-btn,.dtab').find(b=>String(b.getAttribute('onclick')||'').includes("'"+id+"'"));
+      if(nav) nav.click();
+      else if(typeof switchDashTab==='function') switchDashTab(id,btn);
+    }));
+  }
+
+  /* ── Search/filter existing member table in-place ── */
+  function installMemberToolbar(){
+    const panel=$('dp-members');
+    if(!panel || panel.querySelector('.sp-member-toolbar')) return;
+    const table=$('membersTable');
+    if(!table) return;
+    const wrap=table.parentElement;
+    const toolbar=document.createElement('div');
+    toolbar.className='sp-toolbar sp-member-toolbar';
+    toolbar.innerHTML=`
+      <div class="sp-toolbar-left">
+        <input class="sp-search" id="spMemberSearch" type="search" placeholder="Search name, member ID, role or phone…" aria-label="Search members">
+        <select class="sp-filter" id="spMemberStatus" aria-label="Filter member status">
+          <option value="">All statuses</option><option value="active">Active</option><option value="pending">Pending</option><option value="suspended">Suspended</option><option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div class="sp-toolbar-right"><span class="sp-mini"><span class="sp-live-dot"></span>Live member directory</span></div>`;
+    wrap.parentElement.insertBefore(toolbar,wrap);
+    const apply=()=>{
+      const q=($('spMemberSearch').value||'').toLowerCase().trim();
+      const st=($('spMemberStatus').value||'').toLowerCase();
+      const rows=$$('#membersBody tr'); let shown=0;
+      rows.forEach(r=>{
+        const text=(r.textContent||'').toLowerCase();
+        const status=(r.querySelector('.status-pill')?.textContent||'').toLowerCase();
+        const ok=(!q||text.includes(q))&&(!st||status.includes(st));
+        r.style.display=ok?'':'none'; if(ok) shown++;
+      });
+      toolbar.querySelector('.sp-live-dot').nextSibling.textContent=' '+shown+' visible';
+    };
+    $('spMemberSearch').addEventListener('input',apply);
+    $('spMemberStatus').addEventListener('change',apply);
+    const observer=new MutationObserver(apply); const body=$('membersBody'); if(body) observer.observe(body,{childList:true,subtree:true});
+  }
+
+  /* ── Certificate toolbar + client-side search ── */
+  function installCertificateToolbar(){
+    const panel=$('dp-certificates');
+    if(!panel || panel.querySelector('.sp-cert-toolbar')) return;
+    const table=$('certificatesTable'); if(!table) return;
+    const wrap=table.parentElement;
+    const toolbar=document.createElement('div');
+    toolbar.className='sp-toolbar sp-cert-toolbar';
+    toolbar.innerHTML=`
+      <div class="sp-toolbar-left">
+        <input class="sp-search" id="spCertSearch" type="search" placeholder="Search certificate ID, member or title…" aria-label="Search certificates">
+        <select class="sp-filter" id="spCertStatus" aria-label="Filter certificate status"><option value="">All statuses</option><option value="active">Active</option><option value="revoked">Revoked</option><option value="expired">Expired</option></select>
+      </div>
+      <div class="sp-toolbar-right"><span class="sp-mini" id="spCertCount">0 certificates</span></div>`;
+    wrap.parentElement.insertBefore(toolbar,wrap);
+    const apply=()=>{
+      const q=($('spCertSearch').value||'').toLowerCase().trim();
+      const st=($('spCertStatus').value||'').toLowerCase();
+      let shown=0;
+      $$('#certificatesBody tr').forEach(r=>{
+        const text=(r.textContent||'').toLowerCase();
+        const status=(r.querySelector('.status-pill')?.textContent||'').toLowerCase();
+        const ok=(!q||text.includes(q))&&(!st||status.includes(st)); r.style.display=ok?'':'none'; if(ok) shown++;
+      });
+      $('spCertCount').textContent=shown+' certificate'+(shown===1?'':'s');
+    };
+    $('spCertSearch').addEventListener('input',apply); $('spCertStatus').addEventListener('change',apply);
+    const body=$('certificatesBody'); if(body) new MutationObserver(apply).observe(body,{childList:true,subtree:true});
+  }
+
+  /* ── Visual member structure in the existing dashboard ── */
+  async function installMemberStructure(){
+    const panel=$('dp-members');
+    if(!panel || panel.querySelector('.sp-structure')) return;
+    const table=$('membersTable'); if(!table) return;
+    const section=document.createElement('section');
+    section.className='sp-structure';
+    section.innerHTML=`
+      <div class="sp-structure-head">
+        <h3 class="sp-structure-title"><i class="fas fa-sitemap" style="color:var(--sp-gold);margin-right:.45rem"></i>Member Structure</h3>
+        <span class="sp-mini">Organizational view based on existing member roles</span>
+      </div>
+      <div class="sp-structure-grid" id="spStructureGrid"></div>`;
+    const tableWrap=table.parentElement;
+    tableWrap.parentElement.insertBefore(section,tableWrap);
+    renderStructure();
+    const body=$('membersBody'); if(body) new MutationObserver(renderStructure).observe(body,{childList:true,subtree:true});
+  }
+
+  function renderStructure(){
+    const grid=$('spStructureGrid'); if(!grid) return;
+    const roles=[
+      ['founder','Founder','fa-star'],['president','President','fa-crown'],['vice_president','Vice President','fa-user-tie'],['general_secretary','General Secretary','fa-file-signature'],['joint_secretary','Joint Secretary','fa-users-cog'],['event_coordinator','Event Coordinator','fa-calendar-check'],['treasurer','Finance / Treasurer','fa-wallet'],['media_coordinator','Media Coordinator','fa-photo-video']
+    ];
+    const rows=$$('#membersBody tr');
+    grid.innerHTML=roles.map(([key,label,icon])=>{
+      let count=0;
+      rows.forEach(r=>{const txt=(r.textContent||'').toLowerCase(); if(txt.includes(label.toLowerCase())||txt.includes(key.replaceAll('_',' '))) count++;});
+      return `<div class="sp-role-card"><div class="sp-role-icon"><i class="fas ${icon}"></i></div><div class="sp-role-name">${esc(label)}</div><div class="sp-role-count">${count}</div><div class="sp-role-note">Current matching records</div></div>`;
+    }).join('');
+  }
+
+  /* ── Certificate issue form: sensible defaults + preview ── */
+  function enhanceCertificateForm(){
+    const form=$('issueCertificateForm'); if(!form || form.dataset.spEnhanced) return;
+    form.dataset.spEnhanced='1';
+    const date=$('certIssueDate'); if(date && !date.value) date.value=today();
+    const preview=document.createElement('div'); preview.className='sp-cert-preview';
+    preview.innerHTML='<div class="sp-cert-id">CERTIFICATE PREVIEW</div><h4 id="spCertPreviewTitle">Certificate of Participation</h4><p id="spCertPreviewMember">Select a member to preview recipient</p><p id="spCertPreviewDate">Issue date: '+esc(today())+'</p>';
+    form.appendChild(preview);
+    const update=()=>{
+      const opt=$('certMemberSelect')?.selectedOptions?.[0];
+      $('spCertPreviewTitle').textContent=$('certTitle')?.value.trim()||'Certificate of Participation';
+      $('spCertPreviewMember').textContent=opt?.value ? 'Recipient: '+opt.textContent.trim() : 'Select a member to preview recipient';
+      $('spCertPreviewDate').textContent='Issue date: '+($('certIssueDate')?.value||today());
+    };
+    ['certMemberSelect','certTitle','certIssueDate'].forEach(id=>$(id)?.addEventListener('input',update));
+    update();
+  }
+
+  /* ── Better certificate view with verification metadata where possible ── */
+  function enhanceCertificateView(){
+    const modal=$('viewCertificateModal'); if(!modal || modal.dataset.spEnhanced) return;
+    modal.dataset.spEnhanced='1';
+    const body=modal.querySelector('.modal-body');
+    if(!body) return;
+    const note=document.createElement('div'); note.className='sp-verify-card'; note.innerHTML='<div style="font-weight:800;color:var(--sp-navy);margin-bottom:.35rem"><i class="fas fa-shield-alt" style="color:var(--sp-gold);margin-right:.4rem"></i>Authenticity</div><div style="font-size:.76rem;color:#64748b">This certificate is linked to the SHAOOR certificate record and can be verified using its certificate ID / QR code.</div>';
+    body.appendChild(note);
+  }
+
+  /* ── Add a compact public verification entry point to the certificates panel ── */
+  function installVerificationButton(){
+    const panel=$('dp-certificates'); if(!panel || panel.querySelector('.sp-verify-entry')) return;
+    const head=panel.querySelector('div[style*="justify-content:space-between"]'); if(!head) return;
+    const box=document.createElement('div'); box.className='sp-verify-entry'; box.style.cssText='margin:.5rem 0 1rem;display:flex;gap:.55rem;flex-wrap:wrap;align-items:center';
+    box.innerHTML='<input id="spVerifyId" class="sp-search" style="min-width:260px" placeholder="Enter certificate ID to verify…" aria-label="Certificate ID"><button type="button" class="btn btn-gold" id="spVerifyBtn"><i class="fas fa-check-circle"></i> Verify</button>';
+    head.insertAdjacentElement('afterend',box);
+    $('spVerifyBtn').addEventListener('click',verifyById);
+    $('spVerifyId').addEventListener('keydown',e=>{if(e.key==='Enter') verifyById();});
+  }
+
+  async function verifyById(){
+    const id=($('spVerifyId')?.value||'').trim();
+    if(!id){toast('Enter a certificate ID','error');return;}
+    if(typeof sb==='undefined'){toast('Database connection is unavailable','error');return;}
+    try{
+      const {data,error}=await sb.from('certificates').select('*').eq('certificate_id',id).maybeSingle();
+      if(error) throw error;
+      if(!data){toast('Certificate not found','error');return;}
+      const sc=(typeof certStatusColor==='function')?certStatusColor(data.status):{label:data.status||'Unknown'};
+      const memberId=data.member_id||'—';
+      const existing=$('spVerificationResult'); if(existing) existing.remove();
+      const result=document.createElement('div'); result.id='spVerificationResult'; result.className='sp-verify-card';
+      result.innerHTML=`<div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:.65rem"><strong style="font-size:1rem;color:var(--sp-navy)"><i class="fas fa-shield-alt" style="color:#16a34a;margin-right:.4rem"></i>Certificate record found</strong><span class="status-pill" style="background:${esc(sc.bg||'#16a34a')};color:#fff">${esc(sc.label||data.status||'Verified')}</span></div>
+        <div class="sp-verify-row"><span class="sp-verify-label">Certificate ID</span><span class="sp-verify-value">${esc(data.certificate_id)}</span></div>
+        <div class="sp-verify-row"><span class="sp-verify-label">Member</span><span class="sp-verify-value">${esc(memberId)}</span></div>
+        <div class="sp-verify-row"><span class="sp-verify-label">Title</span><span class="sp-verify-value">${esc(data.certificate_title)}</span></div>
+        <div class="sp-verify-row"><span class="sp-verify-label">Issue date</span><span class="sp-verify-value">${esc(data.issue_date)}</span></div>`;
+      $('spVerifyId').parentElement.insertAdjacentElement('afterend',result);
+    }catch(err){toast('Verification failed: '+(err.message||'Unknown error'),'error');}
+  }
+
+  /* ── Safe hooks around existing tab switching ── */
+  function bootEnhancements(){
+    installQuickActions();
+    installMemberToolbar();
+    installCertificateToolbar();
+    installMemberStructure();
+    enhanceCertificateForm();
+    enhanceCertificateView();
+    installVerificationButton();
+    refreshLiveStats();
+  }
+
+  /* Re-run after existing DOM/dashboard functions render their content. */
+  document.addEventListener('DOMContentLoaded',()=>{
+    bootEnhancements();
+    setTimeout(bootEnhancements,500);
+    setTimeout(bootEnhancements,1500);
+  });
+
+  const originalSwitch=window.switchDashTab;
+  if(typeof originalSwitch==='function'){
+    window.switchDashTab=function(id,btn){
+      const out=originalSwitch.apply(this,arguments);
+      setTimeout(()=>{
+        bootEnhancements();
+        if(id==='members' && typeof loadMembersAdmin==='function') setTimeout(()=>{installMemberToolbar();renderStructure&&renderStructure()},250);
+        if(id==='certificates' && typeof loadCertificatesAdmin==='function') setTimeout(()=>{installCertificateToolbar()},250);
+      },50);
+      return out;
+    };
+  }
+
+  /* Keyboard shortcut: Ctrl/Cmd + K focuses the active admin search. */
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){
+      const active=document.querySelector('#adminDash.open .sp-search');
+      if(active){e.preventDefault();active.focus();}
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
