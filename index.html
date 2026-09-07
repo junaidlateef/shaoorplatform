@@ -3017,6 +3017,170 @@ body{font-family:var(--ff-body);}
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
 
+<!-- ═══ ADMIN FUNCTIONS (GLOBAL SCOPE) ═══ -->
+<script>
+  /* ── Load Societies for Admin Panel ── */
+  async function loadSocietiesAdmin() {
+    const tbody = document.getElementById('societiesBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Societies لوڈ ہو رہے ہیں…</td></tr>';
+
+    try {
+      const { data: societies, error } = await sb
+        .from('societies')
+        .select('*')
+        .order('name');
+
+      if (error) {
+        console.error('Societies load error:', error);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی: ' + sanitize(error.message) + '</td></tr>';
+        return;
+      }
+
+      if (!societies || societies.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Society نہیں۔</td></tr>';
+        return;
+      }
+
+      // Fetch member names for president/secretary
+      const presIds = societies.map(s => s.president_id).filter(Boolean);
+      const secIds = societies.map(s => s.general_secretary_id).filter(Boolean);
+      const allIds = [...new Set([...presIds, ...secIds])];
+      
+      let nameMap = {};
+      if (allIds.length > 0) {
+        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', allIds);
+        (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
+      }
+
+      // Count members in each society
+      let countMap = {};
+      if (societies.length > 0) {
+        const { data: members } = await sb.from('society_members').select('society_id');
+        (members || []).forEach(m => {
+          countMap[m.society_id] = (countMap[m.society_id] || 0) + 1;
+        });
+      }
+
+      tbody.innerHTML = societies.map(s => {
+        const presName = s.president_id ? nameMap[s.president_id] || 'Unknown' : '—';
+        const secName = s.general_secretary_id ? nameMap[s.general_secretary_id] || 'Unknown' : '—';
+        const memberCount = countMap[s.id] || 0;
+        const statusBg = s.status === 'active' ? '#16a34a' : '#9ca3af';
+        const statusLabel = s.status === 'active' ? 'فعال' : 'محفوظ';
+
+        return `<tr>
+          <td><strong>${sanitize(s.name)}</strong></td>
+          <td>${sanitize(presName)}</td>
+          <td>${sanitize(secName)}</td>
+          <td>${memberCount}</td>
+          <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
+          <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editSociety('${s.id}')">Edit</button>
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteSociety('${s.id}')">حذف</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch (err) {
+      console.error('Societies error:', err);
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی لوڈ کرتے وقت</td></tr>';
+    }
+  }
+
+  /* ── Load Chapters for Admin Panel ── */
+  async function loadChaptersAdmin() {
+    const tbody = document.getElementById('chaptersBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Chapters لوڈ ہو رہے ہیں…</td></tr>';
+
+    try {
+      const { data: chapters, error } = await sb
+        .from('chapters')
+        .select('*')
+        .order('province');
+
+      if (error) {
+        console.error('Chapters load error:', error);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی: ' + sanitize(error.message) + '</td></tr>';
+        return;
+      }
+
+      if (!chapters || chapters.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Chapter نہیں۔</td></tr>';
+        return;
+      }
+
+      // Fetch chapter head names
+      const headIds = chapters.map(c => c.chapter_head_id).filter(Boolean);
+      let nameMap = {};
+      if (headIds.length > 0) {
+        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', headIds);
+        (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
+      }
+
+      // Count members in each chapter (simple approach)
+      let countMap = {};
+      if (chapters.length > 0) {
+        const { data: members } = await sb.from('chapter_members').select('chapter_id');
+        (members || []).forEach(m => {
+          countMap[m.chapter_id] = (countMap[m.chapter_id] || 0) + 1;
+        });
+      }
+
+      tbody.innerHTML = chapters.map(c => {
+        const headName = c.chapter_head_id ? nameMap[c.chapter_head_id] || 'Unassigned' : '—';
+        const memberCount = countMap[c.id] || 0;
+        const statusBg = c.status === 'active' ? '#16a34a' : c.status === 'forming' ? '#fbbf24' : '#9ca3af';
+        const statusLabel = c.status === 'active' ? 'فعال' : c.status === 'forming' ? 'تشکیل' : 'محفوظ';
+
+        return `<tr>
+          <td><strong>${sanitize(c.name)}</strong></td>
+          <td>${sanitize(c.hq_city || '—')}</td>
+          <td>${sanitize(headName)}</td>
+          <td>${memberCount}</td>
+          <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
+          <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editChapter('${c.id}')">Edit</button>
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteChapter('${c.id}')">حذف</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch (err) {
+      console.error('Chapters error:', err);
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی لوڈ کرتے وقت</td></tr>';
+    }
+  }
+
+  /* ── Placeholder functions for CRUD ── */
+  function openCreateSocietyModal() {
+    showToast('نئی Society بنانے کی سہولت جلد آئے گی۔');
+  }
+
+  function openCreateChapterModal() {
+    showToast('نیا Chapter بنانے کی سہولت جلد آئے گی۔');
+  }
+
+  function editSociety(id) {
+    showToast('Society edit کی سہولت جلد آئے گی۔');
+  }
+
+  function editChapter(id) {
+    showToast('Chapter edit کی سہولت جلد آئے گی۔');
+  }
+
+  function deleteSociety(id) {
+    if (!confirm('کیا یہ Society حذف کرنا چاہتے ہیں?')) return;
+    showToast('Society حذف کی سہولت جلد آئے گی۔');
+  }
+
+  function deleteChapter(id) {
+    if (!confirm('کیا یہ Chapter حذف کرنا چاہتے ہیں?')) return;
+    showToast('Chapter حذف کی سہولت جلد آئے گی۔');
+  }
+</script>
+
 <!-- ═══ SCRIPTS ═══ -->
 <script>
   /* ── THEME ── */
@@ -3471,165 +3635,6 @@ body{font-family:var(--ff-body);}
   }
 
   /* ── Load Societies for Admin Panel ── */
-  async function loadSocietiesAdmin() {
-    const tbody = document.getElementById('societiesBody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Societies لوڈ ہو رہے ہیں…</td></tr>';
-
-    try {
-      const { data: societies, error } = await sb
-        .from('societies')
-        .select('*')
-        .order('name');
-
-      if (error) {
-        console.error('Societies load error:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی: ' + sanitize(error.message) + '</td></tr>';
-        return;
-      }
-
-      if (!societies || societies.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Society نہیں۔</td></tr>';
-        return;
-      }
-
-      // Fetch member names for president/secretary
-      const presIds = societies.map(s => s.president_id).filter(Boolean);
-      const secIds = societies.map(s => s.general_secretary_id).filter(Boolean);
-      const allIds = [...new Set([...presIds, ...secIds])];
-      
-      let nameMap = {};
-      if (allIds.length > 0) {
-        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', allIds);
-        (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
-      }
-
-      // Count members in each society
-      let countMap = {};
-      if (societies.length > 0) {
-        const { data: members } = await sb.from('society_members').select('society_id');
-        (members || []).forEach(m => {
-          countMap[m.society_id] = (countMap[m.society_id] || 0) + 1;
-        });
-      }
-
-      tbody.innerHTML = societies.map(s => {
-        const presName = s.president_id ? nameMap[s.president_id] || 'Unknown' : '—';
-        const secName = s.general_secretary_id ? nameMap[s.general_secretary_id] || 'Unknown' : '—';
-        const memberCount = countMap[s.id] || 0;
-        const statusBg = s.status === 'active' ? '#16a34a' : '#9ca3af';
-        const statusLabel = s.status === 'active' ? 'فعال' : 'محفوظ';
-
-        return `<tr>
-          <td><strong>${sanitize(s.name)}</strong></td>
-          <td>${sanitize(presName)}</td>
-          <td>${sanitize(secName)}</td>
-          <td>${memberCount}</td>
-          <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
-          <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
-            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editSociety('${s.id}')">Edit</button>
-            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteSociety('${s.id}')">حذف</button>
-          </td>
-        </tr>`;
-      }).join('');
-    } catch (err) {
-      console.error('Societies error:', err);
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی لوڈ کرتے وقت</td></tr>';
-    }
-  }
-
-  /* ── Load Chapters for Admin Panel ── */
-  async function loadChaptersAdmin() {
-    const tbody = document.getElementById('chaptersBody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Chapters لوڈ ہو رہے ہیں…</td></tr>';
-
-    try {
-      const { data: chapters, error } = await sb
-        .from('chapters')
-        .select('*')
-        .order('province');
-
-      if (error) {
-        console.error('Chapters load error:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی: ' + sanitize(error.message) + '</td></tr>';
-        return;
-      }
-
-      if (!chapters || chapters.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Chapter نہیں۔</td></tr>';
-        return;
-      }
-
-      // Fetch chapter head names
-      const headIds = chapters.map(c => c.chapter_head_id).filter(Boolean);
-      let nameMap = {};
-      if (headIds.length > 0) {
-        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', headIds);
-        (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
-      }
-
-      // Count members in each chapter (simple approach)
-      let countMap = {};
-      if (chapters.length > 0) {
-        const { data: members } = await sb.from('chapter_members').select('chapter_id');
-        (members || []).forEach(m => {
-          countMap[m.chapter_id] = (countMap[m.chapter_id] || 0) + 1;
-        });
-      }
-
-      tbody.innerHTML = chapters.map(c => {
-        const headName = c.chapter_head_id ? nameMap[c.chapter_head_id] || 'Unassigned' : '—';
-        const memberCount = countMap[c.id] || 0;
-        const statusBg = c.status === 'active' ? '#16a34a' : c.status === 'forming' ? '#fbbf24' : '#9ca3af';
-        const statusLabel = c.status === 'active' ? 'فعال' : c.status === 'forming' ? 'تشکیل' : 'محفوظ';
-
-        return `<tr>
-          <td><strong>${sanitize(c.name)}</strong></td>
-          <td>${sanitize(c.hq_city || '—')}</td>
-          <td>${sanitize(headName)}</td>
-          <td>${memberCount}</td>
-          <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
-          <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
-            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editChapter('${c.id}')">Edit</button>
-            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteChapter('${c.id}')">حذف</button>
-          </td>
-        </tr>`;
-      }).join('');
-    } catch (err) {
-      console.error('Chapters error:', err);
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی لوڈ کرتے وقت</td></tr>';
-    }
-  }
-
-  /* ── Placeholder functions for CRUD ── */
-  function openCreateSocietyModal() {
-    showToast('نئی Society بنانے کی سہولت جلد آئے گی۔');
-  }
-
-  function openCreateChapterModal() {
-    showToast('نیا Chapter بنانے کی سہولت جلد آئے گی۔');
-  }
-
-  function editSociety(id) {
-    showToast('Society edit کی سہولت جلد آئے گی۔');
-  }
-
-  function editChapter(id) {
-    showToast('Chapter edit کی سہولت جلد آئے گی۔');
-  }
-
-  function deleteSociety(id) {
-    if (!confirm('کیا یہ Society حذف کرنا چاہتے ہیں?')) return;
-    showToast('Society حذف کی سہولت جلد آئے گی۔');
-  }
-
-  function deleteChapter(id) {
-    if (!confirm('کیا یہ Chapter حذف کرنا چاہتے ہیں?')) return;
-    showToast('Chapter حذف کی سہولت جلد آئے گی۔');
-  }
 
   /* ── Load Applications for Admin Panel ── */
   async function loadApplicationsAdmin() {
