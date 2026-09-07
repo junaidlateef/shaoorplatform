@@ -2742,15 +2742,13 @@ body{font-family:var(--ff-body);}
         </div>
         <div class="form-group">
           <label for="societyPresident">صدر (President)</label>
-          <select id="societyPresident" class="form-input">
-            <option value="">-- منتخب کریں (اختیاری) --</option>
-          </select>
+          <input type="text" id="societyPresident" list="societyPresidentList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="societyPresidentList"></datalist>
         </div>
         <div class="form-group">
           <label for="societySecretary">جنرل سیکرٹری</label>
-          <select id="societySecretary" class="form-input">
-            <option value="">-- منتخب کریں (اختیاری) --</option>
-          </select>
+          <input type="text" id="societySecretary" list="societySecretaryList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="societySecretaryList"></datalist>
         </div>
         <div class="form-group">
           <label for="societyStatus">Status</label>
@@ -2797,9 +2795,8 @@ body{font-family:var(--ff-body);}
         </div>
         <div class="form-group">
           <label for="chapterHead">Chapter Head</label>
-          <select id="chapterHead" class="form-input">
-            <option value="">-- منتخب کریں (اختیاری) --</option>
-          </select>
+          <input type="text" id="chapterHead" list="chapterHeadList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chapterHeadList"></datalist>
         </div>
         <div class="form-group">
           <label for="chapterStatus">Status</label>
@@ -2845,9 +2842,8 @@ body{font-family:var(--ff-body);}
           <option value="">-- Society --</option>
         </select>
         <input type="text" id="cmCabinetRole" class="form-input" placeholder="عہدہ e.g. President" />
-        <select id="cmCabinetMember" class="form-input" style="grid-column:1/-1;">
-          <option value="">-- Member منتخب کریں --</option>
-        </select>
+        <input type="text" id="cmCabinetMember" list="cmCabinetMemberList" class="form-input" style="grid-column:1/-1;" placeholder="Member کا نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+        <datalist id="cmCabinetMemberList"></datalist>
         <button type="button" class="btn btn-gold" style="grid-column:1/-1;justify-content:center;font-size:.9rem;" onclick="addCabinetSeat()">نشست شامل کریں</button>
       </div>
     </div>
@@ -3282,18 +3278,35 @@ body{font-family:var(--ff-body);}
     }
   }
 
-  /* ── Populate member dropdowns (president / secretary / chapter head) ── */
-  async function populatePeopleSelect(selectEl, currentValue) {
-    selectEl.innerHTML = '<option value="">-- منتخب کریں (اختیاری) --</option>';
+  /* ── Searchable member picker (name or ID) using <datalist> ── */
+  const peopleMaps = {};
+  async function populatePeopleDatalist(inputId, listId, currentId) {
+    const dl = document.getElementById(listId);
+    const inputEl = document.getElementById(inputId);
+    dl.innerHTML = '';
     const { data: profs, error } = await sb.from('profiles').select('id, full_name, member_id').order('full_name');
     if (error || !profs) return;
+    const map = {};
     profs.forEach(p => {
+      const label = p.full_name + ' (' + p.member_id + ')';
+      map[label] = p.id;
       const opt = document.createElement('option');
-      opt.value = p.id;
-      opt.textContent = p.full_name + ' (' + p.member_id + ')';
-      selectEl.appendChild(opt);
+      opt.value = label;
+      dl.appendChild(opt);
     });
-    if (currentValue) selectEl.value = currentValue;
+    peopleMaps[inputId] = map;
+    if (currentId) {
+      const match = profs.find(p => p.id === currentId);
+      inputEl.value = match ? (match.full_name + ' (' + match.member_id + ')') : '';
+    } else {
+      inputEl.value = '';
+    }
+  }
+  function resolvePersonId(inputId) {
+    const val = document.getElementById(inputId).value.trim();
+    if (!val) return null;
+    const map = peopleMaps[inputId] || {};
+    return map[val] || null;
   }
 
   /* ── SOCIETY: create / edit ── */
@@ -3301,8 +3314,8 @@ body{font-family:var(--ff-body);}
     document.getElementById('societyForm').reset();
     document.getElementById('societyEditId').value = '';
     document.getElementById('societyModalTitle').textContent = 'نئی Society';
-    await populatePeopleSelect(document.getElementById('societyPresident'));
-    await populatePeopleSelect(document.getElementById('societySecretary'));
+    await populatePeopleDatalist('societyPresident', 'societyPresidentList');
+    await populatePeopleDatalist('societySecretary', 'societySecretaryList');
     openModal('societyModal');
   }
 
@@ -3314,16 +3327,16 @@ body{font-family:var(--ff-body);}
     document.getElementById('societyModalTitle').textContent = 'Society میں ترمیم';
     document.getElementById('societyName').value = s.name || '';
     document.getElementById('societyStatus').value = s.status || 'active';
-    await populatePeopleSelect(document.getElementById('societyPresident'), s.president_id);
-    await populatePeopleSelect(document.getElementById('societySecretary'), s.general_secretary_id);
+    await populatePeopleDatalist('societyPresident', 'societyPresidentList', s.president_id);
+    await populatePeopleDatalist('societySecretary', 'societySecretaryList', s.general_secretary_id);
     openModal('societyModal');
   }
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('societyForm', async frm => {
     const editId = frm.querySelector('#societyEditId').value;
     const name = frm.querySelector('#societyName').value.trim();
-    const president_id = frm.querySelector('#societyPresident').value || null;
-    const general_secretary_id = frm.querySelector('#societySecretary').value || null;
+    const president_id = resolvePersonId('societyPresident');
+    const general_secretary_id = resolvePersonId('societySecretary');
     const status = frm.querySelector('#societyStatus').value;
 
     if (!name) { showToast('براہ کرم Society کا نام درج کریں', 'error'); return; }
@@ -3356,7 +3369,7 @@ body{font-family:var(--ff-body);}
     document.getElementById('chapterForm').reset();
     document.getElementById('chapterEditId').value = '';
     document.getElementById('chapterModalTitle').textContent = 'نیا Chapter';
-    await populatePeopleSelect(document.getElementById('chapterHead'));
+    await populatePeopleDatalist('chapterHead', 'chapterHeadList');
     openModal('chapterModal');
   }
 
@@ -3370,7 +3383,7 @@ body{font-family:var(--ff-body);}
     document.getElementById('chapterProvince').value = c.province || '';
     document.getElementById('chapterHqCity').value = c.hq_city || '';
     document.getElementById('chapterStatus').value = c.status || 'active';
-    await populatePeopleSelect(document.getElementById('chapterHead'), c.chapter_head_id);
+    await populatePeopleDatalist('chapterHead', 'chapterHeadList', c.chapter_head_id);
     openModal('chapterModal');
   }
 
@@ -3379,7 +3392,7 @@ body{font-family:var(--ff-body);}
     const name = frm.querySelector('#chapterName').value.trim();
     const province = frm.querySelector('#chapterProvince').value;
     const hq_city = frm.querySelector('#chapterHqCity').value.trim() || null;
-    const chapter_head_id = frm.querySelector('#chapterHead').value || null;
+    const chapter_head_id = resolvePersonId('chapterHead');
     const status = frm.querySelector('#chapterStatus').value;
 
     if (!name) { showToast('براہ کرم Chapter کا نام درج کریں', 'error'); return; }
@@ -3487,7 +3500,6 @@ body{font-family:var(--ff-body);}
   /* -- Cabinet seats -- */
   async function loadChapterCabinet(chapterId) {
     const list = document.getElementById('cmCabinetList');
-    const memberSel = document.getElementById('cmCabinetMember');
     list.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">لوڈ ہو رہا ہے…</div>';
 
     const { data: seats, error } = await sb
@@ -3508,14 +3520,14 @@ body{font-family:var(--ff-body);}
         </div>`).join('');
     }
 
-    await populatePeopleSelect(memberSel);
+    await populatePeopleDatalist('cmCabinetMember', 'cmCabinetMemberList');
   }
 
   async function addCabinetSeat() {
     const chapterId = document.getElementById('cmChapterId').value;
     const societyId = document.getElementById('cmCabinetSociety').value;
     const role = document.getElementById('cmCabinetRole').value.trim();
-    const memberId = document.getElementById('cmCabinetMember').value || null;
+    const memberId = resolvePersonId('cmCabinetMember');
 
     if (!societyId) { showToast('پہلے Society منتخب کریں', 'error'); return; }
     if (!role) { showToast('عہدہ درج کریں', 'error'); return; }
