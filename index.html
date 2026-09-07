@@ -1397,7 +1397,6 @@ body{font-family:var(--ff-body);}
     <a href="#events" onclick="closeMobileNav()">Events</a>
   <a href="#membership" onclick="closeMobileNav()">Membership</a>
   <a href="#blog" onclick="closeMobileNav()">Blog</a>
-    <a href="#market" onclick="closeMobileNav()">Market</a>
   <a href="#gallery" onclick="closeMobileNav()">Gallery</a>
   <a href="#contact" onclick="closeMobileNav()">Contact</a>
   <a href="#" onclick="closeMobileNav();openModal('policyModal');return false;">Policy | رازداری</a>
@@ -1446,9 +1445,9 @@ body{font-family:var(--ff-body);}
           <div class="feature-text">Punjab, KPK, Sindh, Balochistan, Kashmir & Gilgit-Baltistan.</div>
         </div>
         <div class="feature-card reveal anim-d2">
-          <div class="feature-icon" style="background:rgba(155,35,53,.1);"><i class="fas fa-store-alt" style="color:var(--ruby);font-size:1.2rem;"></i></div>
-          <div class="feature-title">Art Market</div>
-          <div class="feature-text">Verified members can sell original artwork to collectors nationwide.</div>
+          <div class="feature-icon" style="background:rgba(155,35,53,.1);"><i class="fas fa-images" style="color:var(--ruby);font-size:1.2rem;"></i></div>
+          <div class="feature-title">Events Gallery</div>
+          <div class="feature-text">Photos and reports from SHAOOR's own events, exhibitions & workshops.</div>
         </div>
         <div class="feature-card reveal anim-d3">
           <div class="feature-icon" style="background:rgba(45,58,140,.1);"><i class="fas fa-id-card" style="color:var(--indigo);font-size:1.2rem;"></i></div>
@@ -1476,7 +1475,7 @@ body{font-family:var(--ff-body);}
           <div class="values-list">
             <div class="val-item"><div class="val-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="val-text"><strong>Training</strong><span>Regular workshops and mentorship across all 7 societies.</span></div></div>
             <div class="val-item"><div class="val-icon"><i class="fas fa-map-marked-alt"></i></div><div class="val-text"><strong>Chapters</strong><span>Punjab, KPK, Sindh, Balochistan, Kashmir & Gilgit-Baltistan.</span></div></div>
-            <div class="val-item"><div class="val-icon"><i class="fas fa-store-alt"></i></div><div class="val-text"><strong>Marketplace</strong><span>Sell original artwork directly through SHAOOR Market.</span></div></div>
+            <div class="val-item"><div class="val-icon"><i class="fas fa-images"></i></div><div class="val-text"><strong>Events Gallery</strong><span>Photos & reports from SHAOOR events, exhibitions and workshops.</span></div></div>
             <div class="val-item"><div class="val-icon"><i class="fas fa-certificate"></i></div><div class="val-text"><strong>Recognition</strong><span>Verified ID, certificates, and a portfolio for every member.</span></div></div>
           </div>
         </div>
@@ -1952,137 +1951,7 @@ body{font-family:var(--ff-body);}
         </div>
       </div>
       <!-- Steps -->
-      <div style=
-<!-- ═══ MARKETPLACE ═══ -->
-  <section class="section" id="market" style="background:var(--cream2,var(--cream));">
-    <div class="container">
-      <div class="sec-head reveal">
-        <p class="sec-label">SHAOOR Market</p>
-        <h2 class="sec-title">Buy & Sell Original Art</h2>
-        <p class="sec-sub">A curated marketplace exclusively for SHAOOR members. Buy authentic Pakistani art or sell your own work — all transactions verified by SHAOOR.</p>
-      </div>
-
-      <!-- Filters -->
-      <div class="market-filter">
-        <button class="mf-btn active" onclick="filterMarket('all',this)">All Works</button>
-        <button class="mf-btn" onclick="filterMarket('calligraphy',this)">Calligraphy</button>
-        <button class="mf-btn" onclick="filterMarket('painting',this)">Painting</button>
-        <button class="mf-btn" onclick="filterMarket('textile',this)">Textile</button>
-        <button class="mf-btn" onclick="filterMarket('islamic',this)">Islamic Art</button>
-        <button class="mf-btn" onclick="filterMarket('digital',this)">Digital</button>
-        <button class="mf-btn" onclick="filterMarket('photography',this)">Photography</button>
-      </div>
-
-      <!-- Art Grid -->
-      <div class="market-grid" id="marketGrid">
-
-        <div class="art-card reveal" data-cat="calligraphy">
-          <div class="art-thumb-placeholder" style="background:linear-gradient(135deg,#0B1D35,#C8922A33);"><span style="font-size:3.5rem;">🖋️</span></div>
-          <div class="art-badge">Available</div>
-          <div class="art-body">
-            <div class="art-cat">Calligraphy</div>
-            <div class="art-title">بسم اللہ الرحمٰن الرحیم — Thuluth Script</div>
-            <div class="art-artist"><i class="fas fa-user-circle"></i> Ahmed Raza · Punjab Chapter</div>
-            <div class="art-price-row">
-              <div class="art-price">Rs 4,500 <span>/piece</span></div>
-              <button class="art-buy" onclick="buyArt(this,'بسم اللہ Thuluth')"><i class="fas fa-shopping-bag"></i> Inquire</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="art-card reveal anim-d1" data-cat="painting">
-          <div class="art-thumb-placeholder" style="background:linear-gradient(135deg,#1A6B6B,#E6AF3A33);"><span style="font-size:3.5rem;">🎨</span></div>
-          <div class="art-badge sold">Sold</div>
-          <div class="art-body">
-            <div class="art-cat">Fine Arts · Oil on Canvas</div>
-            <div class="art-title">Indus Valley Sunrise — Landscape Series</div>
-            <div class="art-artist"><i class="fas fa-user-circle"></i> Nadia Shah · Sindh Chapter</div>
-            <div class="art-price-row">
-              <div class="art-price">Rs 18,000 <span>/piece</span></div>
-              <button class="art-buy" disabled><i class="fas fa-lock"></i> Sold</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="art-card reveal anim-d2" data-cat="textile">
-          <div class="art-thumb-placeholder" style="background:linear-gradient(135deg,#9B2335,#F5CC6033);"><span style="font-size:3.5rem;">🧵</span></div>
-          <div class="art-badge">Available</div>
-          <div class="art-body">
-            <div class="art-cat">Textile Art · Hand Embroidery</div>
-            <div class="art-title">Phulkari Heritage Piece — Punjab Motifs</div>
-            <div class="art-artist"><i class="fas fa-user-circle"></i> Zara Malik · Punjab Chapter</div>
-            <div class="art-price-row">
-              <div class="art-price">Rs 7,500 <span>/piece</span></div>
-              <button class="art-buy" onclick="buyArt(this,'Phulkari Heritage')"><i class="fas fa-shopping-bag"></i> Inquire</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="art-card reveal anim-d3" data-cat="islamic">
-          <div class="art-thumb-placeholder" style="background:linear-gradient(135deg,#2D3A8C,#C8922A33);"><span style="font-size:3.5rem;">☪️</span></div>
-          <div class="art-badge reserved">Reserved</div>
-          <div class="art-body">
-            <div class="art-cat">Islamic Art · Geometric</div>
-            <div class="art-title">Eight-Point Star — Girih Pattern Series</div>
-            <div class="art-artist"><i class="fas fa-user-circle"></i> Bilal Khan · KPK Chapter</div>
-            <div class="art-price-row">
-              <div class="art-price">Rs 12,000 <span>/piece</span></div>
-              <button class="art-buy" disabled><i class="fas fa-clock"></i> Reserved</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="art-card reveal anim-d4" data-cat="digital">
-          <div class="art-thumb-placeholder" style="background:linear-gradient(135deg,#1a1a2e,#E6AF3A55);"><span style="font-size:3.5rem;">💻</span></div>
-          <div class="art-badge">Available</div>
-          <div class="art-body">
-            <div class="art-cat">Digital Art · Print Ready</div>
-            <div class="art-title">Mohenjo-Daro Reimagined — Digital Series</div>
-            <div class="art-artist"><i class="fas fa-user-circle"></i> Sara Qureshi · Karachi</div>
-            <div class="art-price-row">
-              <div class="art-price">Rs 3,200 <span>/digital</span></div>
-              <button class="art-buy" onclick="buyArt(this,'Mohenjo-Daro Digital')"><i class="fas fa-shopping-bag"></i> Inquire</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="art-card reveal anim-d5" data-cat="photography">
-          <div class="art-thumb-placeholder" style="background:linear-gradient(135deg,#1C2E4A,#D4700A55);"><span style="font-size:3.5rem;">📸</span></div>
-          <div class="art-badge">Available</div>
-          <div class="art-body">
-            <div class="art-cat">Photography · Fine Print</div>
-            <div class="art-title">Badshahi Mosque at Dawn — Limited Print</div>
-            <div class="art-artist"><i class="fas fa-user-circle"></i> Omar Tariq · Punjab Chapter</div>
-            <div class="art-price-row">
-              <div class="art-price">Rs 6,800 <span>/print</span></div>
-              <button class="art-buy" onclick="buyArt(this,'Badshahi Dawn Print')"><i class="fas fa-shopping-bag"></i> Inquire</button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Sell Banner -->
-      <div class="sell-banner reveal">
-        <div>
-          <h3>Want to Sell Your Art?</h3>
-          <p>SHAOOR Market is exclusively for verified members. List your original artwork, reach collectors across Pakistan, and get paid — all with SHAOOR's support.</p>
-          <div class="sell-steps">
-            <div class="sell-step"><div class="sell-step-num">1</div><div class="sell-step-text"><strong>Become a Member</strong><span>Register & get your SHAOOR ID</span></div></div>
-            <div class="sell-step"><div class="sell-step-num">2</div><div class="sell-step-text"><strong>Submit Your Work</strong><span>Send photos + description to SHAOOR</span></div></div>
-            <div class="sell-step"><div class="sell-step-num">3</div><div class="sell-step-text"><strong>Get Listed</strong><span>SHAOOR verifies & lists within 48 hrs</span></div></div>
-            <div class="sell-step"><div class="sell-step-num">4</div><div class="sell-step-text"><strong>Earn</strong><span>Buyer contacts, you deliver & earn</span></div></div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:.75rem;min-width:200px;">
-          <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" class="btn btn-gold" style="justify-content:center;"><i class="fas fa-upload"></i> List Your Art</a>
-          <a href="mailto:shaoor.platform@yahoo.com" class="btn btn-ghost" style="justify-content:center;"><i class="fas fa-envelope"></i> Contact SHAOOR</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-"max-width:700px;margin:3rem auto 0;text-align:center;">
+      <div style="max-width:700px;margin:3rem auto 0;text-align:center;">
         <p style="font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:.08em;">How to Join SHAOOR</p>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
           <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;">
@@ -2246,46 +2115,14 @@ body{font-family:var(--ff-body);}
     <div class="container">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem;" class="reveal">
         <div>
-          <p class="sec-label">Creative Gallery</p>
-          <h2 class="sec-title">Art, Culture & Community</h2>
-          <p class="sec-sub" style="max-width:480px;">A living gallery of SHAOOR members' work — updated as our community grows.</p>
-        </div>
-        <div class="gallery-actions">
-          <label class="btn btn-gold" style="cursor:pointer;" title="Upload artwork (members only)">
-            <i class="fas fa-cloud-upload-alt"></i> Add Artwork
-            <input type="file" id="galleryUpload" accept="image/*" multiple style="display:none;" onchange="addGalleryImages(this)" />
-          </label>
+          <p class="sec-label">Our Activities</p>
+          <h2 class="sec-title">Events, Exhibitions & Workshops</h2>
+          <p class="sec-sub" style="max-width:480px;">A glimpse into SHAOOR's own events, exhibitions, workshops, and webinars.</p>
         </div>
       </div>
       <div class="gallery-grid" id="galleryGrid">
-        <div class="gallery-item reveal" data-gcat="calligraphy">
-          <div class="gallery-head" style="background:linear-gradient(135deg,var(--navy),#C8922A44);display:flex;align-items:center;justify-content:center;font-size:3rem;">🖋️</div>
-          <div class="gallery-caption"><strong>Surah Al-Fatiha — Naskh</strong><span>Ahmad Raza · Punjab</span></div>
-        </div>
-        <div class="gallery-item reveal anim-d1" data-gcat="painting">
-          <div class="gallery-head" style="background:linear-gradient(135deg,#1A6B6B,#E6AF3A33);display:flex;align-items:center;justify-content:center;font-size:3rem;">🎨</div>
-          <div class="gallery-caption"><strong>Indus Valley at Dusk</strong><span>Nadia Shah · Sindh</span></div>
-        </div>
-        <div class="gallery-item reveal anim-d2" data-gcat="textile">
-          <div class="gallery-head" style="background:linear-gradient(135deg,#9B2335,#F5CC6033);display:flex;align-items:center;justify-content:center;font-size:3rem;">🧵</div>
-          <div class="gallery-caption"><strong>Phulkari Motif Series</strong><span>Zara Malik · Punjab</span></div>
-        </div>
-        <div class="gallery-item reveal anim-d3" data-gcat="islamic">
-          <div class="gallery-head" style="background:linear-gradient(135deg,#2D3A8C,#C8922A33);display:flex;align-items:center;justify-content:center;font-size:3rem;">☪️</div>
-          <div class="gallery-caption"><strong>Geometric Star Pattern</strong><span>Bilal Khan · KPK</span></div>
-        </div>
-        <div class="gallery-item reveal anim-d4" data-gcat="photography">
-          <div class="gallery-head" style="background:linear-gradient(135deg,#1C2E4A,#D4700A55);display:flex;align-items:center;justify-content:center;font-size:3rem;">📸</div>
-          <div class="gallery-caption"><strong>Badshahi Mosque at Dawn</strong><span>Omar Tariq · Punjab</span></div>
-        </div>
-        <div class="gallery-item reveal anim-d5" data-gcat="digital">
-          <div class="gallery-head" style="background:linear-gradient(135deg,#160F08,#E6AF3A55);display:flex;align-items:center;justify-content:center;font-size:3rem;">💻</div>
-          <div class="gallery-caption"><strong>Digital Heritage Series</strong><span>Sara Qureshi · Sindh</span></div>
-        </div>
+        <p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">Gallery لوڈ ہو رہی ہے…</p>
       </div>
-      <p style="text-align:center;margin-top:2rem;font-size:.82rem;color:var(--muted);">
-        <i class="fas fa-info-circle"></i> Members can upload their artwork after logging in. Images shown here are placeholders.
-      </p>
     </div>
   </section>
 
@@ -2443,7 +2280,7 @@ body{font-family:var(--ff-body);}
       <div class="admin-side-logo">SHAOOR <span>Admin</span></div>
       <button class="admin-nav-btn active" onclick="switchDashTab('members',this)"><i class="fas fa-users"></i> Members</button>
       <button class="admin-nav-btn" onclick="switchDashTab('applications',this)"><i class="fas fa-file-alt"></i> Applications</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('market',this)"><i class="fas fa-store"></i> Market</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('gallery',this)"><i class="fas fa-images"></i> Gallery</button>
       <button class="admin-nav-btn" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
@@ -2466,7 +2303,7 @@ body{font-family:var(--ff-body);}
       <div class="dash-tabs">
         <button class="dtab active" onclick="switchDashTab('members',this)"><i class="fas fa-users"></i> Members</button>
         <button class="dtab" onclick="switchDashTab('applications',this)"><i class="fas fa-file-alt"></i> Applications</button>
-        <button class="dtab" onclick="switchDashTab('market',this)"><i class="fas fa-store"></i> Market Listings</button>
+        <button class="dtab" onclick="switchDashTab('gallery',this)"><i class="fas fa-images"></i> Gallery</button>
         <button class="dtab" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
         <button class="dtab" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
         <button class="dtab" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
@@ -2520,20 +2357,26 @@ body{font-family:var(--ff-body);}
         </div>
       </div>
 
-      <!-- Market Panel -->
-      <div class="dash-panel" id="dp-market">
-        <h3 style="font-weight:700;margin-bottom:1rem;">Market Listings</h3>
+      <!-- Gallery Panel -->
+      <div class="dash-panel" id="dp-gallery">
+        <h3 style="font-weight:700;margin-bottom:1rem;">Gallery — SHAOOR کی سرگرمیاں</h3>
+
+        <form onsubmit="addGalleryItem(event)" style="background:#faf8f3;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;display:grid;gap:.75rem;max-width:480px;">
+          <div class="form-group"><label>عنوان (Title)</label><input type="text" id="gTitle" class="form-input" required placeholder="مثلا: Calligraphy Workshop 2026" /></div>
+          <div class="form-group"><label>تاریخ (Date)</label><input type="date" id="gDate" class="form-input" required /></div>
+          <div class="form-group"><label>مختصر تفصیل (Description)</label><textarea id="gDesc" class="form-input" rows="2" placeholder="اختیاری"></textarea></div>
+          <div class="form-group"><label>تصویر (Image)</label><input type="file" id="gImage" class="form-input" accept="image/png,image/jpeg,image/webp" required /></div>
+          <button type="submit" class="btn btn-gold" style="justify-content:center;"><i class="fas fa-plus"></i> Gallery میں شامل کریں</button>
+        </form>
+
         <div style="overflow-x:auto;">
           <table class="admin-table">
-            <thead><tr><th>Title</th><th>Artist</th><th>Category</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr><td>بسم اللہ Thuluth</td><td>Ahmed Raza</td><td>Calligraphy</td><td>Rs 4,500</td><td><span class="status-pill sp-listed">Listed</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">Edit</button></td></tr>
-              <tr><td>Indus Valley Sunrise</td><td>Nadia Shah</td><td>Painting</td><td>Rs 18,000</td><td><span class="status-pill sp-sold">Sold</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">View</button></td></tr>
-              <tr><td>Phulkari Heritage</td><td>Zara Malik</td><td>Textile</td><td>Rs 7,500</td><td><span class="status-pill sp-listed">Listed</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">Edit</button></td></tr>
+            <thead><tr><th>تصویر</th><th>عنوان</th><th>تاریخ</th><th>ایکشن</th></tr></thead>
+            <tbody id="galleryAdminBody">
+              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">Gallery لوڈ ہو رہی ہے…</td></tr>
             </tbody>
           </table>
         </div>
-        <button class="btn btn-gold" style="margin-top:1rem;" onclick="showToast('Add listing feature coming soon!')"><i class="fas fa-plus"></i> Add New Listing</button>
       </div>
 
       <!-- Chapters Panel -->
@@ -4532,26 +4375,6 @@ body{font-family:var(--ff-body);}
     btn.classList.add('active');
   }
 
-  /* ── MARKET FILTER ── */
-  function filterMarket(cat, btn) {
-    document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.art-card').forEach(card => {
-      if (cat === 'all' || card.dataset.cat === cat) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  }
-
-  /* ── BUY ART ── */
-  function buyArt(btn, title) {
-    const clean = sanitize(title);
-    const wa = 'https://wa.me/923102774666?text=' +
-      encodeURIComponent('السلام علیکم! میں SHAOOR Market پر "' + clean + '" کے بارے میں معلومات چاہتا ہوں۔');
-    window.open(wa, '_blank');
-  }
 
   /* ══════════════ MEMBERS (Admin) ══════════════ */
 
@@ -4674,6 +4497,7 @@ body{font-family:var(--ff-body);}
     if (id === 'applications') loadApplicationsAdmin();
     if (id === 'societies') loadSocietiesAdmin();
     if (id === 'chapters') loadChaptersAdmin();
+    if (id === 'gallery') loadGalleryAdmin();
   }
 
   /* Admin form */
@@ -4766,34 +4590,139 @@ body{font-family:var(--ff-body);}
   }, { threshold: 0.5 });
   statNums.forEach(el => heroObs.observe(el));
 
-
-  /* ── GALLERY UPLOAD ── */
-  function addGalleryImages(input) {
-    const rl = rateLimiter.check('gallery_upload', 20, 3600000);
-    if (!rl.allowed) { showToast('Upload limit reached', 'error'); return; }
+  /* ── PUBLIC GALLERY (SHAOOR's own events/exhibitions/workshops/webinars) ── */
+  async function loadPublicGallery() {
     const grid = document.getElementById('galleryGrid');
-    Array.from(input.files).forEach(file => {
-      if (!file.type.startsWith('image/')) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const item = document.createElement('div');
-        item.className = 'gallery-item';
-        item.innerHTML = `
-          <div class="gallery-head" style="position:relative;">
-            <img src="${e.target.result}" alt="Member artwork" loading="lazy" />
-            <button class="gallery-remove" onclick="this.closest('.gallery-item').remove();showToast('Artwork removed')" title="Remove"><i class="fas fa-times"></i></button>
-          </div>
-          <div class="gallery-caption">
-            <strong>${sanitize(file.name.replace(/\.[^.]+$/,''))}</strong>
-            <span>Uploaded by member</span>
-          </div>`;
-        grid.appendChild(item);
-        showToast('Artwork added to gallery!');
-        initReveal();
-      };
-      reader.readAsDataURL(file);
+    if (!grid) return;
+
+    const { data: items, error } = await sb
+      .from('gallery')
+      .select('title, event_date, description, image_url')
+      .order('event_date', { ascending: false });
+
+    if (error) {
+      console.error('Gallery load failed:', error);
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">Gallery ابھی دستیاب نہیں۔</p>';
+      return;
+    }
+
+    if (!items || items.length === 0) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">ابھی کوئی تصاویر شامل نہیں کی گئیں۔</p>';
+      return;
+    }
+
+    grid.innerHTML = items.map(item => `
+      <div class="gallery-item reveal">
+        <div class="gallery-head" style="background-image:url('${item.image_url}');background-size:cover;background-position:center;"></div>
+        <div class="gallery-caption">
+          <strong>${sanitize(item.title)}</strong>
+          <span>${new Date(item.event_date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' })}${item.description ? ' · ' + sanitize(item.description) : ''}</span>
+        </div>
+      </div>
+    `).join('');
+
+    initReveal();
+  }
+  loadPublicGallery();
+
+  /* ── ADMIN: GALLERY MANAGEMENT ── */
+  async function loadGalleryAdmin() {
+    const panel = document.getElementById('dp-gallery');
+    if (!panel) return;
+    const tbody = document.getElementById('galleryAdminBody');
+    if (!tbody) return;
+
+    const { data: items, error } = await sb
+      .from('gallery')
+      .select('id, title, event_date, description, image_url')
+      .order('event_date', { ascending: false });
+
+    if (error || !items) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">لوڈ نہیں ہو سکا</td></tr>';
+      return;
+    }
+    if (items.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی entry موجود نہیں</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = items.map(it => `
+      <tr>
+        <td><img src="${it.image_url}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;" /></td>
+        <td>${sanitize(it.title)}</td>
+        <td>${new Date(it.event_date).toLocaleDateString('en-GB')}</td>
+        <td>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="deleteGalleryItem('${it.id}')"><i class="fas fa-trash"></i> Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function addGalleryItem(e) {
+    e.preventDefault();
+    const titleEl = document.getElementById('gTitle');
+    const dateEl = document.getElementById('gDate');
+    const descEl = document.getElementById('gDesc');
+    const fileEl = document.getElementById('gImage');
+
+    const title = titleEl.value.trim();
+    const event_date = dateEl.value;
+    const description = descEl.value.trim();
+    const file = fileEl.files[0];
+
+    if (!title || !event_date || !file) {
+      showToast('عنوان، تاریخ، اور تصویر ضروری ہیں', 'error');
+      return;
+    }
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('تصویر 5MB سے چھوٹی ہونی چاہیے', 'error');
+      return;
+    }
+
+    const { data: userData } = await sb.auth.getUser();
+    const userId = userData?.user?.id;
+
+    const ext = file.name.split('.').pop();
+    const filePath = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+
+    const { error: uploadError } = await sb.storage.from('gallery-images').upload(filePath, file);
+    if (uploadError) {
+      showToast('اپلوڈ ناکام: ' + uploadError.message, 'error');
+      return;
+    }
+
+    const { data: publicUrlData } = sb.storage.from('gallery-images').getPublicUrl(filePath);
+
+    const { error: insertError } = await sb.from('gallery').insert({
+      title, event_date, description,
+      image_url: publicUrlData.publicUrl,
+      created_by: userId
     });
-    input.value = '';
+
+    if (insertError) {
+      showToast('محفوظ کرنے میں ناکامی: ' + insertError.message, 'error');
+      return;
+    }
+
+    showToast('Gallery میں شامل ہو گیا!');
+    titleEl.value = ''; dateEl.value = ''; descEl.value = ''; fileEl.value = '';
+    loadGalleryAdmin();
+    loadPublicGallery();
+  }
+
+  async function deleteGalleryItem(id) {
+    const { error } = await sb.from('gallery').delete().eq('id', id);
+    if (error) {
+      showToast('حذف کرنے میں ناکامی: ' + error.message, 'error');
+      return;
+    }
+    showToast('حذف ہو گیا');
+    loadGalleryAdmin();
+    loadPublicGallery();
   }
 
   console.log('🎨 SHAOOR Platform — Secured & Ready!');
