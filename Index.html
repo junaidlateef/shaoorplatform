@@ -2561,6 +2561,30 @@ body{font-family:var(--ff-body);}
 
 </main>
 
+<!-- Member Dashboard -->
+<div class="admin-dash" id="memberDash">
+  <div class="dash-top">
+    <div class="dash-brand"><i class="fas fa-user-circle" style="color:var(--gold);margin-right:.5rem;"></i> SHAOOR Member</div>
+    <div class="dash-user">
+      <span>Welcome, <strong style="color:#fff;" id="dashMemberName">Member</strong></span>
+      <button class="dash-logout" onclick="memberLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+  <div class="container" style="padding:2.5rem 1.5rem;max-width:640px;">
+    <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
+      <h3 style="font-weight:700;margin-bottom:1.5rem;color:var(--navy);"><i class="fas fa-id-card" style="color:var(--gold);margin-right:.5rem;"></i> My Profile</h3>
+      <div style="display:grid;gap:1rem;">
+        <div><small style="color:var(--muted);">Full Name</small><div id="mdName" style="font-weight:600;font-size:1.05rem;">—</div></div>
+        <div><small style="color:var(--muted);">SHAOOR Member ID</small><div id="mdMemberId" style="font-weight:600;font-size:1.05rem;letter-spacing:.5px;">—</div></div>
+        <div><small style="color:var(--muted);">Email</small><div id="mdEmail" style="font-weight:600;font-size:1.05rem;">—</div></div>
+        <div><small style="color:var(--muted);">Role</small><div id="mdRole" style="font-weight:600;font-size:1.05rem;text-transform:capitalize;">—</div></div>
+        <div><small style="color:var(--muted);">Status</small><div id="mdStatus" style="font-weight:600;font-size:1.05rem;text-transform:capitalize;">—</div></div>
+      </div>
+      <p style="margin-top:1.5rem;color:var(--muted);font-size:.85rem;">Profile picture, digital ID card, and QR code are coming soon.</p>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
@@ -3041,11 +3065,13 @@ body{font-family:var(--ff-body);}
       // Honeypot check
       if (checkHoneypot(form)) return; // silently drop bot
 
-      // Sanitize all inputs
+      // Sanitize all inputs EXCEPT passwords — passwords must never be rewritten,
+      // or they will silently stop matching what the user actually typed.
       const inputs = form.querySelectorAll('input, textarea, select');
       let valid = true;
       inputs.forEach(inp => {
         if (inp.name === 'website_url') return;
+        if (inp.type === 'password') return;
         inp.value = sanitize(inp.value);
 
         // Email validation
@@ -3076,14 +3102,64 @@ body{font-family:var(--ff-body);}
   secureSubmit('loginForm', async frm => {
     const email = frm.querySelector('#lEmail').value.trim();
     const password = frm.querySelector('#lPass').value;
-    const { error } = await sb.auth.signInWithPassword({ email, password });
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
     if (error) {
       showToast('غلط ای میل یا پاس ورڈ', 'error');
       return;
     }
-    showToast('لاگ ان کامیاب! خوش آمدید۔');
     closeModal('loginModal');
+    await openMemberDashboard(data.user.id);
   });
+
+  async function openMemberDashboard(userId) {
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('full_name, member_id, role, status')
+      .eq('id', userId)
+      .single();
+
+    const { data: userData } = await sb.auth.getUser();
+    const email = userData?.user?.email || '';
+
+    if (error || !profile) {
+      console.error('Profile load failed:', error);
+      showToast('پروفائل لوڈ نہیں ہو سکی: ' + (error ? error.message : 'no profile row found'), 'error');
+      return;
+    }
+
+    document.getElementById('dashMemberName').textContent = profile.full_name || 'Member';
+    document.getElementById('mdName').textContent = profile.full_name || '—';
+    document.getElementById('mdMemberId').textContent = profile.member_id || '—';
+    document.getElementById('mdEmail').textContent = email || '—';
+    document.getElementById('mdRole').textContent = profile.role || '—';
+    document.getElementById('mdStatus').textContent = profile.status || '—';
+
+    document.getElementById('memberDash').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    showToast('خوش آمدید، ' + (profile.full_name || 'Member') + '!');
+  }
+
+  async function memberLogout() {
+    await sb.auth.signOut();
+    document.getElementById('memberDash').classList.remove('open');
+    document.body.style.overflow = '';
+    showToast('Logged out successfully');
+  }
+
+  /* If a member's session is already active on page load, show their dashboard automatically */
+  (async () => {
+    const { data } = await sb.auth.getSession();
+    if (data.session) {
+      const { data: profile } = await sb
+        .from('profiles')
+        .select('role')
+        .eq('id', data.session.user.id)
+        .single();
+      if (profile && profile.role === 'member') {
+        openMemberDashboard(data.session.user.id);
+      }
+    }
+  })();
 
   secureSubmit('signupForm', async frm => {
     const full_name = frm.querySelector('#sName').value.trim();
@@ -3118,8 +3194,8 @@ body{font-family:var(--ff-body);}
 
     err.style.display = 'none';
     if (data.session) {
-      showToast('اکاؤنٹ بن گیا! خوش آمدید، ' + full_name);
       closeModal('signupModal');
+      await openMemberDashboard(data.user.id);
     } else {
       showToast('اکاؤنٹ بن گیا! اپنا ای میل چیک کر کے تصدیق کریں۔');
       closeModal('signupModal');
