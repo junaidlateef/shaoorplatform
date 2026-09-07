@@ -2446,6 +2446,7 @@ body{font-family:var(--ff-body);}
       <button class="admin-nav-btn" onclick="switchDashTab('market',this)"><i class="fas fa-store"></i> Market</button>
       <button class="admin-nav-btn" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
       <div style="margin-top:auto;padding-top:1rem;">
         <button class="admin-nav-btn" onclick="adminLogout()" style="color:rgba(252,165,165,.7);"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -2468,6 +2469,7 @@ body{font-family:var(--ff-body);}
         <button class="dtab" onclick="switchDashTab('market',this)"><i class="fas fa-store"></i> Market Listings</button>
         <button class="dtab" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
         <button class="dtab" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
+        <button class="dtab" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
       </div>
 
       <!-- Members Panel -->
@@ -2556,6 +2558,22 @@ body{font-family:var(--ff-body);}
         <button class="btn btn-gold" style="margin-top:1rem;" onclick="showToast('Add event feature coming soon!')"><i class="fas fa-plus"></i> Add New Event</button>
       </div>
 
+      <!-- Certificates Panel -->
+      <div class="dash-panel" id="dp-certificates">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Certificates</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openIssueCertificateModal()"><i class="fas fa-plus"></i> Issue Certificate</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="certificatesTable">
+            <thead><tr><th>Certificate ID</th><th>Member</th><th>Title</th><th>Type</th><th>Issued</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="certificatesBody">
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading certificates…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2594,6 +2612,13 @@ body{font-family:var(--ff-body);}
       <p style="margin-top:1.5rem;color:var(--muted);font-size:.85rem;"></p>
       <button class="btn btn-gold" style="margin-top:1rem;justify-content:center;width:100%;" onclick="openDigitalId()"><i class="fas fa-id-badge"></i> View Digital ID Card</button>
     </div>
+
+    <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);margin-top:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:1.5rem;color:var(--navy);"><i class="fas fa-certificate" style="color:var(--gold);margin-right:.5rem;"></i> My Certificates</h3>
+      <div id="myCertificatesList" style="display:grid;gap:.75rem;">
+        <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2615,6 +2640,77 @@ body{font-family:var(--ff-body);}
         <div id="idRole" style="font-size:.75rem;color:rgba(255,255,255,.7);text-transform:capitalize;margin-bottom:1rem;">—</div>
         <div id="idQrCode" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;"></div>
         <div style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:.75rem;">Scan to verify membership</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Issue Certificate Modal (Admin) -->
+<div class="modal" id="issueCertificateModal" role="dialog" aria-modal="true" aria-labelledby="issueCertTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="issueCertTitle">Issue New Certificate</h3>
+      <button class="modal-close" onclick="closeModal('issueCertificateModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="issueCertificateForm">
+        <div class="form-group">
+          <label for="certMemberSelect">Select Member</label>
+          <select id="certMemberSelect" class="form-input" required>
+            <option value="">-- Choose Member --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="certTitle">Certificate Title</label>
+          <input type="text" id="certTitle" class="form-input" required placeholder="e.g., Certificate of Participation" />
+        </div>
+        <div class="form-group">
+          <label for="certType">Certificate Type</label>
+          <select id="certType" class="form-input" required>
+            <option value="">-- Choose Type --</option>
+            <option value="participation">Participation</option>
+            <option value="completion">Completion</option>
+            <option value="achievement">Achievement</option>
+            <option value="excellence">Excellence</option>
+            <option value="appreciation">Appreciation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="certIssueDate">Issue Date</label>
+          <input type="date" id="certIssueDate" class="form-input" required />
+        </div>
+        <div class="form-group">
+          <label for="certExpiryDate">Expiry Date (Optional)</label>
+          <input type="date" id="certExpiryDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label for="certNotes">Notes (Optional)</label>
+          <textarea id="certNotes" class="form-input" rows="3" placeholder="Additional notes…"></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;">Issue Certificate</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View/Verify Certificate Modal -->
+<div class="modal" id="viewCertificateModal" role="dialog" aria-modal="true" aria-labelledby="viewCertTitle">
+  <div class="modal-box" style="max-width:380px;">
+    <div class="modal-head">
+      <h3 id="viewCertTitle">Certificate</h3>
+      <button class="modal-close" onclick="closeModal('viewCertificateModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:linear-gradient(135deg,var(--navy),#0d1b3d);border-radius:16px;padding:1.5rem;color:#fff;text-align:center;position:relative;overflow:hidden;">
+        <div style="font-family:var(--ff-display);font-weight:900;letter-spacing:1px;color:var(--gold);font-size:1rem;margin-bottom:.25rem;">SHAOOR | شعور</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-bottom:1rem;">Certificate Verification</div>
+        <div id="vcTitle" style="font-weight:700;font-size:1.1rem;margin-bottom:.25rem;">—</div>
+        <div id="vcId" style="color:var(--gold);font-size:.85rem;letter-spacing:1px;margin-bottom:.5rem;">—</div>
+        <div id="vcMember" style="font-size:.85rem;color:rgba(255,255,255,.85);margin-bottom:.25rem;">—</div>
+        <div id="vcMeta" style="font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:1rem;">—</div>
+        <div id="vcStatusBadge" style="display:inline-block;padding:.3rem .9rem;border-radius:20px;font-size:.8rem;font-weight:700;margin-bottom:1rem;">—</div>
+        <div id="vcQrCode" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;"></div>
+        <div style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:.75rem;">Scan to verify this certificate</div>
       </div>
     </div>
   </div>
@@ -3185,6 +3281,8 @@ body{font-family:var(--ff-body);}
     document.getElementById('memberDash').classList.add('open');
     document.body.style.overflow = 'hidden';
     showToast('خوش آمدید، ' + (profile.full_name || 'Member') + '!');
+
+    loadMyCertificates(userId);
   }
 
   /* ── Avatar upload ── */
@@ -3303,6 +3401,187 @@ body{font-family:var(--ff-body);}
     openModal('idCardModal');
   }
 
+  /* ══════════════ CERTIFICATES ══════════════ */
+
+  /* Renders a QR code into a container for any verification URL */
+  function renderCertQR(containerId, verifyUrl) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    new QRCode(el, { text: verifyUrl, width: 130, height: 130, colorDark: '#0d1b3d', colorLight: '#ffffff' });
+  }
+
+  function certStatusColor(status) {
+    if (status === 'active') return { bg: '#16a34a', label: 'Active / فعال' };
+    if (status === 'revoked') return { bg: 'var(--ruby)', label: 'Revoked / منسوخ' };
+    return { bg: '#a16207', label: 'Expired / میعاد ختم' };
+  }
+
+  /* ── Admin: load all certificates into the admin table ── */
+  async function loadCertificatesAdmin() {
+    const tbody = document.getElementById('certificatesBody');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading certificates…</td></tr>';
+
+    const { data: certs, error } = await sb
+      .from('certificates')
+      .select('id, certificate_id, member_id, certificate_title, certificate_type, issue_date, status')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ruby);padding:1.5rem;">Failed to load: ' + sanitize(error.message) + '</td></tr>';
+      return;
+    }
+
+    if (!certs || certs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">No certificates issued yet.</td></tr>';
+      return;
+    }
+
+    /* Fetch member names for display (map member_id UUID -> name) */
+    const memberIds = [...new Set(certs.map(c => c.member_id))];
+    const { data: profs } = await sb.from('profiles').select('id, full_name, member_id').in('id', memberIds);
+    const nameMap = {};
+    (profs || []).forEach(p => { nameMap[p.id] = p.full_name + ' (' + p.member_id + ')'; });
+
+    tbody.innerHTML = certs.map(c => {
+      const sc = certStatusColor(c.status);
+      const memberLabel = nameMap[c.member_id] || c.member_id;
+      return `<tr>
+        <td>${sanitize(c.certificate_id)}</td>
+        <td>${sanitize(memberLabel)}</td>
+        <td>${sanitize(c.certificate_title)}</td>
+        <td style="text-transform:capitalize;">${sanitize(c.certificate_type)}</td>
+        <td>${sanitize(c.issue_date)}</td>
+        <td><span class="status-pill" style="background:${sc.bg};color:#fff;">${sc.label}</span></td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewCertificate(${c.id})">View</button>
+          ${c.status === 'active'
+            ? `<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="revokeCertificate(${c.id})">Revoke</button>`
+            : ''}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ── Admin: populate the member dropdown in the Issue Certificate modal ── */
+  async function populateCertMemberSelect() {
+    const sel = document.getElementById('certMemberSelect');
+    sel.innerHTML = '<option value="">-- Choose Member --</option>';
+    const { data: profs, error } = await sb.from('profiles').select('id, full_name, member_id').order('full_name');
+    if (error || !profs) return;
+    profs.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.full_name + ' (' + p.member_id + ')';
+      sel.appendChild(opt);
+    });
+  }
+
+  function openIssueCertificateModal() {
+    document.getElementById('issueCertificateForm').reset();
+    document.getElementById('certIssueDate').value = new Date().toISOString().split('T')[0];
+    populateCertMemberSelect();
+    openModal('issueCertificateModal');
+  }
+
+  secureSubmit('issueCertificateForm', async frm => {
+    const member_id = frm.querySelector('#certMemberSelect').value;
+    const certificate_title = frm.querySelector('#certTitle').value.trim();
+    const certificate_type = frm.querySelector('#certType').value;
+    const issue_date = frm.querySelector('#certIssueDate').value;
+    const expiry_date = frm.querySelector('#certExpiryDate').value || null;
+    const notes = frm.querySelector('#certNotes').value.trim() || null;
+
+    if (!member_id) { showToast('براہ کرم ایک ممبر منتخب کریں', 'error'); return; }
+
+    const { error } = await sb.from('certificates').insert({
+      member_id, certificate_title, certificate_type, issue_date, expiry_date, notes, status: 'active'
+    });
+
+    if (error) {
+      showToast('سرٹیفکیٹ جاری نہیں ہو سکا: ' + error.message, 'error');
+      return;
+    }
+
+    showToast('✓ سرٹیفکیٹ کامیابی سے جاری ہو گیا!');
+    closeModal('issueCertificateModal');
+    loadCertificatesAdmin();
+  });
+
+  /* ── Admin: revoke a certificate ── */
+  async function revokeCertificate(id) {
+    if (!confirm('کیا آپ واقعی یہ سرٹیفکیٹ منسوخ کرنا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('certificates').update({ status: 'revoked' }).eq('id', id);
+    if (error) { showToast('منسوخ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('سرٹیفکیٹ منسوخ کر دیا گیا۔');
+    loadCertificatesAdmin();
+  }
+
+  /* ── View a single certificate (from admin table or member list) with QR ── */
+  async function viewCertificate(id) {
+    const { data: c, error } = await sb
+      .from('certificates')
+      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data')
+      .eq('id', id)
+      .single();
+
+    if (error || !c) { showToast('سرٹیفکیٹ لوڈ نہیں ہو سکا', 'error'); return; }
+
+    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+
+    document.getElementById('vcTitle').textContent = c.certificate_title;
+    document.getElementById('vcId').textContent = c.certificate_id;
+    document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + prof.member_id) : '—';
+    document.getElementById('vcMeta').textContent = 'Type: ' + c.certificate_type + ' · Issued: ' + c.issue_date + (c.expiry_date ? ' · Expires: ' + c.expiry_date : '');
+
+    const sc = certStatusColor(c.status);
+    const badge = document.getElementById('vcStatusBadge');
+    badge.textContent = sc.label;
+    badge.style.background = sc.bg;
+    badge.style.color = '#fff';
+
+    const verifyUrl = c.qr_code_data || (window.location.origin + window.location.pathname + '?verify_cert=' + encodeURIComponent(c.certificate_id));
+    renderCertQR('vcQrCode', verifyUrl);
+
+    openModal('viewCertificateModal');
+  }
+
+  /* ── Member: load "My Certificates" list in Member Dashboard ── */
+  async function loadMyCertificates(userId) {
+    const container = document.getElementById('myCertificatesList');
+    if (!container) return;
+
+    const { data: certs, error } = await sb
+      .from('certificates')
+      .select('id, certificate_id, certificate_title, certificate_type, issue_date, status')
+      .eq('member_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      container.innerHTML = '<div style="color:var(--ruby);font-size:.9rem;text-align:center;">لوڈ نہیں ہو سکا</div>';
+      return;
+    }
+
+    if (!certs || certs.length === 0) {
+      container.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">ابھی کوئی سرٹیفکیٹ جاری نہیں ہوا۔</div>';
+      return;
+    }
+
+    container.innerHTML = certs.map(c => {
+      const sc = certStatusColor(c.status);
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.9rem 1rem;border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;gap:.5rem;">
+        <div>
+          <div style="font-weight:600;">${sanitize(c.certificate_title)}</div>
+          <div style="font-size:.78rem;color:var(--muted);">${sanitize(c.certificate_id)} · ${sanitize(c.issue_date)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem;">
+          <span class="status-pill" style="background:${sc.bg};color:#fff;font-size:.72rem;">${sc.label}</span>
+          <button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.78rem;" onclick="viewCertificate(${c.id})">View</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
   /* ── Public verification: if URL has ?verify=MEMBER_ID, look it up and show result ── */
   (async () => {
     const params = new URLSearchParams(window.location.search);
@@ -3324,6 +3603,35 @@ body{font-family:var(--ff-body);}
       showToast('✓ تصدیق شدہ: ' + profile.full_name + ' (' + profile.member_id + ')');
     } else {
       showToast('⚠ یہ اکاؤنٹ فعال نہیں (status: ' + profile.status + ')', 'error');
+    }
+  })();
+
+  /* ── Public verification: if URL has ?verify_cert=CERTIFICATE_ID, look it up and show result ── */
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const certId = params.get('verify_cert');
+    if (!certId) return;
+
+    const { data: c, error } = await sb
+      .from('certificates')
+      .select('certificate_id, certificate_title, certificate_type, issue_date, status, member_id')
+      .eq('certificate_id', certId)
+      .single();
+
+    if (error || !c) {
+      showToast('یہ سرٹیفکیٹ موجود نہیں: ' + certId, 'error');
+      return;
+    }
+
+    const { data: prof } = await sb.from('profiles').select('full_name').eq('id', c.member_id).single();
+    const memberName = prof ? prof.full_name : '';
+
+    if (c.status === 'active') {
+      showToast('✓ سرٹیفکیٹ تصدیق شدہ: ' + c.certificate_title + (memberName ? ' — ' + memberName : ''));
+    } else if (c.status === 'revoked') {
+      showToast('⚠ یہ سرٹیفکیٹ منسوخ کر دیا گیا ہے', 'error');
+    } else {
+      showToast('⚠ اس سرٹیفکیٹ کی میعاد ختم ہو چکی ہے', 'error');
     }
   })();
 
@@ -3580,6 +3888,7 @@ body{font-family:var(--ff-body);}
     const panel = document.getElementById('dp-' + id);
     if (panel) panel.classList.add('active');
     btn.classList.add('active');
+    if (id === 'certificates') loadCertificatesAdmin();
   }
 
   /* Admin form */
