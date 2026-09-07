@@ -2504,6 +2504,22 @@ body{font-family:var(--ff-body);}
         </div>
       </div>
 
+      <!-- Societies Panel -->
+      <div class="dash-panel" id="dp-societies">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Societies</h3>
+          <button class="btn btn-gold" onclick="openCreateSocietyModal()" style="padding:.5rem 1rem;font-size:.9rem;"><i class="fas fa-plus"></i> نئی Society</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead><tr><th>نام</th><th>President</th><th>Secretary</th><th>رکن</th><th>Status</th><th>ایکشن</th></tr></thead>
+            <tbody id="societiesBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Societies لوڈ ہو رہے ہیں…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Market Panel -->
       <div class="dash-panel" id="dp-market">
         <h3 style="font-weight:700;margin-bottom:1rem;">Market Listings</h3>
@@ -2522,17 +2538,15 @@ body{font-family:var(--ff-body);}
 
       <!-- Chapters Panel -->
       <div class="dash-panel" id="dp-chapters">
-        <h3 style="font-weight:700;margin-bottom:1rem;">Chapter Status</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Chapters</h3>
+          <button class="btn btn-gold" onclick="openCreateChapterModal()" style="padding:.5rem 1rem;font-size:.9rem;"><i class="fas fa-plus"></i> نیا Chapter</button>
+        </div>
         <div style="overflow-x:auto;">
           <table class="admin-table">
-            <thead><tr><th>Chapter</th><th>HQ City</th><th>Status</th><th>Members</th><th>Cabinet Seats Filled</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Punjab</strong></td><td>Sahiwal</td><td><span class="status-pill sp-active">Active</span></td><td>380+</td><td>5 / 47</td></tr>
-              <tr><td><strong>KPK</strong></td><td>Peshawar</td><td><span class="status-pill sp-pending">Forming</span></td><td>45</td><td>0 / 47</td></tr>
-              <tr><td><strong>Sindh</strong></td><td>Karachi</td><td><span class="status-pill sp-pending">Forming</span></td><td>38</td><td>0 / 47</td></tr>
-              <tr><td><strong>Balochistan</strong></td><td>Quetta</td><td><span class="status-pill" style="background:#f3e8ff;color:#6b21a8;">Soon</span></td><td>12</td><td>0 / 47</td></tr>
-              <tr><td><strong>Kashmir</strong></td><td>Muzaffarabad</td><td><span class="status-pill" style="background:#f3e8ff;color:#6b21a8;">Soon</span></td><td>18</td><td>0 / 47</td></tr>
-              <tr><td><strong>Gilgit-Baltistan</strong></td><td>Gilgit</td><td><span class="status-pill" style="background:#f3e8ff;color:#6b21a8;">Soon</span></td><td>9</td><td>0 / 47</td></tr>
+            <thead><tr><th>صوبہ</th><th>ہیڈ کوارٹرز</th><th>Head</th><th>رکن</th><th>Status</th><th>ایکشن</th></tr></thead>
+            <tbody id="chaptersBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Chapters لوڈ ہو رہے ہیں…</td></tr>
             </tbody>
           </table>
         </div>
@@ -3456,6 +3470,157 @@ body{font-family:var(--ff-body);}
     }).join('');
   }
 
+  /* ── Load Societies for Admin Panel ── */
+  async function loadSocietiesAdmin() {
+    const tbody = document.getElementById('societiesBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Societies لوڈ ہو رہے ہیں…</td></tr>';
+
+    const { data: societies, error } = await sb
+      .from('societies')
+      .select('id, name, president_id, general_secretary_id, status')
+      .order('name');
+
+    if (error) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی: ' + sanitize(error.message) + '</td></tr>';
+      return;
+    }
+
+    if (!societies || societies.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Society نہیں۔</td></tr>';
+      return;
+    }
+
+    // Fetch member names for president/secretary
+    const presIds = societies.map(s => s.president_id).filter(Boolean);
+    const secIds = societies.map(s => s.general_secretary_id).filter(Boolean);
+    const allIds = [...new Set([...presIds, ...secIds])];
+    
+    let nameMap = {};
+    if (allIds.length > 0) {
+      const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', allIds);
+      (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
+    }
+
+    // Count members in each society
+    const { data: memberCounts } = await sb
+      .from('society_members')
+      .select('society_id, id', { count: 'exact', head: false });
+    
+    let countMap = {};
+    (memberCounts || []).forEach(m => {
+      countMap[m.society_id] = (countMap[m.society_id] || 0) + 1;
+    });
+
+    tbody.innerHTML = societies.map(s => {
+      const presName = s.president_id ? nameMap[s.president_id] || 'Unknown' : '—';
+      const secName = s.general_secretary_id ? nameMap[s.general_secretary_id] || 'Unknown' : '—';
+      const memberCount = countMap[s.id] || 0;
+      const statusBg = s.status === 'active' ? '#16a34a' : '#9ca3af';
+      const statusLabel = s.status === 'active' ? 'فعال' : 'محفوظ';
+
+      return `<tr>
+        <td><strong>${sanitize(s.name)}</strong></td>
+        <td>${sanitize(presName)}</td>
+        <td>${sanitize(secName)}</td>
+        <td>${memberCount}</td>
+        <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editSociety('${s.id}')">Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteSociety('${s.id}')">حذف</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ── Load Chapters for Admin Panel ── */
+  async function loadChaptersAdmin() {
+    const tbody = document.getElementById('chaptersBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Chapters لوڈ ہو رہے ہیں…</td></tr>';
+
+    const { data: chapters, error } = await sb
+      .from('chapters')
+      .select('id, name, province, hq_city, chapter_head_id, status')
+      .order('province');
+
+    if (error) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">خرابی: ' + sanitize(error.message) + '</td></tr>';
+      return;
+    }
+
+    if (!chapters || chapters.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Chapter نہیں۔</td></tr>';
+      return;
+    }
+
+    // Fetch chapter head names
+    const headIds = chapters.map(c => c.chapter_head_id).filter(Boolean);
+    let nameMap = {};
+    if (headIds.length > 0) {
+      const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', headIds);
+      (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
+    }
+
+    // Count members in each chapter
+    const { data: memberCounts } = await sb
+      .from('chapter_members')
+      .select('chapter_id, id', { count: 'exact', head: false });
+    
+    let countMap = {};
+    (memberCounts || []).forEach(m => {
+      countMap[m.chapter_id] = (countMap[m.chapter_id] || 0) + 1;
+    });
+
+    tbody.innerHTML = chapters.map(c => {
+      const headName = c.chapter_head_id ? nameMap[c.chapter_head_id] || 'Unassigned' : '—';
+      const memberCount = countMap[c.id] || 0;
+      const statusBg = c.status === 'active' ? '#16a34a' : c.status === 'forming' ? '#fbbf24' : '#9ca3af';
+      const statusLabel = c.status === 'active' ? 'فعال' : c.status === 'forming' ? 'تشکیل' : 'محفوظ';
+
+      return `<tr>
+        <td><strong>${sanitize(c.name)}</strong></td>
+        <td>${sanitize(c.hq_city || '—')}</td>
+        <td>${sanitize(headName)}</td>
+        <td>${memberCount}</td>
+        <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editChapter('${c.id}')">Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteChapter('${c.id}')">حذف</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ── Placeholder functions for CRUD ── */
+  function openCreateSocietyModal() {
+    showToast('نئی Society بنانے کی سہولت جلد آئے گی۔');
+  }
+
+  function openCreateChapterModal() {
+    showToast('نیا Chapter بنانے کی سہولت جلد آئے گی۔');
+  }
+
+  function editSociety(id) {
+    showToast('Society edit کی سہولت جلد آئے گی۔');
+  }
+
+  function editChapter(id) {
+    showToast('Chapter edit کی سہولت جلد آئے گی۔');
+  }
+
+  function deleteSociety(id) {
+    if (!confirm('کیا یہ Society حذف کرنا چاہتے ہیں?')) return;
+    showToast('Society حذف کی سہولت جلد آئے گی۔');
+  }
+
+  function deleteChapter(id) {
+    if (!confirm('کیا یہ Chapter حذف کرنا چاہتے ہیں?')) return;
+    showToast('Chapter حذف کی سہولت جلد آئے گی۔');
+  }
+
   /* ── Load Applications for Admin Panel ── */
   async function loadApplicationsAdmin() {
     const tbody = document.getElementById('applicationsBody');
@@ -4122,6 +4287,8 @@ body{font-family:var(--ff-body);}
     if (id === 'certificates') loadCertificatesAdmin();
     if (id === 'members') loadMembersAdmin();
     if (id === 'applications') loadApplicationsAdmin();
+    if (id === 'societies') loadSocietiesAdmin();
+    if (id === 'chapters') loadChaptersAdmin();
   }
 
   /* Admin form */
