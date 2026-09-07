@@ -2591,7 +2591,31 @@ body{font-family:var(--ff-body);}
         <div><small style="color:var(--muted);">Role</small><div id="mdRole" style="font-weight:600;font-size:1.05rem;text-transform:capitalize;">—</div></div>
         <div><small style="color:var(--muted);">Status</small><div id="mdStatus" style="font-weight:600;font-size:1.05rem;text-transform:capitalize;">—</div></div>
       </div>
-      <p style="margin-top:1.5rem;color:var(--muted);font-size:.85rem;">Profile picture, digital ID card, and QR code are coming soon.</p>
+      <p style="margin-top:1.5rem;color:var(--muted);font-size:.85rem;"></p>
+      <button class="btn btn-gold" style="margin-top:1rem;justify-content:center;width:100%;" onclick="openDigitalId()"><i class="fas fa-id-badge"></i> View Digital ID Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- Digital ID Card Modal -->
+<div class="modal" id="idCardModal" role="dialog" aria-modal="true" aria-labelledby="idCardTitle">
+  <div class="modal-box" style="max-width:380px;">
+    <div class="modal-head">
+      <h3 id="idCardTitle">Digital Member ID</h3>
+      <button class="modal-close" onclick="closeModal('idCardModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:linear-gradient(135deg,var(--navy),#0d1b3d);border-radius:16px;padding:1.5rem;color:#fff;text-align:center;position:relative;overflow:hidden;">
+        <div style="font-family:var(--ff-display);font-weight:900;letter-spacing:1px;color:var(--gold);font-size:1rem;margin-bottom:.25rem;">SHAOOR | شعور</div>
+        <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-bottom:1rem;">Arts & Culture Organization</div>
+        <img id="idAvatarImg" src="" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:none;margin:0 auto .75rem;" />
+        <div id="idAvatarPlaceholder" style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto .75rem;"><i class="fas fa-user"></i></div>
+        <div id="idName" style="font-weight:700;font-size:1.05rem;">—</div>
+        <div id="idMemberId" style="color:var(--gold);font-size:.85rem;letter-spacing:1px;margin-bottom:.25rem;">—</div>
+        <div id="idRole" style="font-size:.75rem;color:rgba(255,255,255,.7);text-transform:capitalize;margin-bottom:1rem;">—</div>
+        <div id="idQrCode" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;"></div>
+        <div style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:.75rem;">Scan to verify membership</div>
+      </div>
     </div>
   </div>
 </div>
@@ -2878,6 +2902,7 @@ body{font-family:var(--ff-body);}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- ═══ SUPABASE ═══ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   /* ── SUPABASE CLIENT SETUP ──
@@ -3231,6 +3256,76 @@ body{font-family:var(--ff-body);}
     document.body.style.overflow = '';
     showToast('Logged out successfully');
   }
+
+  async function openDigitalId() {
+    const { data: userData } = await sb.auth.getUser();
+    const userId = userData?.user?.id;
+    if (!userId) return;
+
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('full_name, member_id, role, status, avatar_url')
+      .eq('id', userId)
+      .single();
+
+    if (error || !profile) {
+      showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
+      return;
+    }
+
+    document.getElementById('idName').textContent = profile.full_name || '—';
+    document.getElementById('idMemberId').textContent = profile.member_id || '—';
+    document.getElementById('idRole').textContent = (profile.role || '—') + ' · ' + (profile.status || '');
+
+    const idAvatarImg = document.getElementById('idAvatarImg');
+    const idAvatarPlaceholder = document.getElementById('idAvatarPlaceholder');
+    if (profile.avatar_url) {
+      idAvatarImg.src = profile.avatar_url;
+      idAvatarImg.style.display = 'block';
+      idAvatarPlaceholder.style.display = 'none';
+    } else {
+      idAvatarImg.style.display = 'none';
+      idAvatarPlaceholder.style.display = 'flex';
+    }
+
+    // Build the verification URL and render a fresh QR code
+    const verifyUrl = window.location.origin + window.location.pathname + '?verify=' + encodeURIComponent(profile.member_id);
+    const qrContainer = document.getElementById('idQrCode');
+    qrContainer.innerHTML = ''; // clear any previous QR
+    new QRCode(qrContainer, {
+      text: verifyUrl,
+      width: 130,
+      height: 130,
+      colorDark: '#0d1b3d',
+      colorLight: '#ffffff'
+    });
+
+    openModal('idCardModal');
+  }
+
+  /* ── Public verification: if URL has ?verify=MEMBER_ID, look it up and show result ── */
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const verifyId = params.get('verify');
+    if (!verifyId) return;
+
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('full_name, member_id, role, status')
+      .eq('member_id', verifyId)
+      .single();
+
+    if (error || !profile) {
+      showToast('یہ Member ID موجود نہیں: ' + verifyId, 'error');
+      return;
+    }
+
+    if (profile.status === 'active') {
+      showToast('✓ تصدیق شدہ: ' + profile.full_name + ' (' + profile.member_id + ')');
+    } else {
+      showToast('⚠ یہ اکاؤنٹ فعال نہیں (status: ' + profile.status + ')', 'error');
+    }
+  })();
 
   /* If a member's session is already active on page load, show their dashboard automatically */
   (async () => {
