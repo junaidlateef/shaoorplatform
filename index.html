@@ -2483,12 +2483,9 @@ body{font-family:var(--ff-body);}
         </div>
         <div style="overflow-x:auto;">
           <table class="admin-table" id="membersTable">
-            <thead><tr><th>ID</th><th>Name</th><th>Society</th><th>Chapter</th><th>Tier</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Member ID</th><th>Name</th><th>Phone</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="membersBody">
-              <tr><td>SHR-MBR-2026-000001</td><td>Muhammad Ali</td><td>Calligraphy</td><td>Punjab</td><td>Student</td><td><span class="status-pill sp-active">Active</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">View</button></td></tr>
-              <tr><td>SHR-MBR-2026-000002</td><td>Nadia Shah</td><td>Fine Arts</td><td>Sindh</td><td>Individual</td><td><span class="status-pill sp-active">Active</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">View</button></td></tr>
-              <tr><td>SHR-MBR-2026-000003</td><td>Bilal Khan</td><td>Islamic Art</td><td>KPK</td><td>Mentor</td><td><span class="status-pill sp-active">Active</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">View</button></td></tr>
-              <tr><td>SHR-MBR-2026-000004</td><td>Zara Malik</td><td>Textile Art</td><td>Punjab</td><td>Student</td><td><span class="status-pill sp-pending">Pending</span></td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;">View</button></td></tr>
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading members…</td></tr>
             </tbody>
           </table>
         </div>
@@ -3846,7 +3843,81 @@ body{font-family:var(--ff-body);}
     window.open(wa, '_blank');
   }
 
-  /* ── MEMBER SEARCH ── */
+  /* ══════════════ MEMBERS (Admin) ══════════════ */
+
+  function memberStatusPill(status) {
+    if (status === 'active') return '<span class="status-pill sp-active">Active</span>';
+    if (status === 'pending') return '<span class="status-pill sp-pending">Pending</span>';
+    if (status === 'suspended') return '<span class="status-pill" style="background:#fee2e2;color:#991b1b;">Suspended</span>';
+    return '<span class="status-pill" style="background:#f3e8ff;color:#6b21a8;">' + sanitize(status || '—') + '</span>';
+  }
+
+  async function loadMembersAdmin() {
+    const tbody = document.getElementById('membersBody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading members…</td></tr>';
+
+    const { data: members, error } = await sb
+      .from('profiles')
+      .select('id, member_id, full_name, phone, role, status')
+      .order('member_id', { ascending: true });
+
+    if (error) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">Failed to load: ' + sanitize(error.message) + '</td></tr>';
+      return;
+    }
+
+    if (!members || members.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">No members found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = members.map(m => {
+      const actions = [];
+      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
+      if (m.status !== 'active') {
+        actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="setMemberStatus('${m.id}','active')">Approve</button>`);
+      }
+      if (m.status !== 'suspended') {
+        actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="setMemberStatus('${m.id}','suspended')">Suspend</button>`);
+      }
+      return `<tr>
+        <td>${sanitize(m.member_id || '—')}</td>
+        <td>${sanitize(m.full_name || '—')}</td>
+        <td>${sanitize(m.phone || '—')}</td>
+        <td style="text-transform:capitalize;">${sanitize(m.role || '—')}</td>
+        <td>${memberStatusPill(m.status)}</td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap;">${actions.join('')}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function setMemberStatus(id, newStatus) {
+    const label = newStatus === 'active' ? 'approve' : 'suspend';
+    if (!confirm('کیا آپ واقعی اس ممبر کو ' + (newStatus === 'active' ? 'approve' : 'suspend') + ' کرنا چاہتے ہیں؟')) return;
+
+    const { error } = await sb.from('profiles').update({ status: newStatus }).eq('id', id);
+    if (error) {
+      showToast('اپڈیٹ ناکام: ' + error.message, 'error');
+      return;
+    }
+    showToast('ممبر کا status اپڈیٹ ہو گیا۔');
+    loadMembersAdmin();
+  }
+
+  async function viewMember(id) {
+    const { data: m, error } = await sb
+      .from('profiles')
+      .select('member_id, full_name, phone, bio, role, status')
+      .eq('id', id)
+      .single();
+
+    if (error || !m) { showToast('ممبر کی تفصیل لوڈ نہیں ہو سکی', 'error'); return; }
+
+    showToast(m.full_name + ' (' + m.member_id + ') · ' + m.role + ' · ' + m.status);
+  }
+
+  /* ── Member search now filters the real table ── */
   function searchMembers(q) {
     const s = sanitize(q).toLowerCase();
     document.querySelectorAll('#membersBody tr').forEach(row => {
@@ -3889,6 +3960,7 @@ body{font-family:var(--ff-body);}
     if (panel) panel.classList.add('active');
     btn.classList.add('active');
     if (id === 'certificates') loadCertificatesAdmin();
+    if (id === 'members') loadMembersAdmin();
   }
 
   /* Admin form */
@@ -3938,6 +4010,7 @@ body{font-family:var(--ff-body);}
       document.getElementById('dashAdminName').textContent = profile.full_name || profile.role;
       err.style.display = 'none';
       initReveal();
+      loadMembersAdmin();
     });
   }
 
