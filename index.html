@@ -4929,16 +4929,6 @@ select.form-input {
           <input type="text" id="societyName" class="form-input" required placeholder="e.g., Calligraphy Society" />
         </div>
         <div class="form-group">
-          <label for="societyPresident">صدر (President)</label>
-          <input type="text" id="societyPresident" list="societyPresidentList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
-          <datalist id="societyPresidentList"></datalist>
-        </div>
-        <div class="form-group">
-          <label for="societySecretary">جنرل سیکرٹری</label>
-          <input type="text" id="societySecretary" list="societySecretaryList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
-          <datalist id="societySecretaryList"></datalist>
-        </div>
-        <div class="form-group">
           <label for="societyChapter">Chapter</label>
           <select id="societyChapter" class="form-input">
             <option value="">— کوئی Chapter منتخب نہیں —</option>
@@ -4951,6 +4941,62 @@ select.form-input {
             <option value="archived">محفوظ شدہ</option>
           </select>
         </div>
+
+        <div style="margin:1rem 0 .5rem;padding-top:.75rem;border-top:1px solid var(--border);">
+          <strong style="font-size:.9rem;color:var(--ink);">Cabinet — عہدیدار منتخب کریں</strong>
+          <p style="font-size:.78rem;color:var(--muted);margin:.25rem 0 0;">ہر عہدے کے لیے رکن کا نام لکھ کر منتخب کریں (خالی چھوڑا جا سکتا ہے)</p>
+        </div>
+        <div class="form-group">
+          <label for="cabPresident">President</label>
+          <input type="text" id="cabPresident" list="cabPresidentList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabPresidentList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabVicePresident">Vice President</label>
+          <input type="text" id="cabVicePresident" list="cabVicePresidentList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabVicePresidentList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabGeneralSecretary">General Secretary</label>
+          <input type="text" id="cabGeneralSecretary" list="cabGeneralSecretaryList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabGeneralSecretaryList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabTreasurer">Treasurer</label>
+          <input type="text" id="cabTreasurer" list="cabTreasurerList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabTreasurerList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabMediaCoordinator">Media Coordinator</label>
+          <input type="text" id="cabMediaCoordinator" list="cabMediaCoordinatorList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabMediaCoordinatorList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabEventsCoordinator">Events Coordinator</label>
+          <input type="text" id="cabEventsCoordinator" list="cabEventsCoordinatorList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabEventsCoordinatorList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabWomenWingHead">Women Wing Head</label>
+          <input type="text" id="cabWomenWingHead" list="cabWomenWingHeadList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabWomenWingHeadList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabYouthWingHead">Youth Wing Head</label>
+          <input type="text" id="cabYouthWingHead" list="cabYouthWingHeadList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabYouthWingHeadList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabMembershipCoordinator">Membership Coordinator</label>
+          <input type="text" id="cabMembershipCoordinator" list="cabMembershipCoordinatorList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabMembershipCoordinatorList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="cabPublicRelationsOfficer">Public Relations Officer</label>
+          <input type="text" id="cabPublicRelationsOfficer" list="cabPublicRelationsOfficerList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="cabPublicRelationsOfficerList"></datalist>
+        </div>
+
         <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
       </form>
     </div>
@@ -5052,11 +5098,6 @@ select.form-input {
           <input type="text" id="chapterHqCity" class="form-input" placeholder="e.g., Lahore" />
         </div>
         <div class="form-group">
-          <label for="chapterHead">Chapter Head</label>
-          <input type="text" id="chapterHead" list="chapterHeadList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
-          <datalist id="chapterHeadList"></datalist>
-        </div>
-        <div class="form-group">
           <label for="chapterStatus">Status</label>
           <select id="chapterStatus" class="form-input" required>
             <option value="active">فعال</option>
@@ -5064,6 +5105,62 @@ select.form-input {
             <option value="inactive">محفوظ</option>
           </select>
         </div>
+
+        <div style="margin:1rem 0 .5rem;padding-top:.75rem;border-top:1px solid var(--border);">
+          <strong style="font-size:.9rem;color:var(--ink);">Cabinet — عہدیدار منتخب کریں</strong>
+          <p style="font-size:.78rem;color:var(--muted);margin:.25rem 0 0;">ہر عہدے کے لیے رکن کا نام لکھ کر منتخب کریں (خالی چھوڑا جا سکتا ہے)</p>
+        </div>
+        <div class="form-group">
+          <label for="chCabPresident">President</label>
+          <input type="text" id="chCabPresident" list="chCabPresidentList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabPresidentList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabVicePresident">Vice President</label>
+          <input type="text" id="chCabVicePresident" list="chCabVicePresidentList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabVicePresidentList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabGeneralSecretary">General Secretary</label>
+          <input type="text" id="chCabGeneralSecretary" list="chCabGeneralSecretaryList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabGeneralSecretaryList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabTreasurer">Treasurer</label>
+          <input type="text" id="chCabTreasurer" list="chCabTreasurerList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabTreasurerList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabMediaCoordinator">Media Coordinator</label>
+          <input type="text" id="chCabMediaCoordinator" list="chCabMediaCoordinatorList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabMediaCoordinatorList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabEventsCoordinator">Events Coordinator</label>
+          <input type="text" id="chCabEventsCoordinator" list="chCabEventsCoordinatorList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabEventsCoordinatorList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabWomenWingHead">Women Wing Head</label>
+          <input type="text" id="chCabWomenWingHead" list="chCabWomenWingHeadList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabWomenWingHeadList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabYouthWingHead">Youth Wing Head</label>
+          <input type="text" id="chCabYouthWingHead" list="chCabYouthWingHeadList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabYouthWingHeadList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabMembershipCoordinator">Membership Coordinator</label>
+          <input type="text" id="chCabMembershipCoordinator" list="chCabMembershipCoordinatorList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabMembershipCoordinatorList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="chCabPublicRelationsOfficer">Public Relations Officer</label>
+          <input type="text" id="chCabPublicRelationsOfficer" list="chCabPublicRelationsOfficerList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" />
+          <datalist id="chCabPublicRelationsOfficerList"></datalist>
+        </div>
+
         <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
       </form>
     </div>
@@ -5445,15 +5542,29 @@ select.form-input {
         return;
       }
 
-      // Fetch member names for president/secretary
-      const presIds = societies.map(s => s.president_id).filter(Boolean);
-      const secIds = societies.map(s => s.general_secretary_id).filter(Boolean);
-      const allIds = [...new Set([...presIds, ...secIds])];
-      
+      // Fetch President/General Secretary from cabinet_members
+      const societyIds = societies.map(s => s.id);
+      let cabByS = {};
+      if (societyIds.length > 0) {
+        const { data: cabRows } = await sb.from('cabinet_members').select('society_id, position, member_id').in('society_id', societyIds);
+        (cabRows || []).forEach(c => {
+          if (!cabByS[c.society_id]) cabByS[c.society_id] = {};
+          cabByS[c.society_id][c.position] = c.member_id;
+        });
+      }
+      const cabMemberIds = [...new Set(Object.values(cabByS).flatMap(o => Object.values(o)).filter(Boolean))];
       let nameMap = {};
-      if (allIds.length > 0) {
-        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', allIds);
+      if (cabMemberIds.length > 0) {
+        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', cabMemberIds);
         (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
+      }
+
+      // Chapter names
+      const chapterIds = [...new Set(societies.map(s => s.chapter_id).filter(Boolean))];
+      let chapterNameMap = {};
+      if (chapterIds.length > 0) {
+        const { data: chaps } = await sb.from('chapters').select('id, name').in('id', chapterIds);
+        (chaps || []).forEach(c => { chapterNameMap[c.id] = c.name; });
       }
 
       // Count members in each society
@@ -5466,14 +5577,16 @@ select.form-input {
       }
 
       tbody.innerHTML = societies.map(s => {
-        const presName = s.president_id ? nameMap[s.president_id] || 'Unknown' : '—';
-        const secName = s.general_secretary_id ? nameMap[s.general_secretary_id] || 'Unknown' : '—';
+        const cab = cabByS[s.id] || {};
+        const presName = cab.president ? (nameMap[cab.president] || 'Unknown') : '—';
+        const secName = cab.general_secretary ? (nameMap[cab.general_secretary] || 'Unknown') : '—';
+        const chapterName = s.chapter_id ? (chapterNameMap[s.chapter_id] || '—') : '—';
         const memberCount = countMap[s.id] || 0;
         const statusBg = s.status === 'active' ? '#16a34a' : '#9ca3af';
-        const statusLabel = s.status === 'active' ? 'فعال' : 'محفوظ';
+        const statusLabel = s.status === 'active' ? 'فعال' : 'محفوظ شدہ';
 
         return `<tr>
-          <td><strong>${sanitize(s.name)}</strong></td>
+          <td><strong>${sanitize(s.name)}</strong><br><span style="font-size:.75rem;color:var(--muted);">${sanitize(chapterName)}</span></td>
           <td>${sanitize(presName)}</td>
           <td>${sanitize(secName)}</td>
           <td>${memberCount}</td>
@@ -5514,11 +5627,17 @@ select.form-input {
         return;
       }
 
-      // Fetch chapter head names
-      const headIds = chapters.map(c => c.chapter_head_id).filter(Boolean);
+      // Fetch chapter President from cabinet_members
+      const chapterIds = chapters.map(c => c.id);
+      let cabByC = {};
+      if (chapterIds.length > 0) {
+        const { data: cabRows } = await sb.from('cabinet_members').select('chapter_id, position, member_id').eq('position', 'president').in('chapter_id', chapterIds);
+        (cabRows || []).forEach(c => { cabByC[c.chapter_id] = c.member_id; });
+      }
+      const headMemberIds = [...new Set(Object.values(cabByC).filter(Boolean))];
       let nameMap = {};
-      if (headIds.length > 0) {
-        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', headIds);
+      if (headMemberIds.length > 0) {
+        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', headMemberIds);
         (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
       }
 
@@ -5532,7 +5651,8 @@ select.form-input {
       }
 
       tbody.innerHTML = chapters.map(c => {
-        const headName = c.chapter_head_id ? nameMap[c.chapter_head_id] || 'Unassigned' : '—';
+        const headMemberId = cabByC[c.id];
+        const headName = headMemberId ? (nameMap[headMemberId] || 'Unknown') : '—';
         const memberCount = countMap[c.id] || 0;
         const statusBg = c.status === 'active' ? '#16a34a' : c.status === 'forming' ? '#fbbf24' : '#9ca3af';
         const statusLabel = c.status === 'active' ? 'فعال' : c.status === 'forming' ? 'تشکیل' : 'محفوظ';
@@ -5561,6 +5681,7 @@ select.form-input {
   async function populatePeopleDatalist(inputId, listId, currentId) {
     const dl = document.getElementById(listId);
     const inputEl = document.getElementById(inputId);
+    if (!dl || !inputEl) return;
     dl.innerHTML = '';
     const { data: profs, error } = await sb.from('profiles').select('id, full_name, member_id').order('full_name');
     if (error || !profs) return;
@@ -5581,10 +5702,55 @@ select.form-input {
     }
   }
   function resolvePersonId(inputId) {
-    const val = document.getElementById(inputId).value.trim();
+    const el = document.getElementById(inputId);
+    if (!el) return null;
+    const val = el.value.trim();
     if (!val) return null;
     const map = peopleMaps[inputId] || {};
     return map[val] || null;
+  }
+
+  /* ── Cabinet positions shared helper (Society + Chapter) ── */
+  const CABINET_POSITIONS = [
+    { key: 'president', field: 'President' },
+    { key: 'vice_president', field: 'VicePresident' },
+    { key: 'general_secretary', field: 'GeneralSecretary' },
+    { key: 'treasurer', field: 'Treasurer' },
+    { key: 'media_coordinator', field: 'MediaCoordinator' },
+    { key: 'events_coordinator', field: 'EventsCoordinator' },
+    { key: 'women_wing_head', field: 'WomenWingHead' },
+    { key: 'youth_wing_head', field: 'YouthWingHead' },
+    { key: 'membership_coordinator', field: 'MembershipCoordinator' },
+    { key: 'public_relations_officer', field: 'PublicRelationsOfficer' }
+  ];
+
+  // prefix: 'cab' for society form, 'chCab' for chapter form
+  async function populateCabinetFields(prefix, parentType, parentId) {
+    let existing = [];
+    if (parentId) {
+      const col = parentType === 'society' ? 'society_id' : 'chapter_id';
+      const { data } = await sb.from('cabinet_members').select('position, member_id').eq(col, parentId);
+      existing = data || [];
+    }
+    for (const pos of CABINET_POSITIONS) {
+      const inputId = prefix + pos.field;
+      const listId = inputId + 'List';
+      const match = existing.find(e => e.position === pos.key);
+      await populatePeopleDatalist(inputId, listId, match ? match.member_id : null);
+    }
+  }
+
+  async function saveCabinetFields(prefix, parentType, parentId) {
+    const col = parentType === 'society' ? 'society_id' : 'chapter_id';
+    for (const pos of CABINET_POSITIONS) {
+      const inputId = prefix + pos.field;
+      const memberId = resolvePersonId(inputId);
+      // Remove existing row for this position first (handles both set and clear)
+      await sb.from('cabinet_members').delete().eq(col, parentId).eq('position', pos.key);
+      if (memberId) {
+        await sb.from('cabinet_members').insert({ [col]: parentId, position: pos.key, member_id: memberId });
+      }
+    }
   }
 
   /* ── SOCIETY: create / edit ── */
@@ -5608,8 +5774,7 @@ select.form-input {
     document.getElementById('societyForm').reset();
     document.getElementById('societyEditId').value = '';
     document.getElementById('societyModalTitle').textContent = 'نئی Society';
-    await populatePeopleDatalist('societyPresident', 'societyPresidentList');
-    await populatePeopleDatalist('societySecretary', 'societySecretaryList');
+    await populateCabinetFields('cab', 'society', null);
     await populateChapterDropdown();
     openModal('societyModal');
   }
@@ -5622,8 +5787,7 @@ select.form-input {
     document.getElementById('societyModalTitle').textContent = 'Society میں ترمیم';
     document.getElementById('societyName').value = s.name || '';
     document.getElementById('societyStatus').value = s.status || 'active';
-    await populatePeopleDatalist('societyPresident', 'societyPresidentList', s.president_id);
-    await populatePeopleDatalist('societySecretary', 'societySecretaryList', s.general_secretary_id);
+    await populateCabinetFields('cab', 'society', s.id);
     await populateChapterDropdown(s.chapter_id);
     openModal('societyModal');
   }
@@ -5631,22 +5795,24 @@ select.form-input {
   window.addEventListener('DOMContentLoaded', () => secureSubmit('societyForm', async frm => {
     const editId = frm.querySelector('#societyEditId').value;
     const name = frm.querySelector('#societyName').value.trim();
-    const president_id = resolvePersonId('societyPresident');
-    const general_secretary_id = resolvePersonId('societySecretary');
     const chapter_id = frm.querySelector('#societyChapter').value || null;
     const status = frm.querySelector('#societyStatus').value;
 
     if (!name) { showToast('براہ کرم Society کا نام درج کریں', 'error'); return; }
 
-    const payload = { name, president_id, general_secretary_id, chapter_id, status };
-    let error;
+    const payload = { name, chapter_id, status };
+    let error, savedId = editId;
     if (editId) {
       ({ error } = await sb.from('societies').update(payload).eq('id', editId));
     } else {
-      ({ error } = await sb.from('societies').insert(payload));
+      const res = await sb.from('societies').insert(payload).select('id').single();
+      error = res.error;
+      if (!error) savedId = res.data.id;
     }
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    await saveCabinetFields('cab', 'society', savedId);
 
     showToast('✓ Society محفوظ ہو گئی!');
     closeModal('societyModal');
@@ -5666,7 +5832,7 @@ select.form-input {
     document.getElementById('chapterForm').reset();
     document.getElementById('chapterEditId').value = '';
     document.getElementById('chapterModalTitle').textContent = 'نیا Chapter';
-    await populatePeopleDatalist('chapterHead', 'chapterHeadList');
+    await populateCabinetFields('chCab', 'chapter', null);
     openModal('chapterModal');
   }
 
@@ -5680,7 +5846,7 @@ select.form-input {
     document.getElementById('chapterProvince').value = c.province || '';
     document.getElementById('chapterHqCity').value = c.hq_city || '';
     document.getElementById('chapterStatus').value = c.status || 'active';
-    await populatePeopleDatalist('chapterHead', 'chapterHeadList', c.chapter_head_id);
+    await populateCabinetFields('chCab', 'chapter', c.id);
     openModal('chapterModal');
   }
 
@@ -5689,21 +5855,24 @@ select.form-input {
     const name = frm.querySelector('#chapterName').value.trim();
     const province = frm.querySelector('#chapterProvince').value;
     const hq_city = frm.querySelector('#chapterHqCity').value.trim() || null;
-    const chapter_head_id = resolvePersonId('chapterHead');
     const status = frm.querySelector('#chapterStatus').value;
 
     if (!name) { showToast('براہ کرم Chapter کا نام درج کریں', 'error'); return; }
     if (!province) { showToast('براہ کرم صوبہ منتخب کریں', 'error'); return; }
 
-    const payload = { name, province, hq_city, chapter_head_id, status };
-    let error;
+    const payload = { name, province, hq_city, status };
+    let error, savedId = editId;
     if (editId) {
       ({ error } = await sb.from('chapters').update(payload).eq('id', editId));
     } else {
-      ({ error } = await sb.from('chapters').insert(payload));
+      const res = await sb.from('chapters').insert(payload).select('id').single();
+      error = res.error;
+      if (!error) savedId = res.data.id;
     }
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    await saveCabinetFields('chCab', 'chapter', savedId);
 
     showToast('✓ Chapter محفوظ ہو گیا!');
     closeModal('chapterModal');
@@ -7765,71 +7934,6 @@ select.form-input {
   };
 
 
-  /* ── ADMIN SOCIETY MANAGEMENT ── */
-  window.loadSocietiesAdmin = async function() {
-    const container = document.getElementById('societiesBody');
-    if (!container || !sb) return;
-
-    container.innerHTML = '<p style="color:var(--muted);font-size:.88rem;padding:1rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</p>';
-
-    let data, error;
-    try {
-      const res = await sb.from('societies').select('id, name, description, status, created_at').order('name');
-      data = res.data; error = res.error;
-    } catch(e) { error = { message: e.message }; }
-
-    if (error) {
-      container.innerHTML = `<p style="color:var(--ruby);font-size:.88rem;padding:1rem;">لوڈ ناکام: ${sanitize(error.message)}</p>`;
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      container.innerHTML = '<p style="color:var(--muted);font-size:.88rem;padding:1rem;">کوئی Society نہیں ملی۔</p>';
-      return;
-    }
-
-    container.innerHTML = `
-      <div class="admin-table" style="overflow:hidden;border-radius:10px;">
-        <table style="width:100%;border-collapse:collapse;">
-          <thead>
-            <tr>
-              <th style="background:var(--navy);color:#fff;padding:.85rem 1rem;font-size:.78rem;letter-spacing:.05em;text-align:left;">Society Name</th>
-              <th style="background:var(--navy);color:#fff;padding:.85rem 1rem;font-size:.78rem;letter-spacing:.05em;text-align:left;">Description</th>
-              <th style="background:var(--navy);color:#fff;padding:.85rem 1rem;font-size:.78rem;letter-spacing:.05em;">Status</th>
-              <th style="background:var(--navy);color:#fff;padding:.85rem 1rem;font-size:.78rem;letter-spacing:.05em;">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${data.map(s => `
-              <tr>
-                <td style="padding:.85rem 1rem;border-bottom:1px solid var(--border);font-weight:600;color:var(--ink);font-size:.9rem;">${sanitize(s.name)}</td>
-                <td style="padding:.85rem 1rem;border-bottom:1px solid var(--border);color:var(--muted);font-size:.84rem;">${sanitize(s.description || '—')}</td>
-                <td style="padding:.85rem 1rem;border-bottom:1px solid var(--border);text-align:center;">
-                  <span class="status-pill" style="background:${s.status==='active'?'rgba(45,138,112,.10)':'rgba(155,89,100,.10)'};color:${s.status==='active'?'#2d8a70':'#9B5964'};padding:.25rem .7rem;">
-                    ${sanitize(s.status || 'active')}
-                  </span>
-                </td>
-                <td style="padding:.85rem 1rem;border-bottom:1px solid var(--border);text-align:center;">
-                  <button onclick="toggleSocietyStatus('${s.id}','${s.status||'active'}')"
-                    class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;">
-                    ${s.status === 'active' ? 'Deactivate' : 'Activate'}
-                  </button>
-                </td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-      </div>`;
-  };
-
-  window.toggleSocietyStatus = async function(id, currentStatus) {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    try {
-      const { error } = await sb.from('societies').update({ status: newStatus }).eq('id', id);
-      if (error) { showToast('اپڈیٹ ناکام: ' + error.message, 'error'); return; }
-      showToast('Society status اپڈیٹ ہو گئی');
-      loadSocietiesAdmin();
-    } catch(e) { showToast('خرابی: ' + e.message, 'error'); }
-  };
   /* ═══════════════════════════════════════════ END V6 ADDITIONS ═══ */
 
 </script>
