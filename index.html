@@ -6974,7 +6974,12 @@ select.form-input {
 
   window.loadPublicGallery = async function loadPublicGallery() {
     const grid = document.getElementById('galleryGrid');
-    if (!grid) return;
+    if (!grid) {
+      console.warn('🎨 Gallery Grid element not found');
+      return;
+    }
+
+    console.log('🎨 Loading public gallery...');
 
     // Show loading skeleton
     grid.innerHTML = `
@@ -6984,9 +6989,12 @@ select.form-input {
       </div>`;
 
     if (!sb) {
+      console.error('🎨 Supabase not initialized');
       grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">سرور سے رابطہ نہیں ہو سکا۔</p>';
       return;
     }
+    
+    console.log('🎨 Supabase connected, fetching gallery...');
 
     let items, error;
     try {
@@ -7052,7 +7060,15 @@ select.form-input {
 
     initReveal();
   }
-  loadPublicGallery();
+  
+  // Delay gallery loading to ensure Supabase is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => loadPublicGallery(), 500);
+    });
+  } else {
+    setTimeout(() => loadPublicGallery(), 500);
+  }
 
   async function openLightbox(galleryId) {
     const item = lightboxItemsCache.find(i => i.id === galleryId);
