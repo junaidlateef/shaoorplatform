@@ -3921,7 +3921,7 @@ select.form-input {
         </div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Chapter Cabinet Seats — Punjab</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-punjab">
             <div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Amir Shahzad</div></div></div>
             <div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Sidra Rehman</div></div></div>
             <div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Sabeela Kiyani</div></div></div>
@@ -3957,7 +3957,7 @@ select.form-input {
         </div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> KPK Cabinet — All Seats Open</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-kpk">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open — Apply Now</div></div></div>
@@ -3989,7 +3989,7 @@ select.form-input {
         </div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Sindh Cabinet — All Seats Open</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-sindh">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open — Apply Now</div></div></div>
@@ -4012,7 +4012,7 @@ select.form-input {
         <div class="societies-in-chapter" id="dsl-balochistan"></div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Balochistan Cabinet — Open for Applications</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-balochistan">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open</div></div></div>
@@ -4034,7 +4034,7 @@ select.form-input {
         <div class="societies-in-chapter" id="dsl-kashmir"></div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Kashmir Cabinet — Open for Applications</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-kashmir">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open</div></div></div>
@@ -4056,7 +4056,7 @@ select.form-input {
         <div class="societies-in-chapter" id="dsl-gilgit"></div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> GB Cabinet — Open for Applications</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-gilgit">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open</div></div></div>
@@ -7804,6 +7804,69 @@ select.form-input {
     }
   };
   loadChapterSocieties();
+
+  /* ── PUBLIC CHAPTERS — inject live Cabinet Seats into each chapter panel ── */
+  const CABINET_POSITION_LABELS = {
+    president: 'Chapter President',
+    vice_president: 'Vice President',
+    general_secretary: 'General Secretary',
+    treasurer: 'Treasurer',
+    media_coordinator: 'Media Coordinator',
+    events_coordinator: 'Events Coordinator',
+    women_wing_head: 'Women Wing Head',
+    youth_wing_head: 'Youth Wing Head',
+    membership_coordinator: 'Membership Coordinator',
+    public_relations_officer: 'Public Relations Officer'
+  };
+
+  window.loadChapterCabinets = async function() {
+    if (!sb) return;
+    try {
+      const { data: chaps, error: chErr } = await sb.from('chapters').select('id, province');
+      if (chErr || !chaps) return;
+
+      const chapterIds = chaps.map(c => c.id);
+      if (chapterIds.length === 0) return;
+
+      const { data: cabRows, error: cabErr } = await sb
+        .from('cabinet_members')
+        .select('chapter_id, position, member_id')
+        .in('chapter_id', chapterIds);
+      if (cabErr) return;
+
+      const memberIds = [...new Set((cabRows || []).map(r => r.member_id).filter(Boolean))];
+      let nameMap = {};
+      if (memberIds.length > 0) {
+        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', memberIds);
+        (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
+      }
+
+      const provinceToChapterId = {};
+      chaps.forEach(c => { if (c.province) provinceToChapterId[c.province] = c.id; });
+
+      Object.keys(provinceToChapterId).forEach(province => {
+        const grid = document.getElementById('seats-' + province);
+        if (!grid) return;
+        const chapterId = provinceToChapterId[province];
+        const cabByPos = {};
+        (cabRows || []).forEach(r => { if (r.chapter_id === chapterId) cabByPos[r.position] = r.member_id; });
+
+        const html = Object.keys(CABINET_POSITION_LABELS).map(posKey => {
+          const memberId = cabByPos[posKey];
+          const name = memberId ? (nameMap[memberId] || 'Unknown') : null;
+          if (name) {
+            return `<div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">${sanitize(CABINET_POSITION_LABELS[posKey])}</div><div class="seat-name">${sanitize(name)}</div></div></div>`;
+          }
+          return `<div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">${sanitize(CABINET_POSITION_LABELS[posKey])}</div><div class="seat-name">Open — Apply Now</div></div></div>`;
+        }).join('');
+
+        grid.innerHTML = html;
+      });
+    } catch (e) {
+      console.error('loadChapterCabinets error:', e);
+    }
+  };
+  loadChapterCabinets();
 
 
   /* ── PUBLIC BLOG — Supabase ── */
