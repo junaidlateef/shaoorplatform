@@ -4717,18 +4717,18 @@ select.form-input {
 
       <!-- Events Panel -->
       <div class="dash-panel" id="dp-events">
-        <h3 style="font-weight:700;margin-bottom:1rem;">Manage Events</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Manage Events</h3>
+          <button class="btn btn-gold" onclick="openCreateEventModal()" style="padding:.5rem 1rem;font-size:.9rem;"><i class="fas fa-plus"></i> Add New Event</button>
+        </div>
         <div style="overflow-x:auto;">
           <table class="admin-table">
-            <thead><tr><th>Event</th><th>Society</th><th>Date</th><th>Status</th><th>Registrations</th></tr></thead>
-            <tbody>
-              <tr><td>SHAOOR Founding Exhibition</td><td>All Societies</td><td>Q2 2026</td><td><span class="status-pill sp-listed">Upcoming</span></td><td>47</td></tr>
-              <tr><td>Monochrome Exhibition</td><td>All Societies</td><td>Sep 15, 2026</td><td><span class="status-pill sp-active">Open</span></td><td>89</td></tr>
-              <tr><td>Islamic Geometry Masterclass</td><td>Islamic Art</td><td>Q3 2026</td><td><span class="status-pill sp-pending">Planned</span></td><td>23</td></tr>
+            <thead><tr><th>Event</th><th>Society</th><th>Date</th><th>Status</th><th>ایکشن</th></tr></thead>
+            <tbody id="eventsAdminBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Events لوڈ ہو رہے ہیں…</td></tr>
             </tbody>
           </table>
         </div>
-        <button class="btn btn-gold" style="margin-top:1rem;" onclick="showToast('Add event feature coming soon!')"><i class="fas fa-plus"></i> Add New Event</button>
       </div>
 
       <!-- Certificates Panel -->
@@ -4941,6 +4941,70 @@ select.form-input {
             <option value="active">فعال</option>
             <option value="inactive">محفوظ</option>
           </select>
+        </div>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Event Modal (Admin) -->
+<div class="modal" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="eventModalTitle">نیا Event</h3>
+      <button class="modal-close" onclick="closeModal('eventModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="eventForm">
+        <input type="hidden" id="eventEditId" value="" />
+        <div class="form-group">
+          <label for="eventTitle">Event کا عنوان</label>
+          <input type="text" id="eventTitle" class="form-input" required placeholder="e.g., Monochrome Exhibition" />
+        </div>
+        <div class="form-group">
+          <label for="eventDescription">تفصیل</label>
+          <textarea id="eventDescription" class="form-input" rows="3" placeholder="مختصر تفصیل"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="eventSociety">Society</label>
+          <input type="text" id="eventSociety" class="form-input" placeholder="e.g., Calligraphy Society یا All Societies" />
+        </div>
+        <div class="form-group">
+          <label for="eventChapter">Chapter</label>
+          <input type="text" id="eventChapter" class="form-input" placeholder="e.g., Punjab Chapter" />
+        </div>
+        <div class="form-group">
+          <label for="eventFormat">Format</label>
+          <select id="eventFormat" class="form-input" required>
+            <option value="in-person">In-Person</option>
+            <option value="online">Online</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="virtual">Virtual</option>
+            <option value="submission">Submission</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="eventDate">تاریخ</label>
+          <input type="date" id="eventDate" class="form-input" required />
+        </div>
+        <div class="form-group">
+          <label for="eventVenue">مقام (Venue)</label>
+          <input type="text" id="eventVenue" class="form-input" placeholder="e.g., Sahiwal" />
+        </div>
+        <div class="form-group">
+          <label for="eventStatus">Status</label>
+          <select id="eventStatus" class="form-input" required>
+            <option value="upcoming">Upcoming</option>
+            <option value="open">Open Now</option>
+            <option value="planned">Planned</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="eventRegisterUrl">رجسٹریشن لنک (اختیاری)</label>
+          <input type="url" id="eventRegisterUrl" class="form-input" placeholder="https://..." />
         </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
       </form>
@@ -5625,6 +5689,120 @@ select.form-input {
     showToast('Chapter حذف کر دیا گیا۔');
     loadChaptersAdmin();
   }
+
+  /* ── EVENT: create / edit / delete / list (Admin) ── */
+  window.openCreateEventModal = function() {
+    document.getElementById('eventForm').reset();
+    document.getElementById('eventEditId').value = '';
+    document.getElementById('eventModalTitle').textContent = 'نیا Event';
+    document.getElementById('eventFormat').value = 'in-person';
+    document.getElementById('eventStatus').value = 'upcoming';
+    openModal('eventModal');
+  };
+
+  window.editEvent = async function(id) {
+    const { data: ev, error } = await sb.from('events').select('*').eq('id', id).single();
+    if (error || !ev) { showToast('Event نہیں ملا: ' + (error?.message || ''), 'error'); return; }
+    document.getElementById('eventForm').reset();
+    document.getElementById('eventEditId').value = ev.id;
+    document.getElementById('eventModalTitle').textContent = 'Event میں ترمیم';
+    document.getElementById('eventTitle').value = ev.title || '';
+    document.getElementById('eventDescription').value = ev.description || '';
+    document.getElementById('eventSociety').value = ev.society || '';
+    document.getElementById('eventChapter').value = ev.chapter || '';
+    document.getElementById('eventFormat').value = ev.format || 'in-person';
+    document.getElementById('eventDate').value = ev.event_date ? new Date(ev.event_date).toISOString().slice(0,10) : '';
+    document.getElementById('eventVenue').value = ev.venue || '';
+    document.getElementById('eventStatus').value = ev.status || 'upcoming';
+    document.getElementById('eventRegisterUrl').value = ev.register_url || '';
+    openModal('eventModal');
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('eventForm', async frm => {
+    const editId = frm.querySelector('#eventEditId').value;
+    const title = frm.querySelector('#eventTitle').value.trim();
+    const description = frm.querySelector('#eventDescription').value.trim() || null;
+    const society = frm.querySelector('#eventSociety').value.trim() || null;
+    const chapter = frm.querySelector('#eventChapter').value.trim() || null;
+    const format = frm.querySelector('#eventFormat').value;
+    const event_date = frm.querySelector('#eventDate').value || null;
+    const venue = frm.querySelector('#eventVenue').value.trim() || null;
+    const status = frm.querySelector('#eventStatus').value;
+    const register_url = frm.querySelector('#eventRegisterUrl').value.trim() || null;
+
+    if (!title) { showToast('براہ کرم Event کا عنوان درج کریں', 'error'); return; }
+    if (!event_date) { showToast('براہ کرم تاریخ منتخب کریں', 'error'); return; }
+
+    const payload = { title, description, society, chapter, format, event_date, venue, status, register_url };
+    let error;
+    if (editId) {
+      ({ error } = await sb.from('events').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await sb.from('events').insert(payload));
+    }
+
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    showToast('✓ Event محفوظ ہو گیا!');
+    closeModal('eventModal');
+    loadEventsAdmin();
+    if (typeof loadPublicEvents === 'function') loadPublicEvents();
+  }));
+
+  window.deleteEvent = async function(id) {
+    if (!confirm('کیا یہ Event حذف کرنا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('events').delete().eq('id', id);
+    if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('Event حذف کر دیا گیا۔');
+    loadEventsAdmin();
+    if (typeof loadPublicEvents === 'function') loadPublicEvents();
+  };
+
+  window.loadEventsAdmin = async function() {
+    const tbody = document.getElementById('eventsAdminBody');
+    if (!tbody || !sb) return;
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+
+    let data, error;
+    try {
+      const res = await sb.from('events').select('id, title, society, chapter, event_date, status').order('event_date', { ascending: true });
+      data = res.data; error = res.error;
+    } catch(e) { error = { message: e.message }; }
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ruby);padding:1.5rem;">لوڈ ناکام: ${sanitize(error.message)}</td></tr>`;
+      return;
+    }
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Event نہیں ملا۔</td></tr>';
+      return;
+    }
+
+    const statusLabel = {
+      upcoming: 'Upcoming', open: 'Open', planned: 'Planned',
+      completed: 'Completed', cancelled: 'Cancelled'
+    };
+    const statusClass = {
+      upcoming: 'sp-listed', open: 'sp-active', planned: 'sp-pending',
+      completed: 'sp-listed', cancelled: 'sp-pending'
+    };
+
+    tbody.innerHTML = data.map(ev => {
+      const dateStr = ev.event_date ? new Date(ev.event_date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+      const st = (ev.status || 'upcoming');
+      return `
+        <tr>
+          <td style="font-weight:600;">${sanitize(ev.title || '—')}</td>
+          <td>${sanitize(ev.society || ev.chapter || '—')}</td>
+          <td>${dateStr}</td>
+          <td><span class="status-pill ${statusClass[st] || 'sp-listed'}">${statusLabel[st] || st}</span></td>
+          <td>
+            <button onclick="editEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
+            <button onclick="deleteEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
+          </td>
+        </tr>`;
+    }).join('');
+  };
 
   /* ══════════════ CHAPTER MANAGE: societies + cabinet ══════════════ */
   async function openChapterManage(chapterId, chapterName) {
@@ -6875,6 +7053,7 @@ select.form-input {
     if (id === 'societies') loadSocietiesAdmin();
     if (id === 'chapters') loadChaptersAdmin();
     if (id === 'gallery') loadGalleryAdmin();
+    if (id === 'events') loadEventsAdmin();
   }
 
   /* Admin form */
@@ -6974,12 +7153,7 @@ select.form-input {
 
   window.loadPublicGallery = async function loadPublicGallery() {
     const grid = document.getElementById('galleryGrid');
-    if (!grid) {
-      console.warn('🎨 Gallery Grid element not found');
-      return;
-    }
-
-    console.log('🎨 Loading public gallery...');
+    if (!grid) return;
 
     // Show loading skeleton
     grid.innerHTML = `
@@ -6989,12 +7163,9 @@ select.form-input {
       </div>`;
 
     if (!sb) {
-      console.error('🎨 Supabase not initialized');
       grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:2rem;">سرور سے رابطہ نہیں ہو سکا۔</p>';
       return;
     }
-    
-    console.log('🎨 Supabase connected, fetching gallery...');
 
     let items, error;
     try {
@@ -7060,15 +7231,7 @@ select.form-input {
 
     initReveal();
   }
-  
-  // Delay gallery loading to ensure Supabase is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => loadPublicGallery(), 500);
-    });
-  } else {
-    setTimeout(() => loadPublicGallery(), 500);
-  }
+  loadPublicGallery();
 
   async function openLightbox(galleryId) {
     const item = lightboxItemsCache.find(i => i.id === galleryId);
