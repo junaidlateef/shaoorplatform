@@ -3640,27 +3640,6 @@ select.form-input {
 }
 
 </style>
-
-<style id="shaoor-v7-safe-css">
-/* SHAOOR V7 SAFE INSTITUTIONAL UPGRADE — additive UI only */
-.v7-shell{margin:1.25rem 0;padding:1.25rem;border:1px solid var(--border,#e5e7eb);border-radius:18px;background:linear-gradient(145deg,#fff,#faf8f3);box-shadow:0 10px 28px rgba(13,27,61,.06)}
-.v7-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
-.v7-card{border:1px solid var(--border,#e5e7eb);border-radius:14px;padding:1rem;background:#fff}
-.v7-card h4{margin:0 0 .4rem;color:var(--navy,#0d1b3d)}
-.v7-card p{margin:0;color:var(--muted,#667085);font-size:.8rem;line-height:1.5}
-.v7-badge{display:inline-flex;align-items:center;gap:.35rem;margin-top:.65rem;padding:.25rem .6rem;border-radius:999px;background:#eef2f7;color:#475569;font-size:.72rem}
-.v7-badge.ok{background:#dcfce7;color:#166534}.v7-badge.warn{background:#fef3c7;color:#92400e}.v7-badge.err{background:#fee2e2;color:#991b1b}
-.v7-toolbar{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;margin:0 0 1rem}
-.v7-note{padding:.85rem 1rem;border-left:4px solid var(--gold,#c99723);border-radius:9px;background:#f8fafc;color:#475569;font-size:.8rem;line-height:1.55;margin:0 0 1rem}
-.v7-table-wrap{overflow:auto;border:1px solid var(--border,#e5e7eb);border-radius:12px}
-.v7-table{width:100%;border-collapse:collapse;min-width:680px}.v7-table th,.v7-table td{padding:.7rem .75rem;border-bottom:1px solid var(--border,#e5e7eb);text-align:left;font-size:.78rem}.v7-table th{background:#f8fafc;color:var(--navy,#0d1b3d)}
-.v7-status{font-size:.72rem;padding:.22rem .55rem;border-radius:999px;background:#f1f5f9;color:#475569}.v7-status.active{background:#dcfce7;color:#166534}.v7-status.revoked,.v7-status.suspended{background:#fee2e2;color:#991b1b}.v7-status.expired{background:#fef3c7;color:#92400e}
-.v7-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin:1rem 0}.v7-kpi{padding:.9rem;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:#fff}.v7-kpi strong{display:block;font-size:1.35rem;color:var(--navy,#0d1b3d)}.v7-kpi span{font-size:.72rem;color:var(--muted,#667085)}
-.v7-form{display:grid;gap:.6rem}.v7-form-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}.v7-code{width:100%;min-height:220px;background:#0b1730;color:#e5e7eb;border:0;border-radius:10px;padding:1rem;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
-.v7-mini{font-size:.7rem;color:var(--muted,#667085)}
-@media(max-width:650px){.v7-form-row{grid-template-columns:1fr}.v7-shell{padding:.85rem}}
-</style>
-
 </head>
 <body>
 
@@ -4180,6 +4159,7 @@ select.form-input {
         <table class="ev-table" id="eventsTable">
           <thead>
             <tr>
+              <th>Image</th>
               <th>Event Name</th>
               <th>Society / Chapter</th>
               <th>Format</th>
@@ -4191,7 +4171,7 @@ select.form-input {
           </thead>
           <tbody id="eventsTableBody">
             <tr>
-              <td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted);">
+              <td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted);">
                 <i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>
                 Events لوڈ ہو رہے ہیں…
               </td>
@@ -4616,7 +4596,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('gallery',this)"><i class="fas fa-images"></i> Gallery</button>
       <button class="admin-nav-btn" onclick="switchDashTab('societies',this);loadSocietiesAdmin();"><i class="fas fa-layer-group"></i> Societies</button>
       <button class="admin-nav-btn" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
       <div style="margin-top:auto;padding-top:1rem;">
         <button class="admin-nav-btn" onclick="adminLogout()" style="color:rgba(252,165,165,.7);"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -5036,7 +5016,7 @@ select.form-input {
 
 <!-- Create/Edit Event Modal (Admin) -->
 <div class="modal" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
-  <div class="modal-box">
+  <div class="modal-box" style="max-width:540px;">
     <div class="modal-head">
       <h3 id="eventModalTitle">نیا Event</h3>
       <button class="modal-close" onclick="closeModal('eventModal')" aria-label="Close"><i class="fas fa-times"></i></button>
@@ -5044,8 +5024,24 @@ select.form-input {
     <div class="modal-body">
       <form class="modal-form" id="eventForm">
         <input type="hidden" id="eventEditId" value="" />
+        <input type="hidden" id="eventExistingImageUrl" value="" />
+
+        <!-- Banner Image Upload -->
         <div class="form-group">
-          <label for="eventTitle">Event کا عنوان</label>
+          <label>Event Banner / تصویر</label>
+          <div id="eventImageUploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;" onclick="document.getElementById('eventImageInput').click()">
+            <img id="eventImagePreview" src="" alt="" style="display:none;max-height:140px;border-radius:8px;margin:0 auto .5rem;object-fit:cover;width:100%;" />
+            <div id="eventImagePlaceholder" style="color:var(--muted);">
+              <i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:.4rem;"></i>
+              <span style="font-size:.85rem;">تصویر منتخب کریں (PNG, JPG, WEBP — زیادہ سے زیادہ 3MB)</span>
+            </div>
+            <input type="file" id="eventImageInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+          </div>
+          <div id="eventImageStatus" style="font-size:.8rem;color:var(--muted);margin-top:.3rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="eventTitle">Event کا عنوان *</label>
           <input type="text" id="eventTitle" class="form-input" required placeholder="e.g., Monochrome Exhibition" />
         </div>
         <div class="form-group">
@@ -5053,15 +5049,19 @@ select.form-input {
           <textarea id="eventDescription" class="form-input" rows="3" placeholder="مختصر تفصیل"></textarea>
         </div>
         <div class="form-group">
-          <label for="eventSociety">Society</label>
-          <input type="text" id="eventSociety" class="form-input" placeholder="e.g., Calligraphy Society یا All Societies" />
+          <label for="eventSocietySelect">Society</label>
+          <select id="eventSocietySelect" class="form-input">
+            <option value="">— تمام Societies —</option>
+          </select>
         </div>
         <div class="form-group">
-          <label for="eventChapter">Chapter</label>
-          <input type="text" id="eventChapter" class="form-input" placeholder="e.g., Punjab Chapter" />
+          <label for="eventChapterSelect">Chapter</label>
+          <select id="eventChapterSelect" class="form-input">
+            <option value="">— تمام Chapters —</option>
+          </select>
         </div>
         <div class="form-group">
-          <label for="eventFormat">Format</label>
+          <label for="eventFormat">Format *</label>
           <select id="eventFormat" class="form-input" required>
             <option value="in-person">In-Person</option>
             <option value="online">Online</option>
@@ -5071,15 +5071,15 @@ select.form-input {
           </select>
         </div>
         <div class="form-group">
-          <label for="eventDate">تاریخ</label>
+          <label for="eventDate">تاریخ *</label>
           <input type="date" id="eventDate" class="form-input" required />
         </div>
         <div class="form-group">
           <label for="eventVenue">مقام (Venue)</label>
-          <input type="text" id="eventVenue" class="form-input" placeholder="e.g., Sahiwal" />
+          <input type="text" id="eventVenue" class="form-input" placeholder="e.g., SHAOOR Hall, Sahiwal" />
         </div>
         <div class="form-group">
-          <label for="eventStatus">Status</label>
+          <label for="eventStatus">Status *</label>
           <select id="eventStatus" class="form-input" required>
             <option value="upcoming">Upcoming</option>
             <option value="open">Open Now</option>
@@ -5092,7 +5092,7 @@ select.form-input {
           <label for="eventRegisterUrl">رجسٹریشن لنک (اختیاری)</label>
           <input type="url" id="eventRegisterUrl" class="form-input" placeholder="https://..." />
         </div>
-        <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;width:100%;"><i class="fas fa-save"></i> محفوظ کریں</button>
       </form>
     </div>
   </div>
@@ -6006,12 +6006,40 @@ select.form-input {
   }
 
   /* ── EVENT: create / edit / delete / list (Admin) ── */
-  window.openCreateEventModal = function() {
+  let eventSelectedImageFile = null;
+
+  async function populateEventDropdowns() {
+    const socSel = document.getElementById('eventSocietySelect');
+    const chSel = document.getElementById('eventChapterSelect');
+    if (!socSel || !chSel) return;
+
+    const { data: socs } = await sb.from('societies').select('id, name').order('name');
+    socSel.innerHTML = '<option value="">— تمام Societies —</option>' +
+      (socs || []).map(s => `<option value="${sanitize(s.name)}">${sanitize(s.name)}</option>`).join('');
+
+    const { data: chaps } = await sb.from('chapters').select('id, province').order('province');
+    chSel.innerHTML = '<option value="">— تمام Chapters —</option>' +
+      (chaps || []).map(c => `<option value="${sanitize(c.province)}">${sanitize(c.province)}</option>`).join('');
+  }
+
+  function resetEventImageUI() {
+    eventSelectedImageFile = null;
+    document.getElementById('eventExistingImageUrl').value = '';
+    document.getElementById('eventImagePreview').style.display = 'none';
+    document.getElementById('eventImagePreview').src = '';
+    document.getElementById('eventImagePlaceholder').style.display = 'block';
+    document.getElementById('eventImageStatus').textContent = '';
+    document.getElementById('eventImageInput').value = '';
+  }
+
+  window.openCreateEventModal = async function() {
     document.getElementById('eventForm').reset();
     document.getElementById('eventEditId').value = '';
     document.getElementById('eventModalTitle').textContent = 'نیا Event';
     document.getElementById('eventFormat').value = 'in-person';
     document.getElementById('eventStatus').value = 'upcoming';
+    resetEventImageUI();
+    await populateEventDropdowns();
     openModal('eventModal');
   };
 
@@ -6019,26 +6047,63 @@ select.form-input {
     const { data: ev, error } = await sb.from('events').select('*').eq('id', id).single();
     if (error || !ev) { showToast('Event نہیں ملا: ' + (error?.message || ''), 'error'); return; }
     document.getElementById('eventForm').reset();
+    resetEventImageUI();
+    await populateEventDropdowns();
     document.getElementById('eventEditId').value = ev.id;
     document.getElementById('eventModalTitle').textContent = 'Event میں ترمیم';
     document.getElementById('eventTitle').value = ev.title || '';
     document.getElementById('eventDescription').value = ev.description || '';
-    document.getElementById('eventSociety').value = ev.society || '';
-    document.getElementById('eventChapter').value = ev.chapter || '';
+    document.getElementById('eventSocietySelect').value = ev.society || '';
+    document.getElementById('eventChapterSelect').value = ev.chapter || '';
     document.getElementById('eventFormat').value = ev.format || 'in-person';
     document.getElementById('eventDate').value = ev.event_date ? new Date(ev.event_date).toISOString().slice(0,10) : '';
     document.getElementById('eventVenue').value = ev.venue || '';
     document.getElementById('eventStatus').value = ev.status || 'upcoming';
     document.getElementById('eventRegisterUrl').value = ev.register_url || '';
+    if (ev.image_url) {
+      document.getElementById('eventExistingImageUrl').value = ev.image_url;
+      document.getElementById('eventImagePreview').src = ev.image_url;
+      document.getElementById('eventImagePreview').style.display = 'block';
+      document.getElementById('eventImagePlaceholder').style.display = 'none';
+    }
     openModal('eventModal');
   };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const imgInput = document.getElementById('eventImageInput');
+    if (imgInput) {
+      imgInput.addEventListener('change', () => {
+        const file = imgInput.files[0];
+        if (!file) return;
+        if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+          showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
+          imgInput.value = '';
+          return;
+        }
+        if (file.size > 3 * 1024 * 1024) {
+          showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
+          imgInput.value = '';
+          return;
+        }
+        eventSelectedImageFile = file;
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('eventImagePreview').src = e.target.result;
+          document.getElementById('eventImagePreview').style.display = 'block';
+          document.getElementById('eventImagePlaceholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+        document.getElementById('eventImageStatus').textContent = 'نئی تصویر منتخب ہو گئی — محفوظ کرنے پر اپلوڈ ہوگی۔';
+      });
+    }
+  });
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('eventForm', async frm => {
     const editId = frm.querySelector('#eventEditId').value;
     const title = frm.querySelector('#eventTitle').value.trim();
     const description = frm.querySelector('#eventDescription').value.trim() || null;
-    const society = frm.querySelector('#eventSociety').value.trim() || null;
-    const chapter = frm.querySelector('#eventChapter').value.trim() || null;
+    const society = frm.querySelector('#eventSocietySelect').value.trim() || null;
+    const chapter = frm.querySelector('#eventChapterSelect').value.trim() || null;
     const format = frm.querySelector('#eventFormat').value;
     const event_date = frm.querySelector('#eventDate').value || null;
     const venue = frm.querySelector('#eventVenue').value.trim() || null;
@@ -6048,7 +6113,24 @@ select.form-input {
     if (!title) { showToast('براہ کرم Event کا عنوان درج کریں', 'error'); return; }
     if (!event_date) { showToast('براہ کرم تاریخ منتخب کریں', 'error'); return; }
 
-    const payload = { title, description, society, chapter, format, event_date, venue, status, register_url };
+    const statusEl = document.getElementById('eventImageStatus');
+    let image_url = document.getElementById('eventExistingImageUrl').value || null;
+
+    if (eventSelectedImageFile) {
+      if (statusEl) statusEl.textContent = 'تصویر اپلوڈ ہو رہی ہے…';
+      const ext = eventSelectedImageFile.name.split('.').pop();
+      const filePath = 'events/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+      const { error: uploadError } = await sb.storage.from('event-media').upload(filePath, eventSelectedImageFile);
+      if (uploadError) {
+        showToast('تصویر اپلوڈ ناکام: ' + uploadError.message, 'error');
+        if (statusEl) statusEl.textContent = '';
+        return;
+      }
+      const { data: publicUrlData } = sb.storage.from('event-media').getPublicUrl(filePath);
+      image_url = publicUrlData.publicUrl;
+    }
+
+    const payload = { title, description, society, chapter, format, event_date, venue, status, register_url, image_url };
     let error;
     if (editId) {
       ({ error } = await sb.from('events').update(payload).eq('id', editId));
@@ -6058,6 +6140,7 @@ select.form-input {
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
 
+    eventSelectedImageFile = null;
     showToast('✓ Event محفوظ ہو گیا!');
     closeModal('eventModal');
     loadEventsAdmin();
@@ -7779,13 +7862,13 @@ select.form-input {
       return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted);"><i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>Events لوڈ ہو رہے ہیں…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted);"><i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>Events لوڈ ہو رہے ہیں…</td></tr>';
 
     let data, error;
     try {
       const res = await sb
         .from('events')
-        .select('id, title, society, chapter, format, event_date, venue, status, register_url, description')
+        .select('id, title, society, chapter, format, event_date, venue, status, register_url, description, image_url')
         .order('event_date', { ascending: true });
       data = res.data;
       error = res.error;
@@ -7797,7 +7880,7 @@ select.form-input {
       const msg = error?.message || JSON.stringify(error);
       console.error('Events load failed:', msg);
       tbody.innerHTML = `
-        <tr><td colspan="7" style="text-align:center;padding:2rem;">
+        <tr><td colspan="8" style="text-align:center;padding:2rem;">
           <div style="color:var(--muted);font-size:.88rem;margin-bottom:.75rem;">Events لوڈ نہیں ہو سکے: ${sanitize(msg)}</div>
           <button onclick="loadPublicEvents()" class="btn btn-outline" style="font-size:.82rem;">
             <i class="fas fa-redo"></i> دوبارہ کوشش کریں
@@ -7853,8 +7936,13 @@ select.form-input {
         ? `<a href="${sanitize(ev.register_url)}" target="_blank" class="btn btn-gold" style="padding:.35rem .85rem;font-size:.78rem;"><i class="fas fa-external-link-alt"></i> Register</a>`
         : `<span style="color:var(--muted);font-size:.8rem;">—</span>`;
 
+      const imgCell = ev.image_url
+        ? `<img src="${sanitize(ev.image_url)}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;" loading="lazy" />`
+        : `<div style="width:56px;height:56px;border-radius:8px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>`;
+
       return `
         <tr data-status="${(ev.status||'').toLowerCase()}">
+          <td>${imgCell}</td>
           <td>
             <strong style="color:var(--ink);font-size:.92rem;">${sanitize(ev.title || '—')}</strong>
             ${ev.description ? `<br><span style="color:var(--muted);font-size:.78rem;">${sanitize(ev.description.substring(0,80))}${ev.description.length>80?'…':''}</span>` : ''}
@@ -8055,88 +8143,5 @@ select.form-input {
   /* ═══════════════════════════════════════════ END V6 ADDITIONS ═══ */
 
 </script>
-
-<!-- SHAOOR V7 SAFE INSTITUTIONAL PANEL: appended without replacing existing panels -->
-<div class="dash-panel" id="dp-institution-v7-safe">
-  <div class="v7-shell">
-    <div style="display:flex;justify-content:space-between;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:.8rem">
-      <div><h3 style="margin:0;color:var(--navy,#0d1b3d)"><i class="fas fa-shield-alt" style="color:var(--gold,#c99723)"></i> SHAOOR Institutional Control Center</h3><div class="v7-mini">V7 Safe Upgrade · additive only · existing Members, Certificates, Societies, Chapters, Events and Applications are preserved.</div></div>
-      <button class="btn btn-gold" onclick="shaV7RefreshAll()"><i class="fas fa-sync-alt"></i> Refresh</button>
-    </div>
-    <div class="v7-note"><strong>Data Safety:</strong> یہ module موجودہ records کو delete یا replace نہیں کرتا۔ HTML upgrade صرف نئی UI/logic شامل کرتا ہے۔ نئے database modules تب فعال ہوں گے جب نیچے دیا گیا additive Supabase migration ایک بار SQL Editor میں run کیا جائے۔</div>
-    <div class="v7-kpis">
-      <div class="v7-kpi"><strong id="v7KpiMembers">—</strong><span>Total Members</span></div>
-      <div class="v7-kpi"><strong id="v7KpiMemberships">—</strong><span>Membership Records</span></div>
-      <div class="v7-kpi"><strong id="v7KpiAppointments">—</strong><span>Appointments</span></div>
-      <div class="v7-kpi"><strong id="v7KpiDocuments">—</strong><span>Official Documents</span></div>
-      <div class="v7-kpi"><strong id="v7KpiAudit">—</strong><span>Audit Logs</span></div>
-    </div>
-    <div class="v7-grid">
-      <div class="v7-card"><h4><i class="fas fa-id-card" style="color:var(--gold,#c99723)"></i> Membership</h4><p>Membership lifecycle, validity, renewal, suspension and history.</p><span id="v7StatusMembership" class="v7-badge">Checking…</span></div>
-      <div class="v7-card"><h4><i class="fas fa-user-tie" style="color:var(--gold,#c99723)"></i> Leadership</h4><p>Central, Chapter and Society appointments with term history.</p><span id="v7StatusLeadership" class="v7-badge">Checking…</span></div>
-      <div class="v7-card"><h4><i class="fas fa-file-signature" style="color:var(--gold,#c99723)"></i> Documents</h4><p>Official document records and printable branded templates.</p><span id="v7StatusDocuments" class="v7-badge">Checking…</span></div>
-      <div class="v7-card"><h4><i class="fas fa-history" style="color:var(--gold,#c99723)"></i> Audit</h4><p>Track important administrative actions without deleting history.</p><span id="v7StatusAudit" class="v7-badge">Checking…</span></div>
-    </div>
-
-    <div class="v7-grid" style="margin-top:1rem">
-      <div class="v7-card"><h4>Create Membership</h4><form class="v7-form" onsubmit="shaV7CreateMembership(event)">
-        <input id="v7MemberLookup" class="form-input" list="v7MembersList" required placeholder="Member Name / Member ID"><datalist id="v7MembersList"></datalist>
-        <input id="v7MembershipCode" class="form-input" placeholder="Membership ID (optional)">
-        <select id="v7MembershipType" class="form-input"><option value="member">Member</option><option value="student">Student</option><option value="volunteer">Volunteer</option><option value="lifetime">Lifetime</option></select>
-        <div class="v7-form-row"><input id="v7MembershipStart" type="date" class="form-input"><input id="v7MembershipExpiry" type="date" class="form-input"></div>
-        <button class="btn btn-gold" type="submit">Create Membership</button>
-      </form></div>
-      <div class="v7-card"><h4>Issue Appointment Record</h4><form class="v7-form" onsubmit="shaV7CreateAppointment(event)">
-        <input id="v7AppointmentMember" class="form-input" list="v7MembersList" required placeholder="Member Name / Member ID">
-        <input id="v7AppointmentCode" class="form-input" placeholder="Appointment ID (optional)">
-        <div class="v7-form-row"><select id="v7AppointmentOrg" class="form-input"><option value="central">Central</option><option value="chapter">Chapter</option><option value="society">Society</option><option value="other">Other</option></select><input id="v7AppointmentPosition" class="form-input" required placeholder="Position / Designation"></div>
-        <div class="v7-form-row"><input id="v7AppointmentStart" type="date" class="form-input"><input id="v7AppointmentEnd" type="date" class="form-input"></div>
-        <button class="btn btn-gold" type="submit">Issue Appointment</button>
-      </form></div>
-    </div>
-
-    <div style="margin-top:1.25rem"><h4 style="color:var(--navy,#0d1b3d)"><i class="fas fa-id-card"></i> Membership Records</h4><div class="v7-table-wrap"><table class="v7-table"><thead><tr><th>Membership ID</th><th>Member</th><th>Type</th><th>Start</th><th>Expiry</th><th>Status</th></tr></thead><tbody id="v7MembershipBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div></div>
-    <div style="margin-top:1.25rem"><h4 style="color:var(--navy,#0d1b3d)"><i class="fas fa-user-tie"></i> Leadership / Appointments</h4><div class="v7-table-wrap"><table class="v7-table"><thead><tr><th>Appointment ID</th><th>Member</th><th>Organization</th><th>Position</th><th>Term</th><th>Status</th></tr></thead><tbody id="v7AppointmentBody"><tr><td colspan="6">Loading…</td></tr></tbody></table></div></div>
-
-    <div style="margin-top:1.25rem" class="v7-card"><h4><i class="fas fa-search"></i> Unified Verification</h4><div class="v7-toolbar"><input id="v7VerifyInput" class="form-input" style="flex:1;min-width:240px" placeholder="Member ID / Certificate ID / Appointment ID / Document ID"><button class="btn btn-gold" onclick="shaV7Verify()">Verify</button></div><div id="v7VerifyResult" class="v7-note" style="margin:0;display:none"></div></div>
-
-    <div style="margin-top:1.25rem" class="v7-card"><h4><i class="fas fa-file-code"></i> Supabase Additive Migration</h4><p style="margin:.2rem 0 .7rem" class="v7-mini">Safe migration: CREATE IF NOT EXISTS + ADD COLUMN IF NOT EXISTS. It does not DROP tables, TRUNCATE data, or delete existing records.</p><div class="v7-toolbar"><button class="btn btn-gold" onclick="shaV7CopySQL()">Copy SQL</button><button class="btn" onclick="shaV7DownloadSQL()">Download SQL</button></div><textarea id="shaV7MigrationSQL" class="v7-code" readonly></textarea></div>
-  </div>
-</div>
-
-
-<script id="shaoor-v7-safe-js">
-/* ═══════════════════════════════════════════════════════════════
-   SHAOOR V7 SAFE UPGRADE — UI + additive DB operations
-   Existing V6 code remains untouched.
-   ═══════════════════════════════════════════════════════════════ */
-const SHAOOR_V7_SAFE_SQL = "-- SHAOOR V7 SAFE / ADDITIVE SUPABASE MIGRATION\n-- IMPORTANT: This migration is designed to preserve existing data.\n-- It does NOT DROP TABLES, TRUNCATE TABLES, or delete existing records.\n-- Review existing schema and RLS before production deployment.\n\ncreate extension if not exists pgcrypto;\n\ncreate table if not exists public.memberships (\n  id uuid primary key default gen_random_uuid(),\n  member_id uuid not null references public.profiles(id) on delete restrict,\n  membership_code text unique,\n  membership_type text not null default 'member',\n  status text not null default 'pending' check (status in ('pending','active','expiring','expired','suspended','revoked')),\n  start_date date,\n  expiry_date date,\n  renewal_date date,\n  approved_by uuid references public.profiles(id) on delete set null,\n  approved_at timestamptz,\n  suspended_at timestamptz,\n  suspension_reason text,\n  created_at timestamptz not null default now(),\n  updated_at timestamptz not null default now()\n);\ncreate index if not exists memberships_member_id_idx on public.memberships(member_id);\ncreate index if not exists memberships_status_idx on public.memberships(status);\n\ncreate table if not exists public.leadership_appointments (\n  id uuid primary key default gen_random_uuid(),\n  appointment_id text unique not null,\n  member_id uuid not null references public.profiles(id) on delete restrict,\n  organization_type text not null check (organization_type in ('central','chapter','society','other')),\n  organization_id text,\n  position text not null,\n  start_date date,\n  end_date date,\n  status text not null default 'active' check (status in ('draft','active','completed','revoked')),\n  appointed_by uuid references public.profiles(id) on delete set null,\n  appointment_document_id text,\n  responsibilities text,\n  created_at timestamptz not null default now(),\n  updated_at timestamptz not null default now()\n);\ncreate index if not exists leadership_member_idx on public.leadership_appointments(member_id);\ncreate index if not exists leadership_org_idx on public.leadership_appointments(organization_type,organization_id);\n\ncreate table if not exists public.generated_documents (\n  id uuid primary key default gen_random_uuid(),\n  document_id text unique not null,\n  document_type text not null,\n  template_key text not null,\n  member_id uuid references public.profiles(id) on delete set null,\n  related_record_id text,\n  status text not null default 'issued' check (status in ('draft','issued','revoked','archived')),\n  file_url text,\n  qr_payload text,\n  issued_by uuid references public.profiles(id) on delete set null,\n  issued_at timestamptz not null default now(),\n  revoked_at timestamptz,\n  revocation_reason text,\n  created_at timestamptz not null default now()\n);\ncreate index if not exists generated_documents_member_idx on public.generated_documents(member_id);\ncreate index if not exists generated_documents_type_idx on public.generated_documents(document_type);\n\ncreate table if not exists public.document_templates (\n  id uuid primary key default gen_random_uuid(),\n  template_key text unique not null,\n  template_name text not null,\n  document_type text not null,\n  version text not null default '1.0',\n  active boolean not null default true,\n  template_config jsonb not null default '{}'::jsonb,\n  created_at timestamptz not null default now(),\n  updated_at timestamptz not null default now()\n);\ninsert into public.document_templates(template_key,template_name,document_type) values\n('member_card','SHAOOR Official Member Card','member_card'),\n('participation_certificate','Certificate of Participation','certificate'),\n('leadership_certificate','Leadership Certificate','certificate'),\n('volunteer_certificate','Volunteer Certificate','certificate'),\n('appointment_letter','Official Appointment Letter','appointment_letter'),\n('appreciation_letter','Official Appreciation Letter','appreciation_letter'),\n('invitation_letter','Official Invitation Letter','invitation_letter'),\n('official_notice','Official Notice','notice')\non conflict (template_key) do nothing;\n\ncreate table if not exists public.brand_settings (\n  id boolean primary key default true check (id),\n  organization_name text not null default 'SHAOOR | شعور',\n  logo_url text,\n  seal_url text,\n  primary_color text not null default '#0d1b3d',\n  accent_color text not null default '#c99723',\n  background_color text not null default '#f8f6f0',\n  official_email text,\n  official_phone text,\n  founder_name text default 'Fatima Tu Zahra',\n  founder_signature_url text,\n  default_authority text,\n  updated_by uuid references public.profiles(id) on delete set null,\n  updated_at timestamptz not null default now()\n);\ninsert into public.brand_settings(id) values(true) on conflict(id) do nothing;\n\ncreate table if not exists public.notifications (\n  id uuid primary key default gen_random_uuid(),\n  recipient_id uuid references public.profiles(id) on delete cascade,\n  notification_type text not null,\n  title text not null,\n  message text not null,\n  link_url text,\n  is_read boolean not null default false,\n  created_at timestamptz not null default now()\n);\ncreate index if not exists notifications_recipient_idx on public.notifications(recipient_id,created_at desc);\n\ncreate table if not exists public.audit_logs (\n  id uuid primary key default gen_random_uuid(),\n  actor_id uuid references public.profiles(id) on delete set null,\n  action text not null,\n  module text not null,\n  record_id text,\n  old_value jsonb,\n  new_value jsonb,\n  metadata jsonb not null default '{}'::jsonb,\n  created_at timestamptz not null default now()\n);\ncreate index if not exists audit_logs_created_idx on public.audit_logs(created_at desc);\ncreate index if not exists audit_logs_actor_idx on public.audit_logs(actor_id);\n\ncreate table if not exists public.event_registrations (\n  id uuid primary key default gen_random_uuid(),\n  event_id text not null,\n  member_id uuid references public.profiles(id) on delete cascade,\n  registration_status text not null default 'registered' check (registration_status in ('registered','cancelled','waitlist')),\n  registered_at timestamptz not null default now(),\n  unique(event_id,member_id)\n);\n\ncreate table if not exists public.event_attendance (\n  id uuid primary key default gen_random_uuid(),\n  event_id text not null,\n  member_id uuid references public.profiles(id) on delete cascade,\n  attendance_status text not null default 'present' check (attendance_status in ('present','absent','late','excused')),\n  checked_in_at timestamptz,\n  verified_by uuid references public.profiles(id) on delete set null,\n  unique(event_id,member_id)\n);\n\ncreate table if not exists public.member_verifications (\n  id uuid primary key default gen_random_uuid(),\n  member_id uuid references public.profiles(id) on delete cascade,\n  verified_at timestamptz not null default now(),\n  result_status text not null default 'valid',\n  verifier_ip text\n);\n\ncreate table if not exists public.document_verifications (\n  id uuid primary key default gen_random_uuid(),\n  document_id text not null,\n  result_status text not null default 'valid',\n  verified_at timestamptz not null default now(),\n  verifier_ip text\n);\n\nalter table public.profiles add column if not exists whatsapp text;\nalter table public.profiles add column if not exists city text;\nalter table public.profiles add column if not exists province text;\nalter table public.profiles add column if not exists membership_type text;\nalter table public.profiles add column if not exists membership_start_date date;\nalter table public.profiles add column if not exists membership_expiry_date date;\nalter table public.profiles add column if not exists application_id uuid;\nalter table public.profiles add column if not exists approved_at timestamptz;\nalter table public.profiles add column if not exists approved_by uuid;\n\ncreate or replace function public.shoor_set_updated_at()\nreturns trigger language plpgsql as $$\nbegin new.updated_at = now(); return new; end; $$;\n\n-- Create triggers only when they do not already exist.\ndo $$ begin\n  if not exists (select 1 from pg_trigger where tgname='trg_shaoor_memberships_updated_at') then\n    create trigger trg_shaoor_memberships_updated_at before update on public.memberships for each row execute function public.shoor_set_updated_at();\n  end if;\n  if not exists (select 1 from pg_trigger where tgname='trg_shaoor_leadership_updated_at') then\n    create trigger trg_shaoor_leadership_updated_at before update on public.leadership_appointments for each row execute function public.shoor_set_updated_at();\n  end if;\n  if not exists (select 1 from pg_trigger where tgname='trg_shaoor_templates_updated_at') then\n    create trigger trg_shaoor_templates_updated_at before update on public.document_templates for each row execute function public.shoor_set_updated_at();\n  end if;\n  if not exists (select 1 from pg_trigger where tgname='trg_shaoor_brand_updated_at') then\n    create trigger trg_shaoor_brand_updated_at before update on public.brand_settings for each row execute function public.shoor_set_updated_at();\n  end if;\nend $$;\n\n-- IMPORTANT: RLS policies should be reviewed against your existing production roles.\n-- The following helper uses the existing SHAOOR frontend role names.\ncreate or replace function public.is_shaoor_admin()\nreturns boolean language sql security definer set search_path=public as $$\n  select exists(select 1 from public.profiles p where p.id=auth.uid() and p.status='active' and p.role in\n  ('founder','admin','general_secretary','treasurer','media_coordinator','verification_officer','chapter_admin','society_admin','event_coordinator'));\n$$;\n\nalter table public.memberships enable row level security;\nalter table public.leadership_appointments enable row level security;\nalter table public.generated_documents enable row level security;\nalter table public.document_templates enable row level security;\nalter table public.brand_settings enable row level security;\nalter table public.notifications enable row level security;\nalter table public.audit_logs enable row level security;\nalter table public.event_registrations enable row level security;\nalter table public.event_attendance enable row level security;\nalter table public.member_verifications enable row level security;\nalter table public.document_verifications enable row level security;\n\n-- Policies below are additive/re-runnable; they do not delete table rows.\ndrop policy if exists shaoor_memberships_self_select on public.memberships;\ncreate policy shaoor_memberships_self_select on public.memberships for select using (member_id=auth.uid() or public.is_shaoor_admin());\ndrop policy if exists shaoor_memberships_admin_write on public.memberships;\ncreate policy shaoor_memberships_admin_write on public.memberships for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_leadership_admin on public.leadership_appointments;\ncreate policy shaoor_leadership_admin on public.leadership_appointments for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_documents_self_select on public.generated_documents;\ncreate policy shaoor_documents_self_select on public.generated_documents for select using (member_id=auth.uid() or public.is_shaoor_admin());\ndrop policy if exists shaoor_documents_admin_write on public.generated_documents;\ncreate policy shaoor_documents_admin_write on public.generated_documents for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_templates_admin on public.document_templates;\ncreate policy shaoor_templates_admin on public.document_templates for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_brand_admin on public.brand_settings;\ncreate policy shaoor_brand_admin on public.brand_settings for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_notifications_self on public.notifications;\ncreate policy shaoor_notifications_self on public.notifications for select using (recipient_id=auth.uid() or public.is_shaoor_admin());\ndrop policy if exists shaoor_notifications_update on public.notifications;\ncreate policy shaoor_notifications_update on public.notifications for update using (recipient_id=auth.uid() or public.is_shaoor_admin()) with check (recipient_id=auth.uid() or public.is_shaoor_admin());\ndrop policy if exists shaoor_notifications_admin_insert on public.notifications;\ncreate policy shaoor_notifications_admin_insert on public.notifications for insert with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_audit_select on public.audit_logs;\ncreate policy shaoor_audit_select on public.audit_logs for select using (public.is_shaoor_admin());\ndrop policy if exists shaoor_audit_insert on public.audit_logs;\ncreate policy shaoor_audit_insert on public.audit_logs for insert with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_registrations_select on public.event_registrations;\ncreate policy shaoor_registrations_select on public.event_registrations for select using (member_id=auth.uid() or public.is_shaoor_admin());\ndrop policy if exists shaoor_registrations_insert on public.event_registrations;\ncreate policy shaoor_registrations_insert on public.event_registrations for insert with check (member_id=auth.uid() or public.is_shaoor_admin());\n\ndrop policy if exists shaoor_attendance_admin on public.event_attendance;\ncreate policy shaoor_attendance_admin on public.event_attendance for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\n\ndrop policy if exists shaoor_member_verification_admin on public.member_verifications;\ncreate policy shaoor_member_verification_admin on public.member_verifications for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\ndrop policy if exists shaoor_document_verification_admin on public.document_verifications;\ncreate policy shaoor_document_verification_admin on public.document_verifications for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());\n\n-- Optional backfill is intentionally NOT executed here, so existing profiles are never modified or duplicated.\n-- After schema verification, you may separately decide how existing members should receive membership records.\n";
-
-function shaV7Status(id, ok, text){const e=document.getElementById(id);if(!e)return;e.className='v7-badge '+(ok?'ok':'warn');e.textContent=text;}
-async function shaV7Exists(table){try{const r=await sb.from(table).select('*',{count:'exact',head:true}).limit(1);return !r.error}catch(e){return false}}
-async function shaV7Count(table){try{const r=await sb.from(table).select('*',{count:'exact',head:true});return r.error?null:r.count}catch(e){return null}}
-function shaV7Escape(v){const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML}
-async function shaV7RefreshAll(){
-  const [members,memberships,appointments,documents,audit]=await Promise.all(['profiles','memberships','leadership_appointments','generated_documents','audit_logs'].map(shaV7Count));
-  [['v7KpiMembers',members],['v7KpiMemberships',memberships],['v7KpiAppointments',appointments],['v7KpiDocuments',documents],['v7KpiAudit',audit]].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v==null?'—':v});
-  const [m,l,d,a]=await Promise.all(['memberships','leadership_appointments','generated_documents','audit_logs'].map(shaV7Exists));
-  shaV7Status('v7StatusMembership',m,m?'Connected':'Migration required');shaV7Status('v7StatusLeadership',l,l?'Connected':'Migration required');shaV7Status('v7StatusDocuments',d,d?'Connected':'Migration required');shaV7Status('v7StatusAudit',a,a?'Connected':'Migration required');
-  await shaV7LoadMembers(); await shaV7LoadMemberships(); await shaV7LoadAppointments();
-  const box=document.getElementById('shaV7MigrationSQL');if(box)box.value=SHAOOR_V7_SAFE_SQL;
-}
-async function shaV7LoadMembers(){const dl=document.getElementById('v7MembersList');if(!dl)return;try{const {data}=await sb.from('profiles').select('id,full_name,member_id').order('full_name');dl.innerHTML='';(data||[]).forEach(p=>{const o=document.createElement('option');o.value=`${p.full_name||''} (${p.member_id||''})`;o.dataset.profileId=p.id;dl.appendChild(o)})}catch(e){}}
-async function shaV7ResolveMember(inputId){const input=document.getElementById(inputId);if(!input)return null;const val=input.value.trim();const match=val.match(/\(([^)]+)\)$/);if(!match)return null;try{const {data}=await sb.from('profiles').select('id,full_name,member_id').eq('member_id',match[1]).maybeSingle();return data||null}catch(e){return null}}
-async function shaV7CreateMembership(ev){ev.preventDefault();const p=await shaV7ResolveMember('v7MemberLookup');if(!p){showToast('Please select a valid existing member.','error');return}const user=(await sb.auth.getUser()).data.user;const code=document.getElementById('v7MembershipCode').value.trim()||('SHR-MEM-'+Date.now());const payload={member_id:p.id,membership_code:code,membership_type:document.getElementById('v7MembershipType').value,status:'active',start_date:document.getElementById('v7MembershipStart').value||null,expiry_date:document.getElementById('v7MembershipExpiry').value||null,approved_by:user?.id||null,approved_at:new Date().toISOString()};const {error}=await sb.from('memberships').insert(payload);if(error){showToast('Membership could not be created: '+error.message,'error');return}await shaV7Audit('create','memberships',code,null,payload);showToast('Membership record created.');ev.target.reset();shaV7RefreshAll()}
-async function shaV7CreateAppointment(ev){ev.preventDefault();const p=await shaV7ResolveMember('v7AppointmentMember');if(!p){showToast('Please select a valid existing member.','error');return}const user=(await sb.auth.getUser()).data.user;const code=document.getElementById('v7AppointmentCode').value.trim()||('SHR-APT-'+Date.now());const payload={appointment_id:code,member_id:p.id,organization_type:document.getElementById('v7AppointmentOrg').value,position:document.getElementById('v7AppointmentPosition').value.trim(),start_date:document.getElementById('v7AppointmentStart').value||null,end_date:document.getElementById('v7AppointmentEnd').value||null,status:'active',appointed_by:user?.id||null};const {error}=await sb.from('leadership_appointments').insert(payload);if(error){showToast('Appointment could not be created: '+error.message,'error');return}await shaV7Audit('create','leadership_appointments',code,null,payload);showToast('Official appointment record created.');ev.target.reset();shaV7RefreshAll()}
-async function shaV7Audit(action,module,recordId,oldValue,newValue){try{const user=(await sb.auth.getUser()).data.user;await sb.from('audit_logs').insert({actor_id:user?.id||null,action,module,record_id:recordId,old_value:oldValue,new_value:newValue,metadata:{source:'shaoor-v7-ui'}})}catch(e){console.warn('Audit log unavailable:',e.message)}}
-async function shaV7LoadMemberships(){const body=document.getElementById('v7MembershipBody');if(!body)return;try{const {data,error}=await sb.from('memberships').select('membership_code,membership_type,status,start_date,expiry_date,member_id').order('created_at',{ascending:false}).limit(50);if(error)throw error;const ids=[...(new Set((data||[]).map(x=>x.member_id).filter(Boolean)))];let names={};if(ids.length){const r=await sb.from('profiles').select('id,full_name,member_id').in('id',ids);(r.data||[]).forEach(p=>names[p.id]=`${p.full_name||'—'} · ${p.member_id||''}`)}body.innerHTML=(data||[]).map(x=>`<tr><td>${shaV7Escape(x.membership_code||'—')}</td><td>${shaV7Escape(names[x.member_id]||'—')}</td><td>${shaV7Escape(x.membership_type||'—')}</td><td>${shaV7Escape(x.start_date||'—')}</td><td>${shaV7Escape(x.expiry_date||'—')}</td><td><span class="v7-status ${shaV7Escape(x.status)}">${shaV7Escape(x.status||'—')}</span></td></tr>`).join('')||'<tr><td colspan="6">No membership records yet.</td></tr>'}catch(e){body.innerHTML='<tr><td colspan="6">Membership module requires the additive migration.</td></tr>'}}
-async function shaV7LoadAppointments(){const body=document.getElementById('v7AppointmentBody');if(!body)return;try{const {data,error}=await sb.from('leadership_appointments').select('appointment_id,member_id,organization_type,position,start_date,end_date,status').order('created_at',{ascending:false}).limit(50);if(error)throw error;const ids=[...(new Set((data||[]).map(x=>x.member_id).filter(Boolean)))];let names={};if(ids.length){const r=await sb.from('profiles').select('id,full_name,member_id').in('id',ids);(r.data||[]).forEach(p=>names[p.id]=`${p.full_name||'—'} · ${p.member_id||''}`)}body.innerHTML=(data||[]).map(x=>`<tr><td>${shaV7Escape(x.appointment_id)}</td><td>${shaV7Escape(names[x.member_id]||'—')}</td><td>${shaV7Escape(x.organization_type)}</td><td>${shaV7Escape(x.position)}</td><td>${shaV7Escape(x.start_date||'—')} → ${shaV7Escape(x.end_date||'—')}</td><td><span class="v7-status ${shaV7Escape(x.status)}">${shaV7Escape(x.status)}</span></td></tr>`).join('')||'<tr><td colspan="6">No appointments yet.</td></tr>'}catch(e){body.innerHTML='<tr><td colspan="6">Leadership module requires the additive migration.</td></tr>'}}
-async function shaV7Verify(){const input=document.getElementById('v7VerifyInput'),out=document.getElementById('v7VerifyResult');if(!input||!out)return;const id=input.value.trim();if(!id){out.style.display='block';out.textContent='Enter an official ID.';return}out.style.display='block';out.textContent='Searching…';let r=[];try{const x=await sb.from('profiles').select('full_name,member_id,status,role').eq('member_id',id).maybeSingle();if(x.data)r.push(['Member',x.data.member_id,x.data.full_name,x.data.status,x.data.role])}catch(e){}try{const x=await sb.from('certificates').select('certificate_id,certificate_title,status,certificate_type').eq('certificate_id',id).maybeSingle();if(x.data)r.push(['Certificate',x.data.certificate_id,x.data.certificate_title,x.data.status,x.data.certificate_type])}catch(e){}try{const x=await sb.from('memberships').select('membership_code,membership_type,status,member_id').eq('membership_code',id).maybeSingle();if(x.data)r.push(['Membership',x.data.membership_code,x.data.membership_type,x.data.status,x.data.member_id])}catch(e){}try{const x=await sb.from('leadership_appointments').select('appointment_id,position,status,organization_type').eq('appointment_id',id).maybeSingle();if(x.data)r.push(['Appointment',x.data.appointment_id,x.data.position,x.data.status,x.data.organization_type])}catch(e){}try{const x=await sb.from('generated_documents').select('document_id,document_type,status').eq('document_id',id).maybeSingle();if(x.data)r.push(['Document',x.data.document_id,x.data.document_type,x.data.status,'Official'])}catch(e){}if(!r.length){out.innerHTML='<strong style="color:#991b1b">NOT FOUND</strong><br>No matching SHAOOR record was found.';return}out.innerHTML=r.map(x=>`<strong style="color:#166534">✓ ${shaV7Escape(x[0])} — RECORD FOUND</strong><br>ID: ${shaV7Escape(x[1])}<br>Name/Type: ${shaV7Escape(x[2])}<br>Status: ${shaV7Escape(x[3])}<br>Role/Organization: ${shaV7Escape(x[4])}`).join('<hr style="border:0;border-top:1px solid var(--border);margin:.7rem 0">')}
-function shaV7CopySQL(){navigator.clipboard?.writeText(SHAOOR_V7_SAFE_SQL).then(()=>showToast('Safe migration SQL copied.')).catch(()=>showToast('Copy failed. Select the SQL manually.','error'))}
-function shaV7DownloadSQL(){const b=new Blob([SHAOOR_V7_SAFE_SQL],{type:'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='SHAOOR_V7_SAFE_ADDITIVE_MIGRATION.sql';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function shaV7InstallNav(){const nav=[...document.querySelectorAll('.admin-nav-btn')];if(nav.some(b=>b.dataset.v7safe==='1'))return;const ref=nav.find(b=>/Certificates|Events/i.test(b.textContent))||nav[nav.length-1];if(!ref||!ref.parentElement)return;const b=document.createElement('button');b.className='admin-nav-btn';b.dataset.v7safe='1';b.innerHTML='<i class="fas fa-shield-alt"></i> Institutional';b.onclick=function(){switchDashTab('institution-v7-safe',b);shaV7RefreshAll()};ref.parentElement.insertBefore(b,ref.nextSibling)}
-window.addEventListener('load',()=>setTimeout(()=>{shaV7InstallNav();shaV7RefreshAll()},1200));
-</script>
-
 </body>
 </html>
