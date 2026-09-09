@@ -3921,7 +3921,7 @@ select.form-input {
         </div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Chapter Cabinet Seats — Punjab</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-punjab">
             <div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Amir Shahzad</div></div></div>
             <div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Sidra Rehman</div></div></div>
             <div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Sabeela Kiyani</div></div></div>
@@ -3957,7 +3957,7 @@ select.form-input {
         </div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> KPK Cabinet — All Seats Open</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-kpk">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open — Apply Now</div></div></div>
@@ -3989,7 +3989,7 @@ select.form-input {
         </div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Sindh Cabinet — All Seats Open</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-sindh">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open — Apply Now</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open — Apply Now</div></div></div>
@@ -4012,7 +4012,7 @@ select.form-input {
         <div class="societies-in-chapter" id="dsl-balochistan"></div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Balochistan Cabinet — Open for Applications</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-balochistan">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open</div></div></div>
@@ -4034,7 +4034,7 @@ select.form-input {
         <div class="societies-in-chapter" id="dsl-kashmir"></div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> Kashmir Cabinet — Open for Applications</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-kashmir">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open</div></div></div>
@@ -4056,7 +4056,7 @@ select.form-input {
         <div class="societies-in-chapter" id="dsl-gilgit"></div>
         <div class="cabinet-seats">
           <div class="cs-title"><i class="fas fa-users"></i> GB Cabinet — Open for Applications</div>
-          <div class="seats-grid">
+          <div class="seats-grid" id="seats-gilgit">
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Chapter President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">Vice President</div><div class="seat-name">Open</div></div></div>
             <div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">General Secretary</div><div class="seat-name">Open</div></div></div>
@@ -4159,7 +4159,6 @@ select.form-input {
         <table class="ev-table" id="eventsTable">
           <thead>
             <tr>
-              <th>Image</th>
               <th>Event Name</th>
               <th>Society / Chapter</th>
               <th>Format</th>
@@ -4171,7 +4170,7 @@ select.form-input {
           </thead>
           <tbody id="eventsTableBody">
             <tr>
-              <td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted);">
+              <td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted);">
                 <i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>
                 Events لوڈ ہو رہے ہیں…
               </td>
@@ -4596,9 +4595,8 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('gallery',this)"><i class="fas fa-images"></i> Gallery</button>
       <button class="admin-nav-btn" onclick="switchDashTab('societies',this);loadSocietiesAdmin();"><i class="fas fa-layer-group"></i> Societies</button>
       <button class="admin-nav-btn" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
       <div style="margin-top:auto;padding-top:1rem;">
         <button class="admin-nav-btn" onclick="adminLogout()" style="color:rgba(252,165,165,.7);"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -4750,100 +4748,6 @@ select.form-input {
             </tbody>
           </table>
         </div>
-      </div>
-
-      <div class="dash-panel" id="dp-branding">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
-          <h3 style="font-weight:700;">Branding Assets</h3>
-          <span id="brandingSavedNote" style="font-size:.78rem;color:var(--muted);"></span>
-        </div>
-
-        <form id="brandingForm" style="max-width:760px;">
-          <div class="form-group">
-            <label for="brandOrgName">Organization Name</label>
-            <input type="text" id="brandOrgName" class="form-input" placeholder="SHAOOR | شعور" />
-          </div>
-
-          <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-            <div>
-              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Logo</label>
-              <div style="display:flex;align-items:center;gap:.75rem;">
-                <img id="brandLogoPreview" src="" style="display:none;width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
-                <div id="brandLogoPlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
-                <input type="file" id="brandLogoInput" accept="image/png,image/jpeg,image/webp" />
-              </div>
-              <span id="brandLogoStatus" style="font-size:.75rem;color:var(--muted);"></span>
-            </div>
-
-            <div>
-              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Official Seal</label>
-              <div style="display:flex;align-items:center;gap:.75rem;">
-                <img id="brandSealPreview" src="" style="display:none;width:64px;height:64px;object-fit:contain;border-radius:50%;border:1px solid var(--border);background:#fff;" alt="" />
-                <div id="brandSealPlaceholder" style="width:64px;height:64px;border-radius:50%;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-stamp"></i></div>
-                <input type="file" id="brandSealInput" accept="image/png,image/jpeg,image/webp" />
-              </div>
-              <span id="brandSealStatus" style="font-size:.75rem;color:var(--muted);"></span>
-            </div>
-
-            <div>
-              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Signature</label>
-              <div style="display:flex;align-items:center;gap:.75rem;">
-                <img id="brandSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
-                <div id="brandSigPlaceholder" style="width:96px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-signature"></i></div>
-                <input type="file" id="brandSigInput" accept="image/png,image/jpeg,image/webp" />
-              </div>
-              <span id="brandSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
-            </div>
-          </div>
-
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
-            <div class="form-group" style="flex:1;min-width:150px;">
-              <label for="brandPrimaryColor">Primary Color</label>
-              <div style="display:flex;gap:.5rem;align-items:center;">
-                <input type="color" id="brandPrimaryColor" value="#0d1b3d" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
-                <input type="text" id="brandPrimaryColorHex" class="form-input" placeholder="#0d1b3d" />
-              </div>
-            </div>
-            <div class="form-group" style="flex:1;min-width:150px;">
-              <label for="brandAccentColor">Accent Color</label>
-              <div style="display:flex;gap:.5rem;align-items:center;">
-                <input type="color" id="brandAccentColor" value="#c99723" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
-                <input type="text" id="brandAccentColorHex" class="form-input" placeholder="#c99723" />
-              </div>
-            </div>
-            <div class="form-group" style="flex:1;min-width:150px;">
-              <label for="brandBackgroundColor">Background Color</label>
-              <div style="display:flex;gap:.5rem;align-items:center;">
-                <input type="color" id="brandBackgroundColor" value="#f8f6f0" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
-                <input type="text" id="brandBackgroundColorHex" class="form-input" placeholder="#f8f6f0" />
-              </div>
-            </div>
-          </div>
-
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-            <div class="form-group" style="flex:1;min-width:220px;">
-              <label for="brandOfficialEmail">Official Email</label>
-              <input type="email" id="brandOfficialEmail" class="form-input" placeholder="info@shaoor.org" />
-            </div>
-            <div class="form-group" style="flex:1;min-width:220px;">
-              <label for="brandOfficialPhone">Official Phone</label>
-              <input type="text" id="brandOfficialPhone" class="form-input" placeholder="+92…" />
-            </div>
-          </div>
-
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-            <div class="form-group" style="flex:1;min-width:220px;">
-              <label for="brandFounderName">Founder Name</label>
-              <input type="text" id="brandFounderName" class="form-input" placeholder="Fatima Tu Zahra" />
-            </div>
-            <div class="form-group" style="flex:1;min-width:220px;">
-              <label for="brandDefaultAuthority">Default Authority (for documents)</label>
-              <input type="text" id="brandDefaultAuthority" class="form-input" placeholder="Founder" />
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-gold" style="margin-top:.5rem;"><i class="fas fa-save"></i> Save Branding</button>
-        </form>
       </div>
 
     </div>
@@ -5038,16 +4942,6 @@ select.form-input {
           </select>
         </div>
 
-        <div class="form-group">
-          <label for="societyLogoInput">Society Logo</label>
-          <div style="display:flex;align-items:center;gap:1rem;">
-            <img id="societyLogoPreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border);" alt="" />
-            <div id="societyLogoPlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1.3rem;"><i class="fas fa-image"></i></div>
-            <input type="file" id="societyLogoInput" accept="image/png,image/jpeg,image/webp" style="flex:1;" />
-          </div>
-          <span id="societyLogoStatus" style="font-size:.78rem;color:var(--muted);"></span>
-        </div>
-
         <div style="margin:1rem 0 .5rem;padding-top:.75rem;border-top:1px solid var(--border);">
           <strong style="font-size:.9rem;color:var(--ink);">Cabinet — عہدیدار منتخب کریں</strong>
           <p style="font-size:.78rem;color:var(--muted);margin:.25rem 0 0;">ہر عہدے کے لیے رکن کا نام لکھ کر منتخب کریں (خالی چھوڑا جا سکتا ہے)</p>
@@ -5111,7 +5005,7 @@ select.form-input {
 
 <!-- Create/Edit Event Modal (Admin) -->
 <div class="modal" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
-  <div class="modal-box" style="max-width:540px;">
+  <div class="modal-box">
     <div class="modal-head">
       <h3 id="eventModalTitle">نیا Event</h3>
       <button class="modal-close" onclick="closeModal('eventModal')" aria-label="Close"><i class="fas fa-times"></i></button>
@@ -5119,24 +5013,8 @@ select.form-input {
     <div class="modal-body">
       <form class="modal-form" id="eventForm">
         <input type="hidden" id="eventEditId" value="" />
-        <input type="hidden" id="eventExistingImageUrl" value="" />
-
-        <!-- Banner Image Upload -->
         <div class="form-group">
-          <label>Event Banner / تصویر</label>
-          <div id="eventImageUploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;" onclick="document.getElementById('eventImageInput').click()">
-            <img id="eventImagePreview" src="" alt="" style="display:none;max-height:140px;border-radius:8px;margin:0 auto .5rem;object-fit:cover;width:100%;" />
-            <div id="eventImagePlaceholder" style="color:var(--muted);">
-              <i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:.4rem;"></i>
-              <span style="font-size:.85rem;">تصویر منتخب کریں (PNG, JPG, WEBP — زیادہ سے زیادہ 3MB)</span>
-            </div>
-            <input type="file" id="eventImageInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
-          </div>
-          <div id="eventImageStatus" style="font-size:.8rem;color:var(--muted);margin-top:.3rem;"></div>
-        </div>
-
-        <div class="form-group">
-          <label for="eventTitle">Event کا عنوان *</label>
+          <label for="eventTitle">Event کا عنوان</label>
           <input type="text" id="eventTitle" class="form-input" required placeholder="e.g., Monochrome Exhibition" />
         </div>
         <div class="form-group">
@@ -5144,19 +5022,15 @@ select.form-input {
           <textarea id="eventDescription" class="form-input" rows="3" placeholder="مختصر تفصیل"></textarea>
         </div>
         <div class="form-group">
-          <label for="eventSocietySelect">Society</label>
-          <select id="eventSocietySelect" class="form-input">
-            <option value="">— تمام Societies —</option>
-          </select>
+          <label for="eventSociety">Society</label>
+          <input type="text" id="eventSociety" class="form-input" placeholder="e.g., Calligraphy Society یا All Societies" />
         </div>
         <div class="form-group">
-          <label for="eventChapterSelect">Chapter</label>
-          <select id="eventChapterSelect" class="form-input">
-            <option value="">— تمام Chapters —</option>
-          </select>
+          <label for="eventChapter">Chapter</label>
+          <input type="text" id="eventChapter" class="form-input" placeholder="e.g., Punjab Chapter" />
         </div>
         <div class="form-group">
-          <label for="eventFormat">Format *</label>
+          <label for="eventFormat">Format</label>
           <select id="eventFormat" class="form-input" required>
             <option value="in-person">In-Person</option>
             <option value="online">Online</option>
@@ -5166,15 +5040,15 @@ select.form-input {
           </select>
         </div>
         <div class="form-group">
-          <label for="eventDate">تاریخ *</label>
+          <label for="eventDate">تاریخ</label>
           <input type="date" id="eventDate" class="form-input" required />
         </div>
         <div class="form-group">
           <label for="eventVenue">مقام (Venue)</label>
-          <input type="text" id="eventVenue" class="form-input" placeholder="e.g., SHAOOR Hall, Sahiwal" />
+          <input type="text" id="eventVenue" class="form-input" placeholder="e.g., Sahiwal" />
         </div>
         <div class="form-group">
-          <label for="eventStatus">Status *</label>
+          <label for="eventStatus">Status</label>
           <select id="eventStatus" class="form-input" required>
             <option value="upcoming">Upcoming</option>
             <option value="open">Open Now</option>
@@ -5187,7 +5061,7 @@ select.form-input {
           <label for="eventRegisterUrl">رجسٹریشن لنک (اختیاری)</label>
           <input type="url" id="eventRegisterUrl" class="form-input" placeholder="https://..." />
         </div>
-        <button type="submit" class="btn btn-gold" style="justify-content:center;width:100%;"><i class="fas fa-save"></i> محفوظ کریں</button>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
       </form>
     </div>
   </div>
@@ -5896,30 +5770,10 @@ select.form-input {
     sel.value = selectedId || '';
   }
 
-  let societyLogoFile = null;
-  function resetSocietyLogoUI(existingUrl) {
-    societyLogoFile = null;
-    const input = document.getElementById('societyLogoInput');
-    if (input) input.value = '';
-    document.getElementById('societyLogoStatus').textContent = '';
-    const img = document.getElementById('societyLogoPreview');
-    const placeholder = document.getElementById('societyLogoPlaceholder');
-    if (existingUrl) {
-      img.src = existingUrl;
-      img.style.display = 'block';
-      placeholder.style.display = 'none';
-    } else {
-      img.src = '';
-      img.style.display = 'none';
-      placeholder.style.display = 'flex';
-    }
-  }
-
   async function openCreateSocietyModal() {
     document.getElementById('societyForm').reset();
     document.getElementById('societyEditId').value = '';
     document.getElementById('societyModalTitle').textContent = 'نئی Society';
-    resetSocietyLogoUI(null);
     await populateCabinetFields('cab', 'society', null);
     await populateChapterDropdown();
     openModal('societyModal');
@@ -5933,75 +5787,9 @@ select.form-input {
     document.getElementById('societyModalTitle').textContent = 'Society میں ترمیم';
     document.getElementById('societyName').value = s.name || '';
     document.getElementById('societyStatus').value = s.status || 'active';
-    resetSocietyLogoUI(s.logo_url || null);
     await populateCabinetFields('cab', 'society', s.id);
     await populateChapterDropdown(s.chapter_id);
     openModal('societyModal');
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const logoInput = document.getElementById('societyLogoInput');
-    if (logoInput) {
-      logoInput.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
-        if (!allowedTypes.includes(file.type)) {
-          showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
-          logoInput.value = '';
-          return;
-        }
-        if (file.size > 3 * 1024 * 1024) {
-          showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
-          logoInput.value = '';
-          return;
-        }
-        societyLogoFile = file;
-        const img = document.getElementById('societyLogoPreview');
-        const placeholder = document.getElementById('societyLogoPlaceholder');
-        img.src = URL.createObjectURL(file);
-        img.style.display = 'block';
-        placeholder.style.display = 'none';
-      });
-    }
-  });
-
-  async function uploadSocietyLogo(societyId) {
-    if (!societyLogoFile) return;
-    const statusEl = document.getElementById('societyLogoStatus');
-    statusEl.textContent = 'اپلوڈ ہو رہا ہے…';
-
-    const ext = societyLogoFile.name.split('.').pop();
-    const filePath = `${societyId}/logo.${ext}`;
-
-    const { error: uploadError } = await sb.storage
-      .from('society-logos')
-      .upload(filePath, societyLogoFile, { upsert: true, cacheControl: '3600' });
-
-    if (uploadError) {
-      console.error('Society logo upload failed:', uploadError);
-      statusEl.textContent = '';
-      showToast('لوگو اپلوڈ ناکام: ' + uploadError.message, 'error');
-      return;
-    }
-
-    const { data: publicUrlData } = sb.storage.from('society-logos').getPublicUrl(filePath);
-    const publicUrl = publicUrlData.publicUrl + '?t=' + Date.now();
-
-    const { error: updateError } = await sb
-      .from('societies')
-      .update({ logo_url: publicUrl })
-      .eq('id', societyId);
-
-    if (updateError) {
-      console.error('Society logo_url update failed:', updateError);
-      statusEl.textContent = '';
-      showToast('Society ریکارڈ اپڈیٹ ناکام: ' + updateError.message, 'error');
-      return;
-    }
-
-    statusEl.textContent = '';
-    societyLogoFile = null;
   }
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('societyForm', async frm => {
@@ -6024,7 +5812,6 @@ select.form-input {
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
 
-    await uploadSocietyLogo(savedId);
     await saveCabinetFields('cab', 'society', savedId);
 
     showToast('✓ Society محفوظ ہو گئی!');
@@ -6101,40 +5888,12 @@ select.form-input {
   }
 
   /* ── EVENT: create / edit / delete / list (Admin) ── */
-  let eventSelectedImageFile = null;
-
-  async function populateEventDropdowns() {
-    const socSel = document.getElementById('eventSocietySelect');
-    const chSel = document.getElementById('eventChapterSelect');
-    if (!socSel || !chSel) return;
-
-    const { data: socs } = await sb.from('societies').select('id, name').order('name');
-    socSel.innerHTML = '<option value="">— تمام Societies —</option>' +
-      (socs || []).map(s => `<option value="${sanitize(s.name)}">${sanitize(s.name)}</option>`).join('');
-
-    const { data: chaps } = await sb.from('chapters').select('id, province').order('province');
-    chSel.innerHTML = '<option value="">— تمام Chapters —</option>' +
-      (chaps || []).map(c => `<option value="${sanitize(c.province)}">${sanitize(c.province)}</option>`).join('');
-  }
-
-  function resetEventImageUI() {
-    eventSelectedImageFile = null;
-    document.getElementById('eventExistingImageUrl').value = '';
-    document.getElementById('eventImagePreview').style.display = 'none';
-    document.getElementById('eventImagePreview').src = '';
-    document.getElementById('eventImagePlaceholder').style.display = 'block';
-    document.getElementById('eventImageStatus').textContent = '';
-    document.getElementById('eventImageInput').value = '';
-  }
-
-  window.openCreateEventModal = async function() {
+  window.openCreateEventModal = function() {
     document.getElementById('eventForm').reset();
     document.getElementById('eventEditId').value = '';
     document.getElementById('eventModalTitle').textContent = 'نیا Event';
     document.getElementById('eventFormat').value = 'in-person';
     document.getElementById('eventStatus').value = 'upcoming';
-    resetEventImageUI();
-    await populateEventDropdowns();
     openModal('eventModal');
   };
 
@@ -6142,63 +5901,26 @@ select.form-input {
     const { data: ev, error } = await sb.from('events').select('*').eq('id', id).single();
     if (error || !ev) { showToast('Event نہیں ملا: ' + (error?.message || ''), 'error'); return; }
     document.getElementById('eventForm').reset();
-    resetEventImageUI();
-    await populateEventDropdowns();
     document.getElementById('eventEditId').value = ev.id;
     document.getElementById('eventModalTitle').textContent = 'Event میں ترمیم';
     document.getElementById('eventTitle').value = ev.title || '';
     document.getElementById('eventDescription').value = ev.description || '';
-    document.getElementById('eventSocietySelect').value = ev.society || '';
-    document.getElementById('eventChapterSelect').value = ev.chapter || '';
+    document.getElementById('eventSociety').value = ev.society || '';
+    document.getElementById('eventChapter').value = ev.chapter || '';
     document.getElementById('eventFormat').value = ev.format || 'in-person';
     document.getElementById('eventDate').value = ev.event_date ? new Date(ev.event_date).toISOString().slice(0,10) : '';
     document.getElementById('eventVenue').value = ev.venue || '';
     document.getElementById('eventStatus').value = ev.status || 'upcoming';
     document.getElementById('eventRegisterUrl').value = ev.register_url || '';
-    if (ev.image_url) {
-      document.getElementById('eventExistingImageUrl').value = ev.image_url;
-      document.getElementById('eventImagePreview').src = ev.image_url;
-      document.getElementById('eventImagePreview').style.display = 'block';
-      document.getElementById('eventImagePlaceholder').style.display = 'none';
-    }
     openModal('eventModal');
   };
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const imgInput = document.getElementById('eventImageInput');
-    if (imgInput) {
-      imgInput.addEventListener('change', () => {
-        const file = imgInput.files[0];
-        if (!file) return;
-        if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-          showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
-          imgInput.value = '';
-          return;
-        }
-        if (file.size > 3 * 1024 * 1024) {
-          showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
-          imgInput.value = '';
-          return;
-        }
-        eventSelectedImageFile = file;
-        const reader = new FileReader();
-        reader.onload = e => {
-          document.getElementById('eventImagePreview').src = e.target.result;
-          document.getElementById('eventImagePreview').style.display = 'block';
-          document.getElementById('eventImagePlaceholder').style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-        document.getElementById('eventImageStatus').textContent = 'نئی تصویر منتخب ہو گئی — محفوظ کرنے پر اپلوڈ ہوگی۔';
-      });
-    }
-  });
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('eventForm', async frm => {
     const editId = frm.querySelector('#eventEditId').value;
     const title = frm.querySelector('#eventTitle').value.trim();
     const description = frm.querySelector('#eventDescription').value.trim() || null;
-    const society = frm.querySelector('#eventSocietySelect').value.trim() || null;
-    const chapter = frm.querySelector('#eventChapterSelect').value.trim() || null;
+    const society = frm.querySelector('#eventSociety').value.trim() || null;
+    const chapter = frm.querySelector('#eventChapter').value.trim() || null;
     const format = frm.querySelector('#eventFormat').value;
     const event_date = frm.querySelector('#eventDate').value || null;
     const venue = frm.querySelector('#eventVenue').value.trim() || null;
@@ -6208,24 +5930,7 @@ select.form-input {
     if (!title) { showToast('براہ کرم Event کا عنوان درج کریں', 'error'); return; }
     if (!event_date) { showToast('براہ کرم تاریخ منتخب کریں', 'error'); return; }
 
-    const statusEl = document.getElementById('eventImageStatus');
-    let image_url = document.getElementById('eventExistingImageUrl').value || null;
-
-    if (eventSelectedImageFile) {
-      if (statusEl) statusEl.textContent = 'تصویر اپلوڈ ہو رہی ہے…';
-      const ext = eventSelectedImageFile.name.split('.').pop();
-      const filePath = 'events/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
-      const { error: uploadError } = await sb.storage.from('shaoor-uploads').upload(filePath, eventSelectedImageFile);
-      if (uploadError) {
-        showToast('تصویر اپلوڈ ناکام: ' + uploadError.message, 'error');
-        if (statusEl) statusEl.textContent = '';
-        return;
-      }
-      const { data: publicUrlData } = sb.storage.from('shaoor-uploads').getPublicUrl(filePath);
-      image_url = publicUrlData.publicUrl;
-    }
-
-    const payload = { title, description, society, chapter, format, event_date, venue, status, register_url, image_url };
+    const payload = { title, description, society, chapter, format, event_date, venue, status, register_url };
     let error;
     if (editId) {
       ({ error } = await sb.from('events').update(payload).eq('id', editId));
@@ -6235,7 +5940,6 @@ select.form-input {
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
 
-    eventSelectedImageFile = null;
     showToast('✓ Event محفوظ ہو گیا!');
     closeModal('eventModal');
     loadEventsAdmin();
@@ -6621,7 +6325,6 @@ select.form-input {
       inputs.forEach(inp => {
         if (inp.name === 'website_url') return;
         if (inp.type === 'password') return;
-        if (inp.type === 'file') return; // file inputs' value cannot be reassigned — attempting to throws and silently blocks submission
         inp.value = sanitize(inp.value);
 
         // Email validation
@@ -6836,147 +6539,6 @@ select.form-input {
   }
 
   /* ── Admin: load all certificates into the admin table ── */
-  /* ── Branding Assets ── */
-  let brandLogoFile = null, brandSealFile = null, brandSigFile = null;
-  let brandingRowId = null;
-
-  function setBrandPreview(prefix, url) {
-    const img = document.getElementById(prefix + 'Preview');
-    const placeholder = document.getElementById(prefix + 'Placeholder');
-    if (url) {
-      img.src = url;
-      img.style.display = 'block';
-      placeholder.style.display = 'none';
-    } else {
-      img.src = '';
-      img.style.display = 'none';
-      placeholder.style.display = 'flex';
-    }
-  }
-
-  async function loadBrandingAdmin() {
-    const { data, error } = await sb.from('brand_settings').select('*').limit(1).maybeSingle();
-    if (error) { console.error('Branding load failed:', error); showToast('Branding لوڈ نہیں ہو سکی', 'error'); return; }
-    if (!data) return; // no row yet — form stays at defaults, save will need an insert (handled below)
-
-    brandingRowId = data.id;
-    document.getElementById('brandOrgName').value = data.organization_name || '';
-    document.getElementById('brandOfficialEmail').value = data.official_email || '';
-    document.getElementById('brandOfficialPhone').value = data.official_phone || '';
-    document.getElementById('brandFounderName').value = data.founder_name || '';
-    document.getElementById('brandDefaultAuthority').value = data.default_authority || '';
-
-    const primary = data.primary_color || '#0d1b3d';
-    const accent = data.accent_color || '#c99723';
-    const bg = data.background_color || '#f8f6f0';
-    document.getElementById('brandPrimaryColor').value = primary;
-    document.getElementById('brandPrimaryColorHex').value = primary;
-    document.getElementById('brandAccentColor').value = accent;
-    document.getElementById('brandAccentColorHex').value = accent;
-    document.getElementById('brandBackgroundColor').value = bg;
-    document.getElementById('brandBackgroundColorHex').value = bg;
-
-    setBrandPreview('brandLogo', data.logo_url);
-    setBrandPreview('brandSeal', data.seal_url);
-    setBrandPreview('brandSig', data.founder_signature_url);
-
-    const note = document.getElementById('brandingSavedNote');
-    note.textContent = data.updated_at ? ('آخری بار محفوظ: ' + new Date(data.updated_at).toLocaleString()) : '';
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    // Sync color-picker <-> hex text field, both directions
-    [['brandPrimaryColor', 'brandPrimaryColorHex'],
-     ['brandAccentColor', 'brandAccentColorHex'],
-     ['brandBackgroundColor', 'brandBackgroundColorHex']].forEach(([pickerId, hexId]) => {
-      const picker = document.getElementById(pickerId);
-      const hex = document.getElementById(hexId);
-      if (!picker || !hex) return;
-      picker.addEventListener('input', () => { hex.value = picker.value; });
-      hex.addEventListener('change', () => {
-        const v = hex.value.trim();
-        if (/^#[0-9a-fA-F]{6}$/.test(v)) picker.value = v;
-        else showToast('رنگ کا فارمیٹ درست نہیں (مثال: #0d1b3d)', 'error');
-      });
-    });
-
-    const fileMap = [
-      ['brandLogoInput', 'brandLogo', f => brandLogoFile = f],
-      ['brandSealInput', 'brandSeal', f => brandSealFile = f],
-      ['brandSigInput', 'brandSig', f => brandSigFile = f],
-    ];
-    fileMap.forEach(([inputId, prefix, setFile]) => {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-      input.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
-        if (!allowedTypes.includes(file.type)) {
-          showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
-          input.value = '';
-          return;
-        }
-        if (file.size > 3 * 1024 * 1024) {
-          showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
-          input.value = '';
-          return;
-        }
-        setFile(file);
-        setBrandPreview(prefix, URL.createObjectURL(file));
-      });
-    });
-  });
-
-  async function uploadBrandAsset(file, folder) {
-    if (!file) return null;
-    const ext = file.name.split('.').pop();
-    const filePath = `branding/${folder}/${Date.now()}.${ext}`;
-    const { error: uploadError } = await sb.storage.from('shaoor-uploads').upload(filePath, file, { upsert: true, cacheControl: '3600' });
-    if (uploadError) { throw uploadError; }
-    const { data: publicUrlData } = sb.storage.from('shaoor-uploads').getPublicUrl(filePath);
-    return publicUrlData.publicUrl + '?t=' + Date.now();
-  }
-
-  window.addEventListener('DOMContentLoaded', () => secureSubmit('brandingForm', async frm => {
-    const payload = {
-      organization_name: frm.querySelector('#brandOrgName').value.trim() || null,
-      official_email: frm.querySelector('#brandOfficialEmail').value.trim() || null,
-      official_phone: frm.querySelector('#brandOfficialPhone').value.trim() || null,
-      founder_name: frm.querySelector('#brandFounderName').value.trim() || null,
-      default_authority: frm.querySelector('#brandDefaultAuthority').value.trim() || null,
-      primary_color: frm.querySelector('#brandPrimaryColorHex').value.trim() || null,
-      accent_color: frm.querySelector('#brandAccentColorHex').value.trim() || null,
-      background_color: frm.querySelector('#brandBackgroundColorHex').value.trim() || null,
-      updated_at: new Date().toISOString(),
-    };
-    const { data: { user } } = await sb.auth.getUser();
-    if (user) payload.updated_by = user.id;
-
-    try {
-      if (brandLogoFile) payload.logo_url = await uploadBrandAsset(brandLogoFile, 'logo');
-      if (brandSealFile) payload.seal_url = await uploadBrandAsset(brandSealFile, 'seal');
-      if (brandSigFile) payload.founder_signature_url = await uploadBrandAsset(brandSigFile, 'signature');
-    } catch (err) {
-      console.error('Branding asset upload failed:', err);
-      showToast('اپلوڈ ناکام: ' + err.message, 'error');
-      return;
-    }
-
-    let error;
-    if (brandingRowId !== null) {
-      ({ error } = await sb.from('brand_settings').update(payload).eq('id', brandingRowId));
-    } else {
-      ({ error } = await sb.from('brand_settings').insert(payload));
-    }
-
-    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
-
-    brandLogoFile = null; brandSealFile = null; brandSigFile = null;
-    showToast('Branding محفوظ ہو گئی');
-    await loadBrandingAdmin();
-  }));
-
   async function loadCertificatesAdmin() {
     const tbody = document.getElementById('certificatesBody');
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading certificates…</td></tr>';
@@ -8099,13 +7661,13 @@ select.form-input {
       return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted);"><i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>Events لوڈ ہو رہے ہیں…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted);"><i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>Events لوڈ ہو رہے ہیں…</td></tr>';
 
     let data, error;
     try {
       const res = await sb
         .from('events')
-        .select('id, title, society, chapter, format, event_date, venue, status, register_url, description, image_url')
+        .select('id, title, society, chapter, format, event_date, venue, status, register_url, description')
         .order('event_date', { ascending: true });
       data = res.data;
       error = res.error;
@@ -8117,7 +7679,7 @@ select.form-input {
       const msg = error?.message || JSON.stringify(error);
       console.error('Events load failed:', msg);
       tbody.innerHTML = `
-        <tr><td colspan="8" style="text-align:center;padding:2rem;">
+        <tr><td colspan="7" style="text-align:center;padding:2rem;">
           <div style="color:var(--muted);font-size:.88rem;margin-bottom:.75rem;">Events لوڈ نہیں ہو سکے: ${sanitize(msg)}</div>
           <button onclick="loadPublicEvents()" class="btn btn-outline" style="font-size:.82rem;">
             <i class="fas fa-redo"></i> دوبارہ کوشش کریں
@@ -8173,13 +7735,8 @@ select.form-input {
         ? `<a href="${sanitize(ev.register_url)}" target="_blank" class="btn btn-gold" style="padding:.35rem .85rem;font-size:.78rem;"><i class="fas fa-external-link-alt"></i> Register</a>`
         : `<span style="color:var(--muted);font-size:.8rem;">—</span>`;
 
-      const imgCell = ev.image_url
-        ? `<img src="${sanitize(ev.image_url)}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;" loading="lazy" />`
-        : `<div style="width:56px;height:56px;border-radius:8px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>`;
-
       return `
         <tr data-status="${(ev.status||'').toLowerCase()}">
-          <td>${imgCell}</td>
           <td>
             <strong style="color:var(--ink);font-size:.92rem;">${sanitize(ev.title || '—')}</strong>
             ${ev.description ? `<br><span style="color:var(--muted);font-size:.78rem;">${sanitize(ev.description.substring(0,80))}${ev.description.length>80?'…':''}</span>` : ''}
@@ -8247,6 +7804,69 @@ select.form-input {
     }
   };
   loadChapterSocieties();
+
+  /* ── PUBLIC CHAPTERS — inject live Cabinet Seats into each chapter panel ── */
+  const CABINET_POSITION_LABELS = {
+    president: 'Chapter President',
+    vice_president: 'Vice President',
+    general_secretary: 'General Secretary',
+    treasurer: 'Treasurer',
+    media_coordinator: 'Media Coordinator',
+    events_coordinator: 'Events Coordinator',
+    women_wing_head: 'Women Wing Head',
+    youth_wing_head: 'Youth Wing Head',
+    membership_coordinator: 'Membership Coordinator',
+    public_relations_officer: 'Public Relations Officer'
+  };
+
+  window.loadChapterCabinets = async function() {
+    if (!sb) return;
+    try {
+      const { data: chaps, error: chErr } = await sb.from('chapters').select('id, province');
+      if (chErr || !chaps) return;
+
+      const chapterIds = chaps.map(c => c.id);
+      if (chapterIds.length === 0) return;
+
+      const { data: cabRows, error: cabErr } = await sb
+        .from('cabinet_members')
+        .select('chapter_id, position, member_id')
+        .in('chapter_id', chapterIds);
+      if (cabErr) return;
+
+      const memberIds = [...new Set((cabRows || []).map(r => r.member_id).filter(Boolean))];
+      let nameMap = {};
+      if (memberIds.length > 0) {
+        const { data: profs } = await sb.from('profiles').select('id, full_name').in('id', memberIds);
+        (profs || []).forEach(p => { nameMap[p.id] = p.full_name; });
+      }
+
+      const provinceToChapterId = {};
+      chaps.forEach(c => { if (c.province) provinceToChapterId[c.province] = c.id; });
+
+      Object.keys(provinceToChapterId).forEach(province => {
+        const grid = document.getElementById('seats-' + province);
+        if (!grid) return;
+        const chapterId = provinceToChapterId[province];
+        const cabByPos = {};
+        (cabRows || []).forEach(r => { if (r.chapter_id === chapterId) cabByPos[r.position] = r.member_id; });
+
+        const html = Object.keys(CABINET_POSITION_LABELS).map(posKey => {
+          const memberId = cabByPos[posKey];
+          const name = memberId ? (nameMap[memberId] || 'Unknown') : null;
+          if (name) {
+            return `<div class="seat-item filled"><div class="seat-dot filled"></div><div><div class="seat-role">${sanitize(CABINET_POSITION_LABELS[posKey])}</div><div class="seat-name">${sanitize(name)}</div></div></div>`;
+          }
+          return `<div class="seat-item"><div class="seat-dot open"></div><div><div class="seat-role">${sanitize(CABINET_POSITION_LABELS[posKey])}</div><div class="seat-name">Open — Apply Now</div></div></div>`;
+        }).join('');
+
+        grid.innerHTML = html;
+      });
+    } catch (e) {
+      console.error('loadChapterCabinets error:', e);
+    }
+  };
+  loadChapterCabinets();
 
 
   /* ── PUBLIC BLOG — Supabase ── */
