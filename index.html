@@ -6120,13 +6120,13 @@ select.form-input {
       if (statusEl) statusEl.textContent = 'تصویر اپلوڈ ہو رہی ہے…';
       const ext = eventSelectedImageFile.name.split('.').pop();
       const filePath = 'events/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
-      const { error: uploadError } = await sb.storage.from('event-media').upload(filePath, eventSelectedImageFile);
+      const { error: uploadError } = await sb.storage.from('shaoor-uploads').upload(filePath, eventSelectedImageFile);
       if (uploadError) {
         showToast('تصویر اپلوڈ ناکام: ' + uploadError.message, 'error');
         if (statusEl) statusEl.textContent = '';
         return;
       }
-      const { data: publicUrlData } = sb.storage.from('event-media').getPublicUrl(filePath);
+      const { data: publicUrlData } = sb.storage.from('shaoor-uploads').getPublicUrl(filePath);
       image_url = publicUrlData.publicUrl;
     }
 
