@@ -4595,12 +4595,8 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('gallery',this)"><i class="fas fa-images"></i> Gallery</button>
       <button class="admin-nav-btn" onclick="switchDashTab('societies',this);loadSocietiesAdmin();"><i class="fas fa-layer-group"></i> Societies</button>
       <button class="admin-nav-btn" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('institution',this)"><i class="fas fa-building"></i> Institution</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('documents',this)"><i class="fas fa-file-signature"></i> Documents</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('verification',this)"><i class="fas fa-qrcode"></i> Verification</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('security',this)"><i class="fas fa-shield-alt"></i> Security</button>
       <div style="margin-top:auto;padding-top:1rem;">
         <button class="admin-nav-btn" onclick="adminLogout()" style="color:rgba(252,165,165,.7);"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -4610,10 +4606,10 @@ select.form-input {
 
       <!-- Stats -->
       <div class="dash-stats">
-        <div class="ds-card reveal"><div class="ds-num" id="statMembers">—</div><div class="ds-lbl">Total Members</div></div>
-        <div class="ds-card reveal anim-d1"><div class="ds-num" id="statApplications">—</div><div class="ds-lbl">Pending Applications</div></div>
-        <div class="ds-card reveal anim-d2"><div class="ds-num" id="statCertificates">—</div><div class="ds-lbl">Certificates</div></div>
-        <div class="ds-card reveal anim-d3"><div class="ds-num" id="statChapters">—</div><div class="ds-lbl">Active Chapters</div></div>
+        <div class="ds-card reveal"><div class="ds-num">500+</div><div class="ds-lbl">Total Members</div></div>
+        <div class="ds-card reveal anim-d1"><div class="ds-num">42</div><div class="ds-lbl">Pending Applications</div></div>
+        <div class="ds-card reveal anim-d2"><div class="ds-num">12</div><div class="ds-lbl">Artworks Listed</div></div>
+        <div class="ds-card reveal anim-d3"><div class="ds-num">6</div><div class="ds-lbl">Active Chapters</div></div>
       </div>
 
       <!-- Dashboard Tabs -->
@@ -4624,10 +4620,6 @@ select.form-input {
         <button class="dtab" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
         <button class="dtab" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
         <button class="dtab" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
-        <button class="dtab" onclick="switchDashTab('institution',this)"><i class="fas fa-building"></i> Institution</button>
-        <button class="dtab" onclick="switchDashTab('documents',this)"><i class="fas fa-file-signature"></i> Documents</button>
-        <button class="dtab" onclick="switchDashTab('verification',this)"><i class="fas fa-qrcode"></i> Verification</button>
-        <button class="dtab" onclick="switchDashTab('security',this)"><i class="fas fa-shield-alt"></i> Security</button>
       </div>
 
       <!-- Members Panel -->
@@ -4756,78 +4748,6 @@ select.form-input {
             </tbody>
           </table>
         </div>
-      </div>
-
-      <!-- Institutional Management Panel -->
-      <div class="dash-panel" id="dp-institution">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;">
-          <div><h3 style="font-weight:700;margin:0 0 .25rem;">Institutional Management</h3><span class="upgrade-badge"><i class="fas fa-layer-group"></i> SHAOOR Backend V7</span></div>
-          <button class="btn btn-gold" onclick="refreshInstitutionData()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        </div>
-        <div class="sys-note"><strong>Central relationship:</strong> Member → Membership → Society/Chapter → Leadership/Appointment → Events/Attendance → Certificates/Documents → Verification. Existing records are preserved; this layer adds missing institutional records around them.</div>
-        <div class="sys-upgrade-grid">
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-id-card"></i></div><h4>Memberships</h4><p>Active, expired, suspended, renewal and membership history.</p><span id="membershipSysStatus" class="sys-status">Checking…</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-user-tie"></i></div><h4>Leadership</h4><p>Central, Chapter and Society appointments with term history.</p><span id="leadershipSysStatus" class="sys-status">Checking…</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-file-signature"></i></div><h4>Appointments</h4><p>Unique appointment IDs, authorities, signatures and verification.</p><span id="appointmentSysStatus" class="sys-status">Checking…</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-bell"></i></div><h4>Notifications</h4><p>In-dashboard notices for applications, membership, events and documents.</p><span id="notificationSysStatus" class="sys-status">Checking…</span></div>
-        </div>
-        <div class="sys-table-wrap"><table class="admin-table"><thead><tr><th>Module</th><th>Purpose</th><th>Database</th><th>Action</th></tr></thead><tbody id="institutionModuleBody"></tbody></table></div>
-        <div class="sys-upgrade-grid" style="margin-top:1rem;">
-          <div class="sys-card"><h4><i class="fas fa-id-badge" style="color:var(--gold);"></i> Create Membership</h4><div style="display:grid;gap:.55rem;margin-top:.7rem;"><input id="v7MembershipCode" class="form-input" placeholder="Membership ID / Code" /><input id="v7MembershipMember" class="form-input" list="v7MemberList" placeholder="Member Name (Member ID)" /><datalist id="v7MemberList"></datalist><select id="v7MembershipType" class="form-input"><option value="member">Member</option><option value="student">Student</option><option value="volunteer">Volunteer</option><option value="lifetime">Lifetime</option></select><div style="display:flex;gap:.5rem;"><input id="v7MembershipStart" type="date" class="form-input" /><input id="v7MembershipExpiry" type="date" class="form-input" /></div><button class="btn btn-gold" onclick="createV7Membership()">Create Membership</button></div></div>
-          <div class="sys-card"><h4><i class="fas fa-user-tie" style="color:var(--gold);"></i> Issue Appointment</h4><div style="display:grid;gap:.55rem;margin-top:.7rem;"><input id="v7AppointmentCode" class="form-input" placeholder="Appointment ID (e.g. SHR-APT-2026-001)" /><input id="v7AppointmentMember" class="form-input" list="v7MemberList" placeholder="Member Name (Member ID)" /><select id="v7AppointmentOrgType" class="form-input"><option value="central">Central</option><option value="chapter">Chapter</option><option value="society">Society</option><option value="other">Other</option></select><input id="v7AppointmentPosition" class="form-input" placeholder="Position / Designation" /><div style="display:flex;gap:.5rem;"><input id="v7AppointmentStart" type="date" class="form-input" /><input id="v7AppointmentEnd" type="date" class="form-input" /></div><button class="btn btn-gold" onclick="createV7Appointment()">Issue Appointment</button></div></div>
-        </div>
-      </div>
-
-      <!-- Documents Panel -->
-      <div class="dash-panel" id="dp-documents">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;"><div><h3 style="font-weight:700;margin:0;">SHAOOR Document Engine</h3><p style="margin:.25rem 0 0;color:var(--muted);font-size:.8rem;">Central templates for cards, certificates, appointment letters and official documents.</p></div><button class="btn btn-gold" onclick="refreshDocumentTemplates()"><i class="fas fa-sync-alt"></i> Refresh</button></div>
-        <div class="sys-upgrade-grid">
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-certificate"></i></div><h4>Certificate</h4><p>Participation, leadership, volunteer and recognition certificates.</p><span class="sys-status ok">Template Ready</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-id-card"></i></div><h4>Member Card</h4><p>Member ID, photo, society, chapter, validity and QR.</p><span class="sys-status ok">Brand Ready</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-file-contract"></i></div><h4>Appointment Letter</h4><p>Official appointment with position, term and authority.</p><span class="sys-status warn">DB Migration Required</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-envelope-open-text"></i></div><h4>Official Letters</h4><p>Invitation, appreciation, notice and service documents.</p><span class="sys-status warn">DB Migration Required</span></div>
-        </div>
-        <div class="sys-note"><strong>Brand configuration:</strong> Navy + Gold + White/Ivory, official SHAOOR logo, official seal, founder/authorized signatures and QR verification should come from one database configuration instead of being hard-coded per document.</div>
-        <div class="sys-table-wrap"><table class="admin-table"><thead><tr><th>Template</th><th>Document ID</th><th>Status</th><th>Notes</th></tr></thead><tbody id="documentTemplatesBody"><tr><td colspan="4" class="sys-empty">Loading templates…</td></tr></tbody></table></div>
-      </div>
-
-      <!-- Verification Panel -->
-      <div class="dash-panel" id="dp-verification">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;"><div><h3 style="font-weight:700;margin:0;">SHAOOR Verification Center</h3><p style="margin:.25rem 0 0;color:var(--muted);font-size:.8rem;">One place to verify Members, Memberships, Certificates and official Documents.</p></div></div>
-        <div class="sys-upgrade-grid">
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-user-check"></i></div><h4>Member</h4><p>Verify using Member ID and current profile status.</p><span class="sys-status ok">Existing</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-id-badge"></i></div><h4>Membership</h4><p>Verify active membership and validity period.</p><span id="verifyMembershipStatus" class="sys-status">Checking…</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-certificate"></i></div><h4>Certificate</h4><p>Verify certificate ID, recipient and status.</p><span class="sys-status ok">Existing</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-file-signature"></i></div><h4>Document</h4><p>Verify appointment and other generated official documents.</p><span id="verifyDocumentStatus" class="sys-status">Checking…</span></div>
-        </div>
-        <div class="sys-toolbar"><input id="verificationLookupInput" class="form-input" style="max-width:360px;" placeholder="Enter Member / Certificate / Appointment ID" /><button class="btn btn-gold" onclick="runVerificationLookup()"><i class="fas fa-search"></i> Verify</button></div>
-        <div id="verificationResult" class="sys-note">Enter an official ID to run a verification lookup.</div>
-      </div>
-
-      <!-- Security & Governance Panel -->
-      <div class="dash-panel" id="dp-security">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;"><div><h3 style="font-weight:700;margin:0;">Security & Governance</h3><p style="margin:.25rem 0 0;color:var(--muted);font-size:.8rem;">Roles, permissions, audit trail and database migration controls.</p></div><button class="btn btn-gold" onclick="runBackendHealthCheck()"><i class="fas fa-heartbeat"></i> Health Check</button></div>
-        <div class="sys-upgrade-grid">
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-user-shield"></i></div><h4>Role Based Access</h4><p>Founder, Admin, Central, Chapter, Society and specialist permissions.</p><span class="sys-status ok">Frontend Defined</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-database"></i></div><h4>RLS Policies</h4><p>Server-side protection must enforce access; frontend role checks are not enough.</p><span id="rlsStatus" class="sys-status warn">Verify in Supabase</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-history"></i></div><h4>Audit Logs</h4><p>Track who changed what, when and from which module.</p><span id="auditStatus" class="sys-status">Checking…</span></div>
-          <div class="sys-card"><div class="sys-icon"><i class="fas fa-palette"></i></div><h4>Brand Settings</h4><p>Central logo, seal, colors, signatures and document authority.</p><span id="brandStatus" class="sys-status">Checking…</span></div>
-        </div>
-        <h4 style="margin:1.2rem 0 .7rem;">Recommended Permission Matrix</h4>
-        <div class="perm-grid">
-          <div class="perm-item"><strong>Founder / Super Admin</strong><span>Full institutional control</span></div>
-          <div class="perm-item"><strong>Central Admin</strong><span>Members, leadership, events, applications</span></div>
-          <div class="perm-item"><strong>Chapter Admin</strong><span>Own chapter and linked societies</span></div>
-          <div class="perm-item"><strong>Society Admin</strong><span>Own society, members and events</span></div>
-          <div class="perm-item"><strong>Verification Officer</strong><span>Verification and document status</span></div>
-          <div class="perm-item"><strong>Media Admin</strong><span>Gallery and approved media</span></div>
-        </div>
-        <h4 style="margin:1.2rem 0 .7rem;">Supabase Migration Package</h4>
-        <div class="sys-note">The HTML cannot create database tables by itself. The SQL below is embedded so the same upgrade can be applied safely in the Supabase SQL Editor. Existing tables are preserved using <code>CREATE TABLE IF NOT EXISTS</code>.</div>
-        <textarea id="schemaMigrationBox" class="schema-box" readonly></textarea>
-        <div class="sys-toolbar" style="margin-top:.7rem;"><button class="btn btn-gold" onclick="copySchemaMigration()"><i class="fas fa-copy"></i> Copy Migration SQL</button><button class="btn" onclick="downloadSchemaMigration()"><i class="fas fa-download"></i> Save SQL File</button></div>
-        <div id="backendHealthResult" class="sys-note">Run Health Check after applying the migration.</div>
-      </div>
       </div>
 
     </div>
@@ -5095,7 +5015,7 @@ select.form-input {
 
 <!-- Create/Edit Event Modal (Admin) -->
 <div class="modal" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
-  <div class="modal-box">
+  <div class="modal-box" style="max-width:540px;">
     <div class="modal-head">
       <h3 id="eventModalTitle">نیا Event</h3>
       <button class="modal-close" onclick="closeModal('eventModal')" aria-label="Close"><i class="fas fa-times"></i></button>
@@ -5103,8 +5023,24 @@ select.form-input {
     <div class="modal-body">
       <form class="modal-form" id="eventForm">
         <input type="hidden" id="eventEditId" value="" />
+        <input type="hidden" id="eventExistingImageUrl" value="" />
+
+        <!-- Banner Image Upload -->
         <div class="form-group">
-          <label for="eventTitle">Event کا عنوان</label>
+          <label>Event Banner / تصویر</label>
+          <div id="eventImageUploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;" onclick="document.getElementById('eventImageInput').click()">
+            <img id="eventImagePreview" src="" alt="" style="display:none;max-height:140px;border-radius:8px;margin:0 auto .5rem;object-fit:cover;width:100%;" />
+            <div id="eventImagePlaceholder" style="color:var(--muted);">
+              <i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:.4rem;"></i>
+              <span style="font-size:.85rem;">تصویر منتخب کریں (PNG, JPG, WEBP — زیادہ سے زیادہ 3MB)</span>
+            </div>
+            <input type="file" id="eventImageInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+          </div>
+          <div id="eventImageStatus" style="font-size:.8rem;color:var(--muted);margin-top:.3rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="eventTitle">Event کا عنوان *</label>
           <input type="text" id="eventTitle" class="form-input" required placeholder="e.g., Monochrome Exhibition" />
         </div>
         <div class="form-group">
@@ -5112,15 +5048,19 @@ select.form-input {
           <textarea id="eventDescription" class="form-input" rows="3" placeholder="مختصر تفصیل"></textarea>
         </div>
         <div class="form-group">
-          <label for="eventSociety">Society</label>
-          <input type="text" id="eventSociety" class="form-input" placeholder="e.g., Calligraphy Society یا All Societies" />
+          <label for="eventSocietySelect">Society</label>
+          <select id="eventSocietySelect" class="form-input">
+            <option value="">— تمام Societies —</option>
+          </select>
         </div>
         <div class="form-group">
-          <label for="eventChapter">Chapter</label>
-          <input type="text" id="eventChapter" class="form-input" placeholder="e.g., Punjab Chapter" />
+          <label for="eventChapterSelect">Chapter</label>
+          <select id="eventChapterSelect" class="form-input">
+            <option value="">— تمام Chapters —</option>
+          </select>
         </div>
         <div class="form-group">
-          <label for="eventFormat">Format</label>
+          <label for="eventFormat">Format *</label>
           <select id="eventFormat" class="form-input" required>
             <option value="in-person">In-Person</option>
             <option value="online">Online</option>
@@ -5130,15 +5070,15 @@ select.form-input {
           </select>
         </div>
         <div class="form-group">
-          <label for="eventDate">تاریخ</label>
+          <label for="eventDate">تاریخ *</label>
           <input type="date" id="eventDate" class="form-input" required />
         </div>
         <div class="form-group">
           <label for="eventVenue">مقام (Venue)</label>
-          <input type="text" id="eventVenue" class="form-input" placeholder="e.g., Sahiwal" />
+          <input type="text" id="eventVenue" class="form-input" placeholder="e.g., SHAOOR Hall, Sahiwal" />
         </div>
         <div class="form-group">
-          <label for="eventStatus">Status</label>
+          <label for="eventStatus">Status *</label>
           <select id="eventStatus" class="form-input" required>
             <option value="upcoming">Upcoming</option>
             <option value="open">Open Now</option>
@@ -5151,7 +5091,7 @@ select.form-input {
           <label for="eventRegisterUrl">رجسٹریشن لنک (اختیاری)</label>
           <input type="url" id="eventRegisterUrl" class="form-input" placeholder="https://..." />
         </div>
-        <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
+        <button type="submit" class="btn btn-gold" style="justify-content:center;width:100%;"><i class="fas fa-save"></i> محفوظ کریں</button>
       </form>
     </div>
   </div>
@@ -6933,26 +6873,7 @@ select.form-input {
     const styles = Array.from(document.querySelectorAll('style')).map(el => el.textContent).join('\n');
     const safeTitle = title.replace(/[<>]/g,'');
     popup.document.open();
-    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+styles+'
-/* ═══════════════════════════════════════════════════════════════
-   SHAOOR INSTITUTIONAL BACKEND UPGRADE — V7
-   UI layer for memberships, leadership, appointments, documents,
-   verification, notifications, audit logs, permissions and brand.
-   ═══════════════════════════════════════════════════════════════ */
-.sys-upgrade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin:1rem 0 1.5rem}
-.sys-card{background:linear-gradient(145deg,#fff,#faf8f3);border:1px solid var(--border);border-radius:14px;padding:1rem;box-shadow:0 8px 22px rgba(13,27,61,.06)}
-.sys-card .sys-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(201,151,35,.12);color:var(--gold);font-size:1.05rem;margin-bottom:.7rem}
-.sys-card h4{margin:0 0 .35rem;font-size:.98rem}.sys-card p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.5}
-.sys-status{display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;margin-top:.65rem;padding:.22rem .55rem;border-radius:999px;background:#f1f5f9;color:#475569}
-.sys-status.ok{background:#dcfce7;color:#166534}.sys-status.warn{background:#fef3c7;color:#92400e}.sys-status.err{background:#fee2e2;color:#991b1b}
-.sys-toolbar{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1rem}
-.sys-toolbar .btn{font-size:.82rem}.sys-note{background:#f8fafc;border-left:3px solid var(--gold);padding:.8rem 1rem;border-radius:8px;color:#475569;font-size:.8rem;line-height:1.55;margin-bottom:1rem}
-.sys-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:12px}.sys-empty{padding:1.5rem;text-align:center;color:var(--muted)}
-.schema-box{width:100%;min-height:240px;border:1px solid var(--border);border-radius:10px;background:#0b1730;color:#e5e7eb;padding:1rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;line-height:1.5;resize:vertical}
-.perm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.7rem}.perm-item{border:1px solid var(--border);border-radius:10px;padding:.75rem;background:#fff}.perm-item strong{display:block;font-size:.8rem;margin-bottom:.35rem}.perm-item span{font-size:.7rem;color:var(--muted)}
-.upgrade-badge{display:inline-flex;align-items:center;gap:.35rem;background:linear-gradient(135deg,#0d1b3d,#172d59);color:#fff;padding:.3rem .65rem;border-radius:999px;font-size:.7rem;letter-spacing:.03em}
-@media(max-width:700px){.sys-upgrade-grid{grid-template-columns:1fr 1fr}.sys-card{padding:.8rem}}
-</style></head><body style="background:#fff;padding:24px"><div style="max-width:1000px;margin:0 auto">'+area.outerHTML+'</div><script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<\/script></body></html>');
+    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+styles+'</style></head><body style="background:#fff;padding:24px"><div style="max-width:1000px;margin:0 auto">'+area.outerHTML+'</div><script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<\/script></body></html>');
     popup.document.close();
   }
 
@@ -7447,10 +7368,6 @@ select.form-input {
     if (id === 'chapters') loadChaptersAdmin();
     if (id === 'gallery') loadGalleryAdmin();
     if (id === 'events') loadEventsAdmin();
-    if (id === 'institution') refreshInstitutionData();
-    if (id === 'documents') refreshDocumentTemplates();
-    if (id === 'verification') refreshVerificationStatus();
-    if (id === 'security') runBackendHealthCheck();
   }
 
   /* Admin form */
@@ -8136,378 +8053,6 @@ select.form-input {
 
   /* ═══════════════════════════════════════════ END V6 ADDITIONS ═══ */
 
-
-document.addEventListener('DOMContentLoaded',()=>{setTimeout(openAdminV7Init,800);});
-
-/* ═══ SHAOOR V7 INSTITUTIONAL BACKEND UI ═══ */
-const SHAOOR_V7_MIGRATION_SQL = `-- SHAOOR Institutional Backend V7 Migration
--- SAFE PRINCIPLE: additive only. Existing core tables/records are not deleted or replaced.
--- Run in Supabase SQL Editor after reviewing your existing schema.
-
-create extension if not exists pgcrypto;
-
-create table if not exists public.memberships (
-  id uuid primary key default gen_random_uuid(),
-  member_id uuid not null references public.profiles(id) on delete restrict,
-  membership_code text unique,
-  membership_type text not null default 'member',
-  status text not null default 'pending' check (status in ('pending','active','expiring','expired','suspended','revoked')),
-  start_date date,
-  expiry_date date,
-  renewal_date date,
-  approved_by uuid references public.profiles(id) on delete set null,
-  approved_at timestamptz,
-  suspended_at timestamptz,
-  suspension_reason text,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-create index if not exists memberships_member_id_idx on public.memberships(member_id);
-create index if not exists memberships_status_idx on public.memberships(status);
-
-create table if not exists public.leadership_appointments (
-  id uuid primary key default gen_random_uuid(),
-  appointment_id text unique not null,
-  member_id uuid not null references public.profiles(id) on delete restrict,
-  organization_type text not null check (organization_type in ('central','chapter','society','other')),
-  organization_id text,
-  position text not null,
-  start_date date,
-  end_date date,
-  status text not null default 'active' check (status in ('draft','active','completed','revoked')),
-  appointed_by uuid references public.profiles(id) on delete set null,
-  appointment_document_id text,
-  responsibilities text,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-create index if not exists leadership_member_idx on public.leadership_appointments(member_id);
-create index if not exists leadership_org_idx on public.leadership_appointments(organization_type,organization_id);
-
-create table if not exists public.generated_documents (
-  id uuid primary key default gen_random_uuid(),
-  document_id text unique not null,
-  document_type text not null,
-  template_key text not null,
-  member_id uuid references public.profiles(id) on delete set null,
-  related_record_id text,
-  status text not null default 'issued' check (status in ('draft','issued','revoked','archived')),
-  file_url text,
-  qr_payload text,
-  issued_by uuid references public.profiles(id) on delete set null,
-  issued_at timestamptz not null default now(),
-  revoked_at timestamptz,
-  revocation_reason text,
-  created_at timestamptz not null default now()
-);
-create index if not exists generated_documents_member_idx on public.generated_documents(member_id);
-create index if not exists generated_documents_type_idx on public.generated_documents(document_type);
-
-create table if not exists public.document_templates (
-  id uuid primary key default gen_random_uuid(),
-  template_key text unique not null,
-  template_name text not null,
-  document_type text not null,
-  version text not null default '1.0',
-  active boolean not null default true,
-  template_config jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-insert into public.document_templates(template_key,template_name,document_type)
-values
-('member_card','SHAOOR Official Member Card','member_card'),
-('participation_certificate','Certificate of Participation','certificate'),
-('leadership_certificate','Leadership Certificate','certificate'),
-('volunteer_certificate','Volunteer Certificate','certificate'),
-('appointment_letter','Official Appointment Letter','appointment_letter'),
-('appreciation_letter','Official Appreciation Letter','appreciation_letter'),
-('invitation_letter','Official Invitation Letter','invitation_letter'),
-('official_notice','Official Notice','notice')
-on conflict (template_key) do nothing;
-
-create table if not exists public.brand_settings (
-  id boolean primary key default true check (id),
-  organization_name text not null default 'SHAOOR | شعور',
-  logo_url text,
-  seal_url text,
-  primary_color text not null default '#0d1b3d',
-  accent_color text not null default '#c99723',
-  background_color text not null default '#f8f6f0',
-  official_email text,
-  official_phone text,
-  founder_name text default 'Fatima Tu Zahra',
-  founder_signature_url text,
-  default_authority text,
-  updated_by uuid references public.profiles(id) on delete set null,
-  updated_at timestamptz not null default now()
-);
-insert into public.brand_settings(id) values(true) on conflict(id) do nothing;
-
-create table if not exists public.notifications (
-  id uuid primary key default gen_random_uuid(),
-  recipient_id uuid references public.profiles(id) on delete cascade,
-  notification_type text not null,
-  title text not null,
-  message text not null,
-  link_url text,
-  is_read boolean not null default false,
-  created_at timestamptz not null default now()
-);
-create index if not exists notifications_recipient_idx on public.notifications(recipient_id,created_at desc);
-
-create table if not exists public.audit_logs (
-  id uuid primary key default gen_random_uuid(),
-  actor_id uuid references public.profiles(id) on delete set null,
-  action text not null,
-  module text not null,
-  record_id text,
-  old_value jsonb,
-  new_value jsonb,
-  metadata jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now()
-);
-create index if not exists audit_logs_created_idx on public.audit_logs(created_at desc);
-create index if not exists audit_logs_actor_idx on public.audit_logs(actor_id);
-
-create table if not exists public.event_registrations (
-  id uuid primary key default gen_random_uuid(),
-  event_id text not null,
-  member_id uuid references public.profiles(id) on delete cascade,
-  registration_status text not null default 'registered' check (registration_status in ('registered','cancelled','waitlist')),
-  registered_at timestamptz not null default now(),
-  unique(event_id,member_id)
-);
-
-create table if not exists public.event_attendance (
-  id uuid primary key default gen_random_uuid(),
-  event_id text not null,
-  member_id uuid references public.profiles(id) on delete cascade,
-  attendance_status text not null default 'present' check (attendance_status in ('present','absent','late','excused')),
-  checked_in_at timestamptz,
-  verified_by uuid references public.profiles(id) on delete set null,
-  unique(event_id,member_id)
-);
-
-create table if not exists public.member_verifications (
-  id uuid primary key default gen_random_uuid(),
-  member_id uuid references public.profiles(id) on delete cascade,
-  verification_code text not null,
-  result_status text not null default 'valid',
-  verified_at timestamptz not null default now(),
-  verifier_ip text
-);
-
-create table if not exists public.document_verifications (
-  id uuid primary key default gen_random_uuid(),
-  document_id text not null,
-  result_status text not null default 'valid',
-  verified_at timestamptz not null default now(),
-  verifier_ip text
-);
-
--- Additive profile fields. Each ALTER is safe if the column already exists.
-alter table public.profiles add column if not exists whatsapp text;
-alter table public.profiles add column if not exists city text;
-alter table public.profiles add column if not exists province text;
-alter table public.profiles add column if not exists membership_type text;
-alter table public.profiles add column if not exists membership_start_date date;
-alter table public.profiles add column if not exists membership_expiry_date date;
-alter table public.profiles add column if not exists application_id uuid;
-alter table public.profiles add column if not exists approved_at timestamptz;
-alter table public.profiles add column if not exists approved_by uuid;
-
--- Generic updated_at helper.
-create or replace function public.set_updated_at()
-returns trigger language plpgsql as $$
-begin new.updated_at = now(); return new; end; $$;
-
-drop trigger if exists trg_memberships_updated_at on public.memberships;
-create trigger trg_memberships_updated_at before update on public.memberships for each row execute function public.set_updated_at();
-drop trigger if exists trg_leadership_updated_at on public.leadership_appointments;
-create trigger trg_leadership_updated_at before update on public.leadership_appointments for each row execute function public.set_updated_at();
-drop trigger if exists trg_templates_updated_at on public.document_templates;
-create trigger trg_templates_updated_at before update on public.document_templates for each row execute function public.set_updated_at();
-drop trigger if exists trg_brand_updated_at on public.brand_settings;
-create trigger trg_brand_updated_at before update on public.brand_settings for each row execute function public.set_updated_at();
-
--- Admin role helper. Keep role names aligned with the existing SHAOOR frontend.
-create or replace function public.is_shaoor_admin()
-returns boolean
-language sql
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1 from public.profiles p
-    where p.id = auth.uid()
-      and p.status = 'active'
-      and p.role in ('founder','admin','general_secretary','treasurer','media_coordinator','verification_officer','chapter_admin','society_admin','event_coordinator')
-  );
-$$;
-
--- RLS for new sensitive tables.
-alter table public.memberships enable row level security;
-alter table public.leadership_appointments enable row level security;
-alter table public.generated_documents enable row level security;
-alter table public.document_templates enable row level security;
-alter table public.brand_settings enable row level security;
-alter table public.notifications enable row level security;
-alter table public.audit_logs enable row level security;
-alter table public.event_registrations enable row level security;
-alter table public.event_attendance enable row level security;
-alter table public.member_verifications enable row level security;
-alter table public.document_verifications enable row level security;
-
--- Members can see their own membership/notifications/documents; admins can manage institutional data.
-drop policy if exists memberships_self_select on public.memberships;
-create policy memberships_self_select on public.memberships for select using (member_id = auth.uid() or public.is_shaoor_admin());
-drop policy if exists memberships_admin_write on public.memberships;
-create policy memberships_admin_write on public.memberships for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-
-drop policy if exists leadership_admin_all on public.leadership_appointments;
-create policy leadership_admin_all on public.leadership_appointments for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-
-drop policy if exists documents_self_select on public.generated_documents;
-create policy documents_self_select on public.generated_documents for select using (member_id = auth.uid() or public.is_shaoor_admin());
-drop policy if exists documents_admin_write on public.generated_documents;
-create policy documents_admin_write on public.generated_documents for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-
-drop policy if exists templates_admin_all on public.document_templates;
-create policy templates_admin_all on public.document_templates for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-
-drop policy if exists brand_admin_all on public.brand_settings;
-create policy brand_admin_all on public.brand_settings for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-
-drop policy if exists notifications_self on public.notifications;
-create policy notifications_self on public.notifications for select using (recipient_id = auth.uid() or public.is_shaoor_admin());
-drop policy if exists notifications_self_update on public.notifications;
-create policy notifications_self_update on public.notifications for update using (recipient_id = auth.uid() or public.is_shaoor_admin()) with check (recipient_id = auth.uid() or public.is_shaoor_admin());
-drop policy if exists notifications_admin_insert on public.notifications;
-create policy notifications_admin_insert on public.notifications for insert with check (public.is_shaoor_admin());
-
-drop policy if exists audit_admin_select on public.audit_logs;
-create policy audit_admin_select on public.audit_logs for select using (public.is_shaoor_admin());
-drop policy if exists audit_admin_insert on public.audit_logs;
-create policy audit_admin_insert on public.audit_logs for insert with check (public.is_shaoor_admin());
-
-drop policy if exists registrations_self_select on public.event_registrations;
-create policy registrations_self_select on public.event_registrations for select using (member_id = auth.uid() or public.is_shaoor_admin());
-drop policy if exists registrations_self_write on public.event_registrations;
-create policy registrations_self_write on public.event_registrations for insert with check (member_id = auth.uid() or public.is_shaoor_admin());
-
-drop policy if exists attendance_admin_all on public.event_attendance;
-create policy attendance_admin_all on public.event_attendance for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-
-drop policy if exists member_verification_admin_all on public.member_verifications;
-create policy member_verification_admin_all on public.member_verifications for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-drop policy if exists document_verification_admin_all on public.document_verifications;
-create policy document_verification_admin_all on public.document_verifications for all using (public.is_shaoor_admin()) with check (public.is_shaoor_admin());
-
--- Note: Storage bucket policies for avatars/gallery should be reviewed separately because existing buckets may already have custom policies.
-`;
-
-function setSysStatus(id, state, text){
-  const el=document.getElementById(id); if(!el) return;
-  el.className='sys-status '+(state||''); el.textContent=text;
-}
-async function tableExists(table){
-  try{ const {error}=await sb.from(table).select('*',{head:true,count:'exact'}).limit(1); return !error; }
-  catch(e){ return false; }
-}
-async function safeCount(table, filterFn){
-  try{ let q=sb.from(table).select('*',{count:'exact',head:true}); if(filterFn) q=filterFn(q); const r=await q; return r.error?null:r.count; }catch(e){return null;}
-}
-async function refreshDashboardStats(){
-  const [m,a,c,ch]=await Promise.all([
-    safeCount('profiles'), safeCount('applications',q=>q.eq('status','pending')),
-    safeCount('certificates'), safeCount('chapters',q=>q.eq('status','active'))
-  ]);
-  const vals={statMembers:m,statApplications:a,statCertificates:c,statChapters:ch};
-  Object.entries(vals).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=v==null?'—':String(v)});
-}
-async function refreshInstitutionData(){
-  const modules=[
-    ['Memberships','memberships','Membership lifecycle, expiry and renewals.','membershipSysStatus'],
-    ['Leadership','leadership_appointments','Central / Chapter / Society term history.','leadershipSysStatus'],
-    ['Appointments','leadership_appointments','Official appointment IDs and authority records.','appointmentSysStatus'],
-    ['Notifications','notifications','Member and admin notifications.','notificationSysStatus']
-  ];
-  const body=document.getElementById('institutionModuleBody');
-  if(body) body.innerHTML=modules.map(x=>`<tr><td><strong>${x[0]}</strong></td><td>${x[2]}</td><td id="db-${x[1]}">Checking…</td><td><button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="checkOneModule('${x[1]}','${x[3]}')">Check</button></td></tr>`).join('');
-  for(const x of modules) await checkOneModule(x[1],x[3]);
-}
-async function checkOneModule(table,statusId){
-  const exists=await tableExists(table); const cell=document.getElementById('db-'+table); if(cell) cell.textContent=exists?'Available':'Migration required';
-  setSysStatus(statusId,exists?'ok':'warn',exists?'Connected':'Migration required');
-}
-async function refreshDocumentTemplates(){
-  const body=document.getElementById('documentTemplatesBody'); if(!body)return;
-  const {data,error}=await sb.from('document_templates').select('template_key,template_name,document_type,version,active').order('template_name');
-  if(error){body.innerHTML=`<tr><td colspan="4" class="sys-empty">document_templates not available yet. Apply the migration from Security → Supabase Migration Package.</td></tr>`;return;}
-  body.innerHTML=(data||[]).map(t=>`<tr><td><strong>${sanitize(t.template_name)}</strong></td><td>${sanitize(t.template_key)}</td><td><span class="status-pill" style="background:${t.active?'#16a34a':'#9ca3af'};color:#fff;">${t.active?'Active':'Inactive'}</span></td><td>v${sanitize(t.version||'1.0')} · ${sanitize(t.document_type)}</td></tr>`).join('')||'<tr><td colspan="4" class="sys-empty">No templates found.</td></tr>';
-}
-async function refreshVerificationStatus(){
-  const m=await tableExists('memberships'), d=await tableExists('generated_documents');
-  setSysStatus('verifyMembershipStatus',m?'ok':'warn',m?'Available':'Migration required');
-  setSysStatus('verifyDocumentStatus',d?'ok':'warn',d?'Available':'Migration required');
-}
-async function runVerificationLookup(){
-  const input=document.getElementById('verificationLookupInput'), out=document.getElementById('verificationResult'); if(!input||!out)return;
-  const id=input.value.trim(); if(!id){out.textContent='Please enter an official ID.';return;}
-  out.innerHTML='Searching…';
-  let found=[];
-  try{const {data}=await sb.from('profiles').select('full_name,member_id,role,status').eq('member_id',id).maybeSingle();if(data)found.push({type:'Member',status:data.status,name:data.full_name,id:data.member_id,role:data.role});}catch(e){}
-  try{const {data}=await sb.from('certificates').select('certificate_id,certificate_title,certificate_type,issue_date,status,member_id').eq('certificate_id',id).maybeSingle();if(data)found.push({type:'Certificate',status:data.status,name:data.certificate_title,id:data.certificate_id,role:data.certificate_type});}catch(e){}
-  try{const {data}=await sb.from('leadership_appointments').select('appointment_id,position,status,member_id,organization_type').eq('appointment_id',id).maybeSingle();if(data)found.push({type:'Appointment',status:data.status,name:data.position,id:data.appointment_id,role:data.organization_type});}catch(e){}
-  try{const {data}=await sb.from('generated_documents').select('document_id,document_type,status,member_id').eq('document_id',id).maybeSingle();if(data)found.push({type:'Document',status:data.status,name:data.document_type,id:data.document_id,role:'Official SHAOOR Document'});}catch(e){}
-  if(!found.length){out.innerHTML='<strong style="color:#991b1b;">NOT FOUND</strong><br>No matching SHAOOR record was found for this ID.';return;}
-  out.innerHTML=found.map(r=>`<strong style="color:#166534;">✓ ${sanitize(r.type)} — VERIFIED RECORD</strong><br>ID: ${sanitize(r.id)}<br>Name/Type: ${sanitize(r.name||'—')}<br>Status: ${sanitize(r.status||'—')}<br>Role: ${sanitize(r.role||'—')}`).join('<hr style="border:0;border-top:1px solid var(--border);margin:.7rem 0;">');
-}
-async function runBackendHealthCheck(){
-  const out=document.getElementById('backendHealthResult'); if(!out)return;
-  const checks=[['profiles','Core profiles'],['certificates','Certificates'],['applications','Applications'],['societies','Societies'],['chapters','Chapters'],['cabinet_members','Cabinet'],['events','Events'],['gallery','Gallery'],['memberships','Memberships'],['leadership_appointments','Leadership'],['generated_documents','Documents'],['audit_logs','Audit Logs'],['brand_settings','Brand Settings']];
-  const results=[]; for(const [t,n] of checks) results.push(`${await tableExists(t)?'✓':'⚠'} ${n}`);
-  out.innerHTML='<strong>Backend Health</strong><br>'+results.join(' &nbsp; | &nbsp; ')+'<br><small>⚠ indicates the table is not accessible yet; apply the embedded migration where appropriate.</small>';
-  const [audit,brand]=await Promise.all([tableExists('audit_logs'),tableExists('brand_settings')]);
-  setSysStatus('auditStatus',audit?'ok':'warn',audit?'Available':'Migration required');
-  setSysStatus('brandStatus',brand?'ok':'warn',brand?'Available':'Migration required');
-}
-function copySchemaMigration(){navigator.clipboard.writeText(SHAOOR_V7_MIGRATION_SQL).then(()=>showToast('Migration SQL copied to clipboard.')).catch(()=>showToast('Copy failed — select the SQL manually.','error'));}
-function downloadSchemaMigration(){const blob=new Blob([SHAOOR_V7_MIGRATION_SQL],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SHAOOR_Supabase_V7_Migration.sql';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
-async function populateV7MemberList(){
-  const dl=document.getElementById('v7MemberList'); if(!dl)return;
-  const {data}=await sb.from('profiles').select('id,full_name,member_id').order('full_name');
-  dl.innerHTML=''; (data||[]).forEach(p=>{const o=document.createElement('option');o.value=`${p.full_name} (${p.member_id})`;o.dataset.id=p.id;dl.appendChild(o);});
-}
-function resolveV7Member(inputId){
-  const input=document.getElementById(inputId), dl=document.getElementById('v7MemberList'); if(!input||!dl)return null;
-  const val=input.value.trim(); const opt=[...dl.options].find(o=>o.value===val); return opt?opt.value.match(/\(([^)]+)\)$/)?.[1]:null;
-}
-async function findProfileByMemberId(memberId){
-  if(!memberId)return null; const {data}=await sb.from('profiles').select('id,full_name,member_id').eq('member_id',memberId).maybeSingle(); return data||null;
-}
-async function createV7Membership(){
-  const memberCode=resolveV7Member('v7MembershipMember'); const profile=await findProfileByMemberId(memberCode);
-  if(!profile){showToast('Select a valid member from the list.','error');return;}
-  const payload={member_id:profile.id,membership_code:document.getElementById('v7MembershipCode').value.trim()||('SHR-MEM-'+Date.now()),membership_type:document.getElementById('v7MembershipType').value,status:'active',start_date:document.getElementById('v7MembershipStart').value||null,expiry_date:document.getElementById('v7MembershipExpiry').value||null,approved_by:(await sb.auth.getUser()).data.user?.id||null,approved_at:new Date().toISOString()};
-  const {error}=await sb.from('memberships').insert(payload); if(error){showToast('Membership create failed: '+error.message,'error');return;}
-  await sb.from('audit_logs').insert({actor_id:(await sb.auth.getUser()).data.user?.id||null,action:'create',module:'memberships',record_id:payload.membership_code,new_value:payload});
-  showToast('Membership record created successfully.');
-}
-async function createV7Appointment(){
-  const memberCode=resolveV7Member('v7AppointmentMember'); const profile=await findProfileByMemberId(memberCode);
-  if(!profile){showToast('Select a valid member from the list.','error');return;}
-  const payload={appointment_id:document.getElementById('v7AppointmentCode').value.trim()||('SHR-APT-'+Date.now()),member_id:profile.id,organization_type:document.getElementById('v7AppointmentOrgType').value,position:document.getElementById('v7AppointmentPosition').value.trim(),start_date:document.getElementById('v7AppointmentStart').value||null,end_date:document.getElementById('v7AppointmentEnd').value||null,status:'active',appointed_by:(await sb.auth.getUser()).data.user?.id||null};
-  if(!payload.position){showToast('Enter the appointment position.','error');return;}
-  const {error}=await sb.from('leadership_appointments').insert(payload); if(error){showToast('Appointment failed: '+error.message,'error');return;}
-  await sb.from('audit_logs').insert({actor_id:(await sb.auth.getUser()).data.user?.id||null,action:'create',module:'leadership_appointments',record_id:payload.appointment_id,new_value:payload});
-  showToast('Official appointment record created.');
-}
-function loadMigrationBox(){const el=document.getElementById('schemaMigrationBox');if(el)el.value=SHAOOR_V7_MIGRATION_SQL;}
-async function openAdminV7Init(){loadMigrationBox();refreshDashboardStats();populateV7MemberList();}
 </script>
 </body>
 </html>
