@@ -6526,6 +6526,7 @@ select.form-input {
       inputs.forEach(inp => {
         if (inp.name === 'website_url') return;
         if (inp.type === 'password') return;
+        if (inp.type === 'file') return; // file inputs' value cannot be reassigned — attempting to throws and silently blocks submission
         inp.value = sanitize(inp.value);
 
         // Email validation
