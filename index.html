@@ -4414,7 +4414,7 @@ select.form-input {
         <h3 style="font-weight:700;margin-bottom:.4rem;">Verify Certificate</h3>
         <p style="font-size:.88rem;color:var(--muted);margin-bottom:1.25rem;">Enter a certificate ID to verify authenticity.</p>
         <div class="ver-row">
-          <input type="text" id="certiId" class="ver-input" placeholder="e.g. SHR-CER-2026-000001" />
+          <input type="text" id="certiId" class="ver-input" placeholder="e.g. CERT-2026-000001" />
           <button class="btn btn-gold" onclick="verifyCert()">Verify</button>
         </div>
         <div class="ver-result" id="certiResult"></div>
@@ -7989,9 +7989,9 @@ select.form-input {
 
     if (!v) { showToast('سرٹیفکیٹ ID درج کریں', 'error'); return; }
 
-    if (!/^SHR-CER-\d{4}-\d{6}$/.test(v)) {
+    if (!/^CERT-\d{4}-\d{6}$/.test(v)) {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: SHR-CER-YYYY-XXXXXX</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: CERT-YYYY-XXXXXX</span></div></div>`;
       r.style.display = 'block';
       return;
     }
