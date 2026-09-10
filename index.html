@@ -8521,7 +8521,7 @@ select.form-input {
       const res = await sb
         .from('blog_posts')
         .select('id, title, excerpt, category, image_url, published_at, slug')
-        .eq('published', true)
+        .eq('status', 'published')
         .order('published_at', { ascending: false })
         .limit(6);
       data = res.data;
@@ -8531,36 +8531,7 @@ select.form-input {
     if (error) {
       const msg = error?.message || JSON.stringify(error);
       console.warn('Blog load failed:', msg);
-      // Fallback: show placeholder cards
-      grid.innerHTML = `
-        <article class="blog-card reveal">
-          <div class="blog-thumb"><i class="fas fa-image"></i></div>
-          <div class="blog-body">
-            <p class="blog-cat">Featured · Announcement</p>
-            <h3 class="blog-title">Monochrome Exhibition — Call for Submissions</h3>
-            <p class="blog-excerpt">Open call for artists across all disciplines. Theme: Expression in a single colour. Deadline: 15 Sep 2026.</p>
-            <div class="blog-meta"><i class="far fa-calendar-alt"></i> August 15, 2026</div>
-          </div>
-        </article>
-        <article class="blog-card reveal">
-          <div class="blog-thumb"><i class="fas fa-city"></i></div>
-          <div class="blog-body">
-            <p class="blog-cat">Community</p>
-            <h3 class="blog-title">SHAOOR Expands: New Chapters Across Pakistan</h3>
-            <p class="blog-excerpt">New chapters launching in major cities this season with dedicated spaces for all creative societies.</p>
-            <div class="blog-meta"><i class="far fa-calendar-alt"></i> July 10, 2026</div>
-          </div>
-        </article>
-        <article class="blog-card reveal">
-          <div class="blog-thumb"><i class="fas fa-pen-nib"></i></div>
-          <div class="blog-body">
-            <p class="blog-cat">Artist Spotlight</p>
-            <h3 class="blog-title">SHAOOR Artists Represent Pakistan in Cultural Exchange</h3>
-            <p class="blog-excerpt">Members from our calligraphy and fine arts societies participated in the South Asian Creative Exchange 2026.</p>
-            <div class="blog-meta"><i class="far fa-calendar-alt"></i> June 28, 2026</div>
-          </div>
-        </article>`;
-      initReveal();
+      grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--ruby);padding:2rem;font-size:.88rem;">Blog لوڈ نہیں ہو سکا: ${sanitize(msg)}</p>`;
       return;
     }
 
