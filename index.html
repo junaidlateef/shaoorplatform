@@ -5520,6 +5520,14 @@ select.form-input {
       <div class="admin-error" id="signupError"><i class="fas fa-exclamation-circle"></i> <span id="signupErrMsg">Something went wrong</span></div>
       <form class="modal-form" id="signupForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
         <div class="form-group"><label for="sName">Full Name</label><input type="text" id="sName" class="form-input" required placeholder="Your full name" /></div>
+        <div class="form-group">
+          <label for="sAvatar">Profile Picture</label>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <img id="sAvatarPreview" src="" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover;display:none;border:1px solid var(--border);" />
+            <input type="file" id="sAvatar" accept="image/png,image/jpeg,image/webp" class="form-input" required style="padding:.5rem;" />
+          </div>
+          <small id="sAvatarStatus" style="display:block;margin-top:.4rem;color:var(--muted);font-size:.78rem;"></small>
+        </div>
         <div class="form-group"><label for="sEmail">Email Address</label><input type="email" id="sEmail" class="form-input" required placeholder="your@email.com" /></div>
         <div class="form-group"><label for="sPass">Password</label>
           <input type="password" id="sPass" class="form-input" required minlength="8" placeholder="At least 8 characters" />
@@ -7663,6 +7671,39 @@ select.form-input {
     }
   });
 
+  /* ── Signup avatar preview ── */
+  const sAvatarInput = document.getElementById('sAvatar');
+  if (sAvatarInput) {
+    sAvatarInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      const preview = document.getElementById('sAvatarPreview');
+      const statusEl = document.getElementById('sAvatarStatus');
+      statusEl.textContent = '';
+      if (!file) { preview.style.display = 'none'; return; }
+
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        statusEl.textContent = 'صرف PNG, JPG, یا WEBP تصویر منتخب کریں';
+        e.target.value = '';
+        preview.style.display = 'none';
+        return;
+      }
+      if (file.size > 3 * 1024 * 1024) {
+        statusEl.textContent = 'تصویر 3MB سے چھوٹی ہونی چاہیے';
+        e.target.value = '';
+        preview.style.display = 'none';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        preview.src = ev.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   secureSubmit('signupForm', async frm => {
     const full_name = frm.querySelector('#sName').value.trim();
     const email = frm.querySelector('#sEmail').value.trim();
@@ -7670,7 +7711,14 @@ select.form-input {
     const society_id = frm.querySelector('#sSociety').value || null;
     const chapter_id = frm.querySelector('#sChapter').value || null;
     const province = frm.querySelector('#sProvince').value.trim() || null;
+    const avatarFileCheck = frm.querySelector('#sAvatar')?.files?.[0];
     const err = document.getElementById('signupError');
+
+    if (!avatarFileCheck) {
+      document.getElementById('signupErrMsg').textContent = 'Profile picture is required.';
+      err.style.display = 'flex'; err.style.alignItems = 'center'; err.style.gap = '.5rem';
+      return;
+    }
 
     /* Password policy: at least one lowercase, one uppercase, one digit, one special char */
     const hasLower = /[a-z]/.test(password);
@@ -7703,6 +7751,32 @@ select.form-input {
       try {
         await sb.from('profiles').update({ society_id, chapter_id, province }).eq('id', data.user.id);
       } catch (e) { /* best effort — RLS may block until email confirmed/logged in */ }
+    }
+
+    const avatarFile = frm.querySelector('#sAvatar')?.files?.[0];
+    if (data.user && data.session && avatarFile) {
+      const statusEl = document.getElementById('sAvatarStatus');
+      statusEl.textContent = 'تصویر اپلوڈ ہو رہی ہے…';
+
+      const ext = avatarFile.name.split('.').pop();
+      const filePath = `${data.user.id}/avatar.${ext}`;
+
+      const { error: uploadError } = await sb.storage
+        .from('avatars')
+        .upload(filePath, avatarFile, { upsert: true, cacheControl: '3600' });
+
+      if (uploadError) {
+        console.error('Signup avatar upload failed:', uploadError);
+        statusEl.textContent = '';
+        showToast('تصویر اپلوڈ نہیں ہو سکی، بعد میں dashboard سے لگائیں', 'error');
+      } else {
+        const { data: publicUrlData } = sb.storage.from('avatars').getPublicUrl(filePath);
+        const publicUrl = publicUrlData.publicUrl + '?t=' + Date.now();
+        try {
+          await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', data.user.id);
+        } catch (e) { console.error('Avatar profile update failed:', e); }
+        statusEl.textContent = '';
+      }
     }
 
     if (data.session) {
