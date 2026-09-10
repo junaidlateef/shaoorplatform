@@ -7840,7 +7840,7 @@ select.form-input {
 
     const { data: members, error } = await sb
       .from('profiles')
-      .select('id, member_id, full_name, phone, role, status')
+      .select('id, member_id, full_name, phone, role, status, province, society_id, chapter_id, societies(name), chapters(name)')
       .order('member_id', { ascending: true });
 
     if (error) {
@@ -7862,9 +7862,11 @@ select.form-input {
       if (m.status !== 'suspended') {
         actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="setMemberStatus('${m.id}','suspended')">Suspend</button>`);
       }
+      const societyName = m.societies ? m.societies.name : '—';
+      const chapterName = m.chapters ? m.chapters.name : '—';
       return `<tr>
         <td>${sanitize(m.member_id || '—')}</td>
-        <td>${sanitize(m.full_name || '—')}</td>
+        <td>${sanitize(m.full_name || '—')}<br><span style="font-size:.72rem;color:var(--muted);">${sanitize(societyName)} · ${sanitize(chapterName)} · ${sanitize(m.province || '—')}</span></td>
         <td>${sanitize(m.phone || '—')}</td>
         <td style="text-transform:capitalize;">${sanitize(m.role || '—')}</td>
         <td>${memberStatusPill(m.status)}</td>
@@ -8607,146 +8609,6 @@ select.form-input {
 
 
   /* ═══════════════════════════════════════════ END V6 ADDITIONS ═══ */
-
-
-  /* SHAOOR MEMBERS ADMIN MODULE v1.0 */
-  const SHAOORMembersAdmin = (() => {
-    let allMembersCache = [];
-    let currentSession = null;
-    let isLoading = false;
-    const REQUIRED_COLUMNS = ['id', 'member_code', 'full_name', 'society', 'membership_tier', 'chapter', 'status', 'role', 'valid_until', 'created_at'];
-    const log = {
-      info: (msg, data) => console.log(`%c[SHAOOR Members] ${msg}`, 'color: #168A86; font-weight: 600;', data || ''),
-      warn: (msg, data) => console.warn(`%c[SHAOOR Members] ⚠ ${msg}`, 'color: #E28A2B; font-weight: 600;', data || ''),
-      error: (msg, data) => console.error(`%c[SHAOOR Members] ✗ ${msg}`, 'color: #B5485D; font-weight: 600;', data || '')
-    };
-    const verifyAdminSession = async () => {
-      if (!sb) { log.error('Supabase client not initialized'); return null; }
-      try {
-        const { data: { session }, error } = await sb.auth.getSession();
-        if (error || !session) { log.warn('No active session detected'); return null; }
-        const userRole = session.user?.user_metadata?.role;
-        const allowedRoles = ['admin', 'founder', 'general_secretary', 'verification_officer'];
-        if (!allowedRoles.includes(userRole)) { log.error('Insufficient permissions. User role: ' + userRole); return null; }
-        log.info('Admin session verified', { userId: session.user.id, role: userRole, email: session.user.email });
-        currentSession = session;
-        return session;
-      } catch (e) { log.error('Session verification exception', e.message); return null; }
-    };
-    const loadMembers = async () => {
-      const tbody = document.getElementById('membersBody');
-      if (!tbody) { log.error('Members table body not found'); return; }
-      const session = await verifyAdminSession();
-      if (!session) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;"><i class="fas fa-lock"></i> Admin access required.</td></tr>';
-        showToast('Admin authentication required', 'error');
-        return;
-      }
-      isLoading = true;
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> Loading members…</td></tr>';
-      log.info('Starting member load from Supabase');
-      try {
-        const { data: members, error } = await sb.from('members').select('id, member_code, full_name, society, membership_tier, chapter, status, role, valid_until, created_at').order('member_code', { ascending: true });
-        if (error) {
-          log.error('Members query failed', error);
-          const errorMsg = error.code === 'PGRST116' ? 'Members table not found.' : error.code === '42501' ? 'Access denied by RLS policy.' : error.message || 'Unknown error';
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:1.5rem;"><div style="color:var(--ruby);font-weight:600;"><i class="fas fa-exclamation-triangle"></i> Error: ${sanitize(errorMsg)}</div></td></tr>`;
-          showToast(errorMsg, 'error');
-          return;
-        }
-        if (!members || members.length === 0) {
-          log.info('No members found');
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-users"></i> No members yet.</td></tr>';
-          allMembersCache = [];
-          return;
-        }
-        allMembersCache = members;
-        log.info('Members loaded', { count: members.length });
-        renderMembersTable(members);
-      } catch (e) {
-        log.error('Member load exception', e.message);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;"><i class="fas fa-network-wired"></i> Network error.</td></tr>';
-        showToast('Network error: ' + e.message, 'error');
-      } finally { isLoading = false; }
-    };
-    const renderMembersTable = (members) => {
-      const tbody = document.getElementById('membersBody');
-      if (!tbody) return;
-      tbody.innerHTML = members.map((member) => {
-        const { id, member_code, full_name, society, membership_tier, status, valid_until } = member;
-        const statusPill = getStatusPill(status);
-        const tierBadge = getTierBadge(membership_tier);
-        const validityText = valid_until ? new Date(valid_until).toLocaleDateString('en-GB') : '—';
-        const approveBtn = status !== 'Active' ? `<button onclick="SHAOORMembersAdmin.updateMemberStatus('${id}', 'Active')" style="background:#16a34a;color:white;padding:0.35rem 0.75rem;font-size:0.75rem;border:none;border-radius:6px;cursor:pointer;"><i class="fas fa-check"></i> Approve</button>` : '';
-        const disapproveBtn = status !== 'Inactive' ? `<button onclick="SHAOORMembersAdmin.updateMemberStatus('${id}', 'Inactive')" style="background:var(--ruby);color:white;padding:0.35rem 0.75rem;font-size:0.75rem;border:none;border-radius:6px;cursor:pointer;"><i class="fas fa-times"></i> Disapprove</button>` : '';
-        return `<tr data-member-id="${id}"><td style="font-weight:600;color:var(--gold);">${sanitize(member_code)}</td><td style="font-weight:500;">${sanitize(full_name)}</td><td style="color:var(--muted);">${sanitize(society || '—')}</td><td>${tierBadge}</td><td>${sanitize(validityText)}</td><td>${statusPill}</td><td style="display:flex;gap:0.5rem;">${approveBtn}${disapproveBtn}</td></tr>`;
-      }).join('');
-    };
-    const getStatusPill = (status) => {
-      const statusMap = { Active: { bg: '#dcfce7', color: '#166534', text: 'Active' }, Inactive: { bg: '#fecaca', color: '#991b1b', text: 'Inactive' }, Pending: { bg: '#fef3c7', color: '#92400e', text: 'Pending' }, Suspended: { bg: '#fee2e2', color: '#7f1d1d', text: 'Suspended' } };
-      const config = statusMap[status] || { bg: '#f3f4f6', color: '#374151', text: sanitize(status || '—') };
-      return `<span style="background:${config.bg};color:${config.color};padding:0.35rem 0.75rem;border-radius:999px;font-weight:600;font-size:0.8rem;display:inline-block;">${config.text}</span>`;
-    };
-    const getTierBadge = (tier) => {
-      const tierMap = { 'Premium+': { icon: '👑', color: '#D4A63A' }, 'Premium': { icon: '⭐', color: '#F0C75E' }, 'Standard': { icon: '✓', color: '#168A86' }, 'Basic': { icon: '•', color: '#647084' } };
-      const config = tierMap[tier] || { icon: '○', color: '#999' };
-      return `<span style="color:${config.color};font-weight:600;">${config.icon} ${sanitize(tier || 'N/A')}</span>`;
-    };
-    const updateMemberStatus = async (memberId, newStatus) => {
-      if (!memberId || typeof memberId !== 'string') { log.error('Invalid member ID'); showToast('Invalid member ID', 'error'); return; }
-      const validStatuses = ['Active', 'Inactive', 'Pending', 'Suspended'];
-      if (!validStatuses.includes(newStatus)) { log.error('Invalid status'); showToast('Invalid status value', 'error'); return; }
-      const session = await verifyAdminSession();
-      if (!session) { showToast('Admin session expired.', 'error'); return; }
-      const actionLabel = newStatus === 'Active' ? 'Approve' : 'Disapprove';
-      if (!confirm(`${actionLabel} this member?\n\nStatus: ${newStatus}`)) { log.info('Update cancelled'); return; }
-      const row = document.querySelector(`tr[data-member-id="${memberId}"]`);
-      if (row) { row.style.opacity = '0.6'; row.style.pointerEvents = 'none'; }
-      log.info('Updating member status', { memberId, newStatus });
-      try {
-        const { error } = await sb.from('members').update({ status: newStatus }).eq('id', memberId);
-        if (error) {
-          log.error('Update failed', error);
-          if (row) { row.style.opacity = '1'; row.style.pointerEvents = 'auto'; }
-          const errorMsg = error.code === '42501' ? 'Permission denied.' : error.code === 'PGRST116' ? 'Member not found.' : 'Failed to update.';
-          showToast(errorMsg, 'error');
-          return;
-        }
-        log.info('Update successful');
-        showToast(`Member ${actionLabel.toLowerCase()}d!`, 'success');
-        setTimeout(() => { loadMembers(); }, 500);
-      } catch (e) {
-        log.error('Update exception', e.message);
-        if (row) { row.style.opacity = '1'; row.style.pointerEvents = 'auto'; }
-        showToast('Error: ' + e.message, 'error');
-      }
-    };
-    const searchMembers = (query) => {
-      const tbody = document.getElementById('membersBody');
-      if (!tbody) return;
-      const searchTerm = sanitize(query).toLowerCase().trim();
-      document.querySelectorAll('#membersBody tr').forEach((row) => {
-        row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
-      });
-    };
-    return {
-      init: async () => { log.info('Init'); await loadMembers(); },
-      reload: async () => { log.info('Reload'); await loadMembers(); },
-      updateMemberStatus: updateMemberStatus,
-      search: searchMembers,
-      getCache: () => allMembersCache,
-      debug: () => ({ count: allMembersCache.length, loading: isLoading, session: currentSession ? { id: currentSession.user.id, email: currentSession.user.email } : null })
-    };
-  })();
-  if (typeof window.switchDashTab === 'function') {
-    const originalSwitchTab = window.switchDashTab;
-    window.switchDashTab = function(id, btn) {
-      originalSwitchTab.call(this, id, btn);
-      if (id === 'members') { SHAOORMembersAdmin.init(); }
-    };
-  }
-  window.searchMembers = function(query) { SHAOORMembersAdmin.search(query); };
-  console.log('%c✓ SHAOOR Members Admin Module Loaded', 'color: #168A86; font-weight: bold; font-size: 1.1em;');
 
 </script>
 </body>
