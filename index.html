@@ -4945,7 +4945,10 @@ select.form-input {
         <div id="idAvatarPlaceholder" style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto .75rem;"><i class="fas fa-user"></i></div>
         <div id="idName" style="font-weight:700;font-size:1.05rem;">—</div>
         <div id="idMemberId" style="color:var(--gold);font-size:.85rem;letter-spacing:1px;margin-bottom:.25rem;">—</div>
-        <div id="idRole" style="font-size:.75rem;color:rgba(255,255,255,.7);text-transform:capitalize;margin-bottom:1rem;">—</div>
+        <div id="idRole" style="font-size:.75rem;color:rgba(255,255,255,.7);text-transform:capitalize;margin-bottom:.5rem;">—</div>
+        <div id="idSociety" style="font-size:.72rem;color:rgba(255,255,255,.65);margin-bottom:.15rem;"></div>
+        <div id="idChapter" style="font-size:.72rem;color:rgba(255,255,255,.65);margin-bottom:.15rem;"></div>
+        <div id="idProvince" style="font-size:.72rem;color:rgba(255,255,255,.65);margin-bottom:1rem;"></div>
         <div id="idQrCode" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;"></div>
         <div style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:.75rem;">Scan to verify membership</div>
       </div>
@@ -7083,7 +7086,7 @@ select.form-input {
 
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url')
+      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('id', userId)
       .single();
 
@@ -7095,6 +7098,9 @@ select.form-input {
     document.getElementById('idName').textContent = profile.full_name || '—';
     document.getElementById('idMemberId').textContent = profile.member_id || '—';
     document.getElementById('idRole').textContent = (profile.role || '—') + ' · ' + (profile.status || '');
+    document.getElementById('idSociety').textContent = profile.societies ? ('Society: ' + profile.societies.name) : '';
+    document.getElementById('idChapter').textContent = profile.chapters ? ('Chapter: ' + profile.chapters.name) : '';
+    document.getElementById('idProvince').textContent = profile.province ? ('Province: ' + profile.province) : '';
 
     const idAvatarImg = document.getElementById('idAvatarImg');
     const idAvatarPlaceholder = document.getElementById('idAvatarPlaceholder');
@@ -8023,13 +8029,15 @@ select.form-input {
   async function viewMember(id) {
     const { data: m, error } = await sb
       .from('profiles')
-      .select('member_id, full_name, phone, bio, role, status')
+      .select('member_id, full_name, phone, bio, role, status, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('id', id)
       .single();
 
     if (error || !m) { showToast('ممبر کی تفصیل لوڈ نہیں ہو سکی', 'error'); return; }
 
-    showToast(m.full_name + ' (' + m.member_id + ') · ' + m.role + ' · ' + m.status);
+    const societyName = m.societies ? m.societies.name : '—';
+    const chapterName = m.chapters ? m.chapters.name : '—';
+    showToast(m.full_name + ' (' + m.member_id + ') · ' + m.role + ' · ' + m.status + ' · ' + societyName + ' · ' + chapterName + ' · ' + (m.province || '—'));
   }
 
   /* ── Member search now filters the real table ── */
