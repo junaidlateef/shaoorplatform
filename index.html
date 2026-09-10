@@ -4988,6 +4988,51 @@ select.form-input {
   </div>
 </div>
 
+<!-- View Member Profile Modal (Admin) -->
+<div class="modal" id="viewMemberModal" role="dialog" aria-modal="true" aria-labelledby="viewMemberTitle">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-head">
+      <h3 id="viewMemberTitle">Member Profile</h3>
+      <button class="modal-close" onclick="closeModal('viewMemberModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:linear-gradient(135deg,var(--navy),#0d1b3d);border-radius:16px;padding:1.5rem;color:#fff;text-align:center;position:relative;overflow:hidden;margin-bottom:1rem;">
+        <img id="vmAvatarImg" src="" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:none;margin:0 auto .75rem;" />
+        <div id="vmAvatarPlaceholder" style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto .75rem;"><i class="fas fa-user"></i></div>
+        <div id="vmName" style="font-weight:700;font-size:1.1rem;">—</div>
+        <div id="vmMemberId" style="color:var(--gold);font-size:.85rem;letter-spacing:1px;margin-bottom:.25rem;">—</div>
+        <div id="vmStatusPill" style="margin-top:.4rem;"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;font-size:.85rem;">
+        <div>
+          <div style="color:var(--muted);font-size:.72rem;">Role</div>
+          <div id="vmRole" style="font-weight:600;text-transform:capitalize;">—</div>
+        </div>
+        <div>
+          <div style="color:var(--muted);font-size:.72rem;">Phone</div>
+          <div id="vmPhone" style="font-weight:600;">—</div>
+        </div>
+        <div>
+          <div style="color:var(--muted);font-size:.72rem;">Society</div>
+          <div id="vmSociety" style="font-weight:600;">—</div>
+        </div>
+        <div>
+          <div style="color:var(--muted);font-size:.72rem;">Chapter</div>
+          <div id="vmChapter" style="font-weight:600;">—</div>
+        </div>
+        <div>
+          <div style="color:var(--muted);font-size:.72rem;">Province</div>
+          <div id="vmProvince" style="font-weight:600;">—</div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;">
+        <div style="color:var(--muted);font-size:.72rem;margin-bottom:.25rem;">Bio</div>
+        <div id="vmBio" style="font-size:.85rem;line-height:1.5;">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Issue Certificate Modal (Admin) -->
 <div class="modal" id="issueCertificateModal" role="dialog" aria-modal="true" aria-labelledby="issueCertTitle">
 
@@ -8103,7 +8148,7 @@ select.form-input {
   async function viewMember(id) {
     const { data: m, error } = await sb
       .from('profiles')
-      .select('member_id, full_name, phone, bio, role, status, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('member_id, full_name, phone, bio, role, status, province, avatar_url, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('id', id)
       .single();
 
@@ -8111,7 +8156,29 @@ select.form-input {
 
     const societyName = m.societies ? m.societies.name : '—';
     const chapterName = m.chapters ? m.chapters.name : '—';
-    showToast(m.full_name + ' (' + m.member_id + ') · ' + m.role + ' · ' + m.status + ' · ' + societyName + ' · ' + chapterName + ' · ' + (m.province || '—'));
+
+    document.getElementById('vmName').textContent = m.full_name || '—';
+    document.getElementById('vmMemberId').textContent = m.member_id || '—';
+    document.getElementById('vmRole').textContent = m.role || '—';
+    document.getElementById('vmPhone').textContent = m.phone || '—';
+    document.getElementById('vmSociety').textContent = societyName;
+    document.getElementById('vmChapter').textContent = chapterName;
+    document.getElementById('vmProvince').textContent = m.province || '—';
+    document.getElementById('vmBio').textContent = m.bio || '—';
+    document.getElementById('vmStatusPill').innerHTML = memberStatusPill(m.status);
+
+    const avatarImg = document.getElementById('vmAvatarImg');
+    const avatarPlaceholder = document.getElementById('vmAvatarPlaceholder');
+    if (m.avatar_url) {
+      avatarImg.src = m.avatar_url;
+      avatarImg.style.display = 'block';
+      avatarPlaceholder.style.display = 'none';
+    } else {
+      avatarImg.style.display = 'none';
+      avatarPlaceholder.style.display = 'flex';
+    }
+
+    openModal('viewMemberModal');
   }
 
   /* ── Member search now filters the real table ── */
