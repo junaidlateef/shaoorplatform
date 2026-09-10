@@ -4953,8 +4953,41 @@ select.form-input {
   </div>
 </div>
 
+<!-- Edit Member Modal (Admin) -->
+<div class="modal" id="editMemberModal" role="dialog" aria-modal="true" aria-labelledby="editMemberTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="editMemberTitle">Edit Member</h3>
+      <button class="modal-close" onclick="closeModal('editMemberModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="editMemberForm">
+        <input type="hidden" id="editMemberId" value="" />
+        <div class="form-group">
+          <label for="editMemberSociety">Society</label>
+          <select id="editMemberSociety" class="form-input">
+            <option value="">— کوئی Society منتخب نہیں —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="editMemberChapter">Chapter</label>
+          <select id="editMemberChapter" class="form-input">
+            <option value="">— کوئی Chapter منتخب نہیں —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="editMemberProvince">Province</label>
+          <input type="text" id="editMemberProvince" class="form-input" placeholder="e.g., Punjab" />
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Issue Certificate Modal (Admin) -->
 <div class="modal" id="issueCertificateModal" role="dialog" aria-modal="true" aria-labelledby="issueCertTitle">
+
   <div class="modal-box">
     <div class="modal-head">
       <h3 id="issueCertTitle">Issue New Certificate</h3>
@@ -7856,6 +7889,7 @@ select.form-input {
     tbody.innerHTML = members.map(m => {
       const actions = [];
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
+      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="openEditMember('${m.id}')">Edit</button>`);
       if (m.status !== 'active') {
         actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="setMemberStatus('${m.id}','active')">Approve</button>`);
       }
@@ -7887,6 +7921,59 @@ select.form-input {
     showToast('ممبر کا status اپڈیٹ ہو گیا۔');
     loadMembersAdmin();
   }
+
+  async function openEditMember(id) {
+    const { data: m, error } = await sb
+      .from('profiles')
+      .select('id, society_id, chapter_id, province')
+      .eq('id', id)
+      .single();
+
+    if (error || !m) { showToast('ممبر کی تفصیل لوڈ نہیں ہو سکی', 'error'); return; }
+
+    document.getElementById('editMemberId').value = m.id;
+    document.getElementById('editMemberProvince').value = m.province || '';
+
+    const socSel = document.getElementById('editMemberSociety');
+    const { data: socs } = await sb.from('societies').select('id, name').order('name');
+    socSel.innerHTML = '<option value="">— کوئی Society منتخب نہیں —</option>';
+    (socs || []).forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.name;
+      socSel.appendChild(opt);
+    });
+    socSel.value = m.society_id || '';
+
+    const chapSel = document.getElementById('editMemberChapter');
+    const { data: chaps } = await sb.from('chapters').select('id, name').order('name');
+    chapSel.innerHTML = '<option value="">— کوئی Chapter منتخب نہیں —</option>';
+    (chaps || []).forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      chapSel.appendChild(opt);
+    });
+    chapSel.value = m.chapter_id || '';
+
+    openModal('editMemberModal');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('editMemberForm', async frm => {
+    const id = frm.querySelector('#editMemberId').value;
+    const society_id = frm.querySelector('#editMemberSociety').value || null;
+    const chapter_id = frm.querySelector('#editMemberChapter').value || null;
+    const province = frm.querySelector('#editMemberProvince').value.trim() || null;
+
+    const { error } = await sb.from('profiles').update({ society_id, chapter_id, province }).eq('id', id);
+    if (error) {
+      showToast('اپڈیٹ ناکام: ' + error.message, 'error');
+      return;
+    }
+    showToast('ممبر کی تفصیلات محفوظ ہو گئیں۔');
+    closeModal('editMemberModal');
+    loadMembersAdmin();
+  }));
 
   async function viewMember(id) {
     const { data: m, error } = await sb
