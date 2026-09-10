@@ -5518,12 +5518,24 @@ select.form-input {
       <form class="modal-form" id="signupForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
         <div class="form-group"><label for="sName">Full Name</label><input type="text" id="sName" class="form-input" required placeholder="Your full name" /></div>
         <div class="form-group"><label for="sEmail">Email Address</label><input type="email" id="sEmail" class="form-input" required placeholder="your@email.com" /></div>
-        <div class="form-group">
-          <label for="sPass">Password</label>
+        <div class="form-group"><label for="sPass">Password</label>
           <input type="password" id="sPass" class="form-input" required minlength="8" placeholder="At least 8 characters" />
           <small style="display:block;margin-top:.4rem;color:var(--muted);font-size:.78rem;line-height:1.4;">
             Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character (!@#$%^&* etc.)
           </small>
+        </div>
+        <div class="form-group"><label for="sSociety">Society</label>
+          <select id="sSociety" class="form-input">
+            <option value="">— کوئی Society منتخب نہیں —</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="sChapter">Chapter</label>
+          <select id="sChapter" class="form-input">
+            <option value="">— کوئی Chapter منتخب نہیں —</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="sProvince">Province</label>
+          <input type="text" id="sProvince" class="form-input" placeholder="e.g., Punjab" />
         </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">Create Account</button>
       </form>
@@ -7622,10 +7634,36 @@ select.form-input {
     }
   })();
 
+  window.addEventListener('DOMContentLoaded', async () => {
+    const socSel = document.getElementById('sSociety');
+    const chapSel = document.getElementById('sChapter');
+    if (socSel) {
+      const { data: socs } = await sb.from('societies').select('id, name').order('name');
+      (socs || []).forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.name;
+        socSel.appendChild(opt);
+      });
+    }
+    if (chapSel) {
+      const { data: chaps } = await sb.from('chapters').select('id, name').order('name');
+      (chaps || []).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        chapSel.appendChild(opt);
+      });
+    }
+  });
+
   secureSubmit('signupForm', async frm => {
     const full_name = frm.querySelector('#sName').value.trim();
     const email = frm.querySelector('#sEmail').value.trim();
     const password = frm.querySelector('#sPass').value;
+    const society_id = frm.querySelector('#sSociety').value || null;
+    const chapter_id = frm.querySelector('#sChapter').value || null;
+    const province = frm.querySelector('#sProvince').value.trim() || null;
     const err = document.getElementById('signupError');
 
     /* Password policy: at least one lowercase, one uppercase, one digit, one special char */
@@ -7654,6 +7692,13 @@ select.form-input {
     }
 
     err.style.display = 'none';
+
+    if (data.user && (society_id || chapter_id || province)) {
+      try {
+        await sb.from('profiles').update({ society_id, chapter_id, province }).eq('id', data.user.id);
+      } catch (e) { /* best effort — RLS may block until email confirmed/logged in */ }
+    }
+
     if (data.session) {
       closeModal('signupModal');
       await openMemberDashboard(data.user.id);
