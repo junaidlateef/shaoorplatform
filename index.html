@@ -7929,7 +7929,7 @@ select.form-input {
   }
 
   // ── Verify functions secured ──
-  function verifyId() {
+  async function verifyId() {
     const raw = document.getElementById('verId').value;
     const v   = sanitize(raw.trim());
     const r   = document.getElementById('verResult');
@@ -7941,28 +7941,45 @@ select.form-input {
 
     if (!v) { showToast('ID درج کریں', 'error'); return; }
 
-    if (/^SHR-MBR-\d{4}-\d{6}$/.test(v)) {
-      r.className = 'ver-result ver-valid';
-      r.innerHTML = `
-        <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.5rem;">
-          <i class="fas fa-check-circle" style="font-size:1.5rem;color:#16a34a;flex-shrink:0;"></i>
-          <div><strong>درست SHAOOR رکن</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ایک فعال SHAOOR رکن کی ہے۔</span></div>
-        </div>
-        <div class="ver-grid">
-          <div class="ver-field"><div class="lbl">رکن کا نام</div><div class="val">Muhammad Ali</div></div>
-          <div class="ver-field"><div class="lbl">ID نمبر</div><div class="val">${sanitize(v)}</div></div>
-          <div class="ver-field"><div class="lbl">سوسائٹی</div><div class="val">خطاطی سوسائٹی</div></div>
-          <div class="ver-field"><div class="lbl">حیثیت</div><div class="val" style="color:#16a34a;">● فعال — دسمبر ۲۰۲۶</div></div>
-        </div>`;
-      r.style.display = 'block';
-    } else {
+    if (!/^SHR-MBR-\d{4}-\d{6}$/.test(v)) {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط ID</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID درست نہیں — دوبارہ جانچیں۔ فارمیٹ: SHR-MBR-YYYY-XXXXXX</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: SHR-MBR-YYYY-XXXXXX</span></div></div>`;
       r.style.display = 'block';
+      return;
     }
+
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('full_name, member_id, status, societies!profiles_society_id_fkey(name)')
+      .eq('member_id', v)
+      .single();
+
+    if (error || !profile) {
+      r.className = 'ver-result ver-invalid';
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط ID</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ہمارے ریکارڈ میں نہیں ملی۔</span></div></div>`;
+      r.style.display = 'block';
+      return;
+    }
+
+    const societyName = profile.societies ? profile.societies.name : '—';
+    const isActive = profile.status === 'active';
+
+    r.className = 'ver-result ver-valid';
+    r.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.5rem;">
+        <i class="fas fa-check-circle" style="font-size:1.5rem;color:#16a34a;flex-shrink:0;"></i>
+        <div><strong>درست SHAOOR رکن</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID SHAOOR کے ریکارڈ میں موجود ہے۔</span></div>
+      </div>
+      <div class="ver-grid">
+        <div class="ver-field"><div class="lbl">رکن کا نام</div><div class="val">${sanitize(profile.full_name || '—')}</div></div>
+        <div class="ver-field"><div class="lbl">ID نمبر</div><div class="val">${sanitize(profile.member_id)}</div></div>
+        <div class="ver-field"><div class="lbl">سوسائٹی</div><div class="val">${sanitize(societyName)}</div></div>
+        <div class="ver-field"><div class="lbl">حیثیت</div><div class="val" style="color:${isActive ? '#16a34a' : '#dc2626'};">${isActive ? '● فعال' : '● غیر فعال'}</div></div>
+      </div>`;
+    r.style.display = 'block';
   }
 
-  function verifyCert() {
+  async function verifyCert() {
     const raw = document.getElementById('certiId').value;
     const v   = sanitize(raw.trim());
     const r   = document.getElementById('certiResult');
@@ -7972,12 +7989,38 @@ select.form-input {
 
     if (!v) { showToast('سرٹیفکیٹ ID درج کریں', 'error'); return; }
 
-    if (/^SHR-CER-\d{4}-\d{6}$/.test(v)) {
+    if (!/^SHR-CER-\d{4}-\d{6}$/.test(v)) {
+      r.className = 'ver-result ver-invalid';
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: SHR-CER-YYYY-XXXXXX</span></div></div>`;
+      r.style.display = 'block';
+      return;
+    }
+
+    const { data: c, error } = await sb
+      .from('certificates')
+      .select('certificate_id, certificate_title, status, member_id')
+      .eq('certificate_id', v)
+      .single();
+
+    if (error || !c) {
+      r.className = 'ver-result ver-invalid';
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>سرٹیفکیٹ نہیں ملا</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ہمارے ریکارڈ میں نہیں۔</span></div></div>`;
+      r.style.display = 'block';
+      return;
+    }
+
+    const { data: prof } = await sb.from('profiles').select('full_name').eq('id', c.member_id).single();
+    const memberName = prof ? prof.full_name : '';
+
+    if (c.status === 'active') {
       r.className = 'ver-result ver-valid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-check-circle" style="font-size:1.5rem;color:#16a34a;"></i><div><strong>درست سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">سرٹیفکیٹ ID <strong>${sanitize(v)}</strong> SHAOOR کی طرف سے تصدیق شدہ ہے۔</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-check-circle" style="font-size:1.5rem;color:#16a34a;"></i><div><strong>درست سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">${sanitize(c.certificate_title || '')}${memberName ? ' — ' + sanitize(memberName) : ''}</span></div></div>`;
+    } else if (c.status === 'revoked') {
+      r.className = 'ver-result ver-invalid';
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>منسوخ شدہ سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ سرٹیفکیٹ منسوخ کر دیا گیا ہے۔</span></div></div>`;
     } else {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>سرٹیفکیٹ نہیں ملا</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ہمارے ریکارڈ میں نہیں۔ فارمیٹ: SHR-CER-YYYY-XXXXXX</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غیر فعال سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">اس سرٹیفکیٹ کی میعاد ختم ہو چکی ہے۔</span></div></div>`;
     }
     r.style.display = 'block';
   }
