@@ -4790,6 +4790,16 @@ select.form-input {
             </div>
 
             <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Photo</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandFounderPhotoPreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;object-position:top;border-radius:50%;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandFounderPhotoPlaceholder" style="width:64px;height:64px;border-radius:50%;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-user"></i></div>
+                <input type="file" id="brandFounderPhotoInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandFounderPhotoStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
+
+            <div>
               <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Signature</label>
               <div style="display:flex;align-items:center;gap:.75rem;">
                 <img id="brandSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
@@ -7231,7 +7241,7 @@ select.form-input {
 
   /* ── Admin: load all certificates into the admin table ── */
   /* ── Branding Assets ── */
-  let brandLogoFile = null, brandSealFile = null, brandSigFile = null;
+  let brandLogoFile = null, brandSealFile = null, brandSigFile = null, brandFounderPhotoFile = null;
   let brandingRowId = null;
 
   function setBrandPreview(prefix, url) {
@@ -7279,6 +7289,7 @@ select.form-input {
     setBrandPreview('brandLogo', data.logo_url);
     setBrandPreview('brandSeal', data.seal_url);
     setBrandPreview('brandSig', data.founder_signature_url);
+    setBrandPreview('brandFounderPhoto', data.founder_photo_url);
 
     const note = document.getElementById('brandingSavedNote');
     note.textContent = data.updated_at ? ('آخری بار محفوظ: ' + new Date(data.updated_at).toLocaleString()) : '';
@@ -7304,6 +7315,7 @@ select.form-input {
       ['brandLogoInput', 'brandLogo', f => brandLogoFile = f],
       ['brandSealInput', 'brandSeal', f => brandSealFile = f],
       ['brandSigInput', 'brandSig', f => brandSigFile = f],
+      ['brandFounderPhotoInput', 'brandFounderPhoto', f => brandFounderPhotoFile = f],
     ];
     fileMap.forEach(([inputId, prefix, setFile]) => {
       const input = document.getElementById(inputId);
@@ -7363,6 +7375,7 @@ select.form-input {
       if (brandLogoFile) payload.logo_url = await uploadBrandAsset(brandLogoFile, 'logo');
       if (brandSealFile) payload.seal_url = await uploadBrandAsset(brandSealFile, 'seal');
       if (brandSigFile) payload.founder_signature_url = await uploadBrandAsset(brandSigFile, 'signature');
+      if (brandFounderPhotoFile) payload.founder_photo_url = await uploadBrandAsset(brandFounderPhotoFile, 'founder-photo');
     } catch (err) {
       console.error('Branding asset upload failed:', err);
       showToast('اپلوڈ ناکام: ' + err.message, 'error');
@@ -7378,7 +7391,7 @@ select.form-input {
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
 
-    brandLogoFile = null; brandSealFile = null; brandSigFile = null;
+    brandLogoFile = null; brandSealFile = null; brandSigFile = null; brandFounderPhotoFile = null;
     showToast('Branding محفوظ ہو گئی');
     await loadBrandingAdmin();
   }));
