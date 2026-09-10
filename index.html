@@ -7840,7 +7840,7 @@ select.form-input {
 
     const { data: members, error } = await sb
       .from('profiles')
-      .select('id, member_id, full_name, phone, role, status, province, society_id, chapter_id, societies(name), chapters(name)')
+      .select('id, member_id, full_name, phone, role, status, province, society_id, chapter_id, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .order('member_id', { ascending: true });
 
     if (error) {
