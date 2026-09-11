@@ -5506,7 +5506,17 @@ select.form-input {
     </div>
     <div class="modal-body">
       <input type="hidden" id="ccSeatId" value="" />
+      <input type="hidden" id="ccExistingPhotoUrl" value="" />
       <form id="centralCabinetForm">
+        <div class="form-group">
+          <label>تصویر (Photo)</label>
+          <div id="ccPhotoUploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;" onclick="document.getElementById('ccPhotoInput').click()">
+            <img id="ccPhotoPreview" src="" alt="" style="display:none;max-height:120px;border-radius:50%;height:120px;width:120px;margin:0 auto .5rem;object-fit:cover;" />
+            <div id="ccPhotoPlaceholder" style="color:var(--muted);font-size:.85rem;"><i class="fas fa-camera" style="font-size:1.3rem;display:block;margin-bottom:.3rem;"></i>تصویر اپلوڈ کرنے کے لیے کلک کریں</div>
+            <input type="file" id="ccPhotoInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+          </div>
+          <div id="ccPhotoStatus" style="font-size:.8rem;color:var(--muted);margin-top:.3rem;"></div>
+        </div>
         <div class="form-group">
           <label for="ccMember">رکن (Member)</label>
           <input type="text" id="ccMember" list="ccMemberList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" required />
@@ -6931,7 +6941,7 @@ select.form-input {
 
     const { data: seats, error } = await sb
       .from('cabinet_members')
-      .select('id, position, bio, profiles(full_name, avatar_url)')
+      .select('id, position, bio, photo_url, profiles(full_name, avatar_url)')
       .is('chapter_id', null)
       .is('society_id', null)
       .order('position');
@@ -6941,7 +6951,7 @@ select.form-input {
 
     body.innerHTML = seats.map(s => {
       const name = s.profiles ? sanitize(s.profiles.full_name) : '—';
-      const avatar = s.profiles && s.profiles.avatar_url ? s.profiles.avatar_url : '';
+      const avatar = s.photo_url || (s.profiles && s.profiles.avatar_url ? s.profiles.avatar_url : '');
       const imgHtml = avatar
         ? '<img src="' + sanitize(avatar) + '" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" alt="' + name + '" />'
         : '<div style="width:42px;height:42px;border-radius:50%;background:var(--cream2);"></div>';
@@ -6958,10 +6968,48 @@ select.form-input {
     }).join('');
   }
 
+  let ccSelectedPhotoFile = null;
+
+  function resetCcPhotoUI() {
+    ccSelectedPhotoFile = null;
+    document.getElementById('ccExistingPhotoUrl').value = '';
+    document.getElementById('ccPhotoPreview').style.display = 'none';
+    document.getElementById('ccPhotoPreview').src = '';
+    document.getElementById('ccPhotoPlaceholder').style.display = 'block';
+    document.getElementById('ccPhotoStatus').textContent = '';
+    const inp = document.getElementById('ccPhotoInput');
+    if (inp) inp.value = '';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const ccPhotoInput = document.getElementById('ccPhotoInput');
+    if (ccPhotoInput) {
+      ccPhotoInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        if (file.size > 3 * 1024 * 1024) {
+          showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
+          ccPhotoInput.value = '';
+          return;
+        }
+        ccSelectedPhotoFile = file;
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('ccPhotoPreview').src = e.target.result;
+          document.getElementById('ccPhotoPreview').style.display = 'block';
+          document.getElementById('ccPhotoPlaceholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+        document.getElementById('ccPhotoStatus').textContent = 'نئی تصویر منتخب ہو گئی — محفوظ کرنے پر اپلوڈ ہوگی۔';
+      });
+    }
+  });
+
   async function openCentralCabinetModal() {
     document.getElementById('ccSeatId').value = '';
     document.getElementById('ccRole').value = '';
     document.getElementById('ccBio').value = '';
+    resetCcPhotoUI();
     await populatePeopleDatalist('ccMember', 'ccMemberList', null);
     document.getElementById('centralCabinetTitle').textContent = 'نئی Central Cabinet نشست';
     openModal('centralCabinetModal');
@@ -6970,7 +7018,7 @@ select.form-input {
   async function editCentralCabinetSeat(seatId) {
     const { data: seat, error } = await sb
       .from('cabinet_members')
-      .select('id, position, bio, member_id')
+      .select('id, position, bio, member_id, photo_url')
       .eq('id', seatId)
       .single();
     if (error || !seat) { showToast('نشست نہیں ملی۔', 'error'); return; }
@@ -6978,6 +7026,13 @@ select.form-input {
     document.getElementById('ccSeatId').value = seat.id;
     document.getElementById('ccRole').value = seat.position || '';
     document.getElementById('ccBio').value = seat.bio || '';
+    resetCcPhotoUI();
+    if (seat.photo_url) {
+      document.getElementById('ccExistingPhotoUrl').value = seat.photo_url;
+      document.getElementById('ccPhotoPreview').src = seat.photo_url;
+      document.getElementById('ccPhotoPreview').style.display = 'block';
+      document.getElementById('ccPhotoPlaceholder').style.display = 'none';
+    }
     await populatePeopleDatalist('ccMember', 'ccMemberList', seat.member_id);
     document.getElementById('centralCabinetTitle').textContent = 'Central Cabinet نشست میں ترمیم';
     openModal('centralCabinetModal');
@@ -6993,7 +7048,24 @@ select.form-input {
     if (!memberId) { showToast('براہ کرم فہرست میں سے رکن منتخب کریں۔', 'error'); return; }
     if (!position) { showToast('عہدہ درج کریں۔', 'error'); return; }
 
-    const payload = { member_id: memberId, position, bio, chapter_id: null, society_id: null };
+    const statusEl = document.getElementById('ccPhotoStatus');
+    let photo_url = document.getElementById('ccExistingPhotoUrl').value || null;
+
+    if (ccSelectedPhotoFile) {
+      if (statusEl) statusEl.textContent = 'تصویر اپلوڈ ہو رہی ہے…';
+      const ext = ccSelectedPhotoFile.name.split('.').pop();
+      const filePath = 'cabinet/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+      const { error: uploadError } = await sb.storage.from('shaoor-uploads').upload(filePath, ccSelectedPhotoFile);
+      if (uploadError) {
+        showToast('تصویر اپلوڈ ناکام: ' + uploadError.message, 'error');
+        if (statusEl) statusEl.textContent = '';
+        return;
+      }
+      const { data: publicUrlData } = sb.storage.from('shaoor-uploads').getPublicUrl(filePath);
+      photo_url = publicUrlData.publicUrl;
+    }
+
+    const payload = { member_id: memberId, position, bio, photo_url, chapter_id: null, society_id: null };
     let error;
     if (seatId) {
       ({ error } = await sb.from('cabinet_members').update(payload).eq('id', seatId));
@@ -7004,6 +7076,7 @@ select.form-input {
 
     showToast('Central Cabinet نشست محفوظ ہو گئی۔');
     closeModal('centralCabinetModal');
+    resetCcPhotoUI();
     await loadCentralCabinetAdmin();
     if (typeof loadCentralCabinetPublic === 'function') loadCentralCabinetPublic();
   });
