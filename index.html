@@ -5647,7 +5647,12 @@ select.form-input {
     <div class="modal-body">
       <form class="modal-form" id="loginForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
         <div class="form-group"><label for="lEmail">Email Address</label><input type="email" id="lEmail" class="form-input" required placeholder="your@email.com" /></div>
-        <div class="form-group"><label for="lPass">Password</label><input type="password" id="lPass" class="form-input" required placeholder="••••••••" /></div>
+        <div class="form-group"><label for="lPass">Password</label>
+          <div style="position:relative;">
+            <input type="password" id="lPass" class="form-input" required placeholder="••••••••" style="padding-right:2.6rem;" />
+            <button type="button" onclick="togglePwField('lPass', this)" style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem;">
           <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;"><input type="checkbox" /> Remember me</label>
           <a href="#" style="color:var(--gold);" onclick="openModal('forgotModal');closeModal('loginModal');return false;">Forgot password?</a>
@@ -5680,7 +5685,10 @@ select.form-input {
         </div>
         <div class="form-group"><label for="sEmail">Email Address</label><input type="email" id="sEmail" class="form-input" required placeholder="your@email.com" /></div>
         <div class="form-group"><label for="sPass">Password</label>
-          <input type="password" id="sPass" class="form-input" required minlength="8" placeholder="At least 8 characters" />
+          <div style="position:relative;">
+            <input type="password" id="sPass" class="form-input" required minlength="8" placeholder="At least 8 characters" style="padding-right:2.6rem;" />
+            <button type="button" onclick="togglePwField('sPass', this)" style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;"><i class="fas fa-eye"></i></button>
+          </div>
           <small style="display:block;margin-top:.4rem;color:var(--muted);font-size:.78rem;line-height:1.4;">
             Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character (!@#$%^&* etc.)
           </small>
@@ -8915,6 +8923,15 @@ select.form-input {
       inp.type = 'password'; eye.className = 'fas fa-eye';
     }
   }
+  window.togglePwField = function(inputId, btnEl) {
+    const inp = document.getElementById(inputId);
+    const eye = btnEl.querySelector('i');
+    if (inp.type === 'password') {
+      inp.type = 'text'; eye.className = 'fas fa-eye-slash';
+    } else {
+      inp.type = 'password'; eye.className = 'fas fa-eye';
+    }
+  };
   function switchDashTab(id, btn) {
     document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.dtab,.admin-nav-btn').forEach(b => b.classList.remove('active'));
