@@ -2247,7 +2247,7 @@ body, button, input, textarea, select, .btn, .nav-links a, .mobile-nav a{font-fa
 .institutional-hero-copy > .hero-title{margin-top:.85rem!important;margin-bottom:1rem!important;text-align:left!important;}
 .institutional-hero-copy > .hero-sub{margin-top:0!important;text-align:left!important;}
 .institutional-hero-copy > .hero-btns{margin-top:1.4rem!important;}
-.institutional-hero-copy > .hero-stats{margin-top:1.6rem!important;}
+.institutional-hero-copy > .hero-stats{margin-top:1.6rem!important;margin-left:auto!important;margin-right:auto!important;justify-content:center!important;text-align:center!important;}
 .institutional-hero-art{
   grid-area:art;
   justify-self:end;
@@ -2316,6 +2316,11 @@ body, button, input, textarea, select, .btn, .nav-links a, .mobile-nav a{font-fa
 /* BODY SURFACES — institutional alternating rhythm */
 .section{background:var(--cream)!important;transition:background .3s ease,color .3s ease;}
 .section:nth-of-type(even){background:var(--cream2)!important;}
+/* Dark-design sections carry their own inline navy background + white text;
+   the blanket cream rule above was clobbering it and making the text invisible. */
+#founder.section,#courses.section{background:var(--navy)!important;}
+#founder .sec-title,#founder h2,#founder h3,#founder h4,
+#courses .sec-title,#courses h2,#courses h3,#courses h4{color:#fff!important;}
 .sec-title,h2,h3,h4,.feature-title,.chapter-name,.member-name,.blog-title,.contact-title{color:var(--ink)!important;}
 .sec-sub,.feature-text,.chapter-meta,.gallery-caption span,.note,.muted{color:var(--muted)!important;}
 [data-theme="dark"] .sec-sub,[data-theme="dark"] .feature-text,[data-theme="dark"] .chapter-meta,[data-theme="dark"] .gallery-caption span,[data-theme="dark"] .note,[data-theme="dark"] .muted{color:#AEB8C7!important;}
@@ -3751,6 +3756,56 @@ select.form-input {
 }
 .footer-bottom, .footer-bottom span {
   color: rgba(255,255,255,.55) !important;
+}
+
+/* Central Cabinet public heading/subtext: force visible on the dark societies background,
+   independent of whichever earlier rule was actually winning. */
+#cabinet.society-cabinet-wrap .sec-title,
+#societies #cabinet .sec-title {
+  color: #111 !important;
+}
+#cabinet.society-cabinet-wrap .sec-sub,
+#societies #cabinet .sec-sub {
+  color: #222 !important;
+}
+#cabinet.society-cabinet-wrap .sec-label,
+#societies #cabinet .sec-label {
+  color: #111 !important;
+}
+
+/* Admin sidebar nav: guarantee each item is a clearly separated, readable row
+   (icon + label) on the dark navy background, on every breakpoint. */
+.admin-side {
+  background: var(--navy) !important;
+}
+.admin-side .admin-nav-btn {
+  display: flex !important;
+  align-items: center !important;
+  gap: .55rem !important;
+  color: rgba(255,255,255,.85) !important;
+  background: transparent !important;
+  white-space: nowrap !important;
+  margin-bottom: .2rem !important;
+}
+.admin-side .admin-nav-btn i {
+  color: var(--gold3, var(--gold)) !important;
+  flex: 0 0 auto !important;
+}
+.admin-side .admin-nav-btn:hover,
+.admin-side .admin-nav-btn.active {
+  background: rgba(212,166,58,.22) !important;
+  color: #fff !important;
+}
+@media (max-width: 1024px) {
+  .admin-side {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: .4rem !important;
+  }
+  .admin-side .admin-nav-btn {
+    width: auto !important;
+  }
 }
 .footer-bottom a {
   color: rgba(255,255,255,.85) !important;
@@ -9372,27 +9427,64 @@ select.form-input {
 
   /* ── FOOTER STATS COUNTER ANIMATION ── */
   function animateCounter(el, target, suffix='') {
+    target = Number.isFinite(target) ? target : 0;
     let current = 0;
-    const step = Math.ceil(target / 60);
+    const step = Math.ceil(Math.max(target, 1) / 60);
     const timer = setInterval(() => {
       current += step;
       if (current >= target) { current = target; clearInterval(timer); }
       el.textContent = current + suffix;
     }, 25);
   }
-  const statNums = document.querySelectorAll('.stat-num');
-  const heroObs = new IntersectionObserver(entries => {
-    entries.forEach(en => {
-      if (en.isIntersecting) {
-        const txt = en.target.textContent;
-        const num = parseInt(txt);
-        const suf = txt.replace(/[0-9]/g,'');
-        animateCounter(en.target, num, suf);
-        heroObs.unobserve(en.target);
-      }
-    });
-  }, { threshold: 0.5 });
-  statNums.forEach(el => heroObs.observe(el));
+  function heroStatsObserve() {
+    const statNums = document.querySelectorAll('.stat-num');
+    const heroObs = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          const txt = en.target.textContent;
+          const num = parseInt(txt, 10);
+          const suf = txt.replace(/[0-9]/g,'');
+          animateCounter(en.target, isNaN(num) ? 0 : num, suf);
+          heroObs.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    statNums.forEach(el => heroObs.observe(el));
+  }
+
+  /* Populate the real hero stats (Societies / Chapters / Upcoming Events / Active Members)
+     — these were previously left as placeholder "—" text with no data source, which is why
+     the counters showed "NaN" once the scroll-triggered animation tried to parse them. */
+  async function loadHeroStats() {
+    try {
+      const nowIso = new Date().toISOString();
+      const [
+        { count: societiesCount },
+        { count: chaptersCount },
+        { count: upcomingEventsCount },
+        { count: activeMembersCount }
+      ] = await Promise.all([
+        sb.from('societies').select('id', { count: 'exact', head: true }),
+        sb.from('chapters').select('id', { count: 'exact', head: true }),
+        sb.from('events').select('id', { count: 'exact', head: true }).gte('event_date', nowIso),
+        sb.from('profiles').select('id', { count: 'exact', head: true }).eq('status', 'active')
+      ]);
+
+      const setStat = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val ?? 0); };
+      setStat('heroStatSocieties', societiesCount);
+      setStat('heroStatChapters', chaptersCount);
+      setStat('heroStatEvents', upcomingEventsCount);
+      setStat('heroStatMembers', activeMembersCount);
+
+      const wrap = document.getElementById('heroStatsWrap');
+      if (wrap) wrap.style.display = '';
+
+      heroStatsObserve();
+    } catch (e) {
+      console.error('[Hero Stats] load error:', e);
+    }
+  }
+  loadHeroStats();
 
   /* ── PUBLIC GALLERY (SHAOOR's own events/exhibitions/workshops/webinars) ── */
   let lightboxPhotos = [];
