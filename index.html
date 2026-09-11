@@ -993,6 +993,17 @@
     .sp-listed   { background:#dbeafe; color:#1e40af; }
     .sp-sold     { background:#f3e8ff; color:#6b21a8; }
 
+    /* Analytics Panel */
+    .an-stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.1rem 1.2rem; box-shadow:var(--shadow); position:relative; overflow:hidden; }
+    .an-stat-card::before { content:''; position:absolute; inset:0 0 auto; height:3px; background:linear-gradient(90deg,var(--gold),var(--gold2)); }
+    .an-stat-icon { color:var(--gold); font-size:1.1rem; margin-bottom:.5rem; }
+    .an-stat-num { font-family:var(--ff-display); font-size:1.7rem; font-weight:800; color:var(--navy); }
+    [data-theme="dark"] .an-stat-num { color:var(--gold3); }
+    .an-stat-label { font-size:.78rem; color:var(--muted); margin-top:.15rem; letter-spacing:.02em; }
+    .an-chart-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.25rem; box-shadow:var(--shadow); }
+    .an-chart-title { font-size:.92rem; font-weight:700; color:var(--navy); margin-bottom:.9rem; }
+    [data-theme="dark"] .an-chart-title { color:var(--gold3); }
+
     /* ═══ ANIMATIONS ═══ */
     @keyframes slideInLeft  { from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)} }
     @keyframes slideInRight { from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)} }
@@ -4492,6 +4503,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
       <button class="admin-nav-btn" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('analytics',this);loadAnalyticsAdmin();"><i class="fas fa-chart-line"></i> Analytics</button>
       <div style="margin-top:auto;padding-top:1rem;">
         <button class="admin-nav-btn" onclick="adminLogout()" style="color:rgba(252,165,165,.7);"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -4517,6 +4529,7 @@ select.form-input {
         <button class="dtab" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
         <button class="dtab" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
         <button class="dtab" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
+        <button class="dtab" onclick="switchDashTab('analytics',this);loadAnalyticsAdmin();"><i class="fas fa-chart-line"></i> Analytics</button>
       </div>
 
       <!-- Members Panel -->
@@ -4818,6 +4831,77 @@ select.form-input {
               <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Posts لوڈ ہو رہے ہیں…</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Analytics Panel -->
+      <div class="dash-panel" id="dp-analytics">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Analytics Overview</h3>
+          <button class="btn btn-outline" onclick="loadAnalyticsAdmin()" style="padding:.5rem 1rem;font-size:.9rem;"><i class="fas fa-rotate"></i> Refresh</button>
+        </div>
+
+        <!-- Stat Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;">
+          <div class="an-stat-card">
+            <div class="an-stat-icon"><i class="fas fa-users"></i></div>
+            <div class="an-stat-num" id="anTotalMembers">—</div>
+            <div class="an-stat-label">Total Members</div>
+          </div>
+          <div class="an-stat-card">
+            <div class="an-stat-icon"><i class="fas fa-user-clock"></i></div>
+            <div class="an-stat-num" id="anPendingApplications">—</div>
+            <div class="an-stat-label">Pending Applications</div>
+          </div>
+          <div class="an-stat-card">
+            <div class="an-stat-icon"><i class="fas fa-layer-group"></i></div>
+            <div class="an-stat-num" id="anTotalSocieties">—</div>
+            <div class="an-stat-label">Societies</div>
+          </div>
+          <div class="an-stat-card">
+            <div class="an-stat-icon"><i class="fas fa-map"></i></div>
+            <div class="an-stat-num" id="anTotalChapters">—</div>
+            <div class="an-stat-label">Chapters</div>
+          </div>
+          <div class="an-stat-card">
+            <div class="an-stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="an-stat-num" id="anTotalEvents">—</div>
+            <div class="an-stat-label">Events</div>
+          </div>
+          <div class="an-stat-card">
+            <div class="an-stat-icon"><i class="fas fa-certificate"></i></div>
+            <div class="an-stat-num" id="anTotalCertificates">—</div>
+            <div class="an-stat-label">Certificates Issued</div>
+          </div>
+          <div class="an-stat-card">
+            <div class="an-stat-icon"><i class="fas fa-newspaper"></i></div>
+            <div class="an-stat-num" id="anTotalBlogPosts">—</div>
+            <div class="an-stat-label">Blog Posts</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;">
+          <div class="an-chart-box">
+            <h4 class="an-chart-title">Members by Society</h4>
+            <canvas id="anChartSocieties" height="220"></canvas>
+            <div id="anChartSocietiesEmpty" style="display:none;color:var(--muted);text-align:center;padding:2rem 0;">کوئی ڈیٹا دستیاب نہیں</div>
+          </div>
+          <div class="an-chart-box">
+            <h4 class="an-chart-title">Members by Chapter (Province)</h4>
+            <canvas id="anChartChapters" height="220"></canvas>
+            <div id="anChartChaptersEmpty" style="display:none;color:var(--muted);text-align:center;padding:2rem 0;">کوئی ڈیٹا دستیاب نہیں</div>
+          </div>
+          <div class="an-chart-box">
+            <h4 class="an-chart-title">Membership Status Breakdown</h4>
+            <canvas id="anChartStatus" height="220"></canvas>
+            <div id="anChartStatusEmpty" style="display:none;color:var(--muted);text-align:center;padding:2rem 0;">کوئی ڈیٹا دستیاب نہیں</div>
+          </div>
+          <div class="an-chart-box">
+            <h4 class="an-chart-title">New Signups (Last 6 Months)</h4>
+            <canvas id="anChartSignups" height="220"></canvas>
+            <div id="anChartSignupsEmpty" style="display:none;color:var(--muted);text-align:center;padding:2rem 0;">کوئی ڈیٹا دستیاب نہیں</div>
+          </div>
         </div>
       </div>
 
@@ -5797,6 +5881,7 @@ select.form-input {
 
 <!-- ═══ SUPABASE ═══ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   /* ── SUPABASE CLIENT SETUP ──
@@ -8694,6 +8779,113 @@ select.form-input {
     if (id === 'chapters') loadChaptersAdmin();
     if (id === 'gallery') loadGalleryAdmin();
     if (id === 'events') loadEventsAdmin();
+    if (id === 'analytics') loadAnalyticsAdmin();
+  }
+
+  /* ===== Analytics ===== */
+  let anCharts = {};
+  function anRenderChart(canvasId, emptyId, type, labels, data, colors) {
+    const canvas = document.getElementById(canvasId);
+    const emptyEl = document.getElementById(emptyId);
+    if (anCharts[canvasId]) { anCharts[canvasId].destroy(); anCharts[canvasId] = null; }
+    if (!labels.length || data.every(v => !v)) {
+      canvas.style.display = 'none';
+      if (emptyEl) emptyEl.style.display = 'block';
+      return;
+    }
+    canvas.style.display = 'block';
+    if (emptyEl) emptyEl.style.display = 'none';
+    anCharts[canvasId] = new Chart(canvas.getContext('2d'), {
+      type,
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors || ['#D4A63A','#F0C75E','#173F5F','#205072','#4A3B72','#8A6FBF','#E8B4A0','#7FA6C9'],
+          borderColor: '#101A33',
+          borderWidth: type === 'line' ? 2 : 1,
+          tension: .35,
+          fill: type === 'line'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: type === 'doughnut' || type === 'pie', labels: { color: 'var(--text)' } } },
+        scales: (type === 'bar' || type === 'line') ? {
+          x: { ticks: { color: '#7a8399' }, grid: { display: false } },
+          y: { beginAtZero: true, ticks: { color: '#7a8399', precision: 0 }, grid: { color: 'rgba(122,131,153,.15)' } }
+        } : undefined
+      }
+    });
+  }
+
+  async function loadAnalyticsAdmin() {
+    try {
+      const [
+        { count: totalMembers },
+        { count: pendingApps },
+        { data: societies },
+        { data: chapters },
+        { count: totalEvents },
+        { count: totalCertificates },
+        { count: totalBlogPosts },
+        { data: allProfiles }
+      ] = await Promise.all([
+        sb.from('profiles').select('id', { count: 'exact', head: true }),
+        sb.from('profiles').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        sb.from('societies').select('id, name'),
+        sb.from('chapters').select('id, name, province'),
+        sb.from('events').select('id', { count: 'exact', head: true }),
+        sb.from('certificates').select('id', { count: 'exact', head: true }),
+        sb.from('blog_posts').select('id', { count: 'exact', head: true }),
+        sb.from('profiles').select('society_id, chapter_id, province, status, created_at')
+      ]);
+
+      document.getElementById('anTotalMembers').textContent = totalMembers ?? 0;
+      document.getElementById('anPendingApplications').textContent = pendingApps ?? 0;
+      document.getElementById('anTotalSocieties').textContent = (societies || []).length;
+      document.getElementById('anTotalChapters').textContent = (chapters || []).length;
+      document.getElementById('anTotalEvents').textContent = totalEvents ?? 0;
+      document.getElementById('anTotalCertificates').textContent = totalCertificates ?? 0;
+      document.getElementById('anTotalBlogPosts').textContent = totalBlogPosts ?? 0;
+
+      const profs = allProfiles || [];
+
+      /* Members by Society */
+      const socMap = {}; (societies || []).forEach(s => socMap[s.id] = s.name);
+      const socCounts = {};
+      profs.forEach(p => { if (p.society_id) { const n = socMap[p.society_id] || 'نامعلوم'; socCounts[n] = (socCounts[n] || 0) + 1; } });
+      anRenderChart('anChartSocieties', 'anChartSocietiesEmpty', 'bar', Object.keys(socCounts), Object.values(socCounts));
+
+      /* Members by Chapter/Province */
+      const provCounts = {};
+      profs.forEach(p => { if (p.province) { provCounts[p.province] = (provCounts[p.province] || 0) + 1; } });
+      anRenderChart('anChartChapters', 'anChartChaptersEmpty', 'bar', Object.keys(provCounts), Object.values(provCounts));
+
+      /* Membership Status Breakdown */
+      const statusCounts = {};
+      profs.forEach(p => { const s = p.status || 'نامعلوم'; statusCounts[s] = (statusCounts[s] || 0) + 1; });
+      anRenderChart('anChartStatus', 'anChartStatusEmpty', 'doughnut', Object.keys(statusCounts), Object.values(statusCounts));
+
+      /* New Signups — Last 6 Months */
+      const months = [];
+      const now = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({ key: d.getFullYear() + '-' + d.getMonth(), label: d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) });
+      }
+      const monthCounts = Object.fromEntries(months.map(m => [m.key, 0]));
+      profs.forEach(p => {
+        if (!p.created_at) return;
+        const d = new Date(p.created_at);
+        const key = d.getFullYear() + '-' + d.getMonth();
+        if (key in monthCounts) monthCounts[key]++;
+      });
+      anRenderChart('anChartSignups', 'anChartSignupsEmpty', 'line', months.map(m => m.label), months.map(m => monthCounts[m.key]), ['#D4A63A']);
+
+    } catch (err) {
+      console.error('Analytics load error:', err);
+    }
   }
 
   /* Admin form */
