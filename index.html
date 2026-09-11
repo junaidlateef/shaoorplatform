@@ -6367,8 +6367,9 @@ select.form-input {
 
   async function deleteSociety(id) {
     if (!confirm('کیا یہ Society حذف کرنا چاہتے ہیں؟')) return;
-    const { error } = await sb.from('societies').delete().eq('id', id);
+    const { data, error } = await sb.from('societies').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکی: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('حذف نہیں ہو سکی — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
     showToast('Society حذف کر دی گئی۔');
     loadSocietiesAdmin();
     if (typeof loadPublicSocieties === 'function') loadPublicSocieties();
@@ -6428,8 +6429,9 @@ select.form-input {
 
   async function deleteChapter(id) {
     if (!confirm('کیا یہ Chapter حذف کرنا چاہتے ہیں؟')) return;
-    const { error } = await sb.from('chapters').delete().eq('id', id);
+    const { data, error } = await sb.from('chapters').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('حذف نہیں ہو سکا — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
     showToast('Chapter حذف کر دیا گیا۔');
     loadChaptersAdmin();
   }
@@ -6578,8 +6580,9 @@ select.form-input {
 
   window.deleteEvent = async function(id) {
     if (!confirm('کیا یہ Event حذف کرنا چاہتے ہیں؟')) return;
-    const { error } = await sb.from('events').delete().eq('id', id);
+    const { data, error } = await sb.from('events').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('حذف نہیں ہو سکا — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
     showToast('Event حذف کر دیا گیا۔');
     loadEventsAdmin();
     if (typeof loadPublicEvents === 'function') loadPublicEvents();
@@ -6767,8 +6770,9 @@ select.form-input {
 
   window.deleteBlogPost = async function(id) {
     if (!confirm('کیا یہ Post حذف کرنا چاہتے ہیں؟')) return;
-    const { error } = await sb.from('blog_posts').delete().eq('id', id);
+    const { data, error } = await sb.from('blog_posts').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکی: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('حذف نہیں ہو سکی — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
     showToast('Post حذف کر دی گئی۔');
     loadBlogAdmin();
   };
@@ -7230,8 +7234,9 @@ select.form-input {
 
   async function deleteCentralCabinetSeat(seatId) {
     if (!confirm('کیا یہ نشست ہٹانا چاہتے ہیں؟')) return;
-    const { error } = await sb.from('cabinet_members').delete().eq('id', seatId);
+    const { data, error } = await sb.from('cabinet_members').delete().eq('id', seatId).select('id');
     if (error) { showToast('ہٹا نہیں سکے: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('ہٹا نہیں سکے — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
     showToast('نشست ہٹا دی گئی۔');
     await loadCentralCabinetAdmin();
     if (typeof loadCentralCabinetPublic === 'function') loadCentralCabinetPublic();
@@ -7908,9 +7913,13 @@ select.form-input {
   /* ── Delete Application (permanent) ── */
   async function deleteApplication(appId) {
     if (!confirm('کیا آپ یہ درخواست ہمیشہ کے لیے ڈیلیٹ کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔')) return;
-    const { error } = await sb.from('applications').delete().eq('id', appId);
+    const { data, error } = await sb.from('applications').delete().eq('id', appId).select('id');
     if (error) {
       showToast('ڈیلیٹ ناکام: ' + error.message, 'error');
+      return;
+    }
+    if (!data || data.length === 0) {
+      showToast('ڈیلیٹ ناکام — ڈیٹا بیس میں اجازت (RLS Policy) موجود نہیں، اس لیے ریکارڈ حذف نہیں ہوا۔', 'error');
       return;
     }
     showToast('درخواست مستقل طور پر حذف کر دی گئی۔');
@@ -8632,9 +8641,13 @@ select.form-input {
       } catch (e) { /* non-fatal */ }
     }
 
-    const { error } = await sb.from('profiles').delete().eq('id', id);
+    const { data, error } = await sb.from('profiles').delete().eq('id', id).select('id');
     if (error) {
       showToast('ڈیلیٹ ناکام: ' + error.message, 'error');
+      return;
+    }
+    if (!data || data.length === 0) {
+      showToast('ڈیلیٹ ناکام — ڈیٹا بیس میں اجازت (RLS Policy) موجود نہیں، اس لیے پروفائل حذف نہیں ہوا۔', 'error');
       return;
     }
     showToast('ممبر اور متعلقہ ریکارڈ مستقل طور پر حذف کر دیے گئے۔');
@@ -9326,11 +9339,12 @@ select.form-input {
   }
 
   async function deleteGalleryItem(id) {
-    const { error } = await sb.from('gallery').delete().eq('id', id);
+    const { data, error } = await sb.from('gallery').delete().eq('id', id).select('id');
     if (error) {
       showToast('حذف کرنے میں ناکامی: ' + error.message, 'error');
       return;
     }
+    if (!data || data.length === 0) { showToast('حذف نہیں ہو سکا — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
     showToast('حذف ہو گیا');
     loadGalleryAdmin();
     loadPublicGallery();
