@@ -6634,11 +6634,86 @@ select.form-input {
           <td>${dateStr}</td>
           <td><span class="status-pill ${statusClass[st] || 'sp-listed'}">${statusLabel[st] || st}</span></td>
           <td>
+            <button onclick="viewEventAttendance('${ev.id}', '${(ev.title||'').replace(/'/g,"\\'")}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;"><i class="fas fa-clipboard-check"></i> Attendance</button>
             <button onclick="editEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
             <button onclick="deleteEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
           </td>
         </tr>`;
     }).join('');
+  };
+
+  /* ── Event Attendance (Admin view) ── */
+  window.viewEventAttendance = async function(eventId, eventTitle) {
+    let modal = document.getElementById('eventAttendanceModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal';
+      modal.id = 'eventAttendanceModal';
+      modal.innerHTML = `
+        <div class="modal-box" style="max-width:520px;">
+          <button class="modal-close" onclick="document.getElementById('eventAttendanceModal').classList.remove('open')"><i class="fas fa-times"></i></button>
+          <h3 id="eaModalTitle" style="margin-bottom:.3rem;"><i class="fas fa-clipboard-check" style="color:var(--gold);"></i> Attendance</h3>
+          <div id="eaModalCount" style="color:var(--muted);font-size:.85rem;margin-bottom:1rem;"></div>
+          <div id="eaModalList" style="display:grid;gap:.5rem;max-height:50vh;overflow-y:auto;"></div>
+          <button class="btn btn-outline" style="margin-top:1rem;width:100%;justify-content:center;" onclick="exportEventAttendanceCSV('${eventId}','${(eventTitle||'').replace(/'/g,"\\'")}')"><i class="fas fa-file-csv"></i> CSV Download</button>
+        </div>`;
+      document.body.appendChild(modal);
+    }
+    document.getElementById('eaModalTitle').innerHTML = `<i class="fas fa-clipboard-check" style="color:var(--gold);"></i> ${sanitize(eventTitle || 'Event')} — Attendance`;
+    document.getElementById('eaModalList').innerHTML = '<div style="text-align:center;color:var(--muted);padding:1rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>';
+    document.getElementById('eaModalCount').textContent = '';
+    modal.classList.add('open');
+    modal.dataset.eventId = eventId;
+
+    const { data, error } = await sb
+      .from('event_attendance')
+      .select('marked_at, profiles(full_name, member_id)')
+      .eq('event_id', eventId)
+      .order('marked_at', { ascending: true });
+
+    if (error) {
+      document.getElementById('eaModalList').innerHTML = `<div style="color:var(--ruby);text-align:center;padding:1rem;">لوڈ ناکام: ${sanitize(error.message)}</div>`;
+      return;
+    }
+    const rows = data || [];
+    document.getElementById('eaModalCount').textContent = `کل حاضری: ${rows.length}`;
+    if (rows.length === 0) {
+      document.getElementById('eaModalList').innerHTML = '<div style="text-align:center;color:var(--muted);padding:1rem;">ابھی تک کسی نے حاضری نہیں لگائی۔</div>';
+      return;
+    }
+    document.getElementById('eaModalList').innerHTML = rows.map((r, i) => {
+      const name = r.profiles?.full_name || '—';
+      const mid = r.profiles?.member_id || '—';
+      const t = r.marked_at ? new Date(r.marked_at).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem .8rem;border:1px solid var(--border);border-radius:8px;">
+        <div><div style="font-weight:600;">${i+1}. ${sanitize(name)}</div><div style="font-size:.75rem;color:var(--muted);">${sanitize(mid)}</div></div>
+        <div style="font-size:.75rem;color:var(--muted);">${t}</div>
+      </div>`;
+    }).join('');
+  };
+
+  window.exportEventAttendanceCSV = async function(eventId, eventTitle) {
+    const { data, error } = await sb
+      .from('event_attendance')
+      .select('marked_at, profiles(full_name, member_id)')
+      .eq('event_id', eventId)
+      .order('marked_at', { ascending: true });
+    if (error) { showToast('Export ناکام: ' + error.message, 'error'); return; }
+    const rows = data || [];
+    let csv = 'Sr,Name,Member ID,Marked At\n';
+    rows.forEach((r, i) => {
+      const name = (r.profiles?.full_name || '').replace(/"/g,'""');
+      const mid = r.profiles?.member_id || '';
+      const t = r.marked_at || '';
+      csv += `${i+1},"${name}","${mid}","${t}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance_${(eventTitle||'event').replace(/[^a-zA-Z0-9]/g,'_')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   /* ══════════════ BLOG POSTS: create / edit / delete / list ══════════════ */
