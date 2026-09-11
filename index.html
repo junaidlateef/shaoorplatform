@@ -3811,72 +3811,10 @@ select.form-input {
         <h2 class="sec-title">Our Creative Disciplines</h2>
         <p class="sec-sub">From ancient calligraphic traditions to contemporary digital expression — every art form has a home in SHAOOR.</p>
       </div>
-      <div class="soc-grid">
-        <div class="soc-card">
-          <div class="soc-thumb"><img src="https://images.unsplash.com/photo-1582281298055-e25b84a30b0c?w=600&q=80&auto=format&fit=crop" alt="Calligraphy Society" loading="lazy" /></div>
-          <div class="soc-body">
-            <h3 class="soc-name">Calligraphy Society</h3>
-            <p class="soc-desc">Preserving and innovating Pakistan's rich calligraphic traditions across multiple scripts and styles.</p>
-            <a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-        <div class="soc-card">
-          <div class="soc-thumb"><img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&q=80&auto=format&fit=crop" alt="Fine Arts Society" loading="lazy" /></div>
-          <div class="soc-body">
-            <h3 class="soc-name">Fine Arts Society</h3>
-            <p class="soc-desc">Exploring traditional and contemporary painting, drawing, and mixed media techniques.</p>
-            <a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-        <div class="soc-card">
-          <div class="soc-thumb"><img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=600&q=80&auto=format&fit=crop" alt="Textile Art Society" loading="lazy" /></div>
-          <div class="soc-body">
-            <h3 class="soc-name">Textile Art Society</h3>
-            <p class="soc-desc">Celebrating Pakistan's textile heritage through embroidery, weaving, and fabric art.</p>
-            <a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-        <div class="soc-card">
-          <div class="soc-thumb"><img src="https://images.unsplash.com/photo-1519638399535-1b036603ac77?w=600&q=80&auto=format&fit=crop" alt="Islamic Art Society" loading="lazy" /></div>
-          <div class="soc-body">
-            <h3 class="soc-name">Islamic Art Society</h3>
-            <p class="soc-desc">Exploring geometric patterns, arabesque, and non-figurative art forms within Islamic tradition.</p>
-            <a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-        <div class="soc-card">
-          <div class="soc-thumb"><img src="https://images.unsplash.com/photo-1548013146-72479768bada?w=600&q=80&auto=format&fit=crop" alt="Heritage Society" loading="lazy" /></div>
-          <div class="soc-body">
-            <h3 class="soc-name">Heritage Society</h3>
-            <p class="soc-desc">Documenting, preserving, and revitalizing Pakistan's diverse cultural heritage through art.</p>
-            <a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-        <div class="soc-card">
-          <div class="soc-thumb"><img src="https://images.unsplash.com/photo-1516045452073-62f12c0c79a6?w=600&q=80&auto=format&fit=crop" alt="Photography Society" loading="lazy" /></div>
-          <div class="soc-body">
-            <h3 class="soc-name">Photography Society</h3>
-            <p class="soc-desc">Capturing Pakistan's essence through traditional and digital photography techniques.</p>
-            <a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-        <div class="soc-card">
-          <div class="soc-thumb"><img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&q=80&auto=format&fit=crop" alt="Digital Art Society" loading="lazy" /></div>
-          <div class="soc-body">
-            <h3 class="soc-name">Digital Art Society</h3>
-            <p class="soc-desc">Exploring the intersection of technology and creativity through digital media and new art forms.</p>
-            <a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>
-          </div>
-        </div>
-        <div class="soc-card" style="opacity:.7;">
-          <div class="soc-thumb-placeholder" style="background:rgba(255,255,255,.04);">
-            <i class="fas fa-book-open" style="font-size:2.5rem;color:rgba(201,151,43,.3);"></i>
-          </div>
-          <div class="soc-body">
-            <h3 class="soc-name">Literary Society</h3>
-            <p class="soc-desc">Poetry, prose, critique, and cultural discourse — the word as art.</p>
-            <span class="soc-coming"><i class="fas fa-clock"></i> Launching Soon</span>
-          </div>
+      <div class="soc-grid" id="socGrid">
+        <div class="soc-card" style="opacity:.6;">
+          <div class="soc-thumb-placeholder"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:rgba(201,151,43,.4);"></i></div>
+          <div class="soc-body"><h3 class="soc-name">لوڈ ہو رہا ہے…</h3></div>
         </div>
       </div>
       <p style="text-align:center;margin-top:2rem;font-size:.85rem;color:rgba(255,255,255,.4);">Each society operates with its own President, General Secretary, and Members under Central SHAOOR governance.</p>
@@ -5140,6 +5078,10 @@ select.form-input {
           <input type="text" id="societyName" class="form-input" required placeholder="e.g., Calligraphy Society" />
         </div>
         <div class="form-group">
+          <label for="societyDescription">تفصیل (Description) — پبلک ویب سائٹ پر نظر آئے گی</label>
+          <textarea id="societyDescription" class="form-input" rows="3" placeholder="اس Society کے بارے میں مختصر تفصیل لکھیں"></textarea>
+        </div>
+        <div class="form-group">
           <label for="societyChapter">Chapter</label>
           <select id="societyChapter" class="form-input">
             <option value="">— کوئی Chapter منتخب نہیں —</option>
@@ -6232,6 +6174,7 @@ select.form-input {
     document.getElementById('societyEditId').value = s.id;
     document.getElementById('societyModalTitle').textContent = 'Society میں ترمیم';
     document.getElementById('societyName').value = s.name || '';
+    document.getElementById('societyDescription').value = s.description || '';
     document.getElementById('societyStatus').value = s.status || 'active';
     resetSocietyLogoUI(s.logo_url || null);
     await populateCabinetFields('cab', 'society', s.id);
@@ -6307,12 +6250,13 @@ select.form-input {
   window.addEventListener('DOMContentLoaded', () => secureSubmit('societyForm', async frm => {
     const editId = frm.querySelector('#societyEditId').value;
     const name = frm.querySelector('#societyName').value.trim();
+    const description = frm.querySelector('#societyDescription').value.trim();
     const chapter_id = frm.querySelector('#societyChapter').value || null;
     const status = frm.querySelector('#societyStatus').value;
 
     if (!name) { showToast('براہ کرم Society کا نام درج کریں', 'error'); return; }
 
-    const payload = { name, chapter_id, status };
+    const payload = { name, description, chapter_id, status };
     let error, savedId = editId;
     if (editId) {
       ({ error } = await sb.from('societies').update(payload).eq('id', editId));
@@ -6330,6 +6274,7 @@ select.form-input {
     showToast('✓ Society محفوظ ہو گئی!');
     closeModal('societyModal');
     loadSocietiesAdmin();
+    if (typeof loadPublicSocieties === 'function') loadPublicSocieties();
   }));
 
   async function deleteSociety(id) {
@@ -6338,6 +6283,7 @@ select.form-input {
     if (error) { showToast('حذف نہیں ہو سکی: ' + error.message, 'error'); return; }
     showToast('Society حذف کر دی گئی۔');
     loadSocietiesAdmin();
+    if (typeof loadPublicSocieties === 'function') loadPublicSocieties();
   }
 
   /* ── CHAPTER: create / edit ── */
@@ -9186,6 +9132,51 @@ select.form-input {
 
   // Auto-load on page ready
   loadPublicEvents();
+
+  /* ── PUBLIC SOCIETIES SHOWCASE — render live from `societies` table ── */
+  window.loadPublicSocieties = async function() {
+    const grid = document.getElementById('socGrid');
+    if (!grid || !sb) return;
+    try {
+      const { data: socs, error } = await sb
+        .from('societies')
+        .select('name, description, status, logo_url')
+        .order('name');
+
+      if (error) { console.error('Public societies load error:', error); return; }
+
+      if (!socs || socs.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.5);grid-column:1/-1;">فی الحال کوئی Society شامل نہیں۔</p>';
+        return;
+      }
+
+      grid.innerHTML = socs.map(s => {
+        const isComingSoon = (s.status || '').toLowerCase() === 'archived';
+        const thumb = s.logo_url
+          ? `<div class="soc-thumb"><img src="${sanitize(s.logo_url)}" alt="${sanitize(s.name)}" loading="lazy" /></div>`
+          : `<div class="soc-thumb-placeholder"><i class="fas fa-palette" style="font-size:2.5rem;color:rgba(201,151,43,.35);"></i></div>`;
+        const desc = s.description
+          ? sanitize(s.description)
+          : 'اس Society کی تفصیل جلد شامل کی جائے گی۔';
+        const footer = isComingSoon
+          ? `<span class="soc-coming"><i class="fas fa-clock"></i> Launching Soon</span>`
+          : `<a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>`;
+
+        return `
+        <div class="soc-card" ${isComingSoon ? 'style="opacity:.7;"' : ''}>
+          ${thumb}
+          <div class="soc-body">
+            <h3 class="soc-name">${sanitize(s.name)}</h3>
+            <p class="soc-desc">${desc}</p>
+            ${footer}
+          </div>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      console.error('loadPublicSocieties error:', e);
+    }
+  };
+  loadPublicSocieties();
 
   /* ── PUBLIC CHAPTERS — inject live Societies into each chapter panel ── */
   window.loadChapterSocieties = async function() {
