@@ -3651,6 +3651,702 @@ select.form-input {
 }
 
 </style>
+
+<style id="shaoor-backend-auth-design-only">
+/* ================================================================
+   SHAOOR — BACKEND + AUTH VISUAL ENHANCEMENT ONLY
+   IMPORTANT: CSS ONLY. No HTML structure, JS, Supabase, RLS,
+   authentication logic, IDs, database fields, or security logic changed.
+   ================================================================ */
+
+:root{
+  --backend-bg:#F4F6F8;
+  --backend-surface:#FFFFFF;
+  --backend-surface-2:#F8FAFC;
+  --backend-border:#E2E8F0;
+  --backend-text:#172033;
+  --backend-muted:#667085;
+  --backend-navy:#101A33;
+  --backend-navy-2:#173F5F;
+  --backend-gold:#D4A63A;
+  --backend-gold-soft:rgba(212,166,58,.12);
+  --backend-teal:#168A86;
+  --backend-teal-soft:rgba(22,138,134,.11);
+  --backend-danger:#B5485D;
+  --backend-shadow:0 10px 30px rgba(16,26,51,.07);
+  --backend-shadow-lg:0 24px 70px rgba(16,26,51,.14);
+}
+
+/* ---------- ADMIN LOGIN SCREEN ---------- */
+#adminPage{
+  background:
+    radial-gradient(circle at 12% 18%,rgba(22,138,134,.18),transparent 28%),
+    radial-gradient(circle at 88% 82%,rgba(212,166,58,.15),transparent 30%),
+    linear-gradient(135deg,#07101F 0%,#101A33 52%,#173F5F 100%) !important;
+}
+
+#adminPage::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.24;
+  background:
+    linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:42px 42px;
+}
+
+#adminPage .admin-close-btn{
+  width:42px !important;
+  height:42px !important;
+  border-radius:50% !important;
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.14) !important;
+  color:rgba(255,255,255,.72) !important;
+  backdrop-filter:blur(12px);
+  transition:.25s ease !important;
+}
+
+#adminPage .admin-close-btn:hover{
+  background:rgba(181,72,93,.9) !important;
+  border-color:rgba(181,72,93,.9) !important;
+  color:#fff !important;
+  transform:rotate(90deg);
+}
+
+#adminPage .admin-box{
+  width:min(440px,calc(100vw - 32px)) !important;
+  padding:2.35rem !important;
+  border-radius:24px !important;
+  background:rgba(255,255,255,.075) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  box-shadow:0 35px 100px rgba(0,0,0,.48) !important;
+  backdrop-filter:blur(22px) saturate(125%) !important;
+}
+
+#adminPage .admin-logo{
+  font-size:1.75rem !important;
+  letter-spacing:-.045em !important;
+  color:#fff !important;
+}
+
+#adminPage .admin-logo-tag{
+  color:rgba(255,255,255,.56) !important;
+  letter-spacing:.08em !important;
+}
+
+#adminPage .admin-field label{
+  color:rgba(255,255,255,.72) !important;
+  font-size:.78rem !important;
+  letter-spacing:.025em;
+}
+
+#adminPage .admin-input{
+  min-height:48px !important;
+  border-radius:12px !important;
+  background:rgba(255,255,255,.065) !important;
+  border:1px solid rgba(255,255,255,.15) !important;
+  color:#fff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03) !important;
+  transition:.22s ease !important;
+}
+
+#adminPage .admin-input::placeholder{color:rgba(255,255,255,.30) !important}
+
+#adminPage .admin-input:focus{
+  border-color:rgba(212,166,58,.8) !important;
+  box-shadow:0 0 0 4px rgba(212,166,58,.10),inset 0 1px 0 rgba(255,255,255,.04) !important;
+  background:rgba(255,255,255,.09) !important;
+}
+
+#adminPage .admin-btn{
+  min-height:49px !important;
+  border-radius:12px !important;
+  background:linear-gradient(135deg,#D4A63A,#F0C75E) !important;
+  color:#101A33 !important;
+  box-shadow:0 12px 28px rgba(212,166,58,.20) !important;
+  transition:.22s ease !important;
+}
+
+#adminPage .admin-btn:hover{
+  transform:translateY(-2px) !important;
+  box-shadow:0 16px 34px rgba(212,166,58,.28) !important;
+}
+
+/* ---------- ADMIN DASHBOARD SHELL ---------- */
+#adminDash{
+  background:var(--backend-bg) !important;
+}
+
+#adminDash .dash-top{
+  min-height:68px !important;
+  background:rgba(16,26,51,.97) !important;
+  border-bottom:1px solid rgba(255,255,255,.09) !important;
+  box-shadow:0 4px 18px rgba(16,26,51,.10) !important;
+  backdrop-filter:blur(16px);
+}
+
+#adminDash .dash-brand{
+  font-size:1.18rem !important;
+  font-weight:900 !important;
+  letter-spacing:-.035em !important;
+}
+
+#adminDash .dash-user{
+  color:rgba(255,255,255,.82) !important;
+}
+
+#adminDash .dash-user span{
+  color:rgba(255,255,255,.55) !important;
+}
+
+#adminDash .dash-logout{
+  border-radius:9px !important;
+  transition:.22s ease !important;
+}
+
+#adminDash .dash-logout:hover{
+  transform:translateY(-1px) !important;
+}
+
+/* ---------- SIDEBAR ---------- */
+#adminDash .admin-shell{
+  grid-template-columns:250px minmax(0,1fr) !important;
+  min-height:calc(100vh - 68px) !important;
+  background:var(--backend-bg) !important;
+}
+
+#adminDash .admin-side{
+  width:250px !important;
+  background:
+    linear-gradient(180deg,#0C162A 0%,#101A33 52%,#12243D 100%) !important;
+  border-right:1px solid rgba(255,255,255,.08) !important;
+  padding:1.25rem .85rem !important;
+  gap:.28rem !important;
+  box-shadow:8px 0 30px rgba(16,26,51,.08);
+}
+
+#adminDash .admin-side-logo{
+  padding:.55rem .7rem 1.25rem !important;
+  margin-bottom:.65rem !important;
+  border-bottom:1px solid rgba(255,255,255,.09) !important;
+  font-size:1.32rem !important;
+  letter-spacing:-.045em !important;
+}
+
+#adminDash .admin-side-logo span{
+  color:#F0C75E !important;
+}
+
+#adminDash .admin-nav-btn{
+  min-height:43px !important;
+  border-radius:10px !important;
+  padding:.68rem .8rem !important;
+  color:rgba(255,255,255,.62) !important;
+  font-size:.84rem !important;
+  transition:background .2s ease,color .2s ease,transform .2s ease !important;
+}
+
+#adminDash .admin-nav-btn i{
+  width:20px !important;
+  color:rgba(240,199,94,.88) !important;
+}
+
+#adminDash .admin-nav-btn:hover{
+  background:rgba(255,255,255,.065) !important;
+  color:#fff !important;
+  transform:translateX(2px);
+}
+
+#adminDash .admin-nav-btn.active{
+  background:linear-gradient(90deg,rgba(212,166,58,.18),rgba(212,166,58,.07)) !important;
+  color:#fff !important;
+  box-shadow:inset 3px 0 0 #D4A63A !important;
+}
+
+/* ---------- ADMIN CONTENT ---------- */
+#adminDash .admin-main{
+  background:var(--backend-bg) !important;
+  padding:0 !important;
+}
+
+#adminDash .dash-body{
+  max-width:1400px !important;
+  padding:2rem 2rem 3rem !important;
+}
+
+#adminDash .dash-stats{
+  gap:1rem !important;
+  margin-bottom:1.5rem !important;
+}
+
+#adminDash .ds-card,
+#adminDash .admin-stat{
+  position:relative !important;
+  background:var(--backend-surface) !important;
+  border:1px solid var(--backend-border) !important;
+  border-radius:15px !important;
+  box-shadow:var(--backend-shadow) !important;
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease !important;
+}
+
+#adminDash .ds-card:hover,
+#adminDash .admin-stat:hover{
+  transform:translateY(-3px) !important;
+  box-shadow:var(--backend-shadow-lg) !important;
+  border-color:rgba(212,166,58,.34) !important;
+}
+
+#adminDash .ds-num,
+#adminDash .admin-stat b{
+  color:var(--backend-navy) !important;
+  font-weight:850 !important;
+}
+
+/* ---------- DASHBOARD TABS / FILTERS ---------- */
+#adminDash .dtab{
+  min-height:38px !important;
+  border-radius:9px !important;
+  background:var(--backend-surface) !important;
+  border:1px solid var(--backend-border) !important;
+  color:var(--backend-muted) !important;
+  padding:.5rem .85rem !important;
+  transition:.2s ease !important;
+}
+
+#adminDash .dtab:hover{
+  border-color:rgba(212,166,58,.55) !important;
+  color:var(--backend-navy) !important;
+}
+
+#adminDash .dtab.active{
+  background:var(--backend-navy) !important;
+  border-color:var(--backend-navy) !important;
+  color:#fff !important;
+  box-shadow:0 6px 15px rgba(16,26,51,.13) !important;
+}
+
+/* ---------- ADMIN TABLES ---------- */
+#adminDash .admin-table{
+  background:var(--backend-surface) !important;
+  border:1px solid var(--backend-border) !important;
+  border-radius:15px !important;
+  box-shadow:var(--backend-shadow) !important;
+}
+
+#adminDash .admin-table th{
+  background:linear-gradient(180deg,#101A33,#142541) !important;
+  color:rgba(255,255,255,.90) !important;
+  padding:1rem 1.05rem !important;
+  font-size:.74rem !important;
+  letter-spacing:.055em !important;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+#adminDash .admin-table td{
+  padding:.9rem 1.05rem !important;
+  border-bottom:1px solid #EDF0F4 !important;
+  color:var(--backend-text) !important;
+  font-size:.86rem !important;
+}
+
+#adminDash .admin-table tbody tr{
+  transition:background .18s ease;
+}
+
+#adminDash .admin-table tbody tr:hover td{
+  background:rgba(22,138,134,.035) !important;
+}
+
+#adminDash .status-pill,
+#adminDash .admin-badge{
+  border-radius:999px !important;
+  font-weight:750 !important;
+  letter-spacing:.01em;
+}
+
+/* ---------- MEMBER DASHBOARD ---------- */
+#memberDash{
+  background:var(--backend-bg) !important;
+}
+
+#memberDash .dash-top{
+  min-height:68px !important;
+  background:rgba(16,26,51,.97) !important;
+  border-bottom:1px solid rgba(255,255,255,.09) !important;
+  box-shadow:0 4px 18px rgba(16,26,51,.10) !important;
+}
+
+#memberDash .container{
+  max-width:1120px !important;
+}
+
+#memberDash .container > div{
+  background:var(--backend-surface) !important;
+  border:1px solid var(--backend-border) !important;
+  border-radius:18px !important;
+  box-shadow:var(--backend-shadow) !important;
+}
+
+#memberDash h3{
+  color:var(--backend-navy) !important;
+  font-weight:800 !important;
+}
+
+#memberDash .btn-gold{
+  border-radius:10px !important;
+  box-shadow:0 8px 20px rgba(212,166,58,.16) !important;
+}
+
+/* ---------- AUTH MODALS: SIGN IN / SIGN UP / FORGOT ---------- */
+#loginModal,
+#signupModal,
+#forgotModal{
+  background:
+    radial-gradient(circle at 18% 18%,rgba(22,138,134,.10),transparent 25%),
+    radial-gradient(circle at 85% 85%,rgba(212,166,58,.10),transparent 28%),
+    rgba(7,16,31,.66) !important;
+  backdrop-filter:blur(8px) !important;
+}
+
+#loginModal .modal-box,
+#signupModal .modal-box,
+#forgotModal .modal-box{
+  width:min(470px,calc(100vw - 28px)) !important;
+  border-radius:22px !important;
+  border:1px solid rgba(16,26,51,.10) !important;
+  background:rgba(255,255,255,.98) !important;
+  box-shadow:0 30px 90px rgba(16,26,51,.26) !important;
+  overflow:hidden !important;
+}
+
+#loginModal .modal-head,
+#signupModal .modal-head,
+#forgotModal .modal-head{
+  position:relative !important;
+  padding:1.55rem 1.65rem 1.25rem !important;
+  background:
+    linear-gradient(135deg,rgba(16,26,51,.035),rgba(212,166,58,.055)) !important;
+  border-bottom:1px solid #E8ECF1 !important;
+}
+
+#loginModal .modal-head::before,
+#signupModal .modal-head::before,
+#forgotModal .modal-head::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:3px;
+  background:linear-gradient(90deg,#168A86,#D4A63A,#B5485D);
+}
+
+#loginModal .modal-head h3,
+#signupModal .modal-head h3,
+#forgotModal .modal-head h3{
+  color:var(--backend-navy) !important;
+  font-size:1.35rem !important;
+  font-weight:850 !important;
+  letter-spacing:-.025em !important;
+}
+
+#loginModal .modal-close,
+#signupModal .modal-close,
+#forgotModal .modal-close{
+  width:34px !important;
+  height:34px !important;
+  background:#F4F6F8 !important;
+  border:1px solid #E2E8F0 !important;
+  color:#667085 !important;
+  transition:.2s ease !important;
+}
+
+#loginModal .modal-close:hover,
+#signupModal .modal-close:hover,
+#forgotModal .modal-close:hover{
+  background:#B5485D !important;
+  border-color:#B5485D !important;
+  color:#fff !important;
+  transform:rotate(90deg);
+}
+
+#loginModal .modal-body,
+#signupModal .modal-body,
+#forgotModal .modal-body{
+  padding:1.65rem !important;
+  background:#fff !important;
+}
+
+#loginModal .modal-form,
+#signupModal .modal-form,
+#forgotModal .modal-form{
+  gap:1rem !important;
+}
+
+#loginModal .form-group label,
+#signupModal .form-group label,
+#forgotModal .form-group label{
+  color:#344054 !important;
+  font-size:.78rem !important;
+  font-weight:700 !important;
+  letter-spacing:.01em;
+}
+
+#loginModal .form-input,
+#signupModal .form-input,
+#forgotModal .form-input{
+  min-height:47px !important;
+  border-radius:11px !important;
+  border:1px solid #DCE2EA !important;
+  background:#F8FAFC !important;
+  color:#172033 !important;
+  box-shadow:inset 0 1px 1px rgba(16,26,51,.025) !important;
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease !important;
+}
+
+#loginModal .form-input:hover,
+#signupModal .form-input:hover,
+#forgotModal .form-input:hover{
+  border-color:#C7D0DB !important;
+}
+
+#loginModal .form-input:focus,
+#signupModal .form-input:focus,
+#forgotModal .form-input:focus{
+  background:#fff !important;
+  border-color:#168A86 !important;
+  box-shadow:0 0 0 4px rgba(22,138,134,.10) !important;
+}
+
+#loginModal .btn-gold,
+#signupModal .btn-gold,
+#forgotModal .btn-gold{
+  min-height:48px !important;
+  border-radius:11px !important;
+  background:linear-gradient(135deg,#D4A63A,#F0C75E) !important;
+  border-color:#D4A63A !important;
+  color:#101A33 !important;
+  font-weight:800 !important;
+  box-shadow:0 9px 22px rgba(212,166,58,.18) !important;
+  transition:.22s ease !important;
+}
+
+#loginModal .btn-gold:hover,
+#signupModal .btn-gold:hover,
+#forgotModal .btn-gold:hover{
+  transform:translateY(-2px) !important;
+  box-shadow:0 13px 28px rgba(212,166,58,.25) !important;
+}
+
+#loginModal .modal-hint,
+#signupModal .modal-hint,
+#forgotModal .modal-hint{
+  color:#667085 !important;
+  font-size:.8rem !important;
+}
+
+#loginModal .modal-hint a,
+#signupModal .modal-hint a,
+#forgotModal .modal-hint a{
+  color:#168A86 !important;
+  font-weight:750 !important;
+}
+
+#loginModal input[type="checkbox"]{
+  accent-color:#D4A63A;
+}
+
+/* Password-eye buttons already wired by existing JS — visual only */
+#loginModal button[onclick*="togglePwField"],
+#signupModal button[onclick*="togglePwField"]{
+  width:34px !important;
+  height:34px !important;
+  border-radius:8px !important;
+  color:#667085 !important;
+  transition:.18s ease !important;
+}
+
+#loginModal button[onclick*="togglePwField"]:hover,
+#signupModal button[onclick*="togglePwField"]:hover{
+  background:#EEF7F6 !important;
+  color:#168A86 !important;
+}
+
+/* Signup avatar upload preview area */
+#signupModal #sAvatarPreview{
+  width:58px !important;
+  height:58px !important;
+  border:2px solid #D4A63A !important;
+  box-shadow:0 5px 15px rgba(16,26,51,.10) !important;
+}
+
+#signupModal #sAvatar{
+  min-height:45px !important;
+}
+
+#signupModal #sAvatarStatus{
+  color:#667085 !important;
+}
+
+/* Existing signup error state — appearance only */
+#signupModal .admin-error{
+  border-radius:10px !important;
+  border:1px solid rgba(181,72,93,.20) !important;
+  background:rgba(181,72,93,.07) !important;
+  color:#9B354C !important;
+}
+
+/* ---------- DARK MODE FOR BACKEND + AUTH ---------- */
+[data-theme="dark"] #adminDash{
+  background:#080F1C !important;
+}
+
+[data-theme="dark"] #adminDash .admin-main,
+[data-theme="dark"] #memberDash{
+  background:#080F1C !important;
+}
+
+[data-theme="dark"] #adminDash .ds-card,
+[data-theme="dark"] #adminDash .admin-stat,
+[data-theme="dark"] #adminDash .admin-table,
+[data-theme="dark"] #memberDash .container > div{
+  background:#101E35 !important;
+  border-color:#1C2E4A !important;
+}
+
+[data-theme="dark"] #adminDash .ds-num,
+[data-theme="dark"] #adminDash .admin-stat b,
+[data-theme="dark"] #memberDash h3{
+  color:#F0E8D8 !important;
+}
+
+[data-theme="dark"] #adminDash .admin-table td{
+  color:#EDE9E1 !important;
+  border-bottom-color:#243650 !important;
+}
+
+[data-theme="dark"] #adminDash .dtab{
+  background:#101E35 !important;
+  border-color:#263B59 !important;
+  color:#AAB5C6 !important;
+}
+
+[data-theme="dark"] #adminDash .dtab.active{
+  background:#F0C75E !important;
+  border-color:#F0C75E !important;
+  color:#101A33 !important;
+}
+
+/* Auth modals remain clean/light for maximum form readability */
+[data-theme="dark"] #loginModal .modal-box,
+[data-theme="dark"] #signupModal .modal-box,
+[data-theme="dark"] #forgotModal .modal-box{
+  background:#101E35 !important;
+  border-color:#263B59 !important;
+}
+
+[data-theme="dark"] #loginModal .modal-head,
+[data-theme="dark"] #signupModal .modal-head,
+[data-theme="dark"] #forgotModal .modal-head,
+[data-theme="dark"] #loginModal .modal-body,
+[data-theme="dark"] #signupModal .modal-body,
+[data-theme="dark"] #forgotModal .modal-body{
+  background:#101E35 !important;
+  border-color:#263B59 !important;
+}
+
+[data-theme="dark"] #loginModal .modal-head h3,
+[data-theme="dark"] #signupModal .modal-head h3,
+[data-theme="dark"] #forgotModal .modal-head h3{
+  color:#F0E8D8 !important;
+}
+
+[data-theme="dark"] #loginModal .form-group label,
+[data-theme="dark"] #signupModal .form-group label,
+[data-theme="dark"] #forgotModal .form-group label{
+  color:#D7DEEA !important;
+}
+
+[data-theme="dark"] #loginModal .form-input,
+[data-theme="dark"] #signupModal .form-input,
+[data-theme="dark"] #forgotModal .form-input{
+  background:#0D1829 !important;
+  border-color:#263B59 !important;
+  color:#F0E8D8 !important;
+}
+
+[data-theme="dark"] #loginModal .form-input:focus,
+[data-theme="dark"] #signupModal .form-input:focus,
+[data-theme="dark"] #forgotModal .form-input:focus{
+  background:#101E35 !important;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:1050px){
+  #adminDash .admin-shell{
+    grid-template-columns:1fr !important;
+  }
+  #adminDash .admin-side{
+    width:100% !important;
+    flex-direction:row !important;
+    overflow-x:auto !important;
+    padding:.7rem !important;
+    gap:.35rem !important;
+  }
+  #adminDash .admin-side-logo{
+    display:none !important;
+  }
+  #adminDash .admin-nav-btn{
+    flex:0 0 auto !important;
+    width:auto !important;
+    white-space:nowrap !important;
+  }
+}
+
+@media (max-width:700px){
+  #adminDash .dash-body{
+    padding:1.25rem .9rem 2rem !important;
+  }
+  #adminDash .dash-stats{
+    grid-template-columns:1fr 1fr !important;
+  }
+  #adminPage .admin-box{
+    padding:1.55rem !important;
+    border-radius:19px !important;
+  }
+}
+
+@media (max-width:480px){
+  #adminDash .dash-stats{
+    grid-template-columns:1fr !important;
+  }
+  #loginModal .modal-box,
+  #signupModal .modal-box,
+  #forgotModal .modal-box{
+    width:calc(100vw - 20px) !important;
+    border-radius:18px !important;
+  }
+  #loginModal .modal-body,
+  #signupModal .modal-body,
+  #forgotModal .modal-body{
+    padding:1.2rem !important;
+  }
+}
+
+/* Accessibility: preserve keyboard visibility */
+#adminDash .admin-nav-btn:focus-visible,
+#loginModal .form-input:focus-visible,
+#signupModal .form-input:focus-visible,
+#forgotModal .form-input:focus-visible,
+#adminPage .admin-input:focus-visible{
+  outline:3px solid rgba(22,138,134,.30) !important;
+  outline-offset:2px !important;
+}
+</style>
+
 </head>
 <body>
 
