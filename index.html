@@ -4589,6 +4589,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('gallery',this)"><i class="fas fa-images"></i> Gallery</button>
       <button class="admin-nav-btn" onclick="switchDashTab('societies',this);loadSocietiesAdmin();"><i class="fas fa-layer-group"></i> Societies</button>
       <button class="admin-nav-btn" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('cabinet',this);loadCentralCabinetAdmin();"><i class="fas fa-crown"></i> Central Cabinet</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
@@ -4614,6 +4615,7 @@ select.form-input {
         <button class="dtab" onclick="switchDashTab('applications',this)"><i class="fas fa-file-alt"></i> Applications</button>
         <button class="dtab" onclick="switchDashTab('gallery',this)"><i class="fas fa-images"></i> Gallery</button>
         <button class="dtab" onclick="switchDashTab('chapters',this)"><i class="fas fa-map"></i> Chapters</button>
+        <button class="dtab" onclick="switchDashTab('cabinet',this);loadCentralCabinetAdmin();"><i class="fas fa-crown"></i> Central Cabinet</button>
         <button class="dtab" onclick="switchDashTab('events',this)"><i class="fas fa-calendar"></i> Events</button>
         <button class="dtab" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
         <button class="dtab" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
@@ -4710,6 +4712,22 @@ select.form-input {
             <thead><tr><th>صوبہ</th><th>ہیڈ کوارٹرز</th><th>Head</th><th>رکن</th><th>Status</th><th>ایکشن</th></tr></thead>
             <tbody id="chaptersBody">
               <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Chapters لوڈ ہو رہے ہیں…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Central Cabinet Panel -->
+      <div class="dash-panel" id="dp-cabinet">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Central Cabinet</h3>
+          <button class="btn btn-gold" onclick="openCentralCabinetModal()" style="padding:.5rem 1rem;font-size:.9rem;"><i class="fas fa-plus"></i> نئی نشست شامل کریں</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead><tr><th>تصویر</th><th>نام</th><th>عہدہ</th><th>تفصیل</th><th>ایکشن</th></tr></thead>
+            <tbody id="centralCabinetBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Central Cabinet لوڈ ہو رہی ہے…</td></tr>
             </tbody>
           </table>
         </div>
@@ -5473,6 +5491,35 @@ select.form-input {
           <datalist id="chCabPublicRelationsOfficerList"></datalist>
         </div>
 
+        <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Central Cabinet Modal (Admin) -->
+<div class="modal" id="centralCabinetModal" role="dialog" aria-modal="true" aria-labelledby="centralCabinetTitle">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-head">
+      <h3 id="centralCabinetTitle">Central Cabinet نشست</h3>
+      <button class="modal-close" onclick="closeModal('centralCabinetModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ccSeatId" value="" />
+      <form id="centralCabinetForm">
+        <div class="form-group">
+          <label for="ccMember">رکن (Member)</label>
+          <input type="text" id="ccMember" list="ccMemberList" class="form-input" placeholder="نام یا ID لکھ کر تلاش کریں" autocomplete="off" required />
+          <datalist id="ccMemberList"></datalist>
+        </div>
+        <div class="form-group">
+          <label for="ccRole">عہدہ (Role)</label>
+          <input type="text" id="ccRole" class="form-input" placeholder="e.g. President, Vice President" required />
+        </div>
+        <div class="form-group">
+          <label for="ccBio">تفصیل (Bio)</label>
+          <textarea id="ccBio" class="form-input" rows="3" placeholder="مختصر تفصیل لکھیں"></textarea>
+        </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">محفوظ کریں</button>
       </form>
     </div>
@@ -6874,6 +6921,100 @@ select.form-input {
     if (error) { showToast('ہٹا نہیں سکے: ' + error.message, 'error'); return; }
     showToast('نشست ہٹا دی گئی۔');
     await loadChapterCabinet(chapterId);
+  }
+
+  /* ── Central Cabinet (Admin) ── */
+  async function loadCentralCabinetAdmin() {
+    const body = document.getElementById('centralCabinetBody');
+    if (!body) return;
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">لوڈ ہو رہا ہے…</td></tr>';
+
+    const { data: seats, error } = await sb
+      .from('cabinet_members')
+      .select('id, position, bio, profiles(full_name, avatar_url)')
+      .is('chapter_id', null)
+      .is('society_id', null)
+      .order('position');
+
+    if (error) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ruby);">خرابی: ' + sanitize(error.message) + '</td></tr>'; return; }
+    if (!seats || seats.length === 0) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">ابھی کوئی نشست نہیں۔</td></tr>'; return; }
+
+    body.innerHTML = seats.map(s => {
+      const name = s.profiles ? sanitize(s.profiles.full_name) : '—';
+      const avatar = s.profiles && s.profiles.avatar_url ? s.profiles.avatar_url : '';
+      const imgHtml = avatar
+        ? '<img src="' + sanitize(avatar) + '" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" alt="' + name + '" />'
+        : '<div style="width:42px;height:42px;border-radius:50%;background:var(--cream2);"></div>';
+      return '<tr>' +
+        '<td>' + imgHtml + '</td>' +
+        '<td>' + name + '</td>' +
+        '<td>' + sanitize(s.position || '') + '</td>' +
+        '<td style="max-width:260px;">' + sanitize((s.bio || '').slice(0, 80)) + (s.bio && s.bio.length > 80 ? '…' : '') + '</td>' +
+        '<td>' +
+          '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;margin-left:.3rem;" onclick="editCentralCabinetSeat(\'' + s.id + '\')"><i class="fas fa-edit"></i></button>' +
+          '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCentralCabinetSeat(\'' + s.id + '\')"><i class="fas fa-trash"></i></button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  async function openCentralCabinetModal() {
+    document.getElementById('ccSeatId').value = '';
+    document.getElementById('ccRole').value = '';
+    document.getElementById('ccBio').value = '';
+    await populatePeopleDatalist('ccMember', 'ccMemberList', null);
+    document.getElementById('centralCabinetTitle').textContent = 'نئی Central Cabinet نشست';
+    openModal('centralCabinetModal');
+  }
+
+  async function editCentralCabinetSeat(seatId) {
+    const { data: seat, error } = await sb
+      .from('cabinet_members')
+      .select('id, position, bio, member_id')
+      .eq('id', seatId)
+      .single();
+    if (error || !seat) { showToast('نشست نہیں ملی۔', 'error'); return; }
+
+    document.getElementById('ccSeatId').value = seat.id;
+    document.getElementById('ccRole').value = seat.position || '';
+    document.getElementById('ccBio').value = seat.bio || '';
+    await populatePeopleDatalist('ccMember', 'ccMemberList', seat.member_id);
+    document.getElementById('centralCabinetTitle').textContent = 'Central Cabinet نشست میں ترمیم';
+    openModal('centralCabinetModal');
+  }
+
+  document.getElementById('centralCabinetForm')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const seatId = document.getElementById('ccSeatId').value;
+    const memberId = resolvePersonId('ccMember');
+    const position = document.getElementById('ccRole').value.trim();
+    const bio = document.getElementById('ccBio').value.trim();
+
+    if (!memberId) { showToast('براہ کرم فہرست میں سے رکن منتخب کریں۔', 'error'); return; }
+    if (!position) { showToast('عہدہ درج کریں۔', 'error'); return; }
+
+    const payload = { member_id: memberId, position, bio, chapter_id: null, society_id: null };
+    let error;
+    if (seatId) {
+      ({ error } = await sb.from('cabinet_members').update(payload).eq('id', seatId));
+    } else {
+      ({ error } = await sb.from('cabinet_members').insert(payload));
+    }
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    showToast('Central Cabinet نشست محفوظ ہو گئی۔');
+    closeModal('centralCabinetModal');
+    await loadCentralCabinetAdmin();
+    if (typeof loadCentralCabinetPublic === 'function') loadCentralCabinetPublic();
+  });
+
+  async function deleteCentralCabinetSeat(seatId) {
+    if (!confirm('کیا یہ نشست ہٹانا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('cabinet_members').delete().eq('id', seatId);
+    if (error) { showToast('ہٹا نہیں سکے: ' + error.message, 'error'); return; }
+    showToast('نشست ہٹا دی گئی۔');
+    await loadCentralCabinetAdmin();
+    if (typeof loadCentralCabinetPublic === 'function') loadCentralCabinetPublic();
   }
 </script>
 
