@@ -5489,7 +5489,21 @@ select.form-input {
         </div>
         <div class="form-group">
           <label for="ccRole">عہدہ (Role)</label>
-          <input type="text" id="ccRole" class="form-input" placeholder="e.g. President, Vice President" required />
+          <select id="ccRole" class="form-input" required>
+            <option value="">-- عہدہ منتخب کریں --</option>
+            <option value="President">President</option>
+            <option value="Vice President">Vice President</option>
+            <option value="General Secretary">General Secretary</option>
+            <option value="Joint Secretary">Joint Secretary</option>
+            <option value="Finance Secretary">Finance Secretary</option>
+            <option value="Media Secretary">Media Secretary</option>
+            <option value="Membership Secretary">Membership Secretary</option>
+            <option value="Events Coordinator">Events Coordinator</option>
+            <option value="Cultural Coordinator">Cultural Coordinator</option>
+            <option value="Public Relations Officer">Public Relations Officer</option>
+            <option value="__other__">دیگر (Other — خود لکھیں)</option>
+          </select>
+          <input type="text" id="ccRoleOther" class="form-input" placeholder="عہدہ کا نام لکھیں" style="display:none;margin-top:.5rem;" />
         </div>
         <div class="form-group">
           <label for="ccBio">تفصیل (Bio)</label>
@@ -7004,9 +7018,31 @@ select.form-input {
     }
   });
 
+  const CC_PRESET_POSITIONS = ['President','Vice President','General Secretary','Joint Secretary','Finance Secretary','Media Secretary','Membership Secretary','Events Coordinator','Cultural Coordinator','Public Relations Officer'];
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const ccRoleSelect = document.getElementById('ccRole');
+    if (ccRoleSelect) {
+      ccRoleSelect.addEventListener('change', function () {
+        const otherInput = document.getElementById('ccRoleOther');
+        if (this.value === '__other__') {
+          otherInput.style.display = 'block';
+          otherInput.required = true;
+        } else {
+          otherInput.style.display = 'none';
+          otherInput.required = false;
+          otherInput.value = '';
+        }
+      });
+    }
+  });
+
   async function openCentralCabinetModal() {
     document.getElementById('ccSeatId').value = '';
     document.getElementById('ccRole').value = '';
+    document.getElementById('ccRoleOther').value = '';
+    document.getElementById('ccRoleOther').style.display = 'none';
+    document.getElementById('ccRoleOther').required = false;
     document.getElementById('ccBio').value = '';
     resetCcPhotoUI();
     await populatePeopleDatalist('ccMember', 'ccMemberList', null);
@@ -7023,7 +7059,19 @@ select.form-input {
     if (error || !seat) { showToast('نشست نہیں ملی۔', 'error'); return; }
 
     document.getElementById('ccSeatId').value = seat.id;
-    document.getElementById('ccRole').value = seat.position || '';
+    const pos = seat.position || '';
+    const otherInput = document.getElementById('ccRoleOther');
+    if (CC_PRESET_POSITIONS.includes(pos)) {
+      document.getElementById('ccRole').value = pos;
+      otherInput.style.display = 'none';
+      otherInput.required = false;
+      otherInput.value = '';
+    } else {
+      document.getElementById('ccRole').value = '__other__';
+      otherInput.style.display = 'block';
+      otherInput.required = true;
+      otherInput.value = pos;
+    }
     document.getElementById('ccBio').value = seat.bio || '';
     resetCcPhotoUI();
     if (seat.photo_url) {
@@ -7041,7 +7089,8 @@ select.form-input {
     e.preventDefault();
     const seatId = document.getElementById('ccSeatId').value;
     const memberId = resolvePersonId('ccMember');
-    const position = document.getElementById('ccRole').value.trim();
+    const roleSelectVal = document.getElementById('ccRole').value;
+    const position = (roleSelectVal === '__other__' ? document.getElementById('ccRoleOther').value : roleSelectVal).trim();
     const bio = document.getElementById('ccBio').value.trim();
 
     if (!memberId) { showToast('براہ کرم فہرست میں سے رکن منتخب کریں۔', 'error'); return; }
