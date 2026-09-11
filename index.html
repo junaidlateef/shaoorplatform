@@ -4513,10 +4513,10 @@ select.form-input {
 
       <!-- Stats -->
       <div class="dash-stats">
-        <div class="ds-card reveal"><div class="ds-num">500+</div><div class="ds-lbl">Total Members</div></div>
-        <div class="ds-card reveal anim-d1"><div class="ds-num">42</div><div class="ds-lbl">Pending Applications</div></div>
-        <div class="ds-card reveal anim-d2"><div class="ds-num">12</div><div class="ds-lbl">Artworks Listed</div></div>
-        <div class="ds-card reveal anim-d3"><div class="ds-num">6</div><div class="ds-lbl">Active Chapters</div></div>
+        <div class="ds-card reveal"><div class="ds-num" id="dsTotalMembers">—</div><div class="ds-lbl">Total Members</div></div>
+        <div class="ds-card reveal anim-d1"><div class="ds-num" id="dsPendingApplications">—</div><div class="ds-lbl">Pending Applications</div></div>
+        <div class="ds-card reveal anim-d2"><div class="ds-num" id="dsArtworksListed">—</div><div class="ds-lbl">Artworks Listed</div></div>
+        <div class="ds-card reveal anim-d3"><div class="ds-num" id="dsActiveChapters">—</div><div class="ds-lbl">Active Chapters</div></div>
       </div>
 
       <!-- Dashboard Tabs -->
@@ -4964,6 +4964,13 @@ select.form-input {
     <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);margin-top:1.5rem;">
       <h3 style="font-weight:700;margin-bottom:1.5rem;color:var(--navy);"><i class="fas fa-certificate" style="color:var(--gold);margin-right:.5rem;"></i> My Certificates</h3>
       <div id="myCertificatesList" style="display:grid;gap:.75rem;">
+        <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);margin-top:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:1.5rem;color:var(--navy);"><i class="fas fa-calendar-check" style="color:var(--gold);margin-right:.5rem;"></i> Events — Attendance</h3>
+      <div id="myEventsAttendanceList" style="display:grid;gap:.75rem;">
         <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
       </div>
     </div>
@@ -7517,7 +7524,61 @@ select.form-input {
     showToast('خوش آمدید، ' + (profile.full_name || 'Member') + '!');
 
     loadMyCertificates(userId);
+    loadMyEventsAttendance(userId);
   }
+
+  /* ── Events / Self Attendance ── */
+  async function loadMyEventsAttendance(userId) {
+    const wrap = document.getElementById('myEventsAttendanceList');
+    if (!wrap) return;
+    try {
+      const [{ data: events, error: evErr }, { data: myAttendance, error: attErr }] = await Promise.all([
+        sb.from('events').select('id, title, event_date').order('event_date', { ascending: false }).limit(20),
+        sb.from('event_attendance').select('event_id').eq('member_id', userId)
+      ]);
+      if (evErr) throw evErr;
+      const markedIds = new Set((myAttendance || []).map(a => a.event_id));
+      const list = events || [];
+      if (list.length === 0) {
+        wrap.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">فی الحال کوئی پروگرام موجود نہیں۔</div>';
+        return;
+      }
+      wrap.innerHTML = list.map(ev => {
+        const isMarked = markedIds.has(ev.id);
+        const dateStr = ev.event_date ? new Date(ev.event_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+        return `<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1rem;border:1px solid var(--border);border-radius:10px;">
+          <div>
+            <div style="font-weight:600;">${(ev.title || '').replace(/</g,'&lt;')}</div>
+            <div style="font-size:.78rem;color:var(--muted);">${dateStr}</div>
+          </div>
+          ${isMarked
+            ? '<span style="color:#15803d;font-weight:600;font-size:.85rem;white-space:nowrap;"><i class="fas fa-check-circle"></i> حاضر</span>'
+            : `<button class="btn btn-gold" style="padding:.4rem .9rem;font-size:.8rem;white-space:nowrap;" onclick="markMyAttendance('${ev.id}', this)">Present</button>`}
+        </div>`;
+      }).join('');
+    } catch (err) {
+      console.error('Events attendance load error:', err);
+      wrap.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ نہیں ہو سکا۔</div>';
+    }
+  }
+
+  window.markMyAttendance = async function(eventId, btnEl) {
+    const { data: userData } = await sb.auth.getUser();
+    const userId = userData?.user?.id;
+    if (!userId) return;
+    if (btnEl) { btnEl.disabled = true; btnEl.textContent = '...'; }
+    const { error } = await sb.from('event_attendance').insert({ event_id: eventId, member_id: userId });
+    if (error) {
+      showToast('حاضری لگانا ناکام: ' + error.message, 'error');
+      if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Present'; }
+      return;
+    }
+    showToast('حاضری کامیابی سے لگ گئی۔');
+    if (btnEl) {
+      const wrap = btnEl.parentElement;
+      wrap.innerHTML = '<span style="color:#15803d;font-weight:600;font-size:.85rem;white-space:nowrap;"><i class="fas fa-check-circle"></i> حاضر</span>';
+    }
+  };
 
   /* ── Avatar upload ── */
   const avatarInput = document.getElementById('avatarInput');
@@ -8832,6 +8893,28 @@ select.form-input {
     });
   }
 
+  async function loadDashTopStats() {
+    try {
+      const [
+        { count: totalMembers },
+        { count: pendingApps },
+        { count: totalArtworks },
+        { data: chapters }
+      ] = await Promise.all([
+        sb.from('profiles').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+        sb.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        sb.from('gallery').select('id', { count: 'exact', head: true }),
+        sb.from('chapters').select('id')
+      ]);
+      document.getElementById('dsTotalMembers').textContent = totalMembers ?? 0;
+      document.getElementById('dsPendingApplications').textContent = pendingApps ?? 0;
+      document.getElementById('dsArtworksListed').textContent = totalArtworks ?? 0;
+      document.getElementById('dsActiveChapters').textContent = (chapters || []).length;
+    } catch (err) {
+      console.error('Dashboard top stats load error:', err);
+    }
+  }
+
   async function loadAnalyticsAdmin() {
     try {
       const [
@@ -8949,6 +9032,7 @@ select.form-input {
       err.style.display = 'none';
       initReveal();
       loadMembersAdmin();
+      loadDashTopStats();
     });
   }
 
