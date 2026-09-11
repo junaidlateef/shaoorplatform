@@ -4156,7 +4156,39 @@ select.form-input {
     </div>
   </section>
 
-  <!-- MEMBERSHIP -->
+  <!-- COURSES / LEARNING ACADEMY -->
+  <section class="section" id="courses" style="background:var(--navy);padding:4rem 0;">
+    <div class="container">
+      <div class="sec-head">
+        <p class="sec-label" style="color:var(--gold);">Learning Academy</p>
+        <h2 class="sec-title" style="color:#fff;">LEARN &bull; CREATE &bull; GROW</h2>
+        <p class="sec-sub" style="color:rgba(255,255,255,.7);">Free and paid courses for beginner, intermediate, and advanced artists — coming soon from the SHAOOR Learning Academy.</p>
+      </div>
+
+      <!-- Course level filter chips (visual only until course data is connected) -->
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-bottom:2rem;">
+        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Free</span>
+        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Paid</span>
+        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Beginner</span>
+        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Intermediate</span>
+        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Advanced</span>
+      </div>
+
+      <!-- Empty state: no invented courses, instructors, fees, dates, or seats -->
+      <div id="coursesEmptyState" style="text-align:center;padding:3rem 1rem;">
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:2.5rem 1.5rem;max-width:480px;margin:0 auto;">
+          <i class="fas fa-graduation-cap" style="font-size:2.2rem;color:var(--gold);margin-bottom:1rem;display:block;"></i>
+          <h3 style="font-family:var(--ff-display);font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.5rem;">Courses launching soon</h3>
+          <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">The SHAOOR Learning Academy catalog is being prepared. Course listings, instructors, and enrollment will appear here once available.</p>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:2rem;">
+        <a href="#membership" class="btn btn-gold" style="font-size:.84rem;"><i class="fas fa-bell"></i> Notify Me When Courses Launch</a>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="membership">
     <div class="container">
       <div class="sec-head">
@@ -4253,24 +4285,6 @@ select.form-input {
           <button class="btn btn-gold" onclick="verifyCert()">Verify</button>
         </div>
         <div class="ver-result" id="certiResult"></div>
-      </div>
-    </div>
-  <!-- ═══ FOUNDER ═══ -->
-  <section class="section" id="founder" style="background:var(--navy);padding:4rem 0;">
-    <div class="container">
-      <div style="display:grid;grid-template-columns:280px 1fr;gap:3rem;align-items:center;max-width:900px;margin:0 auto;">
-        <div style="text-align:center;">
-          <img id="founderImg" src="" alt="Founder" style="width:200px;height:200px;border-radius:50%;object-fit:cover;object-position:top;border:4px solid var(--gold);margin:0 auto 1rem;display:none;" /><div id="founderImgPlaceholder" style="width:200px;height:200px;border-radius:50%;border:4px dashed var(--gold);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:3rem;"><i class="fas fa-user"></i></div>
-          <div id="founderName" style="font-family:var(--ff-display);font-size:1.2rem;font-weight:800;color:#fff;">Fatima tu Zahra</div>
-          <div id="founderTitle" style="color:var(--gold2);font-size:.85rem;font-weight:600;margin-top:.25rem;">Founding Director</div>
-          <div id="founderSub" style="color:rgba(255,255,255,.5);font-size:.8rem;margin-top:.2rem;">GPGC Sahiwal · Chemistry Graduate</div>
-        </div>
-        <div>
-          <p class="sec-label" style="color:var(--gold2);">The Founder's Vision</p>
-          <h2 style="font-family:var(--ff-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:1rem;">The Woman Behind SHAOOR</h2>
-          <blockquote id="founderQuote" style="border-left:3px solid var(--gold);padding-left:1.25rem;font-family:var(--ff-display);font-size:1.15rem;font-style:italic;color:rgba(255,255,255,.8);line-height:1.65;margin-bottom:1.25rem;">"SHAOOR is not just a platform — it's a movement to reclaim our cultural identity through art. Every artist has a story, and this platform is for them to tell it."</blockquote>
-          <p id="founderBio" style="color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.7;">Fatima tu Zahra founded SHAOOR in Sahiwal with a belief that creativity is the most powerful tool a community has. A Chemistry graduate and passionate creative practitioner, she built SHAOOR to be a space where artists teach, learners grow, and Pakistan's cultural heritage is preserved for future generations.</p>
-        </div>
       </div>
     </div>
   </section>
@@ -5781,6 +5795,25 @@ select.form-input {
       </form>
     </div>
   </div>
+</div>
+
+<!-- CHATBOT: answers only from the real Supabase 'faq' table -->
+<div class="chatbot" id="chatbotWidget">
+  <div class="chat-win" id="chatWin">
+    <div class="chat-win-head">
+      <div class="chat-avatar">S</div>
+      <div class="chat-win-title">Ask SHAOOR</div>
+      <button class="chat-x" onclick="toggleChat(false)" aria-label="Close chat"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="msg msg-bot">السلام علیکم! میں آپ کے سوالات کا جواب SHAOOR کی verified معلومات سے دوں گا۔ کچھ پوچھیں۔</div>
+    </div>
+    <div class="chat-in">
+      <input type="text" id="chatField" class="chat-field" placeholder="اپنا سوال لکھیں..." onkeydown="if(event.key==='Enter')sendChatMessage()" />
+      <button class="chat-send" onclick="sendChatMessage()" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+  <button class="chat-toggle" onclick="toggleChat()" aria-label="Open chat"><i class="fas fa-comment-dots"></i></button>
 </div>
 
 <!-- WHATSAPP -->
@@ -9932,6 +9965,75 @@ select.form-input {
   };
 
   loadPublicBlog();
+
+  /* ── CHATBOT: answers ONLY from the real Supabase 'faq' table ── */
+  function toggleChat(force) {
+    const win = document.getElementById('chatWin');
+    if (!win) return;
+    const shouldOpen = typeof force === 'boolean' ? force : !win.classList.contains('open');
+    win.classList.toggle('open', shouldOpen);
+    if (shouldOpen) {
+      const field = document.getElementById('chatField');
+      if (field) field.focus();
+    }
+  }
+  window.toggleChat = toggleChat;
+
+  function appendChatMsg(text, who) {
+    const msgs = document.getElementById('chatMsgs');
+    if (!msgs) return;
+    const div = document.createElement('div');
+    div.className = 'msg ' + (who === 'user' ? 'msg-usr' : 'msg-bot');
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  async function sendChatMessage() {
+    const field = document.getElementById('chatField');
+    if (!field) return;
+    const question = field.value.trim();
+    if (!question) return;
+    field.value = '';
+    appendChatMsg(question, 'user');
+
+    if (!sb) {
+      appendChatMsg('سرور سے رابطہ نہیں ہو سکا۔ براہ کرم WhatsApp پر رابطہ کریں۔', 'bot');
+      return;
+    }
+
+    appendChatMsg('...', 'bot');
+    const msgs = document.getElementById('chatMsgs');
+    const loadingEl = msgs ? msgs.lastElementChild : null;
+
+    try {
+      // Match the question against real FAQ entries only — never invent an answer.
+      const { data, error } = await sb
+        .from('faq')
+        .select('question, answer')
+        .textSearch('question', question.split(/\s+/).filter(Boolean).join(' | '), { type: 'websearch', config: 'english' })
+        .limit(1);
+
+      if (loadingEl) loadingEl.remove();
+
+      if (error) {
+        console.warn('FAQ lookup failed:', error.message || error);
+        appendChatMsg('معذرت، اس وقت جواب نہیں لایا جا سکا۔ WhatsApp پر رابطہ کریں۔', 'bot');
+        return;
+      }
+
+      if (data && data.length > 0 && data[0].answer) {
+        appendChatMsg(data[0].answer, 'bot');
+      } else {
+        appendChatMsg('معذرت، اس سوال کا verified جواب ابھی موجود نہیں۔ براہ کرم WhatsApp پر ہم سے رابطہ کریں۔', 'bot');
+      }
+    } catch (e) {
+      if (loadingEl) loadingEl.remove();
+      console.warn('FAQ lookup error:', e.message || e);
+      appendChatMsg('معذرت، اس وقت جواب نہیں لایا جا سکا۔ WhatsApp پر رابطہ کریں۔', 'bot');
+    }
+  }
+  window.sendChatMessage = sendChatMessage;
 
 
   /* ── MEMBERSHIP STATUS in Member Dashboard ── */
