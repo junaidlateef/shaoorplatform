@@ -6662,7 +6662,7 @@ select.form-input {
 
     const { data, error } = await sb
       .from('event_attendance')
-      .select('marked_at, profiles(full_name, member_id)')
+      .select('marked_at, profiles!event_attendance_member_id_fkey(full_name, member_id)')
       .eq('event_id', eventId)
       .order('marked_at', { ascending: true });
 
@@ -6690,7 +6690,7 @@ select.form-input {
   window.exportEventAttendanceCSV = async function(eventId, eventTitle) {
     const { data, error } = await sb
       .from('event_attendance')
-      .select('marked_at, profiles(full_name, member_id)')
+      .select('marked_at, profiles!event_attendance_member_id_fkey(full_name, member_id)')
       .eq('event_id', eventId)
       .order('marked_at', { ascending: true });
     if (error) { showToast('Export ناکام: ' + error.message, 'error'); return; }
