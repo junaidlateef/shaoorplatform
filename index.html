@@ -3673,9 +3673,11 @@ select.form-input {
       <div class="nav-links" id="navLinks">
         <a href="#about">About</a>
         <a href="#societies">Societies</a>
-        <a href="#cabinet">Cabinet</a>
+        <a href="#chapters">Chapters</a>
         <a href="#events">Events</a>
+        <a href="#courses">Courses</a>
         <a href="#membership">Membership</a>
+        <a href="#verification">Verification</a>
         <a href="#blog">Blog</a>
         <a href="#contact">Contact</a>
       </div>
@@ -3685,7 +3687,7 @@ select.form-input {
           <i class="fas fa-moon" id="themeIcon"></i>
         </button>
         <button class="btn btn-outline" onclick="openModal('loginModal')">Sign In</button>
-        <a href="#signup" class="btn btn-gold" onclick="openSignupFlow()">Sign Up</a>
+        <a href="#membership" class="btn btn-gold" onclick="openSignupFlow()">Join Us</a>
       </div>
       <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -3699,10 +3701,13 @@ select.form-input {
   <button class="mob-close" onclick="closeMobileNav()" aria-label="Close menu"><i class="fas fa-times"></i></button>
   <a href="#about" onclick="closeMobileNav()">About</a>
   <a href="#societies" onclick="closeMobileNav()">Societies</a>
-    <a href="#events" onclick="closeMobileNav()">Events</a>
+  <a href="#chapters" onclick="closeMobileNav()">Chapters</a>
+  <a href="#events" onclick="closeMobileNav()">Events</a>
+  <a href="#courses" onclick="closeMobileNav()">Courses</a>
   <a href="#membership" onclick="closeMobileNav()">Membership</a>
-  <a href="#blog" onclick="closeMobileNav()">Blog</a>
+  <a href="#verification" onclick="closeMobileNav()">Verification</a>
   <a href="#gallery" onclick="closeMobileNav()">Gallery</a>
+  <a href="#blog" onclick="closeMobileNav()">Blog</a>
   <a href="#contact" onclick="closeMobileNav()">Contact</a>
   <a href="#" onclick="closeMobileNav();openModal('policyModal');return false;">Policy | رازداری</a>
   <div style="margin-top:1.5rem;display:grid;gap:.75rem;">
@@ -3722,15 +3727,16 @@ select.form-input {
 <div class="hero-badge"><i class="fas fa-palette"></i> Pakistan's Creative Arts Platform</div>
         <h1 class="hero-title">WHERE ARTS<br><span class="gold-shimmer">TRANSFORM SOCIETY</span></h1>
         <p class="hero-sub">Ideas • Culture • Creativity • Community — across Pakistan.</p>
-        <div class="hero-btns">
-          <a href="#signup" class="btn btn-gold" onclick="openSignupFlow()"><i class="fas fa-user-plus"></i> ابھی شامل ہوں</a>
-          <a href="#about" class="btn btn-ghost"><i class="fas fa-info-circle"></i> مزید جانیں</a>
+        <div class="hero-btns" style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:2rem;">
+          <a href="#about" class="btn btn-ghost"><i class="fas fa-compass"></i> EXPLORE</a>
+          <a href="#courses" class="btn btn-gold"><i class="fas fa-graduation-cap"></i> ENROLL</a>
+          <a href="#membership" class="btn btn-navy" style="background:var(--navy2);border-color:var(--navy2);color:#fff;"><i class="fas fa-user-plus"></i> JOIN SHAOOR</a>
         </div>
-        <div class="hero-stats">
-          <div class="stat-box"><div class="stat-num">8</div><div class="stat-lbl">Creative Societies</div></div>
-          <div class="stat-box"><div class="stat-num">3</div><div class="stat-lbl">City Chapters</div></div>
-          <div class="stat-box"><div class="stat-num">15+</div><div class="stat-lbl">Upcoming Events</div></div>
-          <div class="stat-box"><div class="stat-num">500+</div><div class="stat-lbl">Active Members</div></div>
+        <div class="hero-stats" id="heroStatsWrap" style="display:none;">
+          <div class="stat-box"><div class="stat-num" id="heroStatSocieties">—</div><div class="stat-lbl">Creative Societies</div></div>
+          <div class="stat-box"><div class="stat-num" id="heroStatChapters">—</div><div class="stat-lbl">City Chapters</div></div>
+          <div class="stat-box"><div class="stat-num" id="heroStatEvents">—</div><div class="stat-lbl">Upcoming Events</div></div>
+          <div class="stat-box"><div class="stat-num" id="heroStatMembers">—</div><div class="stat-lbl">Active Members</div></div>
         </div>
       </div>
         </div>
@@ -3750,22 +3756,22 @@ select.form-input {
       <div class="feature-strip" style="max-width:100%;">
         <div class="feature-card reveal">
           <div class="feature-icon" style="background:rgba(200,146,42,.1);"><i class="fas fa-palette" style="color:var(--gold);font-size:1.2rem;"></i></div>
-          <div class="feature-title">7 Societies</div>
+          <div class="feature-title">Creative Societies</div>
           <div class="feature-text">From Calligraphy to Digital Art — every creative discipline has a home.</div>
         </div>
         <div class="feature-card reveal anim-d1">
           <div class="feature-icon" style="background:rgba(26,107,107,.1);"><i class="fas fa-map-marked-alt" style="color:var(--teal);font-size:1.2rem;"></i></div>
-          <div class="feature-title">6 Chapters</div>
+          <div class="feature-title">Provincial Chapters</div>
           <div class="feature-text">Punjab, KPK, Sindh, Balochistan, Kashmir & Gilgit-Baltistan.</div>
         </div>
         <div class="feature-card reveal anim-d2">
           <div class="feature-icon" style="background:rgba(155,35,53,.1);"><i class="fas fa-images" style="color:var(--ruby);font-size:1.2rem;"></i></div>
-          <div class="feature-title">Events Gallery</div>
-          <div class="feature-text">Photos and reports from SHAOOR's own events, exhibitions & workshops.</div>
+          <div class="feature-title">Events & Gallery</div>
+          <div class="feature-text">Photos and reports from SHAOOR's events, exhibitions & workshops.</div>
         </div>
         <div class="feature-card reveal anim-d3">
           <div class="feature-icon" style="background:rgba(45,58,140,.1);"><i class="fas fa-id-card" style="color:var(--indigo);font-size:1.2rem;"></i></div>
-          <div class="feature-title">Member ID</div>
+          <div class="feature-title">Verified Identity</div>
           <div class="feature-text">Official SHAOOR ID, scannable certificate & verified portfolio.</div>
         </div>
       </div>
@@ -4093,8 +4099,8 @@ select.form-input {
         <h2 class="sec-title">Register & Apply</h2>
         <p class="sec-sub">Fill out the official SHAOOR Registration Form to apply for membership. After submission, join our community group to stay connected.</p>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:900px;margin:0 auto;">
-        <!-- Registration Form Card -->
+      <div style="max-width:520px;margin:0 auto;">
+        <!-- Registration Form Card (single primary action) -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);text-align:center;">
           <div style="width:64px;height:64px;border-radius:14px;background:rgba(201,151,43,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.8rem;color:var(--gold);">
             <i class="fas fa-user-plus"></i>
@@ -4135,41 +4141,19 @@ select.form-input {
               return true;
             }
           </script>
-        </div>
-        <!-- WhatsApp Group Card -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);text-align:center;">
-          <div style="width:64px;height:64px;border-radius:14px;background:rgba(37,211,102,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.8rem;color:#25D366;">
-            <i class="fab fa-whatsapp"></i>
-          </div>
-          <h3 style="font-family:var(--ff-display);font-size:1.3rem;font-weight:800;margin-bottom:.5rem;">Community Group</h3>
-          <p style="font-size:.9rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;">After registering, join our WhatsApp community group to receive updates, event notifications, and connect with fellow members.</p>
-          <div style="background:rgba(37,211,102,.06);border:1px dashed rgba(37,211,102,.4);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--muted);">
-            <i class="fas fa-users" style="color:#25D366;margin-right:.4rem;"></i> 500+ members already in the community
-          </div>
-          <a href="https://wa.me/923102774666?text=السلام%20علیکم!%20SHAOOR%20community%20group%20join%20karna%20chahta%20hun" target="_blank" rel="noopener" class="btn" style="width:100%;justify-content:center;font-size:1rem;background:#25D366;color:#fff;border-color:#25D366;">
-            <i class="fab fa-whatsapp"></i> Join WhatsApp Group
+          <a href="https://wa.me/923102774666?text=السلام%20علیکم!%20SHAOOR%20community%20group%20join%20karna%20chahta%20hun" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.4rem;margin-top:1.25rem;font-size:.8rem;color:#25D366;text-decoration:none;font-weight:600;">
+            <i class="fab fa-whatsapp"></i> Join our WhatsApp community after registering
           </a>
         </div>
       </div>
-      <!-- Steps -->
-      <div style="max-width:700px;margin:3rem auto 0;text-align:center;">
-        <p style="font-size:.85rem;font-weight:600;color:var(--muted);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:.08em;">How to Join SHAOOR</p>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;">
-            <div style="font-family:var(--ff-display);font-size:2rem;font-weight:900;color:var(--gold);margin-bottom:.4rem;">1</div>
-            <div style="font-weight:700;font-size:.92rem;margin-bottom:.25rem;">Fill the Form</div>
-            <div style="font-size:.82rem;color:var(--muted);">Complete the official Google registration form</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;">
-            <div style="font-family:var(--ff-display);font-size:2rem;font-weight:900;color:var(--gold);margin-bottom:.4rem;">2</div>
-            <div style="font-weight:700;font-size:.92rem;margin-bottom:.25rem;">Get Verified</div>
-            <div style="font-size:.82rem;color:var(--muted);">SHAOOR team reviews your application in 3–5 days</div>
-          </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;">
-            <div style="font-family:var(--ff-display);font-size:2rem;font-weight:900;color:var(--gold);margin-bottom:.4rem;">3</div>
-            <div style="font-weight:700;font-size:.92rem;margin-bottom:.25rem;">Receive Your ID</div>
-            <div style="font-size:.82rem;color:var(--muted);">Get your official SHAOOR Member ID card</div>
-          </div>
+      <!-- Compact inline process indicator -->
+      <div style="max-width:520px;margin:2rem auto 0;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:.85rem;font-weight:700;color:var(--muted);">
+          <span style="display:flex;align-items:center;gap:.4rem;color:var(--gold);"><span style="width:26px;height:26px;border-radius:50%;background:var(--gold);color:#2C1B03;display:flex;align-items:center;justify-content:center;font-size:.8rem;">1</span> Apply</span>
+          <i class="fas fa-arrow-right" style="font-size:.7rem;"></i>
+          <span style="display:flex;align-items:center;gap:.4rem;">Review</span>
+          <i class="fas fa-arrow-right" style="font-size:.7rem;"></i>
+          <span style="display:flex;align-items:center;gap:.4rem;">Membership</span>
         </div>
       </div>
     </div>
@@ -4235,47 +4219,11 @@ select.form-input {
         <h2 class="sec-title">SHAOOR Digital ID Card</h2>
         <p class="sec-sub">Every member receives a verified digital ID — scannable, shareable, and officially recognized by all SHAOOR chapters.</p>
       </div>
-      <div class="id-card" style="position:relative;">
-        <div style="position:absolute;top:12px;right:12px;background:var(--gold2,#C9972B);color:#2C1B03;font-size:.65rem;font-weight:700;letter-spacing:.06em;padding:4px 12px;border-radius:20px;z-index:3;">SAMPLE</div>
-        <div class="id-top">
-          <div>
-            <div class="id-brand-en">SHAOOR</div>
-            <div class="id-brand-ur">شعور — Creative Arts Platform</div>
-          </div>
-          <div class="id-mid-id">
-            <div class="lbl">Member ID</div>
-            <div class="val">SHR-MBR-0000-000000</div>
-          </div>
+      <div style="max-width:640px;margin:0 auto;text-align:center;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow);">
+        <div style="width:64px;height:64px;border-radius:14px;background:rgba(201,151,43,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.8rem;color:var(--gold);">
+          <i class="fas fa-id-card"></i>
         </div>
-        <div class="id-body">
-          <div class="id-photo-wrap">
-            <div class="id-photo">--</div>
-            <div>
-              <div class="id-name">Sample Member</div>
-              <div class="id-society">Example Society · Example Role</div>
-            </div>
-          </div>
-          <div class="id-fields">
-            <div class="id-field"><div class="lbl">Member Since</div><div class="val">----</div></div>
-            <div class="id-field"><div class="lbl">Chapter</div><div class="val">Example Chapter</div></div>
-            <div class="id-field"><div class="lbl">Status</div><div class="val" style="color:#4ade80;">● Active</div></div>
-            <div class="id-field"><div class="lbl">Society Role</div><div class="val">Example</div></div>
-          </div>
-          <div style="margin-top:1rem;font-size:.72rem;color:rgba(255,255,255,.5);">For illustration only — not a real member record.</div>
-        </div>
-        <div class="id-footer">
-          <div class="id-valid">Valid through: --</div>
-          <div class="id-qr">
-            <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="2" width="12" height="12" rx="1" fill="#0E1F38"/><rect x="4" y="4" width="8" height="8" rx=".5" fill="white"/><rect x="5" y="5" width="6" height="6" fill="#0E1F38"/>
-              <rect x="18" y="2" width="12" height="12" rx="1" fill="#0E1F38"/><rect x="20" y="4" width="8" height="8" rx=".5" fill="white"/><rect x="21" y="5" width="6" height="6" fill="#0E1F38"/>
-              <rect x="2" y="18" width="12" height="12" rx="1" fill="#0E1F38"/><rect x="4" y="20" width="8" height="8" rx=".5" fill="white"/><rect x="5" y="21" width="6" height="6" fill="#0E1F38"/>
-              <rect x="18" y="18" width="3" height="3" fill="#0E1F38"/><rect x="22" y="18" width="3" height="3" fill="#0E1F38"/><rect x="27" y="18" width="3" height="3" fill="#0E1F38"/>
-              <rect x="18" y="22" width="3" height="3" fill="#0E1F38"/><rect x="27" y="22" width="3" height="3" fill="#0E1F38"/>
-              <rect x="18" y="27" width="3" height="3" fill="#0E1F38"/><rect x="22" y="27" width="8" height="3" fill="#0E1F38"/>
-            </svg>
-          </div>
-        </div>
+        <p style="font-size:.92rem;color:var(--muted);line-height:1.7;">Every SHAOOR member receives a verified digital ID card once their membership is approved — scannable, shareable, and officially recognized by all SHAOOR chapters. Use the verification portal below to check the authenticity of any SHAOOR Member ID or Certificate.</p>
       </div>
       <div style="text-align:center;margin-top:1.75rem;">
         <a href="#verification" class="btn btn-ghost">Verify a SHAOOR ID <i class="fas fa-arrow-right"></i></a>
@@ -4310,8 +4258,25 @@ select.form-input {
         <div class="ver-result" id="certiResult"></div>
       </div>
     </div>
+  <!-- ═══ FOUNDER ═══ -->
+  <section class="section" id="founder" style="background:var(--navy);padding:4rem 0;">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:3rem;align-items:center;max-width:900px;margin:0 auto;">
+        <div style="text-align:center;">
+          <img id="founderImg" src="" alt="Founder" style="width:200px;height:200px;border-radius:50%;object-fit:cover;object-position:top;border:4px solid var(--gold);margin:0 auto 1rem;display:none;" /><div id="founderImgPlaceholder" style="width:200px;height:200px;border-radius:50%;border:4px dashed var(--gold);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:3rem;"><i class="fas fa-user"></i></div>
+          <div id="founderName" style="font-family:var(--ff-display);font-size:1.2rem;font-weight:800;color:#fff;">Fatima tu Zahra</div>
+          <div id="founderTitle" style="color:var(--gold2);font-size:.85rem;font-weight:600;margin-top:.25rem;">Founding Director</div>
+          <div id="founderSub" style="color:rgba(255,255,255,.5);font-size:.8rem;margin-top:.2rem;">GPGC Sahiwal · Chemistry Graduate</div>
+        </div>
+        <div>
+          <p class="sec-label" style="color:var(--gold2);">The Founder's Vision</p>
+          <h2 style="font-family:var(--ff-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:1rem;">The Woman Behind SHAOOR</h2>
+          <blockquote id="founderQuote" style="border-left:3px solid var(--gold);padding-left:1.25rem;font-family:var(--ff-display);font-size:1.15rem;font-style:italic;color:rgba(255,255,255,.8);line-height:1.65;margin-bottom:1.25rem;">"SHAOOR is not just a platform — it's a movement to reclaim our cultural identity through art. Every artist has a story, and this platform is for them to tell it."</blockquote>
+          <p id="founderBio" style="color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.7;">Fatima tu Zahra founded SHAOOR in Sahiwal with a belief that creativity is the most powerful tool a community has. A Chemistry graduate and passionate creative practitioner, she built SHAOOR to be a space where artists teach, learners grow, and Pakistan's cultural heritage is preserved for future generations.</p>
+        </div>
+      </div>
+    </div>
   </section>
-
 
   <!-- ═══ GALLERY ═══ -->
   <section class="section" id="gallery" style="background:var(--cream);">
@@ -5819,27 +5784,6 @@ select.form-input {
       </form>
     </div>
   </div>
-</div>
-
-<!-- ═══ CHATBOT ═══ -->
-<div class="chatbot">
-  <div class="chat-win" id="chatWin">
-    <div class="chat-win-head">
-      <div class="chat-avatar">AI</div>
-      <span class="chat-win-title">SHAOOR Assistant</span>
-      <button class="chat-x" onclick="toggleChat()" aria-label="Close chat"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="chat-msgs" id="chatMsgs">
-      <div class="msg msg-bot">👋 Hello! I'm SHAOOR AI. Ask me about membership, events, societies, or leadership!</div>
-    </div>
-    <div class="chat-in">
-      <input type="text" id="chatField" class="chat-field" placeholder="Type a message…" />
-      <button class="chat-send" onclick="sendMsg()" aria-label="Send"><i class="fas fa-paper-plane"></i></button>
-    </div>
-  </div>
-  <button class="chat-toggle" onclick="toggleChat()" aria-label="Open chat assistant">
-    <i class="fas fa-comments"></i>
-  </button>
 </div>
 
 <!-- WHATSAPP -->
@@ -7552,46 +7496,6 @@ select.form-input {
   document.querySelectorAll('.modal').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
   });
-
-  /* ── CHATBOT ── */
-  const chatWin  = document.getElementById('chatWin');
-  const chatMsgs = document.getElementById('chatMsgs');
-  const chatFld  = document.getElementById('chatField');
-
-  function toggleChat() { chatWin.classList.toggle('open'); }
-
-  function appendMsg(text, who) {
-    const d = document.createElement('div');
-    d.className = 'msg msg-' + who;
-    d.textContent = text;
-    chatMsgs.appendChild(d);
-    chatMsgs.scrollTop = chatMsgs.scrollHeight;
-  }
-
-  function sendMsg() {
-    const m = chatFld.value.trim();
-    if (!m) return;
-    appendMsg(sanitize(m), 'usr');
-    chatFld.value = '';
-    setTimeout(() => appendMsg(botReply(m), 'bot'), 800);
-  }
-  chatFld.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
-
-  function botReply(m) {
-    m = m.toLowerCase();
-    if (/member|join|apply|رکن|رکنیت|signup|شامل/.test(m)) return "رجسٹریشن کے لیے 'ابھی شامل ہوں' بٹن دبائیں یا Sign Up سیکشن میں جائیں۔ درخواست ۳–۵ دنوں میں جانچی جاتی ہے۔";
-    if (/event|workshop|exhibit|ایونٹ|تقریب/.test(m)) return "آنے والی تقریبات: SHAOOR افتتاحی نمائش (Q2 2026) اور Monochrome Exhibition (ابھی کھلی ہے — ڈیڈلائن 15 ستمبر 2026)۔";
-    if (/societ|کلیہ|سوسائٹی/.test(m)) return "SHAOOR میں 8 تخلیقی سوسائٹیاں ہیں: خطاطی، مصوری، نساجی، اسلامی فن، ورثہ، فوٹوگرافی، ڈیجیٹل آرٹ، اور ادبی سوسائٹی (جلد آ رہی ہے)۔";
-    if (/president|leader|cabinet|صدر/.test(m)) return "SHAOOR کے صدر امیر شہزاد ہیں۔ مرکزی کابینہ میں صدرہ رحمان (نائب صدر)، صبیلہ کیانی (جنرل سیکریٹری) اور طوبیٰ سعید (میڈیا کوآرڈینیٹر) شامل ہیں۔";
-    if (/found|fatima|بانی|فاطمہ/.test(m)) return "SHAOOR کی بانی فاطمہ تزہرہ ہیں — GPGC ساہیوال سے کیمسٹری گریجویٹ اور ایک پرجوش تخلیقی فنکار۔";
-    if (/contact|رابطہ|email|whatsapp/.test(m)) return "رابطہ: shaoor.platform@yahoo.com یا WhatsApp: 0310 2774666 — ساہیوال، پنجاب۔";
-    if (/verify|id|تصدیق|certificate/.test(m)) return "تصدیق کے لیے 'Verification' سیکشن میں جائیں اور اپنا SHAOOR ID یا سرٹیفکیٹ نمبر درج کریں۔";
-    if (/policy|رازداری|privacy/.test(m)) return "ہماری رازداری پالیسی دیکھنے کے لیے نیچے footer میں 'Privacy Policy' لنک پر کلک کریں۔";
-    if (/hi|hello|السلام|سلام|آداب/.test(m)) return "السلام علیکم! 👋 میں SHAOOR AI ہوں۔ رکنیت، تقریبات، یا کسی بھی معلومات کے لیے پوچھیں!";
-    if (/thank|شکریہ|مہربانی/.test(m)) return "بہت شکریہ! کوئی اور سوال ہو تو بتائیں۔ 😊";
-    return "معذرت، میں سمجھ نہ پایا۔ براہ کرم رکنیت، تقریبات، یا سوسائٹیوں کے بارے میں پوچھیں۔ براہ راست رابطے کے لیے: shaoor.platform@yahoo.com";
-  }
-
 
   /* ════════════════════════════════════════
      SHAOOR SECURITY LAYER
