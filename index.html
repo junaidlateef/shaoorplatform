@@ -9322,8 +9322,14 @@ select.form-input {
       const { data: chaps, error: chErr } = await sb.from('chapters').select('id, province');
       if (chErr || !chaps) return;
 
-      const { data: socs, error: sErr } = await sb.from('societies').select('name, chapter_id, status').not('chapter_id', 'is', null);
-      if (sErr || !socs) return;
+      // FIXED (Bug 1): read from the chapter_societies JUNCTION table (joined to societies),
+      // matching exactly what the admin "Manage" modal writes to (addSocietyToChapter()).
+      // Previously this queried societies.chapter_id directly, which the admin modal never sets.
+      const { data: links, error: lErr } = await sb
+        .from('chapter_societies')
+        .select('chapter_id, status, societies(name)')
+        .eq('status', 'active');
+      if (lErr || !links) return;
 
       // province -> chapter id map
       const provinceToChapterId = {};
@@ -9334,17 +9340,17 @@ select.form-input {
         const chapterId = provinceToChapterId[province];
         if (!chapterId) return;
 
-        const liveSocs = socs.filter(s => s.chapter_id === chapterId);
-        if (liveSocs.length === 0) return;
+        const liveLinks = links.filter(l => l.chapter_id === chapterId && l.societies);
+        if (liveLinks.length === 0) return;
 
         let container = panel.querySelector('.societies-in-chapter');
         if (!container) return;
 
-        const liveHtml = liveSocs.map(s => `
+        const liveHtml = liveLinks.map(l => `
           <div class="sic-card">
             <div class="sic-icon">✨</div>
-            <div class="sic-name">${sanitize(s.name)}</div>
-            <div class="sic-seats">${s.status === 'active' ? 'فعال' : 'محفوظ'}</div>
+            <div class="sic-name">${sanitize(l.societies.name)}</div>
+            <div class="sic-seats">فعال</div>
           </div>`).join('');
 
         container.insertAdjacentHTML('beforeend', liveHtml);
