@@ -2318,9 +2318,10 @@ body, button, input, textarea, select, .btn, .nav-links a, .mobile-nav a{font-fa
 .section:nth-of-type(even){background:var(--cream2)!important;}
 /* Dark-design sections carry their own inline navy background + white text;
    the blanket cream rule above was clobbering it and making the text invisible. */
-#founder.section,#courses.section{background:var(--navy)!important;}
+#founder.section,#courses.section,#lmsCatalogSection.section{background:var(--navy)!important;}
 #founder .sec-title,#founder h2,#founder h3,#founder h4,
 #courses .sec-title,#courses h2,#courses h3,#courses h4{color:#fff!important;}
+#lmsCatalogSection .sec-title,#lmsCatalogSection h2,#lmsCatalogSection h3,#lmsCatalogSection h4{color:#fff!important;}
 .sec-title,h2,h3,h4,.feature-title,.chapter-name,.member-name,.blog-title,.contact-title{color:var(--ink)!important;}
 .sec-sub,.feature-text,.chapter-meta,.gallery-caption span,.note,.muted{color:var(--muted)!important;}
 [data-theme="dark"] .sec-sub,[data-theme="dark"] .feature-text,[data-theme="dark"] .chapter-meta,[data-theme="dark"] .gallery-caption span,[data-theme="dark"] .note,[data-theme="dark"] .muted{color:#AEB8C7!important;}
@@ -5154,7 +5155,70 @@ select.form-input {
     .lms-empty { text-align: center; padding: 3rem 1rem; color: #888; }
   </style>
 
+  <!-- ============================================================
+       SHAOOR LMS — PHASE 2 REWORK: HOMEPAGE INTRO ONLY
+       (full catalog + course detail now live inside #lmsAcademyOverlay,
+       opened only when the visitor clicks "Explore Courses")
+  ============================================================= -->
+  <style>
+    .lms-pathways { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+    .lms-pathway-card {
+      border: 1px solid rgba(255,255,255,.15); border-radius: 14px; padding: 1.5rem 1.2rem;
+      text-align: center; background: rgba(255,255,255,.04); cursor: pointer; transition: all .2s;
+    }
+    .lms-pathway-card:hover { background: rgba(255,255,255,.09); transform: translateY(-3px); }
+    .lms-pathway-card i { font-size: 1.6rem; color: var(--gold, #c9a44c); margin-bottom: .6rem; display: block; }
+    .lms-pathway-card h4 { font-weight: 700; margin-bottom: .3rem; }
+    .lms-pathway-card p { font-size: .82rem; opacity: .8; margin: 0; }
+    .lms-academy-close {
+      position: sticky; top: 1rem; float: right; margin: 1rem 1.5rem 0 0; z-index: 5;
+      background: rgba(0,0,0,.35); color: #fff; border: none; border-radius: 999px;
+      width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer;
+    }
+    #lmsAcademyOverlay {
+      display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto;
+      background: var(--navy, #142f4a);
+    }
+    #lmsAcademyOverlay.active { display: block; }
+  </style>
+
   <section class="section" id="courses">
+    <div class="container" style="text-align:center;">
+      <div class="hero-badge" style="margin:0 auto 1rem;display:inline-flex;">
+        <i class="fas fa-graduation-cap"></i> LEARN • CREATE • GROW
+      </div>
+      <h2>SHAOOR Learning Academy</h2>
+      <p style="max-width:640px;margin:0 auto;opacity:.85;">A dedicated professional learning space for Pakistan's arts and culture community — structured courses, guided lessons, and recognized certification.</p>
+
+      <div class="lms-pathways" id="lmsHomePathways">
+        <div class="lms-pathway-card" onclick="openLearningAcademy('beginner');">
+          <i class="fas fa-seedling"></i>
+          <h4>Beginner</h4>
+          <p>New to the craft — start with the fundamentals.</p>
+        </div>
+        <div class="lms-pathway-card" onclick="openLearningAcademy('intermediate');">
+          <i class="fas fa-layer-group"></i>
+          <h4>Intermediate</h4>
+          <p>Build on your skills with guided, structured practice.</p>
+        </div>
+        <div class="lms-pathway-card" onclick="openLearningAcademy('advanced');">
+          <i class="fas fa-award"></i>
+          <h4>Advanced</h4>
+          <p>Refine your craft toward professional-level mastery.</p>
+        </div>
+      </div>
+
+      <button class="btn btn-gold" onclick="openLearningAcademy('all');" style="margin-top:.5rem;">
+        <i class="fas fa-graduation-cap"></i> Explore Courses
+      </button>
+      <div id="lmsHomeEmptyNote" style="display:none;margin-top:1rem;font-size:.85rem;opacity:.75;">No published courses yet. Please check back soon.</div>
+    </div>
+  </section>
+
+  <div id="lmsAcademyOverlay">
+    <button class="lms-academy-close" onclick="closeLearningAcademy();" aria-label="Close Learning Academy"><i class="fas fa-times"></i></button>
+
+  <section class="section" id="lmsCatalogSection">
     <div class="container">
       <div class="lms-catalog-header">
         <div class="hero-badge" style="margin:0 auto 1rem;display:inline-flex;">
@@ -5203,6 +5267,11 @@ select.form-input {
         lmsAllCourses = result.data || [];
         lmsCatalogLoaded = true;
         renderCourseCatalog();
+        // Phase 2 rework: honest empty-state hint on the homepage pathway section too.
+        var homeNote = document.getElementById('lmsHomeEmptyNote');
+        var homePathways = document.getElementById('lmsHomePathways');
+        if (homeNote) { homeNote.style.display = lmsAllCourses.length ? 'none' : 'block'; }
+        if (homePathways) { homePathways.style.opacity = lmsAllCourses.length ? '1' : '.5'; }
       } catch (e) {
         console.error('SHAOOR LMS: unexpected error loading courses', e);
       }
@@ -5439,13 +5508,16 @@ select.form-input {
     </div>
   </section>
 
+  </div><!-- /#lmsAcademyOverlay -->
+
   <script>
     /* LMS COURSE DETAIL — Phase 3 */
     let lmsCurrentCourse = null;
     let lmsPendingEnrollCourseId = null; // set when a signed-out user clicks Enroll, so login/signup can resume it
 
     async function showCourseDetail(slug) {
-      document.getElementById('courses').style.display = 'none';
+      document.getElementById('lmsAcademyOverlay').classList.add('active'); // safety: ensure the academy overlay is open
+      document.getElementById('lmsCatalogSection').style.display = 'none';
       var detail = document.getElementById('courseDetail');
       detail.classList.add('active');
       detail.scrollIntoView({ behavior: 'smooth' });
@@ -6328,10 +6400,36 @@ select.form-input {
 
     function closeCourseDetail() {
       document.getElementById('courseDetail').classList.remove('active');
-      document.getElementById('courses').style.display = '';
+      document.getElementById('lmsCatalogSection').style.display = '';
       history.pushState('', document.title, window.location.pathname + window.location.search);
-      document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('lmsCatalogSection').scrollIntoView({ behavior: 'smooth' });
       resetCourseSeoMeta();
+    }
+
+    /* ── PHASE 2 REWORK: dedicated Learning Academy overlay open/close ── */
+    function openLearningAcademy(levelFilter) {
+      document.getElementById('lmsAcademyOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      // Apply the requested pathway filter (beginner/intermediate/advanced/all) to the existing filter buttons.
+      if (levelFilter) {
+        document.querySelectorAll('#lmsFilters .lms-filter-btn').forEach(function (b) {
+          b.classList.toggle('active', b.getAttribute('data-filter') === levelFilter);
+        });
+        if (typeof lmsCurrentFilter !== 'undefined') {
+          lmsCurrentFilter = levelFilter;
+          if (typeof renderCourseCatalog === 'function') renderCourseCatalog();
+        }
+      }
+      document.getElementById('lmsAcademyOverlay').scrollTop = 0;
+    }
+
+    function closeLearningAcademy() {
+      document.getElementById('lmsAcademyOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+      // If a course detail was open inside the academy, reset back to the catalog for next time.
+      var detail = document.getElementById('courseDetail');
+      if (detail.classList.contains('active')) { closeCourseDetail(); }
+      document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
     }
 
     /* ── SEO meta for course detail pages (Phase 13 addition) ──
