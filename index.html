@@ -5374,6 +5374,9 @@ select.form-input {
             <button class="btn btn-gold" style="width:100%;justify-content:center;margin-bottom:.6rem;" onclick="enrollInCourse();">
               <i class="fas fa-user-plus"></i> ENROLL NOW
             </button>
+            <button class="btn btn-outline" id="cdCertBtn" style="width:100%;justify-content:center;margin-bottom:.6rem;display:none;" onclick="claimCourseCertificate();">
+              <i class="fas fa-award"></i> GET CERTIFICATE
+            </button>
             <ul class="lms-detail-list" style="margin-top:1rem;font-size:.85rem;color:#555;">
               <li><i class="fas fa-layer-group"></i> <span id="cdModuleCount">—</span> Modules</li>
               <li><i class="fas fa-book-open"></i> <span id="cdLessonCount">—</span> Lessons</li>
@@ -5687,6 +5690,7 @@ select.form-input {
         lmsPassedModuleQuizIds.add(lmsCurrentQuiz.id);
         renderModules(lmsCurrentModules, lmsAllLessons); // unlock next module's lessons in the sidebar
         renderFinalAssessmentRow(); // may now be eligible if this was the last module quiz
+        maybeShowCertificateButton(); // Phase 10: may now be eligible if there's no final assessment
       }
     }
 
@@ -5891,10 +5895,48 @@ select.form-input {
       });
 
       document.getElementById('lmsFinalSubmitBtn').style.display = 'none';
+      if (passed) { maybeShowCertificateButton(); } // Phase 10: MCQ final assessment auto-approves on pass
     }
 
     function closeFinalPanel() {
       document.getElementById('lmsFinalPanel').classList.remove('active');
+    }
+
+    /* ── PHASE 10: certificate button — server RPC re-checks everything, this is just UI hinting ── */
+    function maybeShowCertificateButton() {
+      var btn = document.getElementById('cdCertBtn');
+      if (!btn) return;
+      if (!lmsCurrentCourse || !lmsCurrentCourse.certificate_available || !lmsEnrollmentActive) {
+        btn.style.display = 'none';
+        return;
+      }
+      if (!isCourseReadyForFinalAssessment()) { btn.style.display = 'none'; return; }
+      btn.style.display = '';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-award"></i> GET CERTIFICATE';
+    }
+
+    async function claimCourseCertificate() {
+      if (!lmsCurrentCourse) return;
+      var btn = document.getElementById('cdCertBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking…';
+      try {
+        var res = await sb.rpc('issue_course_certificate', { p_course_id: lmsCurrentCourse.id });
+        if (res.error) {
+          alert(res.error.message || 'Could not issue certificate yet. Make sure every lesson, quiz, and the final assessment (if any) is completed and approved.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-award"></i> GET CERTIFICATE';
+          return;
+        }
+        alert('🎉 Congratulations! Your certificate has been issued. You can view it under "My Certificates" in your member dashboard.');
+        btn.innerHTML = '<i class="fas fa-check"></i> CERTIFICATE ISSUED';
+      } catch (e) {
+        console.error('SHAOOR LMS: certificate issue failed', e);
+        alert('Could not issue certificate. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-award"></i> GET CERTIFICATE';
+      }
     }
     let lmsAllLessons = [];       // flat, ordered list of lessons for the current course
     let lmsCompletedLessonIds = new Set(); // lesson_id set completed by the current user
@@ -6045,6 +6087,8 @@ select.form-input {
         console.error('SHAOOR LMS: could not load lesson progress', e);
       }
       renderModules(modules, lessons);
+      renderFinalAssessmentRow();
+      maybeShowCertificateButton(); // Phase 10: returning student who already qualifies sees the button right away
     }
 
     function ytEmbedFromLesson(lesson) {
@@ -6138,6 +6182,7 @@ select.form-input {
         lmsCompletedLessonIds.add(lmsCurrentLessonId);
         renderModules(lmsCurrentModules, lmsAllLessons); // refresh lock/complete icons in the sidebar list
         renderFinalAssessmentRow(); // may now be eligible if this was the last lesson
+        maybeShowCertificateButton(); // Phase 10: may now be eligible if there's no final assessment
         openLesson(lmsCurrentLessonId); // refresh player button state (Prev/Next/Complete)
       } catch (e) {
         console.error('SHAOOR LMS: unexpected error saving lesson progress', e);
