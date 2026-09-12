@@ -8170,8 +8170,8 @@ select.form-input {
     document.getElementById('courseModalTitle').textContent = 'Course میں ترمیم';
     document.getElementById('courseTitle').value = c.title || '';
     document.getElementById('courseSlug').value = c.slug || '';
-    document.getElementById('courseShortDesc').value = c.short_description || '';
-    document.getElementById('courseFullDesc').value = c.full_description || '';
+    document.getElementById('courseShortDesc').value = c.description || '';
+    document.getElementById('courseFullDesc').value = '';
     document.getElementById('courseCategory').value = c.category || 'Creative Arts';
     document.getElementById('courseLevel').value = c.level || 'beginner';
     document.getElementById('courseIsPaid').value = c.is_paid ? 'true' : 'false';
@@ -8246,8 +8246,10 @@ select.form-input {
     const editId = frm.querySelector('#courseEditId').value;
     const title = frm.querySelector('#courseTitle').value.trim();
     let slug = frm.querySelector('#courseSlug').value.trim();
-    const short_description = frm.querySelector('#courseShortDesc').value.trim() || null;
-    const full_description = frm.querySelector('#courseFullDesc').value.trim() || null;
+    const shortDescVal = frm.querySelector('#courseShortDesc').value.trim();
+    const fullDescVal = frm.querySelector('#courseFullDesc').value.trim();
+    // Table has a single `description` column — combine short + full (short first, as a lead paragraph).
+    const description = [shortDescVal, fullDescVal].filter(Boolean).join('\n\n') || null;
     const category = frm.querySelector('#courseCategory').value;
     const level = frm.querySelector('#courseLevel').value;
     const is_paid = frm.querySelector('#courseIsPaid').value === 'true';
@@ -8280,9 +8282,11 @@ select.form-input {
     }
 
     const payload = {
-      title, slug, short_description, full_description, category, level,
+      title, slug, description, category, level,
       is_paid, price, currency, duration_label, course_code,
-      certificate_available, status, thumbnail_url
+      certificate_available, status, thumbnail_url,
+      // These columns are NOT NULL in the DB with no admin-facing UI yet — safe defaults for now.
+      quiz_frequency: 4, passing_score: 70
     };
 
     let error;
