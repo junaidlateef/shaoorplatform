@@ -6782,6 +6782,301 @@ select.form-input {
   </div>
 </div>
 
+<!-- ══════════════ PHASE 11 (مکمل): Course Content Manager Modals ══════════════ -->
+
+<!-- Course Content (Modules + Final Assessment + Submissions) -->
+<div class="modal" id="courseContentModal" role="dialog" aria-modal="true" aria-labelledby="courseContentTitle">
+  <div class="modal-box" style="max-width:820px;">
+    <div class="modal-head">
+      <h3 id="courseContentTitle">Course Content</h3>
+      <button class="modal-close" onclick="closeModal('courseContentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:.6rem;">
+        <h4 style="font-weight:700;">Modules</h4>
+        <button class="btn btn-gold" style="font-size:.8rem;" onclick="openCreateModuleModal()"><i class="fas fa-plus"></i> نیا Module</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table" id="modulesAdminTable">
+          <thead><tr><th>Title</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="modulesAdminBody"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">لوڈ ہو رہا ہے…</td></tr></tbody>
+        </table>
+      </div>
+
+      <h4 style="font-weight:700;margin:1.5rem 0 .6rem;">Final Assessment (اختیاری، course کی سطح پر)</h4>
+      <div id="finalAssessmentAdminWrap"><p style="color:var(--muted);font-size:.85rem;">لوڈ ہو رہا ہے…</p></div>
+
+      <h4 style="font-weight:700;margin:1.5rem 0 .6rem;">زیرِ جائزہ Submissions (Written/File Final Assessment)</h4>
+      <div style="overflow-x:auto;">
+        <table class="admin-table" id="pendingSubmissionsTable">
+          <thead><tr><th>Member</th><th>Content</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="pendingSubmissionsBody"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">لوڈ ہو رہا ہے…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Module -->
+<div class="modal" id="moduleModal" role="dialog" aria-modal="true" aria-labelledby="moduleModalTitle">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-head">
+      <h3 id="moduleModalTitle">نیا Module</h3>
+      <button class="modal-close" onclick="closeModal('moduleModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="moduleForm">
+        <input type="hidden" id="moduleEditId" value="" />
+        <div class="form-group">
+          <label for="moduleTitleInput">Module کا عنوان *</label>
+          <input type="text" id="moduleTitleInput" class="form-input" required placeholder="e.g., Module 1 — Basics" />
+        </div>
+        <div class="form-group">
+          <label for="moduleOrderInput">ترتیب (Order)</label>
+          <input type="number" id="moduleOrderInput" class="form-input" min="0" step="1" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label for="moduleStatusInput">Status *</label>
+          <select id="moduleStatusInput" class="form-input" required>
+            <option value="draft">Draft (چھپا ہوا)</option>
+            <option value="published">Published (عوامی)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Module Content (Lessons + Quiz) -->
+<div class="modal" id="moduleContentModal" role="dialog" aria-modal="true" aria-labelledby="moduleContentTitle">
+  <div class="modal-box" style="max-width:760px;">
+    <div class="modal-head">
+      <h3 id="moduleContentTitle">Lessons & Quiz</h3>
+      <button class="modal-close" onclick="closeModal('moduleContentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:.6rem;">
+        <h4 style="font-weight:700;">Lessons</h4>
+        <button class="btn btn-gold" style="font-size:.8rem;" onclick="openCreateLessonModal()"><i class="fas fa-plus"></i> نیا Lesson</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table" id="lessonsAdminTable">
+          <thead><tr><th>Title</th><th>Order</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="lessonsAdminBody"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1rem;">لوڈ ہو رہا ہے…</td></tr></tbody>
+        </table>
+      </div>
+
+      <h4 style="font-weight:700;margin:1.5rem 0 .6rem;">Module Quiz (اختیاری)</h4>
+      <div id="moduleQuizWrap"><p style="color:var(--muted);font-size:.85rem;">لوڈ ہو رہا ہے…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Lesson -->
+<div class="modal" id="lessonModal" role="dialog" aria-modal="true" aria-labelledby="lessonModalTitle">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-head">
+      <h3 id="lessonModalTitle">نیا Lesson</h3>
+      <button class="modal-close" onclick="closeModal('lessonModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="lessonForm">
+        <input type="hidden" id="lessonEditId" value="" />
+        <div class="form-group">
+          <label for="lessonTitleInput">Lesson کا عنوان *</label>
+          <input type="text" id="lessonTitleInput" class="form-input" required placeholder="e.g., Introduction to Watercolors" />
+        </div>
+        <div class="form-group">
+          <label for="lessonDescInput">تفصیل</label>
+          <textarea id="lessonDescInput" class="form-input" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="lessonOrderInput">ترتیب (Order)</label>
+          <input type="number" id="lessonOrderInput" class="form-input" min="0" step="1" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label for="lessonYoutubeIdInput">YouTube Video ID</label>
+          <input type="text" id="lessonYoutubeIdInput" class="form-input" placeholder="e.g., dQw4w9WgXcQ" />
+        </div>
+        <div class="form-group">
+          <label for="lessonYoutubeUrlInput">یا مکمل YouTube URL</label>
+          <input type="url" id="lessonYoutubeUrlInput" class="form-input" placeholder="https://youtube.com/watch?v=..." />
+        </div>
+        <div class="form-group">
+          <label for="lessonRequiredInput">لازمی Lesson؟</label>
+          <select id="lessonRequiredInput" class="form-input">
+            <option value="true">ہاں (لازمی)</option>
+            <option value="false">نہیں (اختیاری)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="lessonPreviewInput">مفت جھلک (بغیر enrollment کے دیکھی جا سکے)؟</label>
+          <select id="lessonPreviewInput" class="form-input">
+            <option value="false">نہیں</option>
+            <option value="true">ہاں</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="lessonStatusInput">Status *</label>
+          <select id="lessonStatusInput" class="form-input" required>
+            <option value="draft">Draft (چھپا ہوا)</option>
+            <option value="published">Published (عوامی)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Quiz -->
+<div class="modal" id="quizModal" role="dialog" aria-modal="true" aria-labelledby="quizModalTitle">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-head">
+      <h3 id="quizModalTitle">نیا Quiz</h3>
+      <button class="modal-close" onclick="closeModal('quizModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="quizForm">
+        <input type="hidden" id="quizEditId" value="" />
+        <div class="form-group">
+          <label for="quizTitleInput">Quiz کا عنوان</label>
+          <input type="text" id="quizTitleInput" class="form-input" placeholder="Module Quiz" />
+        </div>
+        <div class="form-group">
+          <label for="quizPassingInput">Passing Score (%) *</label>
+          <input type="number" id="quizPassingInput" class="form-input" min="0" max="100" step="1" value="70" required />
+        </div>
+        <div class="form-group">
+          <label for="quizAttemptLimitInput">Attempt Limit (خالی چھوڑیں = لامحدود)</label>
+          <input type="number" id="quizAttemptLimitInput" class="form-input" min="1" step="1" placeholder="e.g., 3" />
+        </div>
+        <div class="form-group">
+          <label for="quizTimeLimitInput">Time Limit (منٹ، اختیاری)</label>
+          <input type="number" id="quizTimeLimitInput" class="form-input" min="1" step="1" placeholder="e.g., 15" />
+        </div>
+        <div class="form-group">
+          <label for="quizStatusInput">Status *</label>
+          <select id="quizStatusInput" class="form-input" required>
+            <option value="draft">Draft (چھپا ہوا)</option>
+            <option value="published">Published (عوامی)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Final Assessment -->
+<div class="modal" id="finalAssessmentModal" role="dialog" aria-modal="true" aria-labelledby="finalAssessmentModalTitle">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-head">
+      <h3 id="finalAssessmentModalTitle">نیا Final Assessment</h3>
+      <button class="modal-close" onclick="closeModal('finalAssessmentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="finalAssessmentForm">
+        <input type="hidden" id="finalAssessmentEditId" value="" />
+        <div class="form-group">
+          <label for="faTitleInput">عنوان</label>
+          <input type="text" id="faTitleInput" class="form-input" placeholder="Final Assessment" />
+        </div>
+        <div class="form-group">
+          <label for="faTypeInput">قسم *</label>
+          <select id="faTypeInput" class="form-input" required>
+            <option value="mcq">MCQ (خودکار سکورنگ)</option>
+            <option value="manual">Written / File Submission (Admin review)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="faPassingInput">Passing Score (%) *</label>
+          <input type="number" id="faPassingInput" class="form-input" min="0" max="100" step="1" value="70" required />
+        </div>
+        <div class="form-group">
+          <label for="faAttemptLimitInput">Attempt Limit (خالی چھوڑیں = لامحدود)</label>
+          <input type="number" id="faAttemptLimitInput" class="form-input" min="1" step="1" placeholder="e.g., 2" />
+        </div>
+        <div class="form-group">
+          <label for="faStatusInput">Status *</label>
+          <select id="faStatusInput" class="form-input" required>
+            <option value="draft">Draft (چھپا ہوا)</option>
+            <option value="published">Published (عوامی)</option>
+          </select>
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);">نوٹ: "MCQ" منتخب کرنے پر سوالات یہیں سے شامل کریں۔ "Written/File" کی صورت میں طالب علم کا جمع کردہ کام نیچے "زیرِ جائزہ Submissions" میں آ کر منظور/مسترد کیا جائے گا۔</p>
+        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Questions Manager (shared: quiz_questions / assessment_questions) -->
+<div class="modal" id="questionsManagerModal" role="dialog" aria-modal="true" aria-labelledby="questionsManagerTitle">
+  <div class="modal-box" style="max-width:720px;">
+    <div class="modal-head">
+      <h3 id="questionsManagerTitle">سوالات</h3>
+      <button class="modal-close" onclick="closeModal('questionsManagerModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;">
+        <button class="btn btn-gold" style="font-size:.8rem;" onclick="openCreateQuestionModal()"><i class="fas fa-plus"></i> نیا سوال</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="admin-table" id="questionsAdminTable">
+          <thead><tr><th>سوال</th><th>Type</th><th>Marks</th><th>Actions</th></tr></thead>
+          <tbody id="questionsAdminBody"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">لوڈ ہو رہا ہے…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Question -->
+<div class="modal" id="questionModal" role="dialog" aria-modal="true" aria-labelledby="questionModalTitle">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-head">
+      <h3 id="questionModalTitle">نیا سوال</h3>
+      <button class="modal-close" onclick="closeModal('questionModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="questionForm">
+        <input type="hidden" id="questionEditId" value="" />
+        <div class="form-group">
+          <label for="questionTextInput">سوال کا متن *</label>
+          <textarea id="questionTextInput" class="form-input" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="questionTypeInput">قسم *</label>
+          <select id="questionTypeInput" class="form-input" required>
+            <option value="multiple_choice">Multiple Choice</option>
+            <option value="true_false">True / False</option>
+          </select>
+        </div>
+        <div class="form-group" id="questionOptionsGroup">
+          <label for="questionOptionsInput">Options (ہر لائن پر ایک option)</label>
+          <textarea id="questionOptionsInput" class="form-input" rows="4" placeholder="Option A&#10;Option B&#10;Option C"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="questionCorrectInput">صحیح جواب * (options میں سے کسی ایک جیسا، لفظ بہ لفظ — True/False کے لیے "True" یا "False" لکھیں)</label>
+          <input type="text" id="questionCorrectInput" class="form-input" required placeholder="e.g., Option A" />
+        </div>
+        <div class="form-group">
+          <label for="questionMarksInput">Marks</label>
+          <input type="number" id="questionMarksInput" class="form-input" min="0" step="1" value="1" />
+        </div>
+        <div class="form-group">
+          <label for="questionOrderInput">ترتیب (Order)</label>
+          <input type="number" id="questionOrderInput" class="form-input" min="0" step="1" placeholder="0" />
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);">نوٹ: صحیح جواب کبھی بھی طالب علم کو submission سے پہلے نہیں دکھایا جاتا — یہ صرف Admin کے لیے یہاں محفوظ ہوتا ہے۔</p>
+        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Create/Edit Live Session Modal (Admin) -->
 <div class="modal" id="liveSessionModal" role="dialog" aria-modal="true" aria-labelledby="liveSessionModalTitle">
   <div class="modal-box" style="max-width:520px;">
@@ -8390,6 +8685,7 @@ select.form-input {
           <td>${sanitize(priceStr)}</td>
           <td><span class="status-pill ${statusClass[st] || 'sp-pending'}">${statusLabel[st] || st}</span></td>
           <td>
+            <button onclick="manageCourseContent('${c.id}', '${(c.title||'').replace(/'/g,"\\'")}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;"><i class="fas fa-layer-group"></i> Content</button>
             <button onclick="editCourse('${c.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
             <button onclick="deleteCourse('${c.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
           </td>
@@ -8460,6 +8756,497 @@ select.form-input {
     loadCoursesAdmin();
     if (typeof loadCourseCatalog === 'function') { lmsCatalogLoaded = false; loadCourseCatalog(); }
   }));
+
+  /* ══════════════════════════════════════════════════════════════
+     PHASE 11 (مکمل): Admin — Modules / Lessons / Quizzes / Final Assessment
+     Reuses the same table/column names already read elsewhere in this
+     file (course_modules, course_lessons, quizzes, quiz_questions,
+     course_assessments, assessment_questions, assessment_submissions).
+     If any column name here doesn't match your live schema, check the
+     Supabase error toast — it will name the exact column to fix.
+     ══════════════════════════════════════════════════════════════ */
+
+  var lmsAdminCourseId = null, lmsAdminCourseTitle = '';
+  var lmsAdminModuleId = null, lmsAdminModuleTitle = '';
+  var lmsAdminQuestionTarget = null; // { kind: 'quiz'|'assessment', id, courseId, moduleId }
+
+  /* ---- Course Content (Modules) ---- */
+  window.manageCourseContent = function (courseId, courseTitle) {
+    lmsAdminCourseId = courseId;
+    lmsAdminCourseTitle = courseTitle || '';
+    document.getElementById('courseContentTitle').textContent = 'Course Content — ' + lmsAdminCourseTitle;
+    openModal('courseContentModal');
+    loadModulesAdmin();
+    loadFinalAssessmentAdmin();
+    loadPendingSubmissionsAdmin();
+  };
+
+  window.loadModulesAdmin = async function () {
+    var tbody = document.getElementById('modulesAdminBody');
+    if (!tbody || !sb || !lmsAdminCourseId) return;
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+    var res = await sb.from('course_modules').select('id, title, module_order, status')
+      .eq('course_id', lmsAdminCourseId).order('module_order', { ascending: true });
+    if (res.error) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ruby);padding:1rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</td></tr>'; return; }
+    var modules = res.data || [];
+    if (!modules.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">کوئی Module نہیں — "نیا Module" پر کلک کریں۔</td></tr>'; return; }
+    tbody.innerHTML = modules.map(function (m) {
+      var st = m.status || 'draft';
+      return '<tr>' +
+        '<td style="font-weight:600;">' + sanitize(m.title || '—') + '</td>' +
+        '<td>' + (m.module_order != null ? m.module_order : '—') + '</td>' +
+        '<td><span class="status-pill ' + (st === 'published' ? 'sp-active' : 'sp-pending') + '">' + (st === 'published' ? 'Published' : 'Draft') + '</span></td>' +
+        '<td>' +
+          '<button onclick="manageModuleContent(\'' + m.id + '\', \'' + String(m.title || '').replace(/'/g, "\\'") + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;"><i class="fas fa-book-open"></i> Lessons &amp; Quiz</button>' +
+          '<button onclick="editModule(\'' + m.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;">Edit</button>' +
+          '<button onclick="deleteModule(\'' + m.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>' +
+        '</td></tr>';
+    }).join('');
+  };
+
+  window.openCreateModuleModal = function () {
+    document.getElementById('moduleForm').reset();
+    document.getElementById('moduleEditId').value = '';
+    document.getElementById('moduleModalTitle').textContent = 'نیا Module';
+    openModal('moduleModal');
+  };
+
+  window.editModule = async function (id) {
+    var res = await sb.from('course_modules').select('*').eq('id', id).single();
+    if (res.error || !res.data) { showToast('Module نہیں ملا: ' + (res.error?.message || ''), 'error'); return; }
+    var m = res.data;
+    document.getElementById('moduleForm').reset();
+    document.getElementById('moduleEditId').value = m.id;
+    document.getElementById('moduleModalTitle').textContent = 'Module میں ترمیم';
+    document.getElementById('moduleTitleInput').value = m.title || '';
+    document.getElementById('moduleOrderInput').value = m.module_order != null ? m.module_order : '';
+    document.getElementById('moduleStatusInput').value = m.status || 'draft';
+    openModal('moduleModal');
+  };
+
+  window.deleteModule = async function (id) {
+    if (!confirm('یہ Module حذف کریں؟ اس کے تمام lessons/quiz بھی متاثر ہو سکتے ہیں۔')) return;
+    var res = await sb.from('course_modules').delete().eq('id', id).select('id');
+    if (res.error) { showToast('حذف نہیں ہو سکا: ' + res.error.message, 'error'); return; }
+    if (!res.data || !res.data.length) { showToast('حذف نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
+    showToast('Module حذف کر دیا گیا۔');
+    loadModulesAdmin();
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('moduleForm', async function (frm) {
+    var editId = frm.querySelector('#moduleEditId').value;
+    var title = frm.querySelector('#moduleTitleInput').value.trim();
+    var orderVal = frm.querySelector('#moduleOrderInput').value;
+    var status = frm.querySelector('#moduleStatusInput').value;
+    if (!title) { showToast('براہ کرم Module کا عنوان درج کریں', 'error'); return; }
+    var payload = { course_id: lmsAdminCourseId, title: title, module_order: orderVal ? parseInt(orderVal, 10) : 0, status: status };
+    var error;
+    if (editId) { ({ error } = await sb.from('course_modules').update(payload).eq('id', editId)); }
+    else { ({ error } = await sb.from('course_modules').insert(payload)); }
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('✓ Module محفوظ ہو گیا!');
+    closeModal('moduleModal');
+    loadModulesAdmin();
+  }));
+
+  /* ---- Module Content (Lessons + Quiz) ---- */
+  window.manageModuleContent = function (moduleId, moduleTitle) {
+    lmsAdminModuleId = moduleId;
+    lmsAdminModuleTitle = moduleTitle || '';
+    document.getElementById('moduleContentTitle').textContent = 'Lessons & Quiz — ' + lmsAdminModuleTitle;
+    openModal('moduleContentModal');
+    loadLessonsAdmin();
+    loadQuizAdmin();
+  };
+
+  window.loadLessonsAdmin = async function () {
+    var tbody = document.getElementById('lessonsAdminBody');
+    if (!tbody || !lmsAdminModuleId) return;
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+    var res = await sb.from('course_lessons').select('id, title, lesson_order, is_required, is_preview, status')
+      .eq('module_id', lmsAdminModuleId).order('lesson_order', { ascending: true });
+    if (res.error) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ruby);padding:1rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</td></tr>'; return; }
+    var lessons = res.data || [];
+    if (!lessons.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1rem;">کوئی Lesson نہیں — "نیا Lesson" پر کلک کریں۔</td></tr>'; return; }
+    tbody.innerHTML = lessons.map(function (l) {
+      var st = l.status || 'draft';
+      return '<tr>' +
+        '<td style="font-weight:600;">' + sanitize(l.title || '—') + '</td>' +
+        '<td>' + (l.lesson_order != null ? l.lesson_order : '—') + '</td>' +
+        '<td>' + (l.is_required ? 'لازمی' : 'اختیاری') + (l.is_preview ? ' · Preview' : '') + '</td>' +
+        '<td><span class="status-pill ' + (st === 'published' ? 'sp-active' : 'sp-pending') + '">' + (st === 'published' ? 'Published' : 'Draft') + '</span></td>' +
+        '<td>' +
+          '<button onclick="editLesson(\'' + l.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;">Edit</button>' +
+          '<button onclick="deleteLesson(\'' + l.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>' +
+        '</td></tr>';
+    }).join('');
+  };
+
+  window.openCreateLessonModal = function () {
+    document.getElementById('lessonForm').reset();
+    document.getElementById('lessonEditId').value = '';
+    document.getElementById('lessonModalTitle').textContent = 'نیا Lesson';
+    openModal('lessonModal');
+  };
+
+  window.editLesson = async function (id) {
+    var res = await sb.from('course_lessons').select('*').eq('id', id).single();
+    if (res.error || !res.data) { showToast('Lesson نہیں ملا: ' + (res.error?.message || ''), 'error'); return; }
+    var l = res.data;
+    document.getElementById('lessonForm').reset();
+    document.getElementById('lessonEditId').value = l.id;
+    document.getElementById('lessonModalTitle').textContent = 'Lesson میں ترمیم';
+    document.getElementById('lessonTitleInput').value = l.title || '';
+    document.getElementById('lessonDescInput').value = l.description || '';
+    document.getElementById('lessonOrderInput').value = l.lesson_order != null ? l.lesson_order : '';
+    document.getElementById('lessonYoutubeIdInput').value = l.youtube_video_id || '';
+    document.getElementById('lessonYoutubeUrlInput').value = l.youtube_url || '';
+    document.getElementById('lessonRequiredInput').value = l.is_required === false ? 'false' : 'true';
+    document.getElementById('lessonPreviewInput').value = l.is_preview ? 'true' : 'false';
+    document.getElementById('lessonStatusInput').value = l.status || 'draft';
+    openModal('lessonModal');
+  };
+
+  window.deleteLesson = async function (id) {
+    if (!confirm('یہ Lesson حذف کریں؟')) return;
+    var res = await sb.from('course_lessons').delete().eq('id', id).select('id');
+    if (res.error) { showToast('حذف نہیں ہو سکا: ' + res.error.message, 'error'); return; }
+    if (!res.data || !res.data.length) { showToast('حذف نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
+    showToast('Lesson حذف کر دیا گیا۔');
+    loadLessonsAdmin();
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('lessonForm', async function (frm) {
+    var editId = frm.querySelector('#lessonEditId').value;
+    var title = frm.querySelector('#lessonTitleInput').value.trim();
+    var description = frm.querySelector('#lessonDescInput').value.trim() || null;
+    var orderVal = frm.querySelector('#lessonOrderInput').value;
+    var youtube_video_id = frm.querySelector('#lessonYoutubeIdInput').value.trim() || null;
+    var youtube_url = frm.querySelector('#lessonYoutubeUrlInput').value.trim() || null;
+    var is_required = frm.querySelector('#lessonRequiredInput').value === 'true';
+    var is_preview = frm.querySelector('#lessonPreviewInput').value === 'true';
+    var status = frm.querySelector('#lessonStatusInput').value;
+    if (!title) { showToast('براہ کرم Lesson کا عنوان درج کریں', 'error'); return; }
+    if (!youtube_video_id && !youtube_url) { showToast('براہ کرم YouTube video ID یا URL درج کریں', 'error'); return; }
+    var payload = {
+      course_id: lmsAdminCourseId, module_id: lmsAdminModuleId,
+      title: title, description: description, lesson_order: orderVal ? parseInt(orderVal, 10) : 0,
+      youtube_video_id: youtube_video_id, youtube_url: youtube_url,
+      is_required: is_required, is_preview: is_preview, status: status
+    };
+    var error;
+    if (editId) { ({ error } = await sb.from('course_lessons').update(payload).eq('id', editId)); }
+    else { ({ error } = await sb.from('course_lessons').insert(payload)); }
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('✓ Lesson محفوظ ہو گیا!');
+    closeModal('lessonModal');
+    loadLessonsAdmin();
+  }));
+
+  /* ---- Quiz (one per module) ---- */
+  window.loadQuizAdmin = async function () {
+    var wrap = document.getElementById('moduleQuizWrap');
+    if (!wrap || !lmsAdminModuleId) return;
+    wrap.innerHTML = '<p style="color:var(--muted);font-size:.85rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</p>';
+    var res = await sb.from('quizzes').select('id, title, passing_score, attempt_limit, time_limit_minutes, status')
+      .eq('module_id', lmsAdminModuleId).maybeSingle();
+    if (res.error) { wrap.innerHTML = '<p style="color:var(--ruby);font-size:.85rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</p>'; return; }
+    if (!res.data) {
+      wrap.innerHTML = '<p style="color:var(--muted);font-size:.85rem;margin-bottom:.6rem;">اس Module کے لیے ابھی کوئی Quiz نہیں بنایا گیا۔</p>' +
+        '<button class="btn btn-gold" style="font-size:.8rem;" onclick="openCreateQuizModal()"><i class="fas fa-plus"></i> Quiz بنائیں</button>';
+      return;
+    }
+    var q = res.data;
+    var st = q.status || 'draft';
+    wrap.innerHTML =
+      '<div style="border:1px solid var(--border);border-radius:10px;padding:.9rem;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;">' +
+        '<div><strong>' + sanitize(q.title || 'Module Quiz') + '</strong> <span class="status-pill ' + (st === 'published' ? 'sp-active' : 'sp-pending') + '">' + (st === 'published' ? 'Published' : 'Draft') + '</span></div>' +
+        '<div>' +
+          '<button onclick="manageQuestions(\'quiz\', \'' + q.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;"><i class="fas fa-list-ol"></i> سوالات</button>' +
+          '<button onclick="editQuiz(\'' + q.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;">Edit</button>' +
+          '<button onclick="deleteQuiz(\'' + q.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>' +
+        '</div>' +
+      '</div>' +
+      '<p style="font-size:.8rem;color:var(--muted);margin-top:.5rem;">Passing: ' + (q.passing_score != null ? q.passing_score : '—') + '% · Attempts: ' + (q.attempt_limit || 'Unlimited') + (q.time_limit_minutes ? ' · Time limit: ' + q.time_limit_minutes + ' min' : '') + '</p>' +
+      '</div>';
+  };
+
+  window.openCreateQuizModal = function () {
+    document.getElementById('quizForm').reset();
+    document.getElementById('quizEditId').value = '';
+    document.getElementById('quizModalTitle').textContent = 'نیا Quiz';
+    openModal('quizModal');
+  };
+
+  window.editQuiz = async function (id) {
+    var res = await sb.from('quizzes').select('*').eq('id', id).single();
+    if (res.error || !res.data) { showToast('Quiz نہیں ملا: ' + (res.error?.message || ''), 'error'); return; }
+    var q = res.data;
+    document.getElementById('quizForm').reset();
+    document.getElementById('quizEditId').value = q.id;
+    document.getElementById('quizModalTitle').textContent = 'Quiz میں ترمیم';
+    document.getElementById('quizTitleInput').value = q.title || '';
+    document.getElementById('quizPassingInput').value = q.passing_score != null ? q.passing_score : 70;
+    document.getElementById('quizAttemptLimitInput').value = q.attempt_limit || '';
+    document.getElementById('quizTimeLimitInput').value = q.time_limit_minutes || '';
+    document.getElementById('quizStatusInput').value = q.status || 'draft';
+    openModal('quizModal');
+  };
+
+  window.deleteQuiz = async function (id) {
+    if (!confirm('یہ Quiz اور اس کے تمام سوالات حذف کریں؟')) return;
+    var res = await sb.from('quizzes').delete().eq('id', id).select('id');
+    if (res.error) { showToast('حذف نہیں ہو سکا: ' + res.error.message, 'error'); return; }
+    if (!res.data || !res.data.length) { showToast('حذف نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
+    showToast('Quiz حذف کر دیا گیا۔');
+    loadQuizAdmin();
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('quizForm', async function (frm) {
+    var editId = frm.querySelector('#quizEditId').value;
+    var title = frm.querySelector('#quizTitleInput').value.trim() || 'Module Quiz';
+    var passing_score = parseFloat(frm.querySelector('#quizPassingInput').value) || 70;
+    var attemptVal = frm.querySelector('#quizAttemptLimitInput').value;
+    var timeVal = frm.querySelector('#quizTimeLimitInput').value;
+    var status = frm.querySelector('#quizStatusInput').value;
+    var payload = {
+      course_id: lmsAdminCourseId, module_id: lmsAdminModuleId, title: title,
+      passing_score: passing_score, attempt_limit: attemptVal ? parseInt(attemptVal, 10) : null,
+      time_limit_minutes: timeVal ? parseInt(timeVal, 10) : null, status: status
+    };
+    var error;
+    if (editId) { ({ error } = await sb.from('quizzes').update(payload).eq('id', editId)); }
+    else { ({ error } = await sb.from('quizzes').insert(payload)); }
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('✓ Quiz محفوظ ہو گیا!');
+    closeModal('quizModal');
+    loadQuizAdmin();
+  }));
+
+  /* ---- Final Assessment (one per course) ---- */
+  window.loadFinalAssessmentAdmin = async function () {
+    var wrap = document.getElementById('finalAssessmentAdminWrap');
+    if (!wrap || !lmsAdminCourseId) return;
+    wrap.innerHTML = '<p style="color:var(--muted);font-size:.85rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</p>';
+    var res = await sb.from('course_assessments').select('id, title, assessment_type, passing_score, attempt_limit, status')
+      .eq('course_id', lmsAdminCourseId).maybeSingle();
+    if (res.error) { wrap.innerHTML = '<p style="color:var(--ruby);font-size:.85rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</p>'; return; }
+    if (!res.data) {
+      wrap.innerHTML = '<p style="color:var(--muted);font-size:.85rem;margin-bottom:.6rem;">اس Course کے لیے ابھی کوئی Final Assessment نہیں بنایا گیا (اختیاری ہے)۔</p>' +
+        '<button class="btn btn-gold" style="font-size:.8rem;" onclick="openCreateFinalAssessmentModal()"><i class="fas fa-plus"></i> Final Assessment بنائیں</button>';
+      return;
+    }
+    var a = res.data;
+    var st = a.status || 'draft';
+    var mcq = a.assessment_type === 'mcq';
+    wrap.innerHTML =
+      '<div style="border:1px solid var(--border);border-radius:10px;padding:.9rem;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;">' +
+        '<div><strong>' + sanitize(a.title || 'Final Assessment') + '</strong> <span class="status-pill ' + (st === 'published' ? 'sp-active' : 'sp-pending') + '">' + (st === 'published' ? 'Published' : 'Draft') + '</span></div>' +
+        '<div>' +
+          (mcq ? '<button onclick="manageQuestions(\'assessment\', \'' + a.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;"><i class="fas fa-list-ol"></i> سوالات</button>' : '') +
+          '<button onclick="editFinalAssessment(\'' + a.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;">Edit</button>' +
+          '<button onclick="deleteFinalAssessment(\'' + a.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>' +
+        '</div>' +
+      '</div>' +
+      '<p style="font-size:.8rem;color:var(--muted);margin-top:.5rem;">قسم: ' + (mcq ? 'MCQ (خودکار)' : 'Written/File (Admin review درکار)') + ' · Passing: ' + (a.passing_score != null ? a.passing_score : '—') + '% · Attempts: ' + (a.attempt_limit || 'Unlimited') + '</p>' +
+      '</div>';
+  };
+
+  window.openCreateFinalAssessmentModal = function () {
+    document.getElementById('finalAssessmentForm').reset();
+    document.getElementById('finalAssessmentEditId').value = '';
+    document.getElementById('finalAssessmentModalTitle').textContent = 'نیا Final Assessment';
+    openModal('finalAssessmentModal');
+  };
+
+  window.editFinalAssessment = async function (id) {
+    var res = await sb.from('course_assessments').select('*').eq('id', id).single();
+    if (res.error || !res.data) { showToast('Assessment نہیں ملا: ' + (res.error?.message || ''), 'error'); return; }
+    var a = res.data;
+    document.getElementById('finalAssessmentForm').reset();
+    document.getElementById('finalAssessmentEditId').value = a.id;
+    document.getElementById('finalAssessmentModalTitle').textContent = 'Final Assessment میں ترمیم';
+    document.getElementById('faTitleInput').value = a.title || '';
+    document.getElementById('faTypeInput').value = a.assessment_type || 'mcq';
+    document.getElementById('faPassingInput').value = a.passing_score != null ? a.passing_score : 70;
+    document.getElementById('faAttemptLimitInput').value = a.attempt_limit || '';
+    document.getElementById('faStatusInput').value = a.status || 'draft';
+    openModal('finalAssessmentModal');
+  };
+
+  window.deleteFinalAssessment = async function (id) {
+    if (!confirm('یہ Final Assessment حذف کریں؟')) return;
+    var res = await sb.from('course_assessments').delete().eq('id', id).select('id');
+    if (res.error) { showToast('حذف نہیں ہو سکا: ' + res.error.message, 'error'); return; }
+    if (!res.data || !res.data.length) { showToast('حذف نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
+    showToast('Final Assessment حذف کر دیا گیا۔');
+    loadFinalAssessmentAdmin();
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('finalAssessmentForm', async function (frm) {
+    var editId = frm.querySelector('#finalAssessmentEditId').value;
+    var title = frm.querySelector('#faTitleInput').value.trim() || 'Final Assessment';
+    var assessment_type = frm.querySelector('#faTypeInput').value;
+    var passing_score = parseFloat(frm.querySelector('#faPassingInput').value) || 70;
+    var attemptVal = frm.querySelector('#faAttemptLimitInput').value;
+    var status = frm.querySelector('#faStatusInput').value;
+    var payload = {
+      course_id: lmsAdminCourseId, title: title, assessment_type: assessment_type,
+      passing_score: passing_score, attempt_limit: attemptVal ? parseInt(attemptVal, 10) : null, status: status
+    };
+    var error;
+    if (editId) { ({ error } = await sb.from('course_assessments').update(payload).eq('id', editId)); }
+    else { ({ error } = await sb.from('course_assessments').insert(payload)); }
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('✓ Final Assessment محفوظ ہو گیا!');
+    closeModal('finalAssessmentModal');
+    loadFinalAssessmentAdmin();
+  }));
+
+  /* ---- Questions (shared modal for quiz_questions + assessment_questions) ---- */
+  window.manageQuestions = function (kind, ownerId) {
+    lmsAdminQuestionTarget = { kind: kind, id: ownerId };
+    document.getElementById('questionsManagerTitle').textContent = kind === 'quiz' ? 'Quiz کے سوالات' : 'Final Assessment کے سوالات';
+    openModal('questionsManagerModal');
+    loadQuestionsAdmin();
+  };
+
+  window.loadQuestionsAdmin = async function () {
+    var tbody = document.getElementById('questionsAdminBody');
+    if (!tbody || !lmsAdminQuestionTarget) return;
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+    var table = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_questions' : 'assessment_questions';
+    var fk = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_id' : 'assessment_id';
+    var res = await sb.from(table).select('id, question_text, question_type, options, correct_answer, marks, question_order')
+      .eq(fk, lmsAdminQuestionTarget.id).order('question_order', { ascending: true });
+    if (res.error) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ruby);padding:1rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</td></tr>'; return; }
+    var qs = res.data || [];
+    if (!qs.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">کوئی سوال نہیں — "نیا سوال" پر کلک کریں۔</td></tr>'; return; }
+    tbody.innerHTML = qs.map(function (q) {
+      return '<tr>' +
+        '<td>' + sanitize(q.question_text || '—') + '</td>' +
+        '<td>' + (q.question_type === 'true_false' ? 'True/False' : 'MCQ') + '</td>' +
+        '<td>' + (q.marks != null ? q.marks : 1) + '</td>' +
+        '<td>' +
+          '<button onclick="editQuestion(\'' + q.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;">Edit</button>' +
+          '<button onclick="deleteQuestion(\'' + q.id + '\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>' +
+        '</td></tr>';
+    }).join('');
+  };
+
+  window.openCreateQuestionModal = function () {
+    document.getElementById('questionForm').reset();
+    document.getElementById('questionEditId').value = '';
+    document.getElementById('questionModalTitle').textContent = 'نیا سوال';
+    document.getElementById('questionOptionsGroup').style.display = 'block';
+    openModal('questionModal');
+  };
+
+  window.editQuestion = async function (id) {
+    var table = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_questions' : 'assessment_questions';
+    var res = await sb.from(table).select('*').eq('id', id).single();
+    if (res.error || !res.data) { showToast('سوال نہیں ملا: ' + (res.error?.message || ''), 'error'); return; }
+    var q = res.data;
+    document.getElementById('questionForm').reset();
+    document.getElementById('questionEditId').value = q.id;
+    document.getElementById('questionModalTitle').textContent = 'سوال میں ترمیم';
+    document.getElementById('questionTextInput').value = q.question_text || '';
+    document.getElementById('questionTypeInput').value = q.question_type || 'multiple_choice';
+    document.getElementById('questionOptionsGroup').style.display = q.question_type === 'true_false' ? 'none' : 'block';
+    document.getElementById('questionOptionsInput').value = Array.isArray(q.options) ? q.options.join('\n') : '';
+    document.getElementById('questionCorrectInput').value = q.correct_answer || '';
+    document.getElementById('questionMarksInput').value = q.marks != null ? q.marks : 1;
+    document.getElementById('questionOrderInput').value = q.question_order != null ? q.question_order : '';
+    openModal('questionModal');
+  };
+
+  window.deleteQuestion = async function (id) {
+    if (!confirm('یہ سوال حذف کریں؟')) return;
+    var table = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_questions' : 'assessment_questions';
+    var res = await sb.from(table).delete().eq('id', id).select('id');
+    if (res.error) { showToast('حذف نہیں ہو سکا: ' + res.error.message, 'error'); return; }
+    if (!res.data || !res.data.length) { showToast('حذف نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
+    showToast('سوال حذف کر دیا گیا۔');
+    loadQuestionsAdmin();
+  };
+
+  document.getElementById('questionTypeInput')?.addEventListener('change', function () {
+    document.getElementById('questionOptionsGroup').style.display = this.value === 'true_false' ? 'none' : 'block';
+  });
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('questionForm', async function (frm) {
+    var editId = frm.querySelector('#questionEditId').value;
+    var question_text = frm.querySelector('#questionTextInput').value.trim();
+    var question_type = frm.querySelector('#questionTypeInput').value;
+    var optionsRaw = frm.querySelector('#questionOptionsInput').value;
+    var options = question_type === 'true_false' ? ['True', 'False'] :
+      optionsRaw.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    var correct_answer = frm.querySelector('#questionCorrectInput').value.trim();
+    var marks = parseFloat(frm.querySelector('#questionMarksInput').value) || 1;
+    var orderVal = frm.querySelector('#questionOrderInput').value;
+
+    if (!question_text) { showToast('سوال کا متن درج کریں', 'error'); return; }
+    if (question_type !== 'true_false' && options.length < 2) { showToast('کم از کم دو options درج کریں (ہر لائن پر ایک)', 'error'); return; }
+    if (!correct_answer) { showToast('صحیح جواب درج کریں — لفظ بہ لفظ options میں سے ایک جیسا ہونا چاہیے', 'error'); return; }
+    if (!options.includes(correct_answer)) { showToast('صحیح جواب بالکل options میں سے کسی ایک جیسا ہونا چاہیے', 'error'); return; }
+
+    var table = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_questions' : 'assessment_questions';
+    var fk = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_id' : 'assessment_id';
+    var payload = { question_text: question_text, question_type: question_type, options: options, correct_answer: correct_answer, marks: marks, question_order: orderVal ? parseInt(orderVal, 10) : 0 };
+    payload[fk] = lmsAdminQuestionTarget.id;
+
+    var error;
+    if (editId) { ({ error } = await sb.from(table).update(payload).eq('id', editId)); }
+    else { ({ error } = await sb.from(table).insert(payload)); }
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('✓ سوال محفوظ ہو گیا!');
+    closeModal('questionModal');
+    loadQuestionsAdmin();
+  }));
+
+  /* ---- Final assessment submissions pending manual review (written/file type) ---- */
+  window.loadPendingSubmissionsAdmin = async function () {
+    var tbody = document.getElementById('pendingSubmissionsBody');
+    if (!tbody || !lmsAdminCourseId) return;
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+    var assessRes = await sb.from('course_assessments').select('id').eq('course_id', lmsAdminCourseId).maybeSingle();
+    if (assessRes.error || !assessRes.data) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">اس Course کا کوئی Final Assessment نہیں۔</td></tr>'; return; }
+    var res = await sb.from('assessment_submissions')
+      .select('id, member_id, submission_type, text_content, file_url, review_status, created_at')
+      .eq('assessment_id', assessRes.data.id).order('created_at', { ascending: false });
+    if (res.error) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ruby);padding:1rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</td></tr>'; return; }
+    var subs = res.data || [];
+    if (!subs.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">ابھی کوئی submission موصول نہیں ہوئی۔</td></tr>'; return; }
+    tbody.innerHTML = subs.map(function (s) {
+      var st = s.review_status || 'pending';
+      var stLabel = st === 'approved' ? 'Approved' : (st === 'rejected' ? 'Rejected' : 'Pending Review');
+      var stClass = st === 'approved' ? 'sp-active' : (st === 'rejected' ? 'sp-pending' : 'sp-pending');
+      var contentPreview = s.submission_type === 'file'
+        ? '<a href="' + sanitize(s.file_url || '#') + '" target="_blank" rel="noopener">فائل دیکھیں</a>'
+        : sanitize((s.text_content || '').slice(0, 140)) + ((s.text_content || '').length > 140 ? '…' : '');
+      return '<tr>' +
+        '<td style="font-family:monospace;font-size:.75rem;">' + sanitize(String(s.member_id).slice(0, 8)) + '…</td>' +
+        '<td style="max-width:260px;">' + contentPreview + '</td>' +
+        '<td><span class="status-pill ' + stClass + '">' + stLabel + '</span></td>' +
+        '<td>' +
+          (st === 'pending' ?
+            '<button onclick="reviewSubmission(\'' + s.id + '\', \'approved\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;color:var(--teal, #168A86);">Approve</button>' +
+            '<button onclick="reviewSubmission(\'' + s.id + '\', \'rejected\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;color:var(--ruby);border-color:var(--ruby);">Reject</button>'
+            : '<span style="color:var(--muted);font-size:.78rem;">جائزہ مکمل</span>') +
+        '</td></tr>';
+    }).join('');
+  };
+
+  window.reviewSubmission = async function (id, decision) {
+    if (!confirm(decision === 'approved' ? 'یہ submission منظور کریں؟' : 'یہ submission مسترد کریں؟')) return;
+    var res = await sb.from('assessment_submissions').update({ review_status: decision, reviewed_at: new Date().toISOString() }).eq('id', id).select('id');
+    if (res.error) { showToast('محفوظ نہیں ہو سکا: ' + res.error.message, 'error'); return; }
+    if (!res.data || !res.data.length) { showToast('اپڈیٹ نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
+    showToast(decision === 'approved' ? '✓ Submission منظور کر دی گئی۔' : 'Submission مسترد کر دی گئی۔');
+    loadPendingSubmissionsAdmin();
+  };
 
   /* ── Admin: Live Classes (Google Meet) management (Phase 14) ── */
   window.openCreateLiveSessionModal = async function() {
