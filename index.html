@@ -9184,7 +9184,7 @@ select.form-input {
     var options = question_type === 'true_false' ? ['True', 'False'] :
       optionsRaw.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
     var correct_answer = frm.querySelector('#questionCorrectInput').value.trim();
-    var marks = parseFloat(frm.querySelector('#questionMarksInput').value) || 1;
+    var marks = parseInt(frm.querySelector('#questionMarksInput').value, 10) || 1; // integer column in DB
     var orderVal = frm.querySelector('#questionOrderInput').value;
 
     if (!question_text) { showToast('سوال کا متن درج کریں', 'error'); return; }
