@@ -7328,6 +7328,11 @@ select.form-input {
           <select id="mlPlatform" class="form-input" required>
             <option value="youtube">YouTube</option>
             <option value="facebook">Facebook</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="twitter">Twitter / X</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="other">دیگر (Other)</option>
           </select>
         </div>
         <div class="form-group">
@@ -9835,7 +9840,15 @@ select.form-input {
       return;
     }
 
-    const platformIcon = { youtube: '<i class="fab fa-youtube" style="color:#FF0000;"></i> YouTube', facebook: '<i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook' };
+    const platformIcon = {
+      youtube: '<i class="fab fa-youtube" style="color:#FF0000;"></i> YouTube',
+      facebook: '<i class="fab fa-facebook" style="color:#1877F2;"></i> Facebook',
+      instagram: '<i class="fab fa-instagram" style="color:#C13584;"></i> Instagram',
+      tiktok: '<i class="fab fa-tiktok" style="color:#000;"></i> TikTok',
+      twitter: '<i class="fab fa-x-twitter" style="color:#000;"></i> Twitter / X',
+      linkedin: '<i class="fab fa-linkedin" style="color:#0A66C2;"></i> LinkedIn',
+      other: '<i class="fas fa-link"></i> دیگر'
+    };
     const statusLabel = { draft: 'Draft', published: 'Published' };
     const statusClass = { draft: 'sp-pending', published: 'sp-active' };
 
@@ -12610,12 +12623,28 @@ select.form-input {
       return;
     }
 
+    const platformMeta = {
+      youtube:   { label: 'YouTube',    icon: '<i class="fab fa-youtube" style="color:#FF0000;"></i>' },
+      facebook:  { label: 'Facebook',   icon: '<i class="fab fa-facebook" style="color:#1877F2;"></i>' },
+      instagram: { label: 'Instagram',  icon: '<i class="fab fa-instagram" style="color:#C13584;"></i>' },
+      tiktok:    { label: 'TikTok',     icon: '<i class="fab fa-tiktok" style="color:#000;"></i>' },
+      twitter:   { label: 'Twitter/X',  icon: '<i class="fab fa-x-twitter" style="color:#000;"></i>' },
+      linkedin:  { label: 'LinkedIn',   icon: '<i class="fab fa-linkedin" style="color:#0A66C2;"></i>' },
+      other:     { label: 'Link',       icon: '<i class="fas fa-link"></i>' }
+    };
     grid.innerHTML = items.map(item => {
-      const embed = item.platform === 'youtube' ? ytEmbedUrl(item.url) : fbEmbedUrl(item.url);
-      const icon = item.platform === 'youtube' ? '<i class="fab fa-youtube" style="color:#FF0000;"></i>' : '<i class="fab fa-facebook" style="color:#1877F2;"></i>';
+      const meta = platformMeta[item.platform] || platformMeta.other;
+      // Only YouTube and Facebook have an actual embeddable iframe URL builder.
+      // Every other platform (Instagram, TikTok, X, LinkedIn, etc.) does not support
+      // simple public iframe embedding at all, so for those we always show a clean
+      // icon card + direct link rather than a broken/blank iframe attempt.
+      const embed = item.platform === 'youtube' ? ytEmbedUrl(item.url)
+                  : item.platform === 'facebook' ? fbEmbedUrl(item.url)
+                  : null;
+      const icon = meta.icon;
       const frame = embed
         ? `<iframe src="${embed}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px 12px 0 0;" loading="lazy" allowfullscreen></iframe>`
-        : `<div style="width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--cream2);border-radius:12px 12px 0 0;color:var(--muted);">${icon}</div>`;
+        : `<div style="width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--cream2);border-radius:12px 12px 0 0;color:var(--muted);font-size:2rem;">${icon}</div>`;
       // Facebook's plugin, and a private/embed-disabled YouTube video, can both refuse
       // to render inside the iframe with no way for us to detect that failure from the
       // parent page (cross-origin iframes don't report their internal errors back).
@@ -12626,7 +12655,7 @@ select.form-input {
           ${frame}
           <div class="gallery-caption">
             <strong>${icon} ${sanitize(item.title)}</strong>
-            <span><a href="${sanitize(item.url)}" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700;">اگر یہاں نظر نہ آئے تو براہِ راست ${item.platform === 'youtube' ? 'YouTube' : 'Facebook'} پر دیکھیں <i class="fas fa-external-link-alt"></i></a></span>
+            <span><a href="${sanitize(item.url)}" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700;">${embed ? 'اگر یہاں نظر نہ آئے تو براہِ راست' : 'براہِ راست'} ${meta.label} پر دیکھیں <i class="fas fa-external-link-alt"></i></a></span>
           </div>
         </div>`;
     }).join('');
