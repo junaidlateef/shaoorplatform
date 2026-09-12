@@ -4639,6 +4639,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('cabinet',this);loadCentralCabinetAdmin();"><i class="fas fa-crown"></i> Central Cabinet</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('learning',this);loadCoursesAdmin();"><i class="fas fa-graduation-cap"></i> Learning Academy</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
       <button class="admin-nav-btn" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
       <button class="admin-nav-btn" onclick="switchDashTab('analytics',this);loadAnalyticsAdmin();"><i class="fas fa-chart-line"></i> Analytics</button>
@@ -4804,6 +4805,22 @@ select.form-input {
             <thead><tr><th>Certificate ID</th><th>Member</th><th>Title</th><th>Type</th><th>Issued</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="certificatesBody">
               <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading certificates…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Learning Academy Panel (Phase 11) -->
+      <div class="dash-panel" id="dp-learning">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Learning Academy — Courses</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCreateCourseModal()"><i class="fas fa-plus"></i> نیا Course</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="coursesAdminTable">
+            <thead><tr><th>Title</th><th>Category</th><th>Level</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="coursesAdminBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Courses لوڈ ہو رہے ہیں…</td></tr>
             </tbody>
           </table>
         </div>
@@ -6557,6 +6574,113 @@ select.form-input {
 </div>
 
 <!-- Create/Edit Event Modal (Admin) -->
+<div class="modal" id="courseModal" role="dialog" aria-modal="true" aria-labelledby="courseModalTitle">
+  <div class="modal-box" style="max-width:560px;">
+    <div class="modal-head">
+      <h3 id="courseModalTitle">نیا Course</h3>
+      <button class="modal-close" onclick="closeModal('courseModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="courseForm">
+        <input type="hidden" id="courseEditId" value="" />
+        <input type="hidden" id="courseExistingThumbUrl" value="" />
+
+        <div class="form-group">
+          <label>Thumbnail / تصویر</label>
+          <div id="courseThumbUploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;" onclick="document.getElementById('courseThumbInput').click()">
+            <img id="courseThumbPreview" src="" alt="" style="display:none;max-height:140px;border-radius:8px;margin:0 auto .5rem;object-fit:cover;width:100%;" />
+            <div id="courseThumbPlaceholder" style="color:var(--muted);">
+              <i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:.4rem;"></i>
+              <span style="font-size:.85rem;">تصویر منتخب کریں (PNG, JPG, WEBP — زیادہ سے زیادہ 3MB)</span>
+            </div>
+            <input type="file" id="courseThumbInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+          </div>
+          <div id="courseThumbStatus" style="font-size:.8rem;color:var(--muted);margin-top:.3rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="courseTitle">Course کا عنوان *</label>
+          <input type="text" id="courseTitle" class="form-input" required placeholder="e.g., Watercolor Painting" />
+        </div>
+        <div class="form-group">
+          <label for="courseSlug">Slug (URL-friendly, خودکار بھی بن سکتا ہے)</label>
+          <input type="text" id="courseSlug" class="form-input" placeholder="e.g., watercolor-painting" />
+        </div>
+        <div class="form-group">
+          <label for="courseShortDesc">مختصر تفصیل</label>
+          <textarea id="courseShortDesc" class="form-input" rows="2" placeholder="Card پر دکھائی دینے والی مختصر تفصیل"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="courseFullDesc">مکمل تفصیل</label>
+          <textarea id="courseFullDesc" class="form-input" rows="4" placeholder="Course detail page کی مکمل تفصیل"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="courseCategory">Category *</label>
+          <select id="courseCategory" class="form-input" required>
+            <option value="Creative Arts">Creative Arts</option>
+            <option value="Literature & Culture">Literature & Culture</option>
+            <option value="Professional Growth">Professional Growth</option>
+            <option value="Digital Skills">Digital Skills</option>
+            <option value="Leadership & Communication">Leadership & Communication</option>
+            <option value="Workshops & Short Courses">Workshops & Short Courses</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="courseLevel">Level *</label>
+          <select id="courseLevel" class="form-input" required>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="courseIsPaid">قسم *</label>
+          <select id="courseIsPaid" class="form-input" required onchange="document.getElementById('coursePriceGroup').style.display = this.value === 'true' ? 'block' : 'none';">
+            <option value="false">Free</option>
+            <option value="true">Paid</option>
+          </select>
+        </div>
+        <div id="coursePriceGroup" style="display:none;">
+          <div style="display:flex;gap:1rem;">
+            <div class="form-group" style="flex:1;">
+              <label for="coursePrice">قیمت</label>
+              <input type="number" id="coursePrice" class="form-input" min="0" step="1" placeholder="0" />
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label for="courseCurrency">Currency</label>
+              <input type="text" id="courseCurrency" class="form-input" placeholder="PKR" value="PKR" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="courseDuration">Duration (label)</label>
+          <input type="text" id="courseDuration" class="form-input" placeholder="e.g., 6 weeks / 12 lessons" />
+        </div>
+        <div class="form-group">
+          <label for="courseCode">Course Code (اختیاری)</label>
+          <input type="text" id="courseCode" class="form-input" placeholder="e.g., CA-101" />
+        </div>
+        <div class="form-group">
+          <label for="courseCertificateAvailable">Certificate دستیاب ہے؟</label>
+          <select id="courseCertificateAvailable" class="form-input">
+            <option value="false">نہیں</option>
+            <option value="true">ہاں</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="courseStatus">Status *</label>
+          <select id="courseStatus" class="form-input" required>
+            <option value="draft">Draft (چھپا ہوا)</option>
+            <option value="published">Published (عوامی)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="eventModalTitle">
   <div class="modal-box" style="max-width:540px;">
     <div class="modal-head">
@@ -7983,6 +8107,199 @@ select.form-input {
         </tr>`;
     }).join('');
   };
+
+  /* ── Learning Academy: Admin Course CRUD (Phase 11) ── */
+  let courseSelectedThumbFile = null;
+
+  function resetCourseThumbUI() {
+    courseSelectedThumbFile = null;
+    document.getElementById('courseExistingThumbUrl').value = '';
+    document.getElementById('courseThumbPreview').style.display = 'none';
+    document.getElementById('courseThumbPreview').src = '';
+    document.getElementById('courseThumbPlaceholder').style.display = 'block';
+    document.getElementById('courseThumbStatus').textContent = '';
+    document.getElementById('courseThumbInput').value = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const thumbInput = document.getElementById('courseThumbInput');
+    if (thumbInput) {
+      thumbInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 3 * 1024 * 1024) {
+          showToast('تصویر 3MB سے کم ہونی چاہیے', 'error');
+          thumbInput.value = '';
+          return;
+        }
+        courseSelectedThumbFile = file;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          document.getElementById('courseThumbPreview').src = ev.target.result;
+          document.getElementById('courseThumbPreview').style.display = 'block';
+          document.getElementById('courseThumbPlaceholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  });
+
+  function slugifyCourseTitle(title) {
+    return (title || '').toString().trim().toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  window.openCreateCourseModal = function() {
+    document.getElementById('courseForm').reset();
+    document.getElementById('courseEditId').value = '';
+    document.getElementById('courseModalTitle').textContent = 'نیا Course';
+    document.getElementById('coursePriceGroup').style.display = 'none';
+    resetCourseThumbUI();
+    openModal('courseModal');
+  };
+
+  window.editCourse = async function(id) {
+    const { data: c, error } = await sb.from('courses').select('*').eq('id', id).single();
+    if (error || !c) { showToast('Course نہیں ملا: ' + (error?.message || ''), 'error'); return; }
+    document.getElementById('courseForm').reset();
+    resetCourseThumbUI();
+    document.getElementById('courseEditId').value = c.id;
+    document.getElementById('courseModalTitle').textContent = 'Course میں ترمیم';
+    document.getElementById('courseTitle').value = c.title || '';
+    document.getElementById('courseSlug').value = c.slug || '';
+    document.getElementById('courseShortDesc').value = c.short_description || '';
+    document.getElementById('courseFullDesc').value = c.full_description || '';
+    document.getElementById('courseCategory').value = c.category || 'Creative Arts';
+    document.getElementById('courseLevel').value = c.level || 'beginner';
+    document.getElementById('courseIsPaid').value = c.is_paid ? 'true' : 'false';
+    document.getElementById('coursePriceGroup').style.display = c.is_paid ? 'block' : 'none';
+    document.getElementById('coursePrice').value = c.price || '';
+    document.getElementById('courseCurrency').value = c.currency || 'PKR';
+    document.getElementById('courseDuration').value = c.duration_label || '';
+    document.getElementById('courseCode').value = c.course_code || '';
+    document.getElementById('courseCertificateAvailable').value = c.certificate_available ? 'true' : 'false';
+    document.getElementById('courseStatus').value = c.status || 'draft';
+    if (c.thumbnail_url) {
+      document.getElementById('courseExistingThumbUrl').value = c.thumbnail_url;
+      document.getElementById('courseThumbPreview').src = c.thumbnail_url;
+      document.getElementById('courseThumbPreview').style.display = 'block';
+      document.getElementById('courseThumbPlaceholder').style.display = 'none';
+    }
+    openModal('courseModal');
+  };
+
+  window.deleteCourse = async function(id) {
+    if (!confirm('کیا یہ Course حذف کرنا چاہتے ہیں؟')) return;
+    const { data, error } = await sb.from('courses').delete().eq('id', id).select('id');
+    if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('حذف نہیں ہو سکا — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
+    showToast('Course حذف کر دیا گیا۔');
+    loadCoursesAdmin();
+    if (typeof loadCourseCatalog === 'function') { lmsCatalogLoaded = false; loadCourseCatalog(); }
+  };
+
+  window.loadCoursesAdmin = async function() {
+    const tbody = document.getElementById('coursesAdminBody');
+    if (!tbody || !sb) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+
+    let data, error;
+    try {
+      const res = await sb.from('courses').select('id, title, category, level, is_paid, price, currency, status').order('created_at', { ascending: false });
+      data = res.data; error = res.error;
+    } catch (e) { error = { message: e.message }; }
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">لوڈ ناکام: ${sanitize(error.message)}</td></tr>`;
+      return;
+    }
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Course نہیں ملا۔ "نیا Course" پر کلک کریں۔</td></tr>';
+      return;
+    }
+
+    const statusLabel = { draft: 'Draft', published: 'Published' };
+    const statusClass = { draft: 'sp-pending', published: 'sp-active' };
+
+    tbody.innerHTML = data.map(c => {
+      const priceStr = c.is_paid ? `${c.currency || 'PKR'} ${c.price || 0}` : 'Free';
+      const st = c.status || 'draft';
+      return `
+        <tr>
+          <td style="font-weight:600;">${sanitize(c.title || '—')}</td>
+          <td>${sanitize(c.category || '—')}</td>
+          <td>${sanitize(c.level || '—')}</td>
+          <td>${sanitize(priceStr)}</td>
+          <td><span class="status-pill ${statusClass[st] || 'sp-pending'}">${statusLabel[st] || st}</span></td>
+          <td>
+            <button onclick="editCourse('${c.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
+            <button onclick="deleteCourse('${c.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
+          </td>
+        </tr>`;
+    }).join('');
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('courseForm', async frm => {
+    const editId = frm.querySelector('#courseEditId').value;
+    const title = frm.querySelector('#courseTitle').value.trim();
+    let slug = frm.querySelector('#courseSlug').value.trim();
+    const short_description = frm.querySelector('#courseShortDesc').value.trim() || null;
+    const full_description = frm.querySelector('#courseFullDesc').value.trim() || null;
+    const category = frm.querySelector('#courseCategory').value;
+    const level = frm.querySelector('#courseLevel').value;
+    const is_paid = frm.querySelector('#courseIsPaid').value === 'true';
+    const price = is_paid ? (parseFloat(frm.querySelector('#coursePrice').value) || 0) : 0;
+    const currency = frm.querySelector('#courseCurrency').value.trim() || 'PKR';
+    const duration_label = frm.querySelector('#courseDuration').value.trim() || null;
+    const course_code = frm.querySelector('#courseCode').value.trim() || null;
+    const certificate_available = frm.querySelector('#courseCertificateAvailable').value === 'true';
+    const status = frm.querySelector('#courseStatus').value;
+
+    if (!title) { showToast('براہ کرم Course کا عنوان درج کریں', 'error'); return; }
+    if (!slug) slug = slugifyCourseTitle(title);
+    if (!slug) { showToast('Slug نہیں بن سکا — عنوان چیک کریں', 'error'); return; }
+
+    const statusEl = document.getElementById('courseThumbStatus');
+    let thumbnail_url = document.getElementById('courseExistingThumbUrl').value || null;
+
+    if (courseSelectedThumbFile) {
+      if (statusEl) statusEl.textContent = 'تصویر اپلوڈ ہو رہی ہے…';
+      const ext = courseSelectedThumbFile.name.split('.').pop();
+      const filePath = 'courses/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+      const { error: uploadError } = await sb.storage.from('shaoor-uploads').upload(filePath, courseSelectedThumbFile);
+      if (uploadError) {
+        showToast('تصویر اپلوڈ ناکام: ' + uploadError.message, 'error');
+        if (statusEl) statusEl.textContent = '';
+        return;
+      }
+      const { data: publicUrlData } = sb.storage.from('shaoor-uploads').getPublicUrl(filePath);
+      thumbnail_url = publicUrlData.publicUrl;
+    }
+
+    const payload = {
+      title, slug, short_description, full_description, category, level,
+      is_paid, price, currency, duration_label, course_code,
+      certificate_available, status, thumbnail_url
+    };
+
+    let error;
+    if (editId) {
+      ({ error } = await sb.from('courses').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await sb.from('courses').insert(payload));
+    }
+
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    courseSelectedThumbFile = null;
+    showToast('✓ Course محفوظ ہو گیا!');
+    closeModal('courseModal');
+    loadCoursesAdmin();
+    if (typeof loadCourseCatalog === 'function') { lmsCatalogLoaded = false; loadCourseCatalog(); }
+  }));
 
   /* ── Event Attendance (Admin view) ── */
   window.viewEventAttendance = async function(eventId, eventTitle) {
@@ -10428,6 +10745,7 @@ select.form-input {
     if (id === 'gallery') loadGalleryAdmin();
     if (id === 'media') loadMediaLinksAdmin();
     if (id === 'events') loadEventsAdmin();
+    if (id === 'learning') loadCoursesAdmin();
     if (id === 'analytics') loadAnalyticsAdmin();
   }
 
