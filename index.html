@@ -9425,20 +9425,25 @@ select.form-input {
     } else {
       if (!confirm('یہ submission منظور کریں؟')) return;
     }
-    // is_course_completed_for_member() requires BOTH passed = true AND review_status = 'approved'
-    // before a certificate can be issued — so approving here must also set passed, or an approved
-    // written/file submission would silently block certificates forever.
-    var res = await sb.from('assessment_submissions')
-      .update({
-        review_status: decision,
-        passed: decision === 'approved',
-        reviewer_notes: notes,
-        reviewed_at: new Date().toISOString()
-      })
-      .eq('id', id).select('id');
+    // admin_review_final_submission: sets review_status + passed together, and — on approval —
+    // automatically issues the course certificate via the same eligibility check students use,
+    // so the member sees it in "My Certificates" without any extra click.
+    var res = await sb.rpc('admin_review_final_submission', {
+      p_submission_id: id,
+      p_decision: decision,
+      p_notes: notes
+    });
     if (res.error) { showToast('محفوظ نہیں ہو سکا: ' + res.error.message, 'error'); return; }
-    if (!res.data || !res.data.length) { showToast('اپڈیٹ نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
-    showToast(decision === 'approved' ? '✓ Submission منظور کر دی گئی۔' : 'Submission مسترد کر دی گئی۔');
+    if (decision === 'approved') {
+      var cert = res.data && res.data.certificate;
+      if (cert && cert.certificate_id) {
+        showToast('✓ Submission منظور کر دی گئی — Certificate خود بخود جاری ہو گیا (' + cert.certificate_id + ')۔');
+      } else {
+        showToast('✓ Submission منظور کر دی گئی۔ Certificate ابھی جاری نہیں ہوا — شاید کورس کی کوئی اور شرط (lesson/quiz) ابھی باقی ہے۔');
+      }
+    } else {
+      showToast('Submission مسترد کر دی گئی۔');
+    }
     loadPendingSubmissionsAdmin();
   };
 
@@ -13393,3 +13398,4 @@ select.form-input {
   </style>
 </body>
 </html>
+  
