@@ -8308,21 +8308,6 @@ select.form-input {
   } catch(initErr) {
     console.error('Supabase init failed:', initErr);
   }
-
-  // Helper: safe Supabase query with proper error extraction
-  async function sbQuery(queryFn) {
-    try {
-      const result = await queryFn();
-      if (result.error) {
-        const msg = result.error?.message || result.error?.details || result.error?.hint || JSON.stringify(result.error);
-        throw new Error(msg);
-      }
-      return result;
-    } catch(e) {
-      console.error('Supabase query error:', e.message || e);
-      return { data: null, error: e };
-    }
-  }
 </script>
 
 <!-- ═══ ADMIN FUNCTIONS (GLOBAL SCOPE) ═══ -->
