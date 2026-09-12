@@ -10356,7 +10356,24 @@ select.form-input {
         }
       });
 
-      if (valid) onSuccess(form);
+      if (valid) {
+        // Any error thrown inside onSuccess — sync or from a rejected async/await
+        // chain — used to vanish silently (no toast, no console noise a user would
+        // notice, modal just sits there). That is the "بالکل کچھ نہیں ہوتا" symptom.
+        // Now it always surfaces.
+        try {
+          const result = onSuccess(form);
+          if (result && typeof result.catch === 'function') {
+            result.catch(err => {
+              console.error('[secureSubmit:' + formId + ']', err);
+              showToast('خرابی: ' + (err?.message || String(err)), 'error');
+            });
+          }
+        } catch (err) {
+          console.error('[secureSubmit:' + formId + ']', err);
+          showToast('خرابی: ' + (err?.message || String(err)), 'error');
+        }
+      }
     });
   }
 
