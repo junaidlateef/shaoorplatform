@@ -9197,10 +9197,19 @@ select.form-input {
     var payload = { question_text: question_text, question_type: question_type, options: options, correct_answer: correct_answer, marks: marks, question_order: orderVal ? parseInt(orderVal, 10) : 0 };
     payload[fk] = lmsAdminQuestionTarget.id;
 
-    var error;
-    if (editId) { ({ error } = await sb.from(table).update(payload).eq('id', editId)); }
-    else { ({ error } = await sb.from(table).insert(payload)); }
-    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    // Always .select('id') and check res.data explicitly. Supabase RLS can let a
+    // request through with error === null but return zero rows if a WITH CHECK /
+    // USING clause quietly filters it out — the old code only checked `error`, so it
+    // showed "✓ محفوظ ہو گیا" even when nothing was written. deleteQuestion() above
+    // already guards this way; insert/update now does the same.
+    var res;
+    if (editId) { res = await sb.from(table).update(payload).eq('id', editId).select('id'); }
+    else { res = await sb.from(table).insert(payload).select('id'); }
+    if (res.error) { showToast('محفوظ نہیں ہو سکا: ' + res.error.message, 'error'); return; }
+    if (!res.data || !res.data.length) {
+      showToast('سوال محفوظ نہیں ہوا — RLS پالیسی یا owner id چیک کریں (' + table + ')۔', 'error');
+      return;
+    }
     showToast('✓ سوال محفوظ ہو گیا!');
     closeModal('questionModal');
     loadQuestionsAdmin();
@@ -10300,6 +10309,14 @@ select.form-input {
   }
 
   // ── Secure form handler ──
+  // Admin content-management forms (adding lessons/quizzes/questions/etc. one after
+  // another is normal, legitimate, rapid usage) get a much looser rate limit than
+  // public-facing forms (login/signup/contact — the actual bot/abuse targets). The old
+  // single hardcoded 3-per-2min limit applied to ALL forms was silently blocking admins
+  // mid-session when adding several questions in a row, with only a toast (easy to miss)
+  // as evidence — no data-loss dialog, no console error.
+  const ADMIN_FORM_RATE_LIMIT = { max: 30, windowMs: 120000 };
+  const ADMIN_FORM_IDS = ['questionForm', 'quizForm', 'finalAssessmentForm', 'lessonForm', 'moduleForm', 'courseForm', 'liveSessionForm', 'blogForm', 'mediaLinkForm', 'eventForm', 'societyForm', 'chapterForm'];
   function secureSubmit(formId, onSuccess) {
     const form = document.getElementById(formId);
     if (!form) return;
@@ -10307,7 +10324,10 @@ select.form-input {
       e.preventDefault();
 
       // Rate limit per form
-      const rl = rateLimiter.check('form_' + formId, 3, 120000);
+      const isAdminForm = ADMIN_FORM_IDS.includes(formId);
+      const rl = isAdminForm
+        ? rateLimiter.check('form_' + formId, ADMIN_FORM_RATE_LIMIT.max, ADMIN_FORM_RATE_LIMIT.windowMs)
+        : rateLimiter.check('form_' + formId, 3, 120000);
       if (!rl.allowed) {
         showToast(`بہت زیادہ کوشش — ${rl.wait} سیکنڈ انتظار کریں`, 'error');
         return;
