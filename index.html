@@ -9345,8 +9345,8 @@ select.form-input {
     var assessRes = await sb.from('course_assessments').select('id').eq('course_id', lmsAdminCourseId).maybeSingle();
     if (assessRes.error || !assessRes.data) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">اس Course کا کوئی Final Assessment نہیں۔</td></tr>'; return; }
     var res = await sb.from('assessment_submissions')
-      .select('id, member_id, submission_type, text_content, file_url, review_status, created_at')
-      .eq('assessment_id', assessRes.data.id).order('created_at', { ascending: false });
+      .select('id, member_id, submission_type, text_content, file_url, review_status, submitted_at')
+      .eq('assessment_id', assessRes.data.id).order('submitted_at', { ascending: false });
     if (res.error) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ruby);padding:1rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</td></tr>'; return; }
     var subs = res.data || [];
     if (!subs.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">ابھی کوئی submission موصول نہیں ہوئی۔</td></tr>'; return; }
@@ -9372,7 +9372,12 @@ select.form-input {
 
   window.reviewSubmission = async function (id, decision) {
     if (!confirm(decision === 'approved' ? 'یہ submission منظور کریں؟' : 'یہ submission مسترد کریں؟')) return;
-    var res = await sb.from('assessment_submissions').update({ review_status: decision, reviewed_at: new Date().toISOString() }).eq('id', id).select('id');
+    // is_course_completed_for_member() requires BOTH passed = true AND review_status = 'approved'
+    // before a certificate can be issued — so approving here must also set passed, or an approved
+    // written/file submission would silently block certificates forever.
+    var res = await sb.from('assessment_submissions')
+      .update({ review_status: decision, passed: decision === 'approved', reviewed_at: new Date().toISOString() })
+      .eq('id', id).select('id');
     if (res.error) { showToast('محفوظ نہیں ہو سکا: ' + res.error.message, 'error'); return; }
     if (!res.data || !res.data.length) { showToast('اپڈیٹ نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
     showToast(decision === 'approved' ? '✓ Submission منظور کر دی گئی۔' : 'Submission مسترد کر دی گئی۔');
