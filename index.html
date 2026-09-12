@@ -5781,6 +5781,9 @@ select.form-input {
 
     async function openFinalAssessment() {
       if (!lmsCurrentFinalAssessment) return;
+      var userRes = await sb.auth.getUser();
+      var user = userRes.data ? userRes.data.user : null;
+      if (!user) { alert('Please sign in to view the final assessment.'); return; }
       document.getElementById('lmsLessonPlayer').classList.remove('active');
       document.getElementById('lmsQuizPanel').classList.remove('active');
       var panel = document.getElementById('lmsFinalPanel');
@@ -5814,10 +5817,50 @@ select.form-input {
       } else {
         mcqWrap.style.display = 'none';
         mcqWrap.innerHTML = '';
-        submissionWrap.style.display = '';
         document.getElementById('lmsFinalMeta').textContent = 'Written / file submission — reviewed by an administrator.';
-        document.getElementById('lmsFinalTextContent').value = '';
-        document.getElementById('lmsFinalFileUrl').value = '';
+
+        // Show the student's own most recent submission status (their own row — allowed by
+        // the "own submissions read" RLS policy) before deciding whether to show the form.
+        var mySubRes = await sb.from('assessment_submissions')
+          .select('id, review_status, reviewer_notes, submitted_at')
+          .eq('assessment_id', lmsCurrentFinalAssessment.id)
+          .eq('member_id', user.id)
+          .order('submitted_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        var mySub = mySubRes.data;
+
+        if (mySub && mySub.review_status === 'approved') {
+          submissionWrap.style.display = 'none';
+          btn.style.display = 'none';
+          document.getElementById('lmsFinalResult').innerHTML =
+            '<div class="lms-quiz-result pass">' +
+            '<h3 style="margin:0 0 .3rem;">Approved</h3>' +
+            '<p style="margin:0;">Your submission has been approved. If this course offers a certificate, you can claim it from the course page.</p>' +
+            '</div>';
+        } else if (mySub && mySub.review_status === 'pending') {
+          submissionWrap.style.display = 'none';
+          btn.style.display = 'none';
+          document.getElementById('lmsFinalResult').innerHTML =
+            '<div class="lms-quiz-result" style="background:#FBF4E4;color:#8a6d1f;">' +
+            '<h3 style="margin:0 0 .3rem;">Pending Review</h3>' +
+            '<p style="margin:0;">Your submission is waiting for an administrator to review it. Check back here later.</p>' +
+            '</div>';
+        } else {
+          // No submission yet, or the previous one was rejected — show the form.
+          // Rejected submissions get a visible reason plus a chance to resubmit.
+          submissionWrap.style.display = '';
+          document.getElementById('lmsFinalTextContent').value = '';
+          document.getElementById('lmsFinalFileUrl').value = '';
+          if (mySub && mySub.review_status === 'rejected') {
+            document.getElementById('lmsFinalResult').innerHTML =
+              '<div class="lms-quiz-result fail">' +
+              '<h3 style="margin:0 0 .3rem;">Not Approved — Please Revise</h3>' +
+              '<p style="margin:0;">' + (mySub.reviewer_notes ? sanitize(mySub.reviewer_notes) : 'No specific reason was provided. Please contact an administrator for details.') + '</p>' +
+              '<p style="margin:.4rem 0 0;font-size:.8rem;">You can submit an improved version below.</p>' +
+              '</div>';
+          }
+        }
       }
     }
 
@@ -9345,7 +9388,7 @@ select.form-input {
     var assessRes = await sb.from('course_assessments').select('id').eq('course_id', lmsAdminCourseId).maybeSingle();
     if (assessRes.error || !assessRes.data) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:1rem;">اس Course کا کوئی Final Assessment نہیں۔</td></tr>'; return; }
     var res = await sb.from('assessment_submissions')
-      .select('id, member_id, submission_type, text_content, file_url, review_status, submitted_at')
+      .select('id, member_id, submission_type, text_content, file_url, review_status, reviewer_notes, submitted_at')
       .eq('assessment_id', assessRes.data.id).order('submitted_at', { ascending: false });
     if (res.error) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ruby);padding:1rem;">لوڈ ناکام: ' + sanitize(res.error.message) + '</td></tr>'; return; }
     var subs = res.data || [];
@@ -9360,7 +9403,9 @@ select.form-input {
       return '<tr>' +
         '<td style="font-family:monospace;font-size:.75rem;">' + sanitize(String(s.member_id).slice(0, 8)) + '…</td>' +
         '<td style="max-width:260px;">' + contentPreview + '</td>' +
-        '<td><span class="status-pill ' + stClass + '">' + stLabel + '</span></td>' +
+        '<td><span class="status-pill ' + stClass + '">' + stLabel + '</span>' +
+          (st === 'rejected' && s.reviewer_notes ? '<div style="font-size:.72rem;color:var(--muted);margin-top:.2rem;">' + sanitize(s.reviewer_notes) + '</div>' : '') +
+        '</td>' +
         '<td>' +
           (st === 'pending' ?
             '<button onclick="reviewSubmission(\'' + s.id + '\', \'approved\')" class="btn btn-outline" style="font-size:.72rem;padding:.3rem .6rem;margin-inline-end:.3rem;color:var(--teal, #168A86);">Approve</button>' +
@@ -9371,12 +9416,25 @@ select.form-input {
   };
 
   window.reviewSubmission = async function (id, decision) {
-    if (!confirm(decision === 'approved' ? 'یہ submission منظور کریں؟' : 'یہ submission مسترد کریں؟')) return;
+    var notes = null;
+    if (decision === 'rejected') {
+      notes = prompt('یہ submission کیوں مسترد کی جا رہی ہے؟ (طالبعلم کو یہ وجہ نظر آئے گی تاکہ وہ بہتری لا سکے)');
+      if (notes === null) return; // admin cancelled the prompt
+      notes = notes.trim();
+      if (!notes) { showToast('Reject کرنے کے لیے وجہ لکھنا ضروری ہے۔', 'error'); return; }
+    } else {
+      if (!confirm('یہ submission منظور کریں؟')) return;
+    }
     // is_course_completed_for_member() requires BOTH passed = true AND review_status = 'approved'
     // before a certificate can be issued — so approving here must also set passed, or an approved
     // written/file submission would silently block certificates forever.
     var res = await sb.from('assessment_submissions')
-      .update({ review_status: decision, passed: decision === 'approved', reviewed_at: new Date().toISOString() })
+      .update({
+        review_status: decision,
+        passed: decision === 'approved',
+        reviewer_notes: notes,
+        reviewed_at: new Date().toISOString()
+      })
       .eq('id', id).select('id');
     if (res.error) { showToast('محفوظ نہیں ہو سکا: ' + res.error.message, 'error'); return; }
     if (!res.data || !res.data.length) { showToast('اپڈیٹ نہیں ہو سکا — RLS اجازت چیک کریں۔', 'error'); return; }
