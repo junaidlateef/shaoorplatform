@@ -10728,6 +10728,16 @@ select.form-input {
 
   /* ═══════════════════════════════════════════ END V6 ADDITIONS ═══ */
 
-</script>
+</script>  <style>
+    /* Admin sidebar width fix — appended last so it wins the cascade
+       over the existing repeated .admin-shell/.admin-side rules above. */
+    .admin-shell { grid-template-columns: 190px minmax(0,1fr) !important; }
+    .admin-side { padding: 1rem .75rem !important; }
+    .admin-nav-btn { font-size: .8rem !important; padding: .6rem .65rem !important; }
+    .admin-nav-btn i { width: 16px !important; }
+    @media (max-width: 900px) {
+      .admin-shell { grid-template-columns: 1fr !important; }
+    }
+  </style>
 </body>
 </html>
