@@ -6862,6 +6862,30 @@ select.form-input {
           <input type="date" id="certExpiryDate" class="form-input" />
         </div>
         <div class="form-group">
+          <label for="certTemplateSelect">Certificate Template (Optional)</label>
+          <select id="certTemplateSelect" class="form-input">
+            <option value="">-- Default Design --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="certCourseSelect">Linked Course (Optional)</label>
+          <select id="certCourseSelect" class="form-input">
+            <option value="">-- None --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="certCompletionDate">Completion Date (Optional)</label>
+          <input type="date" id="certCompletionDate" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label for="certGrade">Grade (Optional)</label>
+          <input type="text" id="certGrade" class="form-input" placeholder="e.g., A, 85%, Distinction" />
+        </div>
+        <div class="form-group">
+          <label for="certDuration">Duration (Optional)</label>
+          <input type="text" id="certDuration" class="form-input" placeholder="e.g., 6 weeks" />
+        </div>
+        <div class="form-group">
           <label for="certNotes">Notes (Optional)</label>
           <textarea id="certNotes" class="form-input" rows="3" placeholder="Additional notes…"></textarea>
         </div>
@@ -11484,10 +11508,42 @@ select.form-input {
     });
   }
 
+  /* ── Admin: populate the certificate-template dropdown in the Issue Certificate modal ── */
+  async function populateCertTemplateSelect() {
+    const sel = document.getElementById('certTemplateSelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- Default Design --</option>';
+    const { data: templates, error } = await sb.from('certificate_templates').select('id, name, is_active').eq('is_active', true).order('name');
+    if (error || !templates) return;
+    templates.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  /* ── Admin: populate the linked-course dropdown in the Issue Certificate modal ── */
+  async function populateCertCourseSelect() {
+    const sel = document.getElementById('certCourseSelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- None --</option>';
+    const { data: courses, error } = await sb.from('courses').select('id, title').order('title');
+    if (error || !courses) return;
+    courses.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.title;
+      sel.appendChild(opt);
+    });
+  }
+
   function openIssueCertificateModal() {
     document.getElementById('issueCertificateForm').reset();
     document.getElementById('certIssueDate').value = new Date().toISOString().split('T')[0];
     populateCertMemberSelect();
+    populateCertTemplateSelect();
+    populateCertCourseSelect();
     openModal('issueCertificateModal');
   }
 
@@ -11497,12 +11553,18 @@ select.form-input {
     const certificate_type = frm.querySelector('#certType').value;
     const issue_date = frm.querySelector('#certIssueDate').value;
     const expiry_date = frm.querySelector('#certExpiryDate').value || null;
+    const template_id = frm.querySelector('#certTemplateSelect').value || null;
+    const course_id = frm.querySelector('#certCourseSelect').value || null;
+    const completion_date = frm.querySelector('#certCompletionDate').value || null;
+    const grade = frm.querySelector('#certGrade').value.trim() || null;
+    const duration = frm.querySelector('#certDuration').value.trim() || null;
     const notes = frm.querySelector('#certNotes').value.trim() || null;
 
     if (!member_id) { showToast('براہ کرم ایک ممبر منتخب کریں', 'error'); return; }
 
     const { error } = await sb.from('certificates').insert({
-      member_id, certificate_title, certificate_type, issue_date, expiry_date, notes, status: 'active'
+      member_id, certificate_title, certificate_type, issue_date, expiry_date, notes, status: 'active',
+      template_id, course_id, completion_date, grade, duration
     });
 
     if (error) {
@@ -11645,10 +11707,52 @@ select.form-input {
   }
 
   /* ── View a single certificate (from admin table or member list) with QR ── */
+  /* ── Apply a certificate_templates.config onto the print area, and render signature blocks ── */
+  function applyCertificateTemplate(config, brand) {
+    const area = document.getElementById('certificatePrintArea');
+    if (!area) return;
+
+    if (config) {
+      if (config.background_color) area.style.background = config.background_color;
+      if (config.text_color) area.style.color = config.text_color;
+      if (config.accent_color) area.style.setProperty('--gold', config.accent_color);
+    }
+
+    let sigHolder = document.getElementById('vcSignatures');
+    if (!sigHolder) {
+      sigHolder = document.createElement('div');
+      sigHolder.id = 'vcSignatures';
+      sigHolder.style.cssText = 'display:flex;justify-content:center;gap:1.2rem;margin-top:1rem;flex-wrap:wrap;';
+      area.appendChild(sigHolder);
+    }
+    sigHolder.innerHTML = '';
+
+    if (!brand) return;
+    const labels = brand.signature_labels || {};
+    const order = (brand.signature_order && brand.signature_order.length) ? brand.signature_order
+      : ['founder', 'president', 'society', 'chapter'];
+    const urlMap = {
+      founder: brand.founder_signature_url,
+      president: brand.president_signature_url,
+      society: brand.society_signature_url,
+      chapter: brand.chapter_signature_url
+    };
+    order.forEach(key => {
+      const url = urlMap[key];
+      if (!url) return;
+      const label = labels[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+      const block = document.createElement('div');
+      block.style.cssText = 'text-align:center;';
+      block.innerHTML = '<img src="' + url + '" style="height:36px;object-fit:contain;display:block;margin:0 auto .2rem;filter:brightness(0) invert(1);" />' +
+        '<div style="font-size:.65rem;color:rgba(255,255,255,.7);border-top:1px solid rgba(255,255,255,.35);padding-top:.15rem;">' + sanitize(label) + '</div>';
+      sigHolder.appendChild(block);
+    });
+  }
+
   async function viewCertificate(id) {
     const { data: c, error } = await sb
       .from('certificates')
-      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data')
+      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name')
       .eq('id', id)
       .single();
 
@@ -11659,7 +11763,11 @@ select.form-input {
     document.getElementById('vcTitle').textContent = c.certificate_title;
     document.getElementById('vcId').textContent = c.certificate_id;
     document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + prof.member_id) : '—';
-    document.getElementById('vcMeta').textContent = 'Type: ' + c.certificate_type + ' · Issued: ' + c.issue_date + (c.expiry_date ? ' · Expires: ' + c.expiry_date : '');
+    let metaText = 'Type: ' + c.certificate_type + ' · Issued: ' + c.issue_date + (c.expiry_date ? ' · Expires: ' + c.expiry_date : '');
+    if (c.grade) metaText += ' · Grade: ' + c.grade;
+    if (c.duration) metaText += ' · Duration: ' + c.duration;
+    if (c.completion_date) metaText += ' · Completed: ' + c.completion_date;
+    document.getElementById('vcMeta').textContent = metaText;
 
     const sc = certStatusColor(c.status);
     const badge = document.getElementById('vcStatusBadge');
@@ -11669,6 +11777,15 @@ select.form-input {
 
     const verifyUrl = c.qr_code_data || (window.location.origin + window.location.pathname + '?verify_cert=' + encodeURIComponent(c.certificate_id));
     renderCertQR('vcQrCode', verifyUrl);
+
+    // Apply template design (if any) and signature blocks (from brand_settings)
+    const { data: brand } = await sb.from('brand_settings').select('*').limit(1).maybeSingle();
+    let templateConfig = null;
+    if (c.template_id) {
+      const { data: tmpl } = await sb.from('certificate_templates').select('config').eq('id', c.template_id).maybeSingle();
+      templateConfig = tmpl ? tmpl.config : null;
+    }
+    applyCertificateTemplate(templateConfig, brand);
 
     openModal('viewCertificateModal');
   }
