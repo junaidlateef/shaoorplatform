@@ -5392,6 +5392,7 @@ select.form-input {
   <script>
     /* LMS COURSE DETAIL — Phase 3 */
     let lmsCurrentCourse = null;
+    let lmsPendingEnrollCourseId = null; // set when a signed-out user clicks Enroll, so login/signup can resume it
 
     async function showCourseDetail(slug) {
       document.getElementById('courses').style.display = 'none';
@@ -6207,6 +6208,7 @@ select.form-input {
 
       if (!user) {
         // Not authenticated — reuse the existing SHAOOR sign-in modal.
+        lmsPendingEnrollCourseId = lmsCurrentCourse.id; // resume enrollment automatically after login/signup
         alert('Please sign in or create a SHAOOR account to enroll in this course.');
         closeModal('signupModal');
         openModal('loginModal');
@@ -9325,7 +9327,12 @@ select.form-input {
       return;
     }
     closeModal('loginModal');
-    await openMemberDashboard(data.user.id);
+    if (lmsPendingEnrollCourseId) {
+      lmsPendingEnrollCourseId = null;
+      await enrollInCourse(); // resume the enrollment they were trying to do before signing in
+    } else {
+      await openMemberDashboard(data.user.id);
+    }
   });
 
   async function openMemberDashboard(userId) {
@@ -10309,7 +10316,12 @@ select.form-input {
 
     if (data.session) {
       closeModal('signupModal');
-      await openMemberDashboard(data.user.id);
+      if (lmsPendingEnrollCourseId) {
+        lmsPendingEnrollCourseId = null;
+        await enrollInCourse(); // resume the enrollment they were trying to do before signing up
+      } else {
+        await openMemberDashboard(data.user.id);
+      }
     } else {
       showToast('اکاؤنٹ بن گیا! اپنا ای میل چیک کر کے تصدیق کریں۔');
       closeModal('signupModal');
