@@ -3846,6 +3846,45 @@ select.form-input {
 .id-section .sec-sub{ color: var(--muted) !important; }
 .id-section .sec-label{ color: var(--gold) !important; }
 </style>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PHASE 5 — LOGO & NAVIGATION FIX (final, authoritative patch)
+     This block intentionally comes LAST so it wins over the many
+     older .nav-* overrides scattered earlier in the file (from
+     previous phases). No older rule is deleted — this only adds
+     the missing safety rules that stop the logo/links from ever
+     overlapping, at every breakpoint.
+════════════════════════════════════════════════════════════ -->
+<style id="shaoor-phase5-nav-logo-fix">
+  /* Logo: fixed relationship to its own row, never shrinks, never overlaps nav-links */
+  .nav-brand { flex-shrink: 0 !important; min-width: 0; max-width: 46vw; overflow: hidden; }
+  .shaoor-nav-logo { height: 40px !important; width: auto !important; max-width: 100%; flex-shrink: 0; }
+  @media (min-width: 1025px) { .shaoor-nav-logo { height: 46px !important; } }
+  @media (max-width: 480px)  { .shaoor-nav-logo { height: 32px !important; } }
+
+  /* Row: logo, links, actions never wrap onto each other; guaranteed gap between them */
+  .nav-inner { flex-wrap: nowrap !important; gap: .75rem; }
+  .nav-links { flex-shrink: 1; min-width: 0; overflow: hidden; }
+  .nav-actions { flex-shrink: 0 !important; }
+
+  /* Progressively tighten spacing BEFORE the hamburger breakpoint so text never collides,
+     instead of relying on a single conflicting gap value from earlier patches. */
+  @media (min-width: 1401px) { .nav-links { gap: 1.6rem !important; } }
+  @media (max-width: 1400px) and (min-width: 1201px) { .nav-links { gap: 1.1rem !important; font-size: .86rem; } }
+  @media (max-width: 1200px) and (min-width: 1025px) { .nav-links { gap: .7rem !important; font-size: .8rem; } }
+
+  /* Hamburger cutoff — unchanged behaviour, just made explicit and final */
+  @media (max-width: 1024px) {
+    .nav-links { display: none !important; }
+    .hamburger { display: flex !important; }
+    .nav-actions .admin-link span { display: none; } /* icon-only Admin link to save space */
+  }
+
+  /* Sign In / Join Us buttons: never let long labels force an overlap on narrow desktop */
+  @media (max-width: 1200px) {
+    .nav-actions .btn { padding: .45rem .8rem !important; font-size: .82rem !important; }
+  }
+</style>
 </head>
 <body>
 
