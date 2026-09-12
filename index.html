@@ -4336,39 +4336,6 @@ select.form-input {
     </div>
   </section>
 
-  <!-- COURSES / LEARNING ACADEMY -->
-  <section class="section" id="courses" style="background:var(--navy);padding:4rem 0;">
-    <div class="container">
-      <div class="sec-head">
-        <p class="sec-label" style="color:var(--gold);">Learning Academy</p>
-        <h2 class="sec-title" style="color:#fff;">LEARN &bull; CREATE &bull; GROW</h2>
-        <p class="sec-sub" style="color:rgba(255,255,255,.7);">Free and paid courses for beginner, intermediate, and advanced artists — coming soon from the SHAOOR Learning Academy.</p>
-      </div>
-
-      <!-- Course level filter chips (visual only until course data is connected) -->
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin-bottom:2rem;">
-        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Free</span>
-        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Paid</span>
-        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Beginner</span>
-        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Intermediate</span>
-        <span style="padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.85);font-size:.8rem;font-weight:600;">Advanced</span>
-      </div>
-
-      <!-- Empty state: no invented courses, instructors, fees, dates, or seats -->
-      <div id="coursesEmptyState" style="text-align:center;padding:3rem 1rem;">
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:2.5rem 1.5rem;max-width:480px;margin:0 auto;">
-          <i class="fas fa-graduation-cap" style="font-size:2.2rem;color:var(--gold);margin-bottom:1rem;display:block;"></i>
-          <h3 style="font-family:var(--ff-display);font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.5rem;">Courses launching soon</h3>
-          <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">The SHAOOR Learning Academy catalog is being prepared. Course listings, instructors, and enrollment will appear here once available.</p>
-        </div>
-      </div>
-
-      <div style="text-align:center;margin-top:2rem;">
-        <a href="#membership" class="btn btn-gold" style="font-size:.84rem;"><i class="fas fa-bell"></i> Notify Me When Courses Launch</a>
-      </div>
-    </div>
-  </section>
-
   <section class="section" id="membership">
     <div class="container">
       <div class="sec-head">
@@ -5081,6 +5048,467 @@ select.form-input {
 
     </div>
   </div>
+
+  <!-- ============================================================
+       SHAOOR LMS — PHASE 2: PUBLIC COURSE CATALOG
+  ============================================================= -->
+  <style>
+    .lms-catalog-header { text-align: center; margin-bottom: 2.5rem; }
+    .lms-catalog-header h2 { font-size: 2rem; font-weight: 800; margin-bottom: .5rem; }
+    .lms-filters { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-bottom: 2.5rem; }
+    .lms-filter-btn {
+      padding: .5rem 1.1rem; border-radius: 999px; border: 1px solid var(--teal, #4f8582);
+      background: transparent; cursor: pointer; font-weight: 600; font-size: .85rem;
+      transition: all .2s;
+    }
+    .lms-filter-btn.active, .lms-filter-btn:hover { background: var(--teal, #4f8582); color: #fff; }
+    .lms-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .lms-card {
+      border: 1px solid rgba(0,0,0,.08); border-radius: 14px; overflow: hidden;
+      background: var(--card-bg, #fff); transition: transform .2s, box-shadow .2s;
+      display: flex; flex-direction: column;
+    }
+    .lms-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+    .lms-card-thumb {
+      height: 160px; background: linear-gradient(135deg, var(--teal, #4f8582), var(--gold, #c9a44c));
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.2rem;
+    }
+    .lms-card-body { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
+    .lms-card-title { font-weight: 700; font-size: 1.05rem; }
+    .lms-card-meta { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: #666; }
+    .lms-badge { padding: .2rem .6rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+    .lms-badge-free { background: #e4f5ec; color: #1f8b4c; }
+    .lms-badge-paid { background: #fdeee0; color: #b5651d; }
+    .lms-card-cta {
+      margin-top: auto; text-align: center; padding: .6rem; border-radius: 8px;
+      background: var(--gold, #c9a44c); color: #fff; font-weight: 700; text-decoration: none;
+      font-size: .85rem;
+    }
+    .lms-empty { text-align: center; padding: 3rem 1rem; color: #888; }
+  </style>
+
+  <section class="section" id="courses">
+    <div class="container">
+      <div class="lms-catalog-header">
+        <div class="hero-badge" style="margin:0 auto 1rem;display:inline-flex;">
+          <i class="fas fa-graduation-cap"></i> LEARN • CREATE • GROW
+        </div>
+        <h2>SHAOOR Course Catalog</h2>
+        <p style="color:#666;">Explore SHAOOR's professional arts and culture learning programs — free and paid.</p>
+      </div>
+
+      <div class="lms-filters" id="lmsFilters">
+        <button class="lms-filter-btn active" data-filter="all">All</button>
+        <button class="lms-filter-btn" data-filter="free">Free</button>
+        <button class="lms-filter-btn" data-filter="paid">Paid</button>
+        <button class="lms-filter-btn" data-filter="beginner">Beginner</button>
+        <button class="lms-filter-btn" data-filter="intermediate">Intermediate</button>
+        <button class="lms-filter-btn" data-filter="advanced">Advanced</button>
+      </div>
+
+      <div class="lms-grid" id="lmsGrid">
+        <!-- Cards rendered by renderCourseCatalog() -->
+      </div>
+      <div class="lms-empty" id="lmsEmpty" style="display:none;">
+        No published courses yet. Please check back soon.
+      </div>
+    </div>
+  </section>
+
+  <script>
+    /* LMS CATALOG LOGIC — Phase 2. Reuses the existing `sb` Supabase client. */
+    let lmsAllCourses = [];
+    let lmsCurrentFilter = 'all';
+    let lmsCatalogLoaded = false;
+
+    async function loadCourseCatalog() {
+      try {
+        var result = await sb
+          .from('courses')
+          .select('id, slug, title, category, level, duration_label, is_paid, price, currency, thumbnail_url, certificate_available, course_code, status')
+          .eq('status', 'published')
+          .order('created_at', { ascending: false });
+
+        if (result.error) {
+          console.error('SHAOOR LMS: failed to load courses', result.error);
+          return;
+        }
+        lmsAllCourses = result.data || [];
+        lmsCatalogLoaded = true;
+        renderCourseCatalog();
+      } catch (e) {
+        console.error('SHAOOR LMS: unexpected error loading courses', e);
+      }
+    }
+
+    function renderCourseCatalog() {
+      var grid = document.getElementById('lmsGrid');
+      var empty = document.getElementById('lmsEmpty');
+      if (!grid) return;
+
+      var filtered = lmsAllCourses.filter(function (c) {
+        if (lmsCurrentFilter === 'all') return true;
+        if (lmsCurrentFilter === 'free') return !c.is_paid;
+        if (lmsCurrentFilter === 'paid') return !!c.is_paid;
+        return c.level === lmsCurrentFilter;
+      });
+
+      grid.innerHTML = '';
+      if (!filtered.length) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      filtered.forEach(function (course) {
+        var card = document.createElement('div');
+        card.className = 'lms-card';
+
+        var priceBadge = course.is_paid
+          ? '<span class="lms-badge lms-badge-paid">' + (course.currency || 'PKR') + ' ' + (course.price || 0) + '</span>'
+          : '<span class="lms-badge lms-badge-free">FREE</span>';
+
+        var certBadge = course.certificate_available
+          ? '<span class="lms-badge" style="background:#eef1f7;color:#3a4a6b;">Certificate</span>'
+          : '';
+
+        card.innerHTML =
+          '<div class="lms-card-thumb">' +
+            (course.thumbnail_url
+              ? '<img src="' + course.thumbnail_url + '" alt="" style="width:100%;height:100%;object-fit:cover;">'
+              : '<i class="fas fa-palette"></i>') +
+          '</div>' +
+          '<div class="lms-card-body">' +
+            '<div class="lms-card-title">' + (course.title || 'Untitled Course') + '</div>' +
+            '<div class="lms-card-meta">' +
+              priceBadge + certBadge +
+              (course.level ? '<span class="lms-badge" style="background:#f2f2f2;">' + course.level + '</span>' : '') +
+              (course.duration_label ? '<span>' + course.duration_label + '</span>' : '') +
+            '</div>' +
+            '<a href="#course/' + course.slug + '" class="lms-card-cta" onclick="showCourseDetail(\'' + course.slug + '\');return false;">VIEW COURSE</a>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var filterBar = document.getElementById('lmsFilters');
+      if (filterBar) {
+        filterBar.addEventListener('click', function (e) {
+          var btn = e.target.closest('.lms-filter-btn');
+          if (!btn) return;
+          filterBar.querySelectorAll('.lms-filter-btn').forEach(function (b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          lmsCurrentFilter = btn.dataset.filter;
+          renderCourseCatalog();
+        });
+      }
+      // Load once the page is ready; sb is initialized elsewhere in this file.
+      setTimeout(function () {
+        if (!lmsCatalogLoaded && typeof sb !== 'undefined' && sb) {
+          loadCourseCatalog();
+        }
+      }, 300);
+    });
+
+  </script>
+
+  <!-- ============================================================
+       SHAOOR LMS — PHASE 3: COURSE DETAIL PAGE
+       Public, per-course landing page. Hidden by default; shown
+       when a course card's "VIEW COURSE" button is clicked.
+       Does not expose any private learner progress (public page).
+  ============================================================= -->
+  <style>
+    #courseDetail { display: none; }
+    #courseDetail.active { display: block; }
+    .lms-detail-hero {
+      background: linear-gradient(135deg, var(--navy, #101a33), var(--teal, #4f8582));
+      color: #fff; padding: 3rem 0; text-align: center;
+    }
+    .lms-detail-hero h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: .6rem; }
+    .lms-detail-meta { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin: 1rem 0; }
+    .lms-detail-body { padding: 3rem 0; }
+    .lms-detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; }
+    @media (max-width: 820px) { .lms-detail-grid { grid-template-columns: 1fr; } }
+    .lms-detail-section { margin-bottom: 2rem; }
+    .lms-detail-section h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: .8rem; }
+    .lms-detail-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+    .lms-detail-list li { display: flex; gap: .5rem; align-items: flex-start; font-size: .92rem; }
+    .lms-detail-list li i { color: var(--teal, #4f8582); margin-top: .2rem; }
+    .lms-module { border: 1px solid rgba(0,0,0,.08); border-radius: 10px; padding: .9rem 1.1rem; margin-bottom: .7rem; }
+    .lms-module-title { font-weight: 700; font-size: .95rem; display: flex; justify-content: space-between; }
+    .lms-sidebar-card {
+      border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 1.5rem;
+      position: sticky; top: 100px; background: var(--card-bg, #fff);
+    }
+    .lms-sidebar-price { font-size: 1.6rem; font-weight: 800; margin-bottom: .3rem; }
+    .lms-back-link { display: inline-flex; align-items: center; gap: .4rem; color: #fff; opacity: .85; margin-bottom: 1rem; cursor: pointer; font-size: .85rem; }
+  </style>
+
+  <section id="courseDetail">
+    <div class="lms-detail-hero">
+      <div class="container">
+        <a class="lms-back-link" onclick="closeCourseDetail();"><i class="fas fa-arrow-left"></i> Back to Courses</a>
+        <div class="hero-badge" style="margin:0 auto 1rem;display:inline-flex;" id="cdCategory">Course</div>
+        <h1 id="cdTitle">Loading…</h1>
+        <p id="cdDescription" style="opacity:.85;max-width:640px;margin:0 auto;"></p>
+        <div class="lms-detail-meta" id="cdMeta"></div>
+      </div>
+    </div>
+
+    <div class="lms-detail-body">
+      <div class="container lms-detail-grid">
+        <div>
+          <div class="lms-detail-section">
+            <h3>What you'll learn</h3>
+            <ul class="lms-detail-list" id="cdOutcomes"></ul>
+          </div>
+          <div class="lms-detail-section">
+            <h3>Requirements</h3>
+            <ul class="lms-detail-list" id="cdRequirements"></ul>
+          </div>
+          <div class="lms-detail-section">
+            <h3>Course Content</h3>
+            <div id="cdModules"><p style="color:#888;font-size:.85rem;">Modules will be published here as they are added.</p></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="lms-sidebar-card">
+            <div class="lms-sidebar-price" id="cdPrice">FREE</div>
+            <div id="cdCertLine" style="font-size:.85rem;color:#666;margin-bottom:1rem;"></div>
+            <button class="btn btn-gold" style="width:100%;justify-content:center;margin-bottom:.6rem;" onclick="enrollInCourse();">
+              <i class="fas fa-user-plus"></i> ENROLL NOW
+            </button>
+            <ul class="lms-detail-list" style="margin-top:1rem;font-size:.85rem;color:#555;">
+              <li><i class="fas fa-layer-group"></i> <span id="cdModuleCount">—</span> Modules</li>
+              <li><i class="fas fa-book-open"></i> <span id="cdLessonCount">—</span> Lessons</li>
+              <li><i class="fas fa-clock"></i> <span id="cdDuration">—</span></li>
+              <li><i class="fas fa-signal"></i> <span id="cdLevel">—</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    /* LMS COURSE DETAIL — Phase 3 */
+    let lmsCurrentCourse = null;
+
+    async function showCourseDetail(slug) {
+      document.getElementById('courses').style.display = 'none';
+      var detail = document.getElementById('courseDetail');
+      detail.classList.add('active');
+      detail.scrollIntoView({ behavior: 'smooth' });
+      window.location.hash = 'course/' + slug;
+
+      resetCourseDetailView();
+
+      try {
+        var courseRes = await sb
+          .from('courses')
+          .select('*')
+          .eq('slug', slug)
+          .eq('status', 'published')
+          .single();
+
+        if (courseRes.error || !courseRes.data) {
+          console.error('SHAOOR LMS: course not found', courseRes.error);
+          document.getElementById('cdTitle').textContent = 'Course not found';
+          return;
+        }
+        var course = courseRes.data;
+        lmsCurrentCourse = course;
+
+        document.getElementById('cdCategory').innerHTML =
+          '<i class="fas fa-palette"></i> ' + (course.category || 'Course');
+        document.getElementById('cdTitle').textContent = course.title || 'Untitled Course';
+        document.getElementById('cdDescription').textContent = course.description || '';
+        document.getElementById('cdLevel').textContent = course.level || '—';
+        document.getElementById('cdDuration').textContent = course.duration_label || '—';
+        document.getElementById('cdPrice').textContent = course.is_paid
+          ? (course.currency || 'PKR') + ' ' + (course.price || 0)
+          : 'FREE';
+        document.getElementById('cdCertLine').textContent = course.certificate_available
+          ? 'Certificate available on completion'
+          : 'No certificate for this course';
+
+        renderListItems('cdOutcomes', course.learning_outcomes, 'fa-check-circle');
+        renderListItems('cdRequirements', course.requirements, 'fa-info-circle');
+
+        // Modules + lesson counts (publicly readable per Phase 1 RLS)
+        var modulesRes = await sb
+          .from('course_modules')
+          .select('id, title, module_order, status')
+          .eq('course_id', course.id)
+          .eq('status', 'published')
+          .order('module_order', { ascending: true });
+
+        var modules = (modulesRes.data || []);
+        document.getElementById('cdModuleCount').textContent = modules.length;
+
+        if (modules.length) {
+          var lessonsRes = await sb
+            .from('course_lessons')
+            .select('id, module_id, title, lesson_order, is_required, status')
+            .eq('course_id', course.id)
+            .eq('status', 'published')
+            .order('lesson_order', { ascending: true });
+
+          var lessons = (lessonsRes.data || []);
+          document.getElementById('cdLessonCount').textContent = lessons.length;
+          renderModules(modules, lessons);
+        } else {
+          document.getElementById('cdLessonCount').textContent = '0';
+        }
+        // Reflect existing enrollment status on the button, if any.
+        await refreshEnrollButtonState();
+      } catch (e) {
+        console.error('SHAOOR LMS: unexpected error loading course detail', e);
+      }
+    }
+
+    async function refreshEnrollButtonState() {
+      var btn = document.querySelector('#courseDetail .lms-sidebar-card .btn-gold');
+      if (!btn || !lmsCurrentCourse) return;
+      try {
+        var userRes = await sb.auth.getUser();
+        var user = userRes.data ? userRes.data.user : null;
+        if (!user) return; // stays as "ENROLL NOW" for guests
+
+        var existing = await sb
+          .from('course_enrollments')
+          .select('status')
+          .eq('course_id', lmsCurrentCourse.id)
+          .eq('member_id', user.id)
+          .maybeSingle();
+
+        if (existing.data) {
+          if (existing.data.status === 'pending') {
+            btn.innerHTML = '<i class="fas fa-clock"></i> PENDING APPROVAL';
+          } else {
+            btn.innerHTML = '<i class="fas fa-play"></i> CONTINUE LEARNING';
+          }
+        }
+      } catch (e) {
+        console.error('SHAOOR LMS: could not check enrollment status', e);
+      }
+    }
+
+    function resetCourseDetailView() {
+      lmsCurrentCourse = null;
+      document.getElementById('cdTitle').textContent = 'Loading…';
+      document.getElementById('cdDescription').textContent = '';
+      document.getElementById('cdMeta').innerHTML = '';
+      document.getElementById('cdOutcomes').innerHTML = '';
+      document.getElementById('cdRequirements').innerHTML = '';
+      document.getElementById('cdModules').innerHTML = '<p style="color:#888;font-size:.85rem;">Loading course content…</p>';
+      document.getElementById('cdModuleCount').textContent = '—';
+      document.getElementById('cdLessonCount').textContent = '—';
+    }
+
+    function renderListItems(elId, items, icon) {
+      var el = document.getElementById(elId);
+      el.innerHTML = '';
+      if (!items || !items.length) {
+        el.innerHTML = '<li style="color:#888;">Not specified yet.</li>';
+        return;
+      }
+      items.forEach(function (item) {
+        var li = document.createElement('li');
+        li.innerHTML = '<i class="fas ' + icon + '"></i> <span>' + item + '</span>';
+        el.appendChild(li);
+      });
+    }
+
+    function renderModules(modules, lessons) {
+      var container = document.getElementById('cdModules');
+      container.innerHTML = '';
+      modules.forEach(function (mod, idx) {
+        var modLessons = lessons.filter(function (l) { return l.module_id === mod.id; });
+        var div = document.createElement('div');
+        div.className = 'lms-module';
+        div.innerHTML =
+          '<div class="lms-module-title"><span>Module ' + (idx + 1) + ': ' + mod.title + '</span>' +
+          '<span style="color:#888;font-weight:400;">' + modLessons.length + ' lessons</span></div>';
+        container.appendChild(div);
+      });
+    }
+
+    function closeCourseDetail() {
+      document.getElementById('courseDetail').classList.remove('active');
+      document.getElementById('courses').style.display = '';
+      history.pushState('', document.title, window.location.pathname + window.location.search);
+      document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function enrollInCourse() {
+      if (!lmsCurrentCourse) return;
+      var btn = event ? event.currentTarget : null;
+
+      var userRes = await sb.auth.getUser();
+      var user = userRes.data ? userRes.data.user : null;
+
+      if (!user) {
+        // Not authenticated — reuse the existing SHAOOR sign-in modal.
+        alert('Please sign in or create a SHAOOR account to enroll in this course.');
+        closeModal('signupModal');
+        openModal('loginModal');
+        return;
+      }
+
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling…'; }
+
+      try {
+        // Check for an existing enrollment first (course_id + member_id is unique).
+        var existing = await sb
+          .from('course_enrollments')
+          .select('id, status')
+          .eq('course_id', lmsCurrentCourse.id)
+          .eq('member_id', user.id)
+          .maybeSingle();
+
+        if (existing.data) {
+          alert('You are already enrolled in this course. Check "My Learning" in your member portal.');
+          if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-play"></i> CONTINUE LEARNING'; }
+          return;
+        }
+
+        var isPaid = !!lmsCurrentCourse.is_paid;
+        var insertRes = await sb.from('course_enrollments').insert({
+          course_id: lmsCurrentCourse.id,
+          member_id: user.id,
+          status: isPaid ? 'pending' : 'active',
+          payment_status: isPaid ? 'pending' : 'not_required',
+          progress_percent: 0
+        }).select().single();
+
+        if (insertRes.error) {
+          console.error('SHAOOR LMS: enrollment failed', insertRes.error);
+          alert('Something went wrong while enrolling. Please try again.');
+          if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> ENROLL NOW'; }
+          return;
+        }
+
+        if (isPaid) {
+          alert('Enrollment request received. Your seat will be confirmed once payment is approved by SHAOOR.');
+          if (btn) { btn.innerHTML = '<i class="fas fa-clock"></i> PENDING APPROVAL'; }
+        } else {
+          alert('You are enrolled! You can start learning from "My Learning" in your member portal.');
+          if (btn) { btn.innerHTML = '<i class="fas fa-check"></i> ENROLLED'; }
+        }
+      } catch (e) {
+        console.error('SHAOOR LMS: unexpected enrollment error', e);
+        alert('Something went wrong while enrolling. Please try again.');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> ENROLL NOW'; }
+      }
+    }
+  </script>
 
 </main>
 
