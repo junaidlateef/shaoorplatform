@@ -6149,9 +6149,9 @@ select.form-input {
     }
 
     function ytWatchUrlFromLesson(lesson) {
-      if (lesson.youtube_url) return lesson.youtube_url;
-      if (lesson.youtube_video_id) return 'https://www.youtube.com/watch?v=' + lesson.youtube_video_id;
-      return null;
+      var raw = lesson.youtube_url || (lesson.youtube_video_id ? 'https://www.youtube.com/watch?v=' + lesson.youtube_video_id : null);
+      if (!raw) return null;
+      return typeof decodeUrlEntities === 'function' ? decodeUrlEntities(raw) : raw;
     }
 
     function openLesson(lessonId) {
@@ -10457,6 +10457,12 @@ select.form-input {
         if (inp.name === 'website_url') return;
         if (inp.type === 'password') return;
         if (inp.type === 'file') return; // file inputs' value cannot be reassigned — attempting to throws and silently blocks submission
+        // URLs must never be HTML-escaped: sanitize() turns '/' into '&#x2F;', which
+        // corrupted every saved link (https:&#x2F;&#x2F;youtube.com&#x2F;... instead of
+        // https://youtube.com/...) and made them all 404. URL fields are safe to store
+        // as-is — they go into href="" / iframe src="" attributes, never rendered as
+        // raw HTML text, so there is no XSS risk here.
+        if (inp.type === 'url') return;
         inp.value = sanitize(inp.value);
 
         // Required-field check — forms now use novalidate, so this replaces native
@@ -12568,9 +12574,20 @@ select.form-input {
   loadPublicGallery();
 
   /* ── PUBLIC MEDIA LINKS (YouTube / Facebook) ── */
+  // Repairs URLs that were corrupted by the old sanitize() bug, which HTML-escaped
+  // forward slashes ('/' -> '&#x2F;') before saving them — turning every stored
+  // YouTube/Facebook/media link into something like "https:&#x2F;&#x2F;youtube.com&#x2F;...".
+  // Decoding entities here means old, already-broken database rows work again
+  // immediately, with no need to re-enter every link by hand.
+  function decodeUrlEntities(str) {
+    if (!str) return str;
+    const div = document.createElement('div');
+    div.innerHTML = str;
+    return div.textContent || div.innerText || str;
+  }
   function ytEmbedUrl(url) {
     try {
-      const u = new URL(url);
+      const u = new URL(decodeUrlEntities(url));
       let id = '';
       if (u.hostname.includes('youtu.be')) id = u.pathname.slice(1);
       else if (u.pathname.startsWith('/embed/')) id = u.pathname.split('/embed/')[1];
@@ -12581,9 +12598,9 @@ select.form-input {
     } catch(e) { return null; }
   }
   function fbEmbedUrl(url) {
-    let normalized = url;
+    let normalized = decodeUrlEntities(url);
     try {
-      const u = new URL(url);
+      const u = new URL(normalized);
       // Facebook blocks iframe-embedding from web.facebook.com / m.facebook.com / mobile.facebook.com (X-Frame-Options).
       // Only www.facebook.com works inside the embed plugin.
       if (/(^|\.)facebook\.com$/.test(u.hostname) && u.hostname !== 'www.facebook.com') {
@@ -12645,6 +12662,10 @@ select.form-input {
       const frame = embed
         ? `<iframe src="${embed}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px 12px 0 0;" loading="lazy" allowfullscreen></iframe>`
         : `<div style="width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--cream2);border-radius:12px 12px 0 0;color:var(--muted);font-size:2rem;">${icon}</div>`;
+      // Decode first (repairs old rows saved with &#x2F; instead of /), then only
+      // escape double-quotes for safe attribute embedding — sanitize() would just
+      // re-corrupt the slashes all over again.
+      const safeUrl = decodeUrlEntities(item.url).replace(/"/g, '&quot;');
       // Facebook's plugin, and a private/embed-disabled YouTube video, can both refuse
       // to render inside the iframe with no way for us to detect that failure from the
       // parent page (cross-origin iframes don't report their internal errors back).
@@ -12655,7 +12676,7 @@ select.form-input {
           ${frame}
           <div class="gallery-caption">
             <strong>${icon} ${sanitize(item.title)}</strong>
-            <span><a href="${sanitize(item.url)}" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700;">${embed ? 'اگر یہاں نظر نہ آئے تو براہِ راست' : 'براہِ راست'} ${meta.label} پر دیکھیں <i class="fas fa-external-link-alt"></i></a></span>
+            <span><a href="${safeUrl}" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700;">${embed ? 'اگر یہاں نظر نہ آئے تو براہِ راست' : 'براہِ راست'} ${meta.label} پر دیکھیں <i class="fas fa-external-link-alt"></i></a></span>
           </div>
         </div>`;
     }).join('');
