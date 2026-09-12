@@ -5240,7 +5240,23 @@ select.form-input {
     .lms-detail-list li { display: flex; gap: .5rem; align-items: flex-start; font-size: .92rem; }
     .lms-detail-list li i { color: var(--teal, #4f8582); margin-top: .2rem; }
     .lms-module { border: 1px solid rgba(0,0,0,.08); border-radius: 10px; padding: .9rem 1.1rem; margin-bottom: .7rem; }
-    .lms-module-title { font-weight: 700; font-size: .95rem; display: flex; justify-content: space-between; }
+    .lms-module-title { font-weight: 700; font-size: .95rem; display: flex; justify-content: space-between; margin-bottom:.5rem; }
+    .lms-lesson-row {
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      padding:.55rem .6rem; border-radius:8px; font-size:.86rem; margin-bottom:.3rem;
+    }
+    .lms-lesson-row.unlocked { cursor:pointer; }
+    .lms-lesson-row.unlocked:hover { background:rgba(0,0,0,.03); }
+    .lms-lesson-row.locked { color:#999; cursor:not-allowed; }
+    .lms-lesson-left { display:flex; align-items:center; gap:.6rem; }
+    .lms-lesson-icon { width:22px; text-align:center; }
+    .lms-lesson-icon.done { color:#15803d; }
+    .lms-lesson-icon.locked { color:#aaa; }
+    .lms-lesson-icon.play { color:var(--gold, #d4a63a); }
+    #lessonModal .modal-box { max-width: 720px !important; }
+    #lessonPlayerWrap { position:relative; width:100%; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; margin-bottom:1rem; }
+    #lessonPlayerWrap iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .lesson-support-box { background:var(--cream,#faf7ef); border:1px solid var(--border,#eee); border-radius:10px; padding:.9rem 1rem; font-size:.85rem; color:#555; margin:1rem 0; }
     .lms-sidebar-card {
       border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 1.2rem;
       position: sticky; top: 100px; background: var(--card-bg, #fff);
@@ -5297,9 +5313,39 @@ select.form-input {
     </div>
   </section>
 
+  <!-- Lesson Player Modal — Phase 6/7 -->
+  <div class="modal" id="lessonModal" role="dialog" aria-modal="true" aria-labelledby="lessonModalTitle">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <div style="font-size:.75rem;color:#888;" id="lessonModalMeta">Module · Lesson</div>
+          <h3 id="lessonModalTitle" style="margin:0;">Lesson</h3>
+        </div>
+        <button class="modal-close" onclick="closeLessonModal();" aria-label="Close"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="lessonPlayerWrap"><div style="color:#fff;text-align:center;padding-top:20%;">No video for this lesson.</div></div>
+        <p id="lessonModalDescription" style="font-size:.9rem;color:#444;"></p>
+        <div class="lesson-support-box">
+          <i class="fas fa-heart" style="color:var(--gold,#d4a63a);"></i>
+          After watching the lesson, please support SHAOOR by following/subscribing to our YouTube channel and liking the lesson video. Then return here and mark this lesson as completed.
+        </div>
+        <div id="lessonModalStatus" style="display:none;color:#15803d;font-weight:700;margin-bottom:.75rem;"><i class="fas fa-check-circle"></i> Lesson Completed</div>
+        <button class="btn btn-gold" id="lessonCompleteBtn" style="width:100%;justify-content:center;" onclick="markLessonComplete();">
+          <i class="fas fa-check"></i> MARK LESSON COMPLETE
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     /* LMS COURSE DETAIL — Phase 3 */
     let lmsCurrentCourse = null;
+    let lmsCurrentUser = null;
+    let lmsCurrentEnrollment = null;      // { id, status, progress, ... } or null
+    let lmsFlatLessons = [];              // ordered list across all modules
+    let lmsCompletedLessonIds = new Set();
+    let lmsActiveLesson = null;
 
     async function showCourseDetail(slug) {
       document.getElementById('courses').style.display = 'none';
@@ -5356,21 +5402,67 @@ select.form-input {
         if (modules.length) {
           var lessonsRes = await sb
             .from('course_lessons')
-            .select('id, module_id, title, lesson_order, is_required, status')
+            .select('id, module_id, title, description, youtube_url, duration_label, lesson_order, is_required, status')
             .eq('course_id', course.id)
             .eq('status', 'published')
             .order('lesson_order', { ascending: true });
 
           var lessons = (lessonsRes.data || []);
           document.getElementById('cdLessonCount').textContent = lessons.length;
+
+          // Build the flat, ordered lesson sequence used for unlocking logic.
+          lmsFlatLessons = modules
+            .slice()
+            .sort(function (a, b) { return (a.module_order || 0) - (b.module_order || 0); })
+            .reduce(function (acc, mod) {
+              var modLessons = lessons
+                .filter(function (l) { return l.module_id === mod.id; })
+                .sort(function (a, b) { return (a.lesson_order || 0) - (b.lesson_order || 0); });
+              return acc.concat(modLessons);
+            }, []);
+
+          await loadLearnerProgress(course.id);
           renderModules(modules, lessons);
         } else {
           document.getElementById('cdLessonCount').textContent = '0';
+          lmsFlatLessons = [];
         }
         // Reflect existing enrollment status on the button, if any.
         await refreshEnrollButtonState();
       } catch (e) {
         console.error('SHAOOR LMS: unexpected error loading course detail', e);
+      }
+    }
+
+    /* Phase 6/7: pull the logged-in learner's enrollment + completed lessons
+       so we know what to unlock. Public visitors simply see everything locked. */
+    async function loadLearnerProgress(courseId) {
+      lmsCurrentEnrollment = null;
+      lmsCompletedLessonIds = new Set();
+
+      var userRes = await sb.auth.getUser();
+      lmsCurrentUser = userRes.data ? userRes.data.user : null;
+      if (!lmsCurrentUser) return;
+
+      try {
+        var enrollRes = await sb
+          .from('course_enrollments')
+          .select('id, status, progress')
+          .eq('course_id', courseId)
+          .eq('member_id', lmsCurrentUser.id)
+          .maybeSingle();
+        lmsCurrentEnrollment = enrollRes.data || null;
+
+        if (lmsCurrentEnrollment) {
+          var progRes = await sb
+            .from('lesson_progress')
+            .select('lesson_id')
+            .eq('course_id', courseId)
+            .eq('member_id', lmsCurrentUser.id);
+          (progRes.data || []).forEach(function (row) { lmsCompletedLessonIds.add(row.lesson_id); });
+        }
+      } catch (e) {
+        console.error('SHAOOR LMS: could not load learner progress', e);
       }
     }
 
@@ -5430,16 +5522,184 @@ select.form-input {
     function renderModules(modules, lessons) {
       var container = document.getElementById('cdModules');
       container.innerHTML = '';
+      var enrolled = !!(lmsCurrentEnrollment && lmsCurrentEnrollment.status !== 'pending');
+
       modules.forEach(function (mod, idx) {
-        var modLessons = lessons.filter(function (l) { return l.module_id === mod.id; });
+        var modLessons = lessons
+          .filter(function (l) { return l.module_id === mod.id; })
+          .sort(function (a, b) { return (a.lesson_order || 0) - (b.lesson_order || 0); });
+
         var div = document.createElement('div');
         div.className = 'lms-module';
+
+        var lessonRowsHtml = modLessons.map(function (lesson) {
+          var flatIndex = lmsFlatLessons.findIndex(function (l) { return l.id === lesson.id; });
+          var isDone = lmsCompletedLessonIds.has(lesson.id);
+          var prevDone = flatIndex <= 0 || lmsCompletedLessonIds.has(lmsFlatLessons[flatIndex - 1].id);
+          var isUnlocked = enrolled && (isDone || prevDone);
+
+          var icon, rowClass, clickAttr;
+          if (isDone) {
+            icon = '<i class="fas fa-check-circle"></i>';
+            rowClass = 'lms-lesson-icon done';
+          } else if (isUnlocked) {
+            icon = '<i class="fas fa-play-circle"></i>';
+            rowClass = 'lms-lesson-icon play';
+          } else {
+            icon = '<i class="fas fa-lock"></i>';
+            rowClass = 'lms-lesson-icon locked';
+          }
+
+          if (isUnlocked) {
+            clickAttr = 'onclick="openLesson(\'' + lesson.id + '\')"';
+          } else {
+            clickAttr = 'onclick="' + (enrolled
+              ? "alert('Complete the previous lesson to unlock this lesson.')"
+              : "alert('Enroll in this course to unlock lessons.')") + '"';
+          }
+
+          return '<div class="lms-lesson-row ' + (isUnlocked ? 'unlocked' : 'locked') + '" ' + clickAttr + '>' +
+            '<div class="lms-lesson-left"><span class="lms-lesson-icon ' + rowClass.replace('lms-lesson-icon', '').trim() + '">' + icon + '</span>' +
+            '<span>' + (lesson.title || 'Untitled lesson') + '</span></div>' +
+            (lesson.duration_label ? '<span style="color:#999;font-size:.78rem;white-space:nowrap;">' + lesson.duration_label + '</span>' : '') +
+          '</div>';
+        }).join('');
+
         div.innerHTML =
           '<div class="lms-module-title"><span>Module ' + (idx + 1) + ': ' + mod.title + '</span>' +
-          '<span style="color:#888;font-weight:400;">' + modLessons.length + ' lessons</span></div>';
+          '<span style="color:#888;font-weight:400;">' + modLessons.length + ' lessons</span></div>' +
+          (lessonRowsHtml || '<div style="color:#999;font-size:.82rem;">No lessons published yet.</div>');
         container.appendChild(div);
       });
     }
+
+    /* ── Lesson Player (Phase 6) ── */
+    function youtubeEmbedUrl(url) {
+      if (!url) return null;
+      var id = null;
+      var short = url.match(/youtu\.be\/([\w-]+)/);
+      var watch = url.match(/[?&]v=([\w-]+)/);
+      var embed = url.match(/embed\/([\w-]+)/);
+      if (short) id = short[1];
+      else if (watch) id = watch[1];
+      else if (embed) id = embed[1];
+      return id ? ('https://www.youtube.com/embed/' + id) : null;
+    }
+
+    function openLesson(lessonId) {
+      var lesson = lmsFlatLessons.find(function (l) { return l.id === lessonId; });
+      if (!lesson) return;
+      lmsActiveLesson = lesson;
+
+      var moduleIndex = 0; // display label only; exact module title not critical here
+      document.getElementById('lessonModalMeta').textContent = lmsCurrentCourse.title || 'Course';
+      document.getElementById('lessonModalTitle').textContent = lesson.title || 'Lesson';
+      document.getElementById('lessonModalDescription').textContent = lesson.description || '';
+
+      var playerWrap = document.getElementById('lessonPlayerWrap');
+      var embedUrl = youtubeEmbedUrl(lesson.youtube_url);
+      playerWrap.innerHTML = embedUrl
+        ? '<iframe src="' + embedUrl + '" title="' + (lesson.title || 'Lesson video') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+        : '<div style="color:#fff;text-align:center;padding-top:20%;">No video for this lesson.</div>';
+
+      var isDone = lmsCompletedLessonIds.has(lesson.id);
+      document.getElementById('lessonModalStatus').style.display = isDone ? 'block' : 'none';
+      var completeBtn = document.getElementById('lessonCompleteBtn');
+      if (isDone) {
+        completeBtn.style.display = 'none';
+      } else {
+        completeBtn.style.display = 'flex';
+        completeBtn.disabled = false;
+        completeBtn.innerHTML = '<i class="fas fa-check"></i> MARK LESSON COMPLETE';
+      }
+
+      var modal = document.getElementById('lessonModal');
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    window.openLesson = openLesson;
+
+    function closeLessonModal() {
+      var modal = document.getElementById('lessonModal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      var playerWrap = document.getElementById('lessonPlayerWrap');
+      playerWrap.innerHTML = ''; // stop playback
+      lmsActiveLesson = null;
+    }
+    window.closeLessonModal = closeLessonModal;
+
+    async function markLessonComplete() {
+      if (!lmsActiveLesson || !lmsCurrentUser || !lmsCurrentCourse) return;
+      var lesson = lmsActiveLesson;
+      var completeBtn = document.getElementById('lessonCompleteBtn');
+      completeBtn.disabled = true;
+      completeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+
+      try {
+        var insertRes = await sb.from('lesson_progress').insert({
+          member_id: lmsCurrentUser.id,
+          course_id: lmsCurrentCourse.id,
+          module_id: lesson.module_id,
+          lesson_id: lesson.id,
+          completed_at: new Date().toISOString(),
+          status: 'completed'
+        });
+
+        if (insertRes.error) {
+          console.error('SHAOOR LMS: could not save lesson completion', insertRes.error);
+          alert('Could not save your progress. Please try again.');
+          completeBtn.disabled = false;
+          completeBtn.innerHTML = '<i class="fas fa-check"></i> MARK LESSON COMPLETE';
+          return;
+        }
+
+        lmsCompletedLessonIds.add(lesson.id);
+
+        // Recalculate + persist overall course progress from actual completed-lesson records.
+        var totalLessons = lmsFlatLessons.length || 1;
+        var newProgress = Math.round((lmsCompletedLessonIds.size / totalLessons) * 100);
+        var isCourseComplete = lmsCompletedLessonIds.size >= totalLessons;
+
+        if (lmsCurrentEnrollment) {
+          await sb.from('course_enrollments').update({
+            progress: newProgress,
+            status: isCourseComplete ? 'completed' : 'active',
+            current_lesson: lesson.id
+          }).eq('id', lmsCurrentEnrollment.id);
+          lmsCurrentEnrollment.progress = newProgress;
+          if (isCourseComplete) lmsCurrentEnrollment.status = 'completed';
+        }
+
+        document.getElementById('lessonModalStatus').style.display = 'block';
+        completeBtn.style.display = 'none';
+
+        // Re-render the module list so the next lesson unlocks immediately.
+        var modulesRes = await sb
+          .from('course_modules')
+          .select('id, title, module_order, status')
+          .eq('course_id', lmsCurrentCourse.id)
+          .eq('status', 'published')
+          .order('module_order', { ascending: true });
+        var lessonsRes = await sb
+          .from('course_lessons')
+          .select('id, module_id, title, description, youtube_url, duration_label, lesson_order, is_required, status')
+          .eq('course_id', lmsCurrentCourse.id)
+          .eq('status', 'published')
+          .order('lesson_order', { ascending: true });
+        renderModules(modulesRes.data || [], lessonsRes.data || []);
+
+        if (isCourseComplete) {
+          alert('🏆 Congratulations! You have completed all lessons in this course.');
+        }
+      } catch (e) {
+        console.error('SHAOOR LMS: unexpected error marking lesson complete', e);
+        alert('Something went wrong. Please try again.');
+        completeBtn.disabled = false;
+        completeBtn.innerHTML = '<i class="fas fa-check"></i> MARK LESSON COMPLETE';
+      }
+    }
+    window.markLessonComplete = markLessonComplete;
 
     function closeCourseDetail() {
       document.getElementById('courseDetail').classList.remove('active');
