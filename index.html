@@ -4560,7 +4560,7 @@ select.form-input {
   <!-- Gallery Lightbox -->
   <div class="modal" id="galleryLightbox" role="dialog" aria-modal="true">
     <div class="modal-box" style="max-width:640px;background:#111;">
-      <div class="modal-head" style="border-bottom:1px solid #333;">
+      <div class="modal-head" style="border-bottom:1px solid var(--border);">
         <h3 id="lightboxTitle" style="color:#fff;">—</h3>
         <button class="modal-close" onclick="closeModal('galleryLightbox')" aria-label="Close" style="color:#fff;"><i class="fas fa-times"></i></button>
       </div>
@@ -4825,7 +4825,7 @@ select.form-input {
           </div>
           <div style="display:flex;gap:.5rem;">
             <button type="submit" id="gSubmitBtn" class="btn btn-gold" style="justify-content:center;flex:1;"><i class="fas fa-plus"></i> Gallery میں شامل کریں</button>
-            <button type="button" id="gCancelBtn" class="btn" style="display:none;background:#eee;color:#333;" onclick="cancelGalleryEdit()">Cancel</button>
+            <button type="button" id="gCancelBtn" class="btn" style="display:none;background:var(--cream);color:var(--muted);" onclick="cancelGalleryEdit()">Cancel</button>
           </div>
         </form>
 
@@ -5235,7 +5235,7 @@ select.form-input {
     }
     .lms-card-body { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
     .lms-card-title { font-weight: 700; font-size: 1.05rem; }
-    .lms-card-meta { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: #666; }
+    .lms-card-meta { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: var(--muted); }
     .lms-badge { padding: .2rem .6rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
     .lms-badge-free { background: #e4f5ec; color: #1f8b4c; }
     .lms-badge-paid { background: #fdeee0; color: #b5651d; }
@@ -5244,7 +5244,7 @@ select.form-input {
       background: var(--gold, #c9a44c); color: #fff; font-weight: 700; text-decoration: none;
       font-size: .85rem;
     }
-    .lms-empty { text-align: center; padding: 3rem 1rem; color: #888; }
+    .lms-empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
   </style>
 
   <!-- ============================================================
@@ -5317,7 +5317,7 @@ select.form-input {
           <i class="fas fa-graduation-cap"></i> LEARN • CREATE • GROW
         </div>
         <h2>SHAOOR Course Catalog</h2>
-        <p style="color:#666;">Explore SHAOOR's professional arts and culture learning programs — free and paid.</p>
+        <p style="color:var(--muted);">Explore SHAOOR's professional arts and culture learning programs — free and paid.</p>
       </div>
 
       <div class="lms-filters" id="lmsFilters">
@@ -5473,7 +5473,7 @@ select.form-input {
     .lms-lesson-row.completed .lms-lesson-icon { color:#1e8e5a; }
     .lms-lesson-row.locked .lms-lesson-icon { color:#9aa1a9; }
     .lms-lesson-row .lms-lesson-title { flex:1; }
-    .lms-lesson-row .lms-lesson-status { font-size:.72rem; color:#888; }
+    .lms-lesson-row .lms-lesson-status { font-size:.72rem; color:var(--muted); }
     .lms-lesson-player { display:none; }
     .lms-lesson-player.active { display:block; }
     .lms-player-frame { position:relative; width:100%; padding-top:56.25%; background:#0B1F33; border-radius:10px; overflow:hidden; margin-bottom:1rem; }
@@ -5489,7 +5489,7 @@ select.form-input {
     .lms-quiz-option:hover { background:#F8F5EE; }
     .lms-quiz-option.correct { background:#E7F6EC; }
     .lms-quiz-option.incorrect { background:#FBEAEA; }
-    .lms-quiz-explanation { font-size:.8rem; color:#666; margin-top:.4rem; padding-top:.4rem; border-top:1px dashed rgba(0,0,0,.1); display:none; }
+    .lms-quiz-explanation { font-size:.8rem; color:var(--muted); margin-top:.4rem; padding-top:.4rem; border-top:1px dashed rgba(0,0,0,.1); display:none; }
     .lms-quiz-explanation.show { display:block; }
     .lms-quiz-result { text-align:center; padding:1.2rem; border-radius:10px; margin-bottom:1rem; }
     .lms-quiz-result.pass { background:#E7F6EC; color:#1e8e5a; }
@@ -5527,7 +5527,7 @@ select.form-input {
           </div>
           <div class="lms-detail-section">
             <h3>Course Content</h3>
-            <div id="cdModules"><p style="color:#888;font-size:.85rem;">Modules will be published here as they are added.</p></div>
+            <div id="cdModules"><p style="color:var(--muted);font-size:.85rem;">Modules will be published here as they are added.</p></div>
             <div id="cdFinalAssessmentRow" style="display:none;"></div>
           </div>
 
@@ -5541,7 +5541,7 @@ select.form-input {
                 <i class="fab fa-youtube"></i> اگر ویڈیو یہاں نظر نہ آئے تو براہِ راست YouTube پر دیکھیں
               </a>
             </p>
-            <p id="lmsPlayerLessonDesc" style="font-size:.9rem;color:#555;"></p>
+            <p id="lmsPlayerLessonDesc" style="font-size:.9rem;color:var(--muted);"></p>
             <div id="lmsPlayerLockedMsg" class="lms-locked-msg" style="display:none;"></div>
             <div class="lms-player-nav">
               <button class="btn btn-outline" id="lmsPrevLessonBtn" onclick="goToAdjacentLesson(-1);"><i class="fas fa-arrow-left"></i> Previous Lesson</button>
@@ -5552,7 +5552,7 @@ select.form-input {
 
           <div class="lms-detail-section lms-quiz-panel" id="lmsQuizPanel">
             <h3 id="lmsQuizTitle">Module Quiz</h3>
-            <p id="lmsQuizMeta" style="font-size:.82rem;color:#888;"></p>
+            <p id="lmsQuizMeta" style="font-size:.82rem;color:var(--muted);"></p>
             <div id="lmsQuizResult"></div>
             <div id="lmsQuizQuestions"></div>
             <div class="lms-player-nav">
@@ -5563,13 +5563,13 @@ select.form-input {
 
           <div class="lms-detail-section lms-quiz-panel" id="lmsFinalPanel">
             <h3 id="lmsFinalTitle">Final Assessment</h3>
-            <p id="lmsFinalMeta" style="font-size:.82rem;color:#888;"></p>
+            <p id="lmsFinalMeta" style="font-size:.82rem;color:var(--muted);"></p>
             <div id="lmsFinalResult"></div>
             <div id="lmsFinalMcqQuestions"></div>
             <div id="lmsFinalSubmissionForm" style="display:none;">
               <textarea id="lmsFinalTextContent" class="form-input" rows="8" placeholder="Write your submission here…" style="width:100%;margin-bottom:.8rem;"></textarea>
               <input type="url" id="lmsFinalFileUrl" class="form-input" placeholder="Link to your file (Google Drive, etc.) — optional" style="width:100%;margin-bottom:.8rem;" />
-              <p style="font-size:.78rem;color:#888;">Your submission will be reviewed by an administrator. You'll see the result in My Learning once reviewed.</p>
+              <p style="font-size:.78rem;color:var(--muted);">Your submission will be reviewed by an administrator. You'll see the result in My Learning once reviewed.</p>
             </div>
             <div class="lms-player-nav">
               <button class="btn btn-outline" onclick="closeFinalPanel();"><i class="fas fa-arrow-left"></i> Back to Course</button>
@@ -5581,14 +5581,14 @@ select.form-input {
         <div>
           <div class="lms-sidebar-card">
             <div class="lms-sidebar-price" id="cdPrice">FREE</div>
-            <div id="cdCertLine" style="font-size:.85rem;color:#666;margin-bottom:1rem;"></div>
+            <div id="cdCertLine" style="font-size:.85rem;color:var(--muted);margin-bottom:1rem;"></div>
             <button class="btn btn-gold" style="width:100%;justify-content:center;margin-bottom:.6rem;" onclick="enrollInCourse();">
               <i class="fas fa-user-plus"></i> ENROLL NOW
             </button>
             <button class="btn btn-outline" id="cdCertBtn" style="width:100%;justify-content:center;margin-bottom:.6rem;display:none;" onclick="claimCourseCertificate();">
               <i class="fas fa-award"></i> GET CERTIFICATE
             </button>
-            <ul class="lms-detail-list" style="margin-top:1rem;font-size:.85rem;color:#555;">
+            <ul class="lms-detail-list" style="margin-top:1rem;font-size:.85rem;color:var(--muted);">
               <li><i class="fas fa-layer-group"></i> <span id="cdModuleCount">—</span> Modules</li>
               <li><i class="fas fa-book-open"></i> <span id="cdLessonCount">—</span> Lessons</li>
               <li><i class="fas fa-clock"></i> <span id="cdDuration">—</span></li>
@@ -5752,7 +5752,7 @@ select.form-input {
       document.getElementById('cdMeta').innerHTML = '';
       document.getElementById('cdOutcomes').innerHTML = '';
       document.getElementById('cdRequirements').innerHTML = '';
-      document.getElementById('cdModules').innerHTML = '<p style="color:#888;font-size:.85rem;">Loading course content…</p>';
+      document.getElementById('cdModules').innerHTML = '<p style="color:var(--muted);font-size:.85rem;">Loading course content…</p>';
       document.getElementById('cdModuleCount').textContent = '—';
       document.getElementById('cdLessonCount').textContent = '—';
     }
@@ -5761,7 +5761,7 @@ select.form-input {
       var el = document.getElementById(elId);
       el.innerHTML = '';
       if (!items || !items.length) {
-        el.innerHTML = '<li style="color:#888;">Not specified yet.</li>';
+        el.innerHTML = '<li style="color:var(--muted);">Not specified yet.</li>';
         return;
       }
       items.forEach(function (item) {
@@ -5779,7 +5779,7 @@ select.form-input {
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       document.getElementById('lmsQuizResult').innerHTML = '';
-      document.getElementById('lmsQuizQuestions').innerHTML = '<p style="color:#888;font-size:.85rem;">Loading quiz…</p>';
+      document.getElementById('lmsQuizQuestions').innerHTML = '<p style="color:var(--muted);font-size:.85rem;">Loading quiz…</p>';
       document.getElementById('lmsQuizSubmitBtn').style.display = '';
 
       try {
@@ -5817,7 +5817,7 @@ select.form-input {
     function renderQuizQuestions() {
       var container = document.getElementById('lmsQuizQuestions');
       if (!lmsQuizQuestions.length) {
-        container.innerHTML = '<p style="color:#888;font-size:.85rem;">This quiz has no questions yet.</p>';
+        container.innerHTML = '<p style="color:var(--muted);font-size:.85rem;">This quiz has no questions yet.</p>';
         return;
       }
       container.innerHTML = lmsQuizQuestions.map(function (q, idx) {
@@ -5972,7 +5972,7 @@ select.form-input {
           'Passing score: ' + lmsCurrentFinalAssessment.passing_score + '%' +
           (lmsCurrentFinalAssessment.attempt_limit ? ' · Attempts allowed: ' + lmsCurrentFinalAssessment.attempt_limit : '');
 
-        mcqWrap.innerHTML = '<p style="color:#888;font-size:.85rem;">Loading assessment…</p>';
+        mcqWrap.innerHTML = '<p style="color:var(--muted);font-size:.85rem;">Loading assessment…</p>';
         var qRes = await sb
           .from('assessment_questions')
           .select('id, question_text, question_type, options, marks, question_order')
@@ -6033,7 +6033,7 @@ select.form-input {
     function renderFinalMcqQuestions() {
       var container = document.getElementById('lmsFinalMcqQuestions');
       if (!lmsFinalQuestions.length) {
-        container.innerHTML = '<p style="color:#888;font-size:.85rem;">This assessment has no questions yet.</p>';
+        container.innerHTML = '<p style="color:var(--muted);font-size:.85rem;">This assessment has no questions yet.</p>';
         return;
       }
       container.innerHTML = lmsFinalQuestions.map(function (q, idx) {
@@ -6257,7 +6257,7 @@ select.form-input {
 
         div.innerHTML =
           '<div class="lms-module-title"><span>Module ' + (idx + 1) + ': ' + mod.title + '</span>' +
-          '<span style="color:#888;font-weight:400;">' + modLessons.length + ' lessons</span></div>' +
+          '<span style="color:var(--muted);font-weight:400;">' + modLessons.length + ' lessons</span></div>' +
           lessonsHtml + quizHtml;
         container.appendChild(div);
       });
@@ -8391,7 +8391,7 @@ select.form-input {
         const secName = cab.general_secretary ? (nameMap[cab.general_secretary] || 'Unknown') : '—';
         const chapterName = s.chapter_id ? (chapterNameMap[s.chapter_id] || '—') : '—';
         const memberCount = countMap[s.id] || 0;
-        const statusBg = s.status === 'active' ? '#16a34a' : '#9ca3af';
+        const statusBg = s.status === 'active' ? 'var(--teal)' : '#9ca3af';
         const statusLabel = s.status === 'active' ? 'فعال' : 'محفوظ شدہ';
 
         return `<tr>
@@ -8463,7 +8463,7 @@ select.form-input {
         const headMemberId = cabByC[c.id];
         const headName = headMemberId ? (nameMap[headMemberId] || 'Unknown') : '—';
         const memberCount = countMap[c.id] || 0;
-        const statusBg = c.status === 'active' ? '#16a34a' : c.status === 'forming' ? '#fbbf24' : '#9ca3af';
+        const statusBg = c.status === 'active' ? 'var(--teal)' : c.status === 'forming' ? '#fbbf24' : '#9ca3af';
         const statusLabel = c.status === 'active' ? 'فعال' : c.status === 'forming' ? 'تشکیل' : 'محفوظ';
 
         return `<tr>
@@ -11140,7 +11140,7 @@ select.form-input {
   }
 
   function certStatusColor(status) {
-    if (status === 'active') return { bg: '#16a34a', label: 'Active / فعال' };
+    if (status === 'active') return { bg: 'var(--teal)', label: 'Active / فعال' };
     if (status === 'revoked') return { bg: 'var(--ruby)', label: 'Revoked / منسوخ' };
     return { bg: '#a16207', label: 'Expired / میعاد ختم' };
   }
@@ -11375,7 +11375,7 @@ select.form-input {
 
     tbody.innerHTML = apps.map(app => {
       const statusBg = app.status === 'pending' ? '#fbbf24' 
-                     : app.status === 'approved' ? '#16a34a'
+                     : app.status === 'approved' ? 'var(--teal)'
                      : '#ef4444';
       const statusLabel = app.status === 'pending' ? 'زیرِ التوا'
                         : app.status === 'approved' ? 'منظور' 
@@ -11391,7 +11391,7 @@ select.form-input {
         <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
           <span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span>
           ${app.status === 'pending' ? `
-            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="approveApplication('${app.id}')">منظور کریں</button>
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="approveApplication('${app.id}')">منظور کریں</button>
             <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="rejectApplication('${app.id}')">مسترد کریں</button>
           ` : ''}
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="viewApplication('${app.id}')">دیکھیں</button>
@@ -11528,7 +11528,7 @@ select.form-input {
   /* ── Admin: Course Enrollments management (Learning Academy) ── */
   function enrollStatusColor(status) {
     switch (status) {
-      case 'active': return { bg: '#16a34a', label: 'Active' };
+      case 'active': return { bg: 'var(--teal)', label: 'Active' };
       case 'completed': return { bg: 'var(--gold, #c9a44c)', label: 'Completed' };
       case 'pending': return { bg: '#f59e0b', label: 'Pending' };
       case 'cancelled': return { bg: '#6b7280', label: 'Cancelled' };
@@ -11569,7 +11569,7 @@ select.form-input {
       const enrolledOn = r.enrolled_at ? new Date(r.enrolled_at).toLocaleDateString() : '—';
       var actions = '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewEnrollment(\'' + r.id + '\')">View</button>';
       if (r.status === 'pending') {
-        actions += ' <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="approveEnrollment(\'' + r.id + '\')">Approve</button>';
+        actions += ' <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="approveEnrollment(\'' + r.id + '\')">Approve</button>';
       }
       if (r.status === 'active' || r.status === 'pending') {
         actions += ' <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#6b7280;" onclick="suspendEnrollment(\'' + r.id + '\')">Suspend</button>';
@@ -12190,7 +12190,7 @@ select.form-input {
 
     if (!/^SHR-MBR-\d{4}-\d{6}$/.test(v)) {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: SHR-MBR-YYYY-XXXXXX</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:var(--ruby);"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: SHR-MBR-YYYY-XXXXXX</span></div></div>`;
       r.style.display = 'block';
       return;
     }
@@ -12203,7 +12203,7 @@ select.form-input {
 
     if (error || !profile) {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط ID</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ہمارے ریکارڈ میں نہیں ملی۔</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:var(--ruby);"></i><div><strong>غلط ID</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ہمارے ریکارڈ میں نہیں ملی۔</span></div></div>`;
       r.style.display = 'block';
       return;
     }
@@ -12214,14 +12214,14 @@ select.form-input {
     r.className = 'ver-result ver-valid';
     r.innerHTML = `
       <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.5rem;">
-        <i class="fas fa-check-circle" style="font-size:1.5rem;color:#16a34a;flex-shrink:0;"></i>
+        <i class="fas fa-check-circle" style="font-size:1.5rem;color:var(--teal);flex-shrink:0;"></i>
         <div><strong>درست SHAOOR رکن</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID SHAOOR کے ریکارڈ میں موجود ہے۔</span></div>
       </div>
       <div class="ver-grid">
         <div class="ver-field"><div class="lbl">رکن کا نام</div><div class="val">${sanitize(profile.full_name || '—')}</div></div>
         <div class="ver-field"><div class="lbl">ID نمبر</div><div class="val">${sanitize(profile.member_id)}</div></div>
         <div class="ver-field"><div class="lbl">سوسائٹی</div><div class="val">${sanitize(societyName)}</div></div>
-        <div class="ver-field"><div class="lbl">حیثیت</div><div class="val" style="color:${isActive ? '#16a34a' : '#dc2626'};">${isActive ? '● فعال' : '● غیر فعال'}</div></div>
+        <div class="ver-field"><div class="lbl">حیثیت</div><div class="val" style="color:${isActive ? 'var(--teal)' : 'var(--ruby)'};">${isActive ? '● فعال' : '● غیر فعال'}</div></div>
       </div>`;
     r.style.display = 'block';
   }
@@ -12238,7 +12238,7 @@ select.form-input {
 
     if (!/^CERT-\d{4}-\d{6}$/.test(v)) {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: CERT-YYYY-XXXXXX</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:var(--ruby);"></i><div><strong>غلط فارمیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">فارمیٹ: CERT-YYYY-XXXXXX</span></div></div>`;
       r.style.display = 'block';
       return;
     }
@@ -12251,7 +12251,7 @@ select.form-input {
 
     if (error || !c) {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>سرٹیفکیٹ نہیں ملا</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ہمارے ریکارڈ میں نہیں۔</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:var(--ruby);"></i><div><strong>سرٹیفکیٹ نہیں ملا</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ ID ہمارے ریکارڈ میں نہیں۔</span></div></div>`;
       r.style.display = 'block';
       return;
     }
@@ -12261,13 +12261,13 @@ select.form-input {
 
     if (c.status === 'active') {
       r.className = 'ver-result ver-valid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-check-circle" style="font-size:1.5rem;color:#16a34a;"></i><div><strong>درست سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">${sanitize(c.certificate_title || '')}${memberName ? ' — ' + sanitize(memberName) : ''}</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-check-circle" style="font-size:1.5rem;color:var(--teal);"></i><div><strong>درست سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">${sanitize(c.certificate_title || '')}${memberName ? ' — ' + sanitize(memberName) : ''}</span></div></div>`;
     } else if (c.status === 'revoked') {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>منسوخ شدہ سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ سرٹیفکیٹ منسوخ کر دیا گیا ہے۔</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:var(--ruby);"></i><div><strong>منسوخ شدہ سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">یہ سرٹیفکیٹ منسوخ کر دیا گیا ہے۔</span></div></div>`;
     } else {
       r.className = 'ver-result ver-invalid';
-      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:#dc2626;"></i><div><strong>غیر فعال سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">اس سرٹیفکیٹ کی میعاد ختم ہو چکی ہے۔</span></div></div>`;
+      r.innerHTML = `<div style="display:flex;align-items:center;gap:.75rem;"><i class="fas fa-exclamation-circle" style="font-size:1.5rem;color:var(--ruby);"></i><div><strong>غیر فعال سرٹیفکیٹ</strong><br><span style="font-size:.88rem;color:var(--muted);">اس سرٹیفکیٹ کی میعاد ختم ہو چکی ہے۔</span></div></div>`;
     }
     r.style.display = 'block';
   }
@@ -12351,7 +12351,7 @@ select.form-input {
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="openEditMember('${m.id}')">Edit</button>`);
       if (m.status !== 'active') {
-        actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="setMemberStatus('${m.id}','active')">Approve</button>`);
+        actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="setMemberStatus('${m.id}','active')">Approve</button>`);
       }
       if (m.status !== 'suspended') {
         actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="setMemberStatus('${m.id}','suspended')">Suspend</button>`);
