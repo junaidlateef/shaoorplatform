@@ -6316,19 +6316,22 @@ select.form-input {
         <div><small style="color:var(--muted);">Status</small><div id="mdStatus" style="font-weight:600;font-size:1.05rem;text-transform:capitalize;">—</div></div>
       </div>
 
-      <!-- Membership Details Row -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.25rem;padding:1.25rem;background:var(--cream);border:1px solid var(--border);border-radius:10px;">
-        <div>
-          <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Membership Status</small>
-          <div id="mdMembershipStatus" style="font-weight:700;font-size:.95rem;margin-top:.2rem;">—</div>
-        </div>
-        <div>
-          <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Membership Tier</small>
-          <div id="mdMembershipTier" style="font-weight:600;font-size:.95rem;margin-top:.2rem;color:var(--gold);">—</div>
-        </div>
-        <div>
-          <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Society / Chapter</small>
-          <div id="mdMemberSociety" style="font-weight:600;font-size:.9rem;margin-top:.2rem;color:var(--teal);">—</div>
+      <!-- Membership Details Card -->
+      <div style="margin-top:1.25rem;padding:1.25rem;background:var(--cream);border:1px solid var(--border);border-radius:10px;">
+        <h4 style="font-weight:700;font-size:.95rem;margin-bottom:1rem;color:var(--navy);"><i class="fas fa-shield-alt" style="color:var(--gold);margin-right:.4rem;"></i> رکنیت کی تفصیل (Membership)</h4>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+          <div>
+            <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Membership Status</small>
+            <div id="mdMembershipStatus" style="font-weight:700;font-size:.95rem;margin-top:.2rem;">—</div>
+          </div>
+          <div>
+            <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Membership Tier</small>
+            <div id="mdMembershipTier" style="font-weight:600;font-size:.95rem;margin-top:.2rem;color:var(--gold);">—</div>
+          </div>
+          <div>
+            <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Society / Chapter</small>
+            <div id="mdMemberSociety" style="font-weight:600;font-size:.9rem;margin-top:.2rem;color:var(--teal);">—</div>
+          </div>
         </div>
       </div>
 
@@ -9988,8 +9991,8 @@ select.form-input {
 
     let query = sb
       .from('course_enrollments')
-      .select('id, member_id, course_id, status, payment_status, created_at, courses(title), profiles(full_name, member_id)')
-      .order('created_at', { ascending: false });
+      .select('id, member_id, course_id, status, payment_status, enrolled_at, courses(title), profiles(full_name, member_id)')
+      .order('enrolled_at', { ascending: false });
     if (filterStatus) query = query.eq('status', filterStatus);
 
     const { data: rows, error } = await query;
@@ -10008,7 +10011,7 @@ select.form-input {
       const sc = enrollStatusColor(r.status);
       const memberLabel = r.profiles ? (r.profiles.full_name + ' (' + r.profiles.member_id + ')') : r.member_id;
       const courseLabel = r.courses ? r.courses.title : r.course_id;
-      const enrolledOn = r.created_at ? new Date(r.created_at).toLocaleDateString() : '—';
+      const enrolledOn = r.enrolled_at ? new Date(r.enrolled_at).toLocaleDateString() : '—';
       var actions = '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewEnrollment(\'' + r.id + '\')">View</button>';
       if (r.status === 'pending') {
         actions += ' <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="approveEnrollment(\'' + r.id + '\')">Approve</button>';
@@ -10031,7 +10034,7 @@ select.form-input {
   function viewEnrollment(id) {
     // Simple detail view for now — full modal can be added later if needed.
     sb.from('course_enrollments')
-      .select('id, status, payment_status, progress_percent, created_at, courses(title), profiles(full_name, member_id)')
+      .select('id, status, payment_status, progress_percent, enrolled_at, courses(title), profiles(full_name, member_id)')
       .eq('id', id)
       .single()
       .then(function (res) {
@@ -10043,7 +10046,7 @@ select.form-input {
           'Status: ' + e.status + '\n' +
           'Payment: ' + (e.payment_status || '—') + '\n' +
           'Progress: ' + (e.progress_percent || 0) + '%\n' +
-          'Enrolled: ' + new Date(e.created_at).toLocaleString()
+          'Enrolled: ' + new Date(e.enrolled_at).toLocaleString()
         );
       });
   }
@@ -10159,9 +10162,9 @@ select.form-input {
 
     const { data: enrollments, error } = await sb
       .from('course_enrollments')
-      .select('id, course_id, status, payment_status, created_at, courses(id, title, slug, level, duration_label)')
+      .select('id, course_id, status, payment_status, enrolled_at, courses(id, title, slug, level, duration_label)')
       .eq('member_id', userId)
-      .order('created_at', { ascending: false });
+      .order('enrolled_at', { ascending: false });
 
     if (error) {
       container.innerHTML = '<div style="color:var(--ruby);font-size:.9rem;text-align:center;">لوڈ نہیں ہو سکا</div>';
@@ -11980,20 +11983,28 @@ select.form-input {
     // Now load extra: membership status + society
     try {
       const { data: appData } = await sb
-        .from('applications')
-        .select('membership_tier, society, chapter, status, created_at')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(1)
+        .from('profiles')
+        .select('membership_type, society_id, chapter_id, status, created_at')
+        .eq('id', userId)
         .single();
+
+      let societyName = '', chapterName = '';
+      if (appData && appData.society_id) {
+        const { data: soc } = await sb.from('societies').select('name').eq('id', appData.society_id).single();
+        societyName = soc ? soc.name : '';
+      }
+      if (appData && appData.chapter_id) {
+        const { data: chap } = await sb.from('chapters').select('name').eq('id', appData.chapter_id).single();
+        chapterName = chap ? chap.name : '';
+      }
 
       if (appData) {
         const statusEl = document.getElementById('mdMembershipStatus');
         const tierEl   = document.getElementById('mdMembershipTier');
         const socEl    = document.getElementById('mdMemberSociety');
         if (statusEl) statusEl.textContent = appData.status || '—';
-        if (tierEl)   tierEl.textContent   = appData.membership_tier || '—';
-        if (socEl)    socEl.textContent    = (appData.society || '') + (appData.chapter ? ' · ' + appData.chapter : '') || '—';
+        if (tierEl)   tierEl.textContent   = appData.membership_type || '—';
+        if (socEl)    socEl.textContent    = (societyName || '') + (chapterName ? ' · ' + chapterName : '') || '—';
 
         // Status badge color
         if (statusEl) {
