@@ -4639,7 +4639,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('cabinet',this);loadCentralCabinetAdmin();"><i class="fas fa-crown"></i> Central Cabinet</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('learning',this);loadCoursesAdmin();loadEnrollmentsAdmin();"><i class="fas fa-graduation-cap"></i> Learning Academy</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('learning',this);loadCoursesAdmin();loadEnrollmentsAdmin();loadLiveSessionsAdmin();loadPlatformSettingsAdmin();"><i class="fas fa-graduation-cap"></i> Learning Academy</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
       <button class="admin-nav-btn" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
       <button class="admin-nav-btn" onclick="switchDashTab('analytics',this);loadAnalyticsAdmin();"><i class="fas fa-chart-line"></i> Analytics</button>
@@ -4844,6 +4844,31 @@ select.form-input {
             </tbody>
           </table>
         </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:2rem 0 1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Live Classes (Google Meet)</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCreateLiveSessionModal()"><i class="fas fa-plus"></i> نیا Live Session</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="liveSessionsAdminTable">
+            <thead><tr><th>Course</th><th>Title</th><th>Scheduled</th><th>Status</th><th>Recording</th><th>Actions</th></tr></thead>
+            <tbody id="liveSessionsAdminBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Live Sessions لوڈ ہو رہے ہیں…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin:2rem 0 1rem;">
+          <h3 style="font-weight:700;">Platform WhatsApp Group (عمومی)</h3>
+          <p style="font-size:.82rem;color:var(--muted);margin-top:.2rem;">یہ لنک تمام enrolled ممبرز کو My Learning میں نظر آئے گا — کسی مخصوص کورس کے لیے نہیں، بلکہ پورے Learning Academy کے لیے۔</p>
+        </div>
+        <form id="platformSettingsForm" style="max-width:520px;display:flex;gap:.6rem;align-items:flex-end;flex-wrap:wrap;">
+          <div class="form-group" style="flex:1;min-width:240px;margin:0;">
+            <label for="generalWhatsappLink">General WhatsApp Group لنک</label>
+            <input type="url" id="generalWhatsappLink" class="form-input" placeholder="https://chat.whatsapp.com/..." />
+          </div>
+          <button type="submit" class="btn btn-gold" style="font-size:.85rem;">محفوظ کریں</button>
+        </form>
       </div>
 
       <div class="dash-panel" id="dp-branding">
@@ -6740,6 +6765,10 @@ select.form-input {
           </select>
         </div>
         <div class="form-group">
+          <label for="courseWhatsappLink">Course کا WhatsApp Group لنک (اختیاری)</label>
+          <input type="url" id="courseWhatsappLink" class="form-input" placeholder="https://chat.whatsapp.com/..." />
+        </div>
+        <div class="form-group">
           <label for="courseStatus">Status *</label>
           <select id="courseStatus" class="form-input" required>
             <option value="draft">Draft (چھپا ہوا)</option>
@@ -6747,6 +6776,59 @@ select.form-input {
           </select>
         </div>
 
+        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Live Session Modal (Admin) -->
+<div class="modal" id="liveSessionModal" role="dialog" aria-modal="true" aria-labelledby="liveSessionModalTitle">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-head">
+      <h3 id="liveSessionModalTitle">نیا Live Session</h3>
+      <button class="modal-close" onclick="closeModal('liveSessionModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form class="modal-form" id="liveSessionForm">
+        <input type="hidden" id="liveSessionEditId" value="" />
+        <div class="form-group">
+          <label for="liveSessionCourse">Course *</label>
+          <select id="liveSessionCourse" class="form-input" required></select>
+        </div>
+        <div class="form-group">
+          <label for="liveSessionTitle">عنوان *</label>
+          <input type="text" id="liveSessionTitle" class="form-input" required placeholder="e.g., Live Session 1 — Basics" />
+        </div>
+        <div class="form-group">
+          <label for="liveSessionMeetLink">Google Meet لنک *</label>
+          <input type="url" id="liveSessionMeetLink" class="form-input" required placeholder="https://meet.google.com/xxx-xxxx-xxx" />
+        </div>
+        <div class="form-group">
+          <label for="liveSessionScheduledAt">تاریخ و وقت *</label>
+          <input type="datetime-local" id="liveSessionScheduledAt" class="form-input" required />
+        </div>
+        <div class="form-group">
+          <label for="liveSessionDuration">دورانیہ (منٹ)</label>
+          <input type="number" id="liveSessionDuration" class="form-input" min="0" step="1" placeholder="e.g., 60" />
+        </div>
+        <div class="form-group">
+          <label for="liveSessionStatus">Status *</label>
+          <select id="liveSessionStatus" class="form-input" required>
+            <option value="upcoming">Upcoming</option>
+            <option value="live">Live (ابھی جاری)</option>
+            <option value="ended">Ended</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="liveSessionRecordingUrl">Recording لنک (کلاس ختم ہونے کے بعد، YouTube Unlisted)</label>
+          <input type="url" id="liveSessionRecordingUrl" class="form-input" placeholder="https://youtube.com/watch?v=..." />
+        </div>
+        <div class="form-group">
+          <label for="liveSessionNotes">نوٹس (اختیاری)</label>
+          <textarea id="liveSessionNotes" class="form-input" rows="2"></textarea>
+        </div>
         <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
       </form>
     </div>
@@ -8253,6 +8335,7 @@ select.form-input {
     document.getElementById('courseDuration').value = c.duration_label || '';
     document.getElementById('courseCode').value = c.course_code || '';
     document.getElementById('courseCertificateAvailable').value = c.certificate_available ? 'true' : 'false';
+    document.getElementById('courseWhatsappLink').value = c.whatsapp_group_link || '';
     document.getElementById('courseStatus').value = c.status || 'draft';
     if (c.thumbnail_url) {
       document.getElementById('courseExistingThumbUrl').value = c.thumbnail_url;
@@ -8330,6 +8413,7 @@ select.form-input {
     const duration_label = frm.querySelector('#courseDuration').value.trim() || null;
     const course_code = frm.querySelector('#courseCode').value.trim() || null;
     const certificate_available = frm.querySelector('#courseCertificateAvailable').value === 'true';
+    const whatsapp_group_link = frm.querySelector('#courseWhatsappLink').value.trim() || null;
     const status = frm.querySelector('#courseStatus').value;
 
     if (!title) { showToast('براہ کرم Course کا عنوان درج کریں', 'error'); return; }
@@ -8356,7 +8440,7 @@ select.form-input {
     const payload = {
       title, slug, description, category, level,
       is_paid, price, currency, duration_label, course_code,
-      certificate_available, status, thumbnail_url,
+      certificate_available, status, thumbnail_url, whatsapp_group_link,
       // These columns are NOT NULL in the DB with no admin-facing UI yet — safe defaults for now.
       quiz_frequency: 4, passing_score: 70
     };
@@ -8375,6 +8459,145 @@ select.form-input {
     closeModal('courseModal');
     loadCoursesAdmin();
     if (typeof loadCourseCatalog === 'function') { lmsCatalogLoaded = false; loadCourseCatalog(); }
+  }));
+
+  /* ── Admin: Live Classes (Google Meet) management (Phase 14) ── */
+  window.openCreateLiveSessionModal = async function() {
+    await populateLiveSessionCourseOptions();
+    document.getElementById('liveSessionForm').reset();
+    document.getElementById('liveSessionEditId').value = '';
+    document.getElementById('liveSessionModalTitle').textContent = 'نیا Live Session';
+    openModal('liveSessionModal');
+  };
+
+  async function populateLiveSessionCourseOptions(selectedId) {
+    const sel = document.getElementById('liveSessionCourse');
+    if (!sel) return;
+    const { data, error } = await sb.from('courses').select('id, title').order('title', { ascending: true });
+    if (error) { sel.innerHTML = '<option value="">Courses لوڈ نہیں ہو سکے</option>'; return; }
+    sel.innerHTML = (data || []).map(c => `<option value="${c.id}">${sanitize(c.title)}</option>`).join('');
+    if (selectedId) sel.value = selectedId;
+  }
+
+  window.editLiveSession = async function(id) {
+    const { data: s, error } = await sb.from('course_live_sessions').select('*').eq('id', id).single();
+    if (error || !s) { showToast('Live Session نہیں ملا: ' + (error?.message || ''), 'error'); return; }
+    await populateLiveSessionCourseOptions(s.course_id);
+    document.getElementById('liveSessionEditId').value = s.id;
+    document.getElementById('liveSessionModalTitle').textContent = 'Live Session میں ترمیم';
+    document.getElementById('liveSessionTitle').value = s.title || '';
+    document.getElementById('liveSessionMeetLink').value = s.meet_link || '';
+    if (s.scheduled_at) {
+      const d = new Date(s.scheduled_at);
+      const pad = n => String(n).padStart(2, '0');
+      document.getElementById('liveSessionScheduledAt').value =
+        `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    document.getElementById('liveSessionDuration').value = s.duration_minutes || '';
+    document.getElementById('liveSessionStatus').value = s.status || 'upcoming';
+    document.getElementById('liveSessionRecordingUrl').value = s.recording_url || '';
+    document.getElementById('liveSessionNotes').value = s.notes || '';
+    openModal('liveSessionModal');
+  };
+
+  window.deleteLiveSession = async function(id) {
+    if (!confirm('کیا یہ Live Session حذف کرنا چاہتے ہیں؟')) return;
+    const { data, error } = await sb.from('course_live_sessions').delete().eq('id', id).select('id');
+    if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('حذف نہیں ہو سکا — اجازت موجود نہیں۔', 'error'); return; }
+    showToast('Live Session حذف کر دیا گیا۔');
+    loadLiveSessionsAdmin();
+  };
+
+  window.loadLiveSessionsAdmin = async function() {
+    const tbody = document.getElementById('liveSessionsAdminBody');
+    if (!tbody || !sb) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+
+    const { data, error } = await sb
+      .from('course_live_sessions')
+      .select('id, title, scheduled_at, status, recording_url, courses(title)')
+      .order('scheduled_at', { ascending: false });
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">لوڈ ناکام: ${sanitize(error.message)}</td></tr>`;
+      return;
+    }
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Live Session نہیں ملا۔</td></tr>';
+      return;
+    }
+
+    const statusLabel = { upcoming: 'Upcoming', live: 'Live', ended: 'Ended', cancelled: 'Cancelled' };
+    const statusClass = { upcoming: 'sp-pending', live: 'sp-active', ended: 'sp-listed', cancelled: 'sp-listed' };
+
+    tbody.innerHTML = data.map(s => {
+      const st = s.status || 'upcoming';
+      const when = s.scheduled_at ? new Date(s.scheduled_at).toLocaleString() : '—';
+      return `
+        <tr>
+          <td>${sanitize(s.courses ? s.courses.title : '—')}</td>
+          <td style="font-weight:600;">${sanitize(s.title || '—')}</td>
+          <td>${sanitize(when)}</td>
+          <td><span class="status-pill ${statusClass[st] || 'sp-pending'}">${statusLabel[st] || st}</span></td>
+          <td>${s.recording_url ? '<i class="fas fa-check" style="color:#1e8e5a;"></i>' : '<span style="color:var(--muted);">—</span>'}</td>
+          <td>
+            <button onclick="editLiveSession('${s.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
+            <button onclick="deleteLiveSession('${s.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
+          </td>
+        </tr>`;
+    }).join('');
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('liveSessionForm', async frm => {
+    const editId = frm.querySelector('#liveSessionEditId').value;
+    const course_id = frm.querySelector('#liveSessionCourse').value;
+    const title = frm.querySelector('#liveSessionTitle').value.trim();
+    const meet_link = frm.querySelector('#liveSessionMeetLink').value.trim();
+    const scheduledLocal = frm.querySelector('#liveSessionScheduledAt').value;
+    const duration_minutes = parseInt(frm.querySelector('#liveSessionDuration').value, 10) || null;
+    const status = frm.querySelector('#liveSessionStatus').value;
+    const recording_url = frm.querySelector('#liveSessionRecordingUrl').value.trim() || null;
+    const notes = frm.querySelector('#liveSessionNotes').value.trim() || null;
+
+    if (!course_id) { showToast('براہ کرم Course منتخب کریں', 'error'); return; }
+    if (!title) { showToast('براہ کرم عنوان درج کریں', 'error'); return; }
+    if (!meet_link) { showToast('براہ کرم Google Meet لنک درج کریں', 'error'); return; }
+    if (!scheduledLocal) { showToast('براہ کرم تاریخ و وقت منتخب کریں', 'error'); return; }
+
+    const payload = {
+      course_id, title, meet_link,
+      scheduled_at: new Date(scheduledLocal).toISOString(),
+      duration_minutes, status, recording_url, notes
+    };
+
+    let error;
+    if (editId) {
+      ({ error } = await sb.from('course_live_sessions').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await sb.from('course_live_sessions').insert(payload));
+    }
+
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+
+    showToast('✓ Live Session محفوظ ہو گیا!');
+    closeModal('liveSessionModal');
+    loadLiveSessionsAdmin();
+  }));
+
+  /* ── Admin: Platform Settings (general WhatsApp group) ── */
+  window.loadPlatformSettingsAdmin = async function() {
+    const input = document.getElementById('generalWhatsappLink');
+    if (!input || !sb) return;
+    const { data, error } = await sb.from('platform_settings').select('general_whatsapp_link').eq('id', 1).maybeSingle();
+    if (!error && data) input.value = data.general_whatsapp_link || '';
+  };
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('platformSettingsForm', async frm => {
+    const general_whatsapp_link = frm.querySelector('#generalWhatsappLink').value.trim() || null;
+    const { error } = await sb.from('platform_settings').update({ general_whatsapp_link }).eq('id', 1);
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('✓ محفوظ ہو گیا!');
   }));
 
   /* ── Event Attendance (Admin view) ── */
@@ -10162,7 +10385,7 @@ select.form-input {
 
     const { data: enrollments, error } = await sb
       .from('course_enrollments')
-      .select('id, course_id, status, payment_status, enrolled_at, courses(id, title, slug, level, duration_label)')
+      .select('id, course_id, status, payment_status, enrolled_at, courses(id, title, slug, level, duration_label, whatsapp_group_link)')
       .eq('member_id', userId)
       .order('enrolled_at', { ascending: false });
 
@@ -10211,7 +10434,40 @@ select.form-input {
       console.warn('SHAOOR LMS: lesson_progress unavailable for My Learning', e);
     }
 
-    container.innerHTML = enrollments.map(function (e) {
+    // Live classes (Google Meet) for actively enrolled courses — RLS already restricts
+    // rows to sessions belonging to courses the member is actively enrolled in.
+    var liveSessionsByCourse = {};
+    try {
+      var liveRes = await sb
+        .from('course_live_sessions')
+        .select('id, course_id, title, meet_link, scheduled_at, status, recording_url')
+        .in('course_id', courseIds)
+        .order('scheduled_at', { ascending: true });
+      (liveRes.data || []).forEach(function (s) {
+        if (!liveSessionsByCourse[s.course_id]) liveSessionsByCourse[s.course_id] = [];
+        liveSessionsByCourse[s.course_id].push(s);
+      });
+    } catch (e) {
+      console.warn('SHAOOR LMS: could not load live sessions for My Learning', e);
+    }
+
+    // Platform-wide general WhatsApp group (shown once, above the course list).
+    var generalWhatsappLink = null;
+    try {
+      var settingsRes = await sb.from('platform_settings').select('general_whatsapp_link').eq('id', 1).maybeSingle();
+      generalWhatsappLink = settingsRes.data ? settingsRes.data.general_whatsapp_link : null;
+    } catch (e) {
+      console.warn('SHAOOR LMS: could not load platform settings for My Learning', e);
+    }
+
+    var generalWhatsappHtml = generalWhatsappLink
+      ? '<div style="padding:.8rem 1rem;border:1px solid var(--border);border-radius:10px;margin-bottom:.9rem;background:#e9fbf1;display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;">' +
+        '<span style="font-size:.85rem;"><i class="fab fa-whatsapp" style="color:#1e8e5a;"></i> Learning Academy کے عمومی WhatsApp Group میں شامل ہوں</span>' +
+        '<a href="' + generalWhatsappLink + '" target="_blank" rel="noopener" class="btn btn-outline" style="padding:.35rem .8rem;font-size:.78rem;">Join Group</a>' +
+        '</div>'
+      : '';
+
+    container.innerHTML = generalWhatsappHtml + enrollments.map(function (e) {
       var course = e.courses || {};
       var total = totalLessonCountByCourse[e.course_id] || 0;
       var completed = completedCountByCourse[e.course_id] || 0;
@@ -10224,6 +10480,33 @@ select.form-input {
       else { statusLabel = 'ACTIVE'; statusColor = '#0B1F33'; }
 
       var actionLabel = (e.status === 'pending') ? 'View Course' : 'Continue Learning';
+
+      // Live classes: show the next upcoming/live session, and list any past sessions with a recording.
+      var sessions = liveSessionsByCourse[e.course_id] || [];
+      var upcoming = sessions.filter(function (s) { return s.status === 'upcoming' || s.status === 'live'; })[0];
+      var pastWithRecording = sessions.filter(function (s) { return s.status === 'ended' && s.recording_url; });
+
+      var liveHtml = '';
+      if (upcoming) {
+        var whenStr = upcoming.scheduled_at ? new Date(upcoming.scheduled_at).toLocaleString() : '—';
+        var isLive = upcoming.status === 'live';
+        liveHtml += '<div style="margin-top:.7rem;padding:.6rem .8rem;border-radius:8px;background:' + (isLive ? '#fff4e5' : '#eef4ff') + ';font-size:.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;">' +
+          '<span><i class="fas fa-video" style="color:' + (isLive ? '#c98a1e' : '#2b5cad') + ';"></i> ' + sanitize(upcoming.title) + (isLive ? ' — ابھی جاری ہے' : ' — ' + whenStr) + '</span>' +
+          '<a href="' + upcoming.meet_link + '" target="_blank" rel="noopener" class="btn btn-gold" style="padding:.3rem .7rem;font-size:.75rem;">' + (isLive ? 'Join Now' : 'Meet Link') + '</a>' +
+          '</div>';
+      }
+      if (pastWithRecording.length) {
+        liveHtml += pastWithRecording.map(function (s) {
+          return '<div style="margin-top:.5rem;padding:.6rem .8rem;border-radius:8px;background:#f5f5f5;font-size:.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;">' +
+            '<span><i class="fas fa-play-circle" style="color:var(--muted);"></i> ' + sanitize(s.title) + ' — ریکارڈنگ دستیاب</span>' +
+            '<a href="' + s.recording_url + '" target="_blank" rel="noopener" class="btn btn-outline" style="padding:.3rem .7rem;font-size:.75rem;">Watch Recording</a>' +
+            '</div>';
+        }).join('');
+      }
+
+      var courseWhatsappHtml = course.whatsapp_group_link
+        ? '<div style="margin-top:.5rem;font-size:.78rem;"><i class="fab fa-whatsapp" style="color:#1e8e5a;"></i> <a href="' + course.whatsapp_group_link + '" target="_blank" rel="noopener">اس کورس کے WhatsApp Group میں شامل ہوں</a></div>'
+        : '';
 
       return '<div style="padding:.9rem 1rem;border:1px solid var(--border);border-radius:10px;">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;">' +
@@ -10238,6 +10521,8 @@ select.form-input {
             '<div style="width:' + pct + '%;background:var(--gold);height:100%;"></div>' +
             '</div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem;">' + pct + '% complete (' + completed + '/' + total + ' lessons)</div>'
           : '') +
+        liveHtml +
+        courseWhatsappHtml +
         '<button class="btn btn-outline" style="margin-top:.7rem;padding:.35rem .8rem;font-size:.78rem;" onclick="closeModal(\'memberDash\');showCourseDetail(\'' + (course.slug || '') + '\');">' + actionLabel + '</button>' +
         '</div>';
     }).join('');
@@ -10936,7 +11221,7 @@ select.form-input {
     if (id === 'gallery') loadGalleryAdmin();
     if (id === 'media') loadMediaLinksAdmin();
     if (id === 'events') loadEventsAdmin();
-    if (id === 'learning') loadCoursesAdmin();
+    if (id === 'learning') { loadCoursesAdmin(); loadEnrollmentsAdmin(); loadLiveSessionsAdmin(); loadPlatformSettingsAdmin(); }
     if (id === 'analytics') loadAnalyticsAdmin();
   }
 
