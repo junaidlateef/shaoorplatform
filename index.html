@@ -6575,7 +6575,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('societyModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="societyForm">
+      <form class="modal-form" id="societyForm" novalidate>
         <input type="hidden" id="societyEditId" value="" />
         <div class="form-group">
           <label for="societyName">Society کا نام</label>
@@ -6678,7 +6678,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('courseModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="courseForm">
+      <form class="modal-form" id="courseForm" novalidate>
         <input type="hidden" id="courseEditId" value="" />
         <input type="hidden" id="courseExistingThumbUrl" value="" />
 
@@ -6825,7 +6825,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('moduleModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="moduleForm">
+      <form class="modal-form" id="moduleForm" novalidate>
         <input type="hidden" id="moduleEditId" value="" />
         <div class="form-group">
           <label for="moduleTitleInput">Module کا عنوان *</label>
@@ -6881,7 +6881,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('lessonModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="lessonForm">
+      <form class="modal-form" id="lessonForm" novalidate>
         <input type="hidden" id="lessonEditId" value="" />
         <div class="form-group">
           <label for="lessonTitleInput">Lesson کا عنوان *</label>
@@ -6938,7 +6938,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('quizModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="quizForm">
+      <form class="modal-form" id="quizForm" novalidate>
         <input type="hidden" id="quizEditId" value="" />
         <div class="form-group">
           <label for="quizTitleInput">Quiz کا عنوان</label>
@@ -6977,7 +6977,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('finalAssessmentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="finalAssessmentForm">
+      <form class="modal-form" id="finalAssessmentForm" novalidate>
         <input type="hidden" id="finalAssessmentEditId" value="" />
         <div class="form-group">
           <label for="faTitleInput">عنوان</label>
@@ -7041,7 +7041,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('questionModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="questionForm">
+      <form class="modal-form" id="questionForm" novalidate>
         <input type="hidden" id="questionEditId" value="" />
         <div class="form-group">
           <label for="questionTextInput">سوال کا متن *</label>
@@ -7085,7 +7085,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('liveSessionModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="liveSessionForm">
+      <form class="modal-form" id="liveSessionForm" novalidate>
         <input type="hidden" id="liveSessionEditId" value="" />
         <div class="form-group">
           <label for="liveSessionCourse">Course *</label>
@@ -7137,7 +7137,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('eventModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="eventForm">
+      <form class="modal-form" id="eventForm" novalidate>
         <input type="hidden" id="eventEditId" value="" />
         <input type="hidden" id="eventExistingImageUrl" value="" />
 
@@ -7221,7 +7221,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('mediaLinkModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="mediaLinkForm">
+      <form class="modal-form" id="mediaLinkForm" novalidate>
         <input type="hidden" id="mlEditId" value="" />
         <div class="form-group">
           <label for="mlPlatform">Platform *</label>
@@ -7261,7 +7261,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('blogModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="blogForm">
+      <form class="modal-form" id="blogForm" novalidate>
         <input type="hidden" id="blogEditId" value="" />
         <input type="hidden" id="blogExistingImageUrl" value="" />
 
@@ -7315,7 +7315,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('chapterModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <form class="modal-form" id="chapterForm">
+      <form class="modal-form" id="chapterForm" novalidate>
         <input type="hidden" id="chapterEditId" value="" />
         <div class="form-group">
           <label for="chapterName">Chapter کا نام</label>
@@ -10346,15 +10346,24 @@ select.form-input {
         if (inp.type === 'file') return; // file inputs' value cannot be reassigned — attempting to throws and silently blocks submission
         inp.value = sanitize(inp.value);
 
+        // Required-field check — forms now use novalidate, so this replaces native
+        // browser validation (which some sandboxed/preview iframes render invisibly,
+        // making the form look like it silently does nothing on submit).
+        if (inp.hasAttribute('required') && inp.type !== 'file' && !inp.value.trim()) {
+          inp.style.borderColor = 'var(--ruby)';
+          valid = false;
+        }
+
         // Email validation
         if (inp.type === 'email' && inp.value && !isValidEmail(inp.value)) {
           inp.style.borderColor = 'var(--ruby)';
           valid = false;
           showToast('درست ای میل درج کریں', 'error');
-        } else {
+        } else if (inp.value.trim() || !inp.hasAttribute('required')) {
           inp.style.borderColor = '';
         }
       });
+      if (!valid) showToast('براہ کرم تمام لازمی خانے (*) پُر کریں', 'error');
 
       if (valid) {
         // Any error thrown inside onSuccess — sync or from a rejected async/await
