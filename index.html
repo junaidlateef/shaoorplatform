@@ -6000,6 +6000,7 @@ select.form-input {
     let lmsPassedModuleQuizIds = new Set(); // quiz_id set the user has already passed
     let lmsCurrentFinalAssessment = null; // {id, title, assessment_type, passing_score, attempt_limit}
     let lmsFinalQuestions = [];
+    let lmsCurrentEnrollmentId = null; // this member's course_enrollments.id for the open course — required by lesson_progress (NOT NULL enrollment_id)
 
     function renderModules(modules, lessons) {
       var container = document.getElementById('cdModules');
@@ -6092,13 +6093,15 @@ select.form-input {
 
         var enrollRes = await sb
           .from('course_enrollments')
-          .select('status')
+          .select('id, status')
           .eq('course_id', course.id)
           .eq('member_id', user.id)
           .maybeSingle();
 
+        lmsCurrentEnrollmentId = null;
         if (enrollRes.data && (enrollRes.data.status === 'active' || enrollRes.data.status === 'completed')) {
           lmsEnrollmentActive = true;
+          lmsCurrentEnrollmentId = enrollRes.data.id;
         }
 
         if (lmsEnrollmentActive) {
@@ -6229,20 +6232,34 @@ select.form-input {
       var user = userRes.data ? userRes.data.user : null;
       if (!user) { alert('Please sign in to track your lesson progress.'); return; }
 
+      if (!lmsCurrentEnrollmentId) {
+        alert('You need an active enrollment in this course before progress can be tracked. Please enroll first.');
+        return;
+      }
+      var currentLesson = lmsAllLessons.find(function (l) { return l.id === lmsCurrentLessonId; });
+      if (!currentLesson || !currentLesson.module_id) {
+        alert('Could not determine this lesson\'s module. Please refresh the page and try again.');
+        return;
+      }
+
       var btn = document.getElementById('lmsMarkCompleteBtn');
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
 
       try {
+        // lesson_progress requires enrollment_id + module_id (both NOT NULL), and its real
+        // UNIQUE constraint is (enrollment_id, lesson_id) — not (course_id, lesson_id, member_id).
         var upsertRes = await sb
           .from('lesson_progress')
           .upsert({
+            enrollment_id: lmsCurrentEnrollmentId,
             course_id: lmsCurrentCourse.id,
+            module_id: currentLesson.module_id,
             lesson_id: lmsCurrentLessonId,
             member_id: user.id,
             status: 'completed',
             completed_at: new Date().toISOString()
-          }, { onConflict: 'course_id,lesson_id,member_id' });
+          }, { onConflict: 'enrollment_id,lesson_id' });
 
         if (upsertRes.error) {
           console.error('SHAOOR LMS: could not save lesson progress', upsertRes.error);
