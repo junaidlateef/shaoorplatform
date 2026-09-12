@@ -4639,7 +4639,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('cabinet',this);loadCentralCabinetAdmin();"><i class="fas fa-crown"></i> Central Cabinet</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('learning',this);loadCoursesAdmin();"><i class="fas fa-graduation-cap"></i> Learning Academy</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('learning',this);loadCoursesAdmin();loadEnrollmentsAdmin();"><i class="fas fa-graduation-cap"></i> Learning Academy</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
       <button class="admin-nav-btn" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
       <button class="admin-nav-btn" onclick="switchDashTab('analytics',this);loadAnalyticsAdmin();"><i class="fas fa-chart-line"></i> Analytics</button>
@@ -4821,6 +4821,26 @@ select.form-input {
             <thead><tr><th>Title</th><th>Category</th><th>Level</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="coursesAdminBody">
               <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Courses لوڈ ہو رہے ہیں…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:2rem 0 1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Course Enrollments</h3>
+          <select id="enrollFilterStatus" class="form-input" style="width:auto;font-size:.82rem;" onchange="loadEnrollmentsAdmin()">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="enrollmentsAdminTable">
+            <thead><tr><th>Member</th><th>Course</th><th>Status</th><th>Payment</th><th>Enrolled On</th><th>Actions</th></tr></thead>
+            <tbody id="enrollmentsAdminBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Enrollments لوڈ ہو رہے ہیں…</td></tr>
             </tbody>
           </table>
         </div>
@@ -9945,6 +9965,111 @@ select.form-input {
     if (error) { showToast('منسوخ نہیں ہو سکا: ' + error.message, 'error'); return; }
     showToast('سرٹیفکیٹ منسوخ کر دیا گیا۔');
     loadCertificatesAdmin();
+  }
+
+  /* ── Admin: Course Enrollments management (Learning Academy) ── */
+  function enrollStatusColor(status) {
+    switch (status) {
+      case 'active': return { bg: '#16a34a', label: 'Active' };
+      case 'completed': return { bg: 'var(--gold, #c9a44c)', label: 'Completed' };
+      case 'pending': return { bg: '#f59e0b', label: 'Pending' };
+      case 'cancelled': return { bg: '#6b7280', label: 'Cancelled' };
+      case 'suspended': return { bg: 'var(--ruby, #ef4444)', label: 'Suspended' };
+      default: return { bg: '#6b7280', label: status || '—' };
+    }
+  }
+
+  async function loadEnrollmentsAdmin() {
+    const tbody = document.getElementById('enrollmentsAdminBody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Enrollments لوڈ ہو رہے ہیں…</td></tr>';
+
+    const filterStatus = document.getElementById('enrollFilterStatus')?.value || '';
+
+    let query = sb
+      .from('course_enrollments')
+      .select('id, member_id, course_id, status, payment_status, created_at, courses(title), profiles(full_name, member_id)')
+      .order('created_at', { ascending: false });
+    if (filterStatus) query = query.eq('status', filterStatus);
+
+    const { data: rows, error } = await query;
+
+    if (error) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">Failed to load: ' + sanitize(error.message) + '</td></tr>';
+      return;
+    }
+
+    if (!rows || rows.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">No enrollments found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(function (r) {
+      const sc = enrollStatusColor(r.status);
+      const memberLabel = r.profiles ? (r.profiles.full_name + ' (' + r.profiles.member_id + ')') : r.member_id;
+      const courseLabel = r.courses ? r.courses.title : r.course_id;
+      const enrolledOn = r.created_at ? new Date(r.created_at).toLocaleDateString() : '—';
+      var actions = '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewEnrollment(\'' + r.id + '\')">View</button>';
+      if (r.status === 'pending') {
+        actions += ' <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#16a34a;" onclick="approveEnrollment(\'' + r.id + '\')">Approve</button>';
+      }
+      if (r.status === 'active' || r.status === 'pending') {
+        actions += ' <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:#6b7280;" onclick="suspendEnrollment(\'' + r.id + '\')">Suspend</button>';
+      }
+      actions += ' <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteEnrollment(\'' + r.id + '\')"><i class="fas fa-trash"></i></button>';
+      return '<tr>' +
+        '<td>' + sanitize(memberLabel) + '</td>' +
+        '<td>' + sanitize(courseLabel) + '</td>' +
+        '<td><span class="status-pill" style="background:' + sc.bg + ';color:#fff;">' + sc.label + '</span></td>' +
+        '<td style="text-transform:capitalize;">' + sanitize(r.payment_status || '—') + '</td>' +
+        '<td>' + enrolledOn + '</td>' +
+        '<td style="display:flex;gap:.4rem;flex-wrap:wrap;">' + actions + '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  function viewEnrollment(id) {
+    // Simple detail view for now — full modal can be added later if needed.
+    sb.from('course_enrollments')
+      .select('id, status, payment_status, progress_percent, created_at, courses(title), profiles(full_name, member_id)')
+      .eq('id', id)
+      .single()
+      .then(function (res) {
+        if (res.error || !res.data) { showToast('Could not load enrollment', 'error'); return; }
+        var e = res.data;
+        alert(
+          'Member: ' + (e.profiles ? e.profiles.full_name + ' (' + e.profiles.member_id + ')' : '—') + '\n' +
+          'Course: ' + (e.courses ? e.courses.title : '—') + '\n' +
+          'Status: ' + e.status + '\n' +
+          'Payment: ' + (e.payment_status || '—') + '\n' +
+          'Progress: ' + (e.progress_percent || 0) + '%\n' +
+          'Enrolled: ' + new Date(e.created_at).toLocaleString()
+        );
+      });
+  }
+
+  async function approveEnrollment(id) {
+    const { error } = await sb.from('course_enrollments').update({ status: 'active', payment_status: 'paid' }).eq('id', id);
+    if (error) { showToast('منظوری ناکام: ' + error.message, 'error'); return; }
+    showToast('✓ Enrollment approved');
+    loadEnrollmentsAdmin();
+  }
+
+  async function suspendEnrollment(id) {
+    if (!confirm('Suspend this enrollment? The student will lose access until reactivated.')) return;
+    const { error } = await sb.from('course_enrollments').update({ status: 'suspended' }).eq('id', id);
+    if (error) { showToast('ناکام: ' + error.message, 'error'); return; }
+    showToast('Enrollment suspended');
+    loadEnrollmentsAdmin();
+  }
+
+  async function deleteEnrollment(id) {
+    if (!confirm('Permanently delete this enrollment? This cannot be undone — the student will need to re-enroll.')) return;
+    const { data, error } = await sb.from('course_enrollments').delete().eq('id', id).select('id');
+    if (error) { showToast('حذف ناکام: ' + error.message, 'error'); return; }
+    if (!data || data.length === 0) { showToast('حذف ناکام — RLS permission missing', 'error'); return; }
+    showToast('Enrollment deleted');
+    loadEnrollmentsAdmin();
   }
 
 
