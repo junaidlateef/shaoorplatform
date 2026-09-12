@@ -20,11 +20,11 @@
   <!-- ══ SECURITY HEADERS ══ -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' https:;
-             script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net;
+             script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdn.vercel-insights.com;
              style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com;
              img-src 'self' data: https://images.unsplash.com https://aerbvhslbdstmmrbvwvo.supabase.co;
              font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
-             connect-src 'self' https://aerbvhslbdstmmrbvwvo.supabase.co;
+             connect-src 'self' https://aerbvhslbdstmmrbvwvo.supabase.co https://vitals.vercel-insights.com;
              form-action 'self' https://docs.google.com https://forms.gle;
              frame-ancestors 'none';">
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -13698,5 +13698,7 @@ select.form-input {
       .admin-shell { grid-template-columns: 1fr !important; }
     }
   </style>
+  <!-- Vercel Web Analytics -->
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 </body>
 </html>
