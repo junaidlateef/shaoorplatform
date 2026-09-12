@@ -5303,6 +5303,7 @@ select.form-input {
           <div class="lms-detail-section">
             <h3>Course Content</h3>
             <div id="cdModules"><p style="color:#888;font-size:.85rem;">Modules will be published here as they are added.</p></div>
+            <div id="cdFinalAssessmentRow" style="display:none;"></div>
           </div>
 
           <div class="lms-detail-section lms-lesson-player" id="lmsLessonPlayer">
@@ -5327,6 +5328,22 @@ select.form-input {
             <div class="lms-player-nav">
               <button class="btn btn-outline" onclick="closeQuizPanel();"><i class="fas fa-arrow-left"></i> Back to Course</button>
               <button class="btn btn-gold" id="lmsQuizSubmitBtn" onclick="submitQuiz();"><i class="fas fa-paper-plane"></i> Submit Quiz</button>
+            </div>
+          </div>
+
+          <div class="lms-detail-section lms-quiz-panel" id="lmsFinalPanel">
+            <h3 id="lmsFinalTitle">Final Assessment</h3>
+            <p id="lmsFinalMeta" style="font-size:.82rem;color:#888;"></p>
+            <div id="lmsFinalResult"></div>
+            <div id="lmsFinalMcqQuestions"></div>
+            <div id="lmsFinalSubmissionForm" style="display:none;">
+              <textarea id="lmsFinalTextContent" class="form-input" rows="8" placeholder="Write your submission here…" style="width:100%;margin-bottom:.8rem;"></textarea>
+              <input type="url" id="lmsFinalFileUrl" class="form-input" placeholder="Link to your file (Google Drive, etc.) — optional" style="width:100%;margin-bottom:.8rem;" />
+              <p style="font-size:.78rem;color:#888;">Your submission will be reviewed by an administrator. You'll see the result in My Learning once reviewed.</p>
+            </div>
+            <div class="lms-player-nav">
+              <button class="btn btn-outline" onclick="closeFinalPanel();"><i class="fas fa-arrow-left"></i> Back to Course</button>
+              <button class="btn btn-gold" id="lmsFinalSubmitBtn" onclick="submitFinalAssessment();"><i class="fas fa-paper-plane"></i> Submit</button>
             </div>
           </div>
         </div>
@@ -5420,7 +5437,22 @@ select.form-input {
         }
         lmsCurrentModuleQuizzes = lmsModuleQuizzes;
 
+        // Final assessment (Phase 9) — course-level, not module-level. Missing table = hidden section.
+        lmsCurrentFinalAssessment = null;
+        try {
+          var finalRes = await sb
+            .from('course_assessments')
+            .select('id, title, assessment_type, passing_score, attempt_limit, status')
+            .eq('course_id', course.id)
+            .eq('status', 'published')
+            .maybeSingle();
+          if (finalRes.data) lmsCurrentFinalAssessment = finalRes.data;
+        } catch (e) {
+          console.warn('SHAOOR LMS: course_assessments table unavailable', e);
+        }
+
         document.getElementById('lmsLessonPlayer').classList.remove('active');
+        document.getElementById('lmsFinalPanel').classList.remove('active');
         lmsCurrentLessonId = null;
 
         if (modules.length) {
@@ -5439,6 +5471,7 @@ select.form-input {
         } else {
           document.getElementById('cdLessonCount').textContent = '0';
         }
+        renderFinalAssessmentRow(); // Phase 9 — shown/locked based on course completion state
         // Reflect existing enrollment status on the button, if any.
         await refreshEnrollButtonState();
       } catch (e) {
@@ -5634,6 +5667,7 @@ select.form-input {
       if (passed) {
         lmsPassedModuleQuizIds.add(lmsCurrentQuiz.id);
         renderModules(lmsCurrentModules, lmsAllLessons); // unlock next module's lessons in the sidebar
+        renderFinalAssessmentRow(); // may now be eligible if this was the last module quiz
       }
     }
 
@@ -5641,6 +5675,207 @@ select.form-input {
       document.getElementById('lmsQuizPanel').classList.remove('active');
       lmsCurrentQuiz = null;
       lmsQuizQuestions = [];
+    }
+
+    /* ── PHASE 9: final assessment (course-level, MCQ or written/file submission) ── */
+
+    // All lessons complete + all module quizzes (if any) passed = eligible for the final assessment.
+    function isCourseReadyForFinalAssessment() {
+      if (!lmsAllLessons.length) return false;
+      var allLessonsDone = lmsAllLessons.every(function (l) { return lmsCompletedLessonIds.has(l.id); });
+      if (!allLessonsDone) return false;
+      var allQuizzesPassed = Object.keys(lmsCurrentModuleQuizzes).every(function (moduleId) {
+        return lmsPassedModuleQuizIds.has(lmsCurrentModuleQuizzes[moduleId].id);
+      });
+      return allQuizzesPassed;
+    }
+
+    function renderFinalAssessmentRow() {
+      var wrap = document.getElementById('cdFinalAssessmentRow');
+      if (!lmsCurrentFinalAssessment) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+
+      var ready = lmsEnrollmentActive && isCourseReadyForFinalAssessment();
+      var rowClass = 'lms-lesson-row' + (ready ? '' : ' locked');
+      wrap.style.display = '';
+      wrap.innerHTML = '<div class="' + rowClass + '" onclick="' +
+        (ready ? 'openFinalAssessment();' : 'alert(\'Complete all lessons and module quizzes to unlock the final assessment.\');') + '">' +
+        '<span class="lms-lesson-icon"><i class="fas ' + (ready ? 'fa-flag-checkered' : 'fa-lock') + '"></i></span>' +
+        '<span class="lms-lesson-title">' + (lmsCurrentFinalAssessment.title || 'Final Assessment') + ' <span class="lms-quiz-badge"><i class="fas fa-award"></i> Final Assessment</span></span>' +
+        '<span class="lms-lesson-status">' + (ready ? 'Available' : 'Locked') + '</span>' +
+        '</div>';
+    }
+
+    async function openFinalAssessment() {
+      if (!lmsCurrentFinalAssessment) return;
+      document.getElementById('lmsLessonPlayer').classList.remove('active');
+      document.getElementById('lmsQuizPanel').classList.remove('active');
+      var panel = document.getElementById('lmsFinalPanel');
+      panel.classList.add('active');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      document.getElementById('lmsFinalTitle').textContent = lmsCurrentFinalAssessment.title || 'Final Assessment';
+      document.getElementById('lmsFinalResult').innerHTML = '';
+      document.getElementById('lmsFinalSubmitBtn').style.display = '';
+      document.getElementById('lmsFinalSubmitBtn').disabled = false;
+      document.getElementById('lmsFinalSubmitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+
+      var mcqWrap = document.getElementById('lmsFinalMcqQuestions');
+      var submissionWrap = document.getElementById('lmsFinalSubmissionForm');
+
+      if (lmsCurrentFinalAssessment.assessment_type === 'mcq') {
+        submissionWrap.style.display = 'none';
+        mcqWrap.style.display = '';
+        document.getElementById('lmsFinalMeta').textContent =
+          'Passing score: ' + lmsCurrentFinalAssessment.passing_score + '%' +
+          (lmsCurrentFinalAssessment.attempt_limit ? ' · Attempts allowed: ' + lmsCurrentFinalAssessment.attempt_limit : '');
+
+        mcqWrap.innerHTML = '<p style="color:#888;font-size:.85rem;">Loading assessment…</p>';
+        var qRes = await sb
+          .from('assessment_questions')
+          .select('id, question_text, question_type, options, marks, question_order')
+          .eq('assessment_id', lmsCurrentFinalAssessment.id)
+          .order('question_order', { ascending: true });
+        lmsFinalQuestions = qRes.data || [];
+        renderFinalMcqQuestions();
+      } else {
+        mcqWrap.style.display = 'none';
+        mcqWrap.innerHTML = '';
+        submissionWrap.style.display = '';
+        document.getElementById('lmsFinalMeta').textContent = 'Written / file submission — reviewed by an administrator.';
+        document.getElementById('lmsFinalTextContent').value = '';
+        document.getElementById('lmsFinalFileUrl').value = '';
+      }
+    }
+
+    function renderFinalMcqQuestions() {
+      var container = document.getElementById('lmsFinalMcqQuestions');
+      if (!lmsFinalQuestions.length) {
+        container.innerHTML = '<p style="color:#888;font-size:.85rem;">This assessment has no questions yet.</p>';
+        return;
+      }
+      container.innerHTML = lmsFinalQuestions.map(function (q, idx) {
+        var options = Array.isArray(q.options) ? q.options : (q.question_type === 'true_false' ? ['True', 'False'] : []);
+        var optionsHtml = options.map(function (opt) {
+          return '<label class="lms-quiz-option">' +
+            '<input type="radio" name="fq_' + q.id + '" value="' + String(opt).replace(/"/g, '&quot;') + '"> ' + opt +
+            '</label>';
+        }).join('');
+        return '<div class="lms-quiz-question" data-question-id="' + q.id + '">' +
+          '<h4>' + (idx + 1) + '. ' + q.question_text + '</h4>' + optionsHtml +
+          '<div class="lms-quiz-explanation" id="lmsFQExplain_' + q.id + '"></div>' +
+          '</div>';
+      }).join('');
+    }
+
+    async function submitFinalAssessment() {
+      if (!lmsCurrentFinalAssessment) return;
+      var userRes = await sb.auth.getUser();
+      var user = userRes.data ? userRes.data.user : null;
+      if (!user) { alert('Please sign in to submit the final assessment.'); return; }
+
+      var btn = document.getElementById('lmsFinalSubmitBtn');
+
+      if (lmsCurrentFinalAssessment.assessment_type === 'mcq') {
+        var answers = lmsFinalQuestions.map(function (q) {
+          var checked = document.querySelector('input[name="fq_' + q.id + '"]:checked');
+          return { question_id: q.id, selected: checked ? checked.value : null };
+        });
+        if (answers.some(function (a) { return a.selected === null; })) {
+          alert('Please answer every question before submitting.');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+        try {
+          // Scoring happens entirely server-side — see submit_final_assessment_mcq RPC.
+          var res = await sb.rpc('submit_final_assessment_mcq', {
+            p_assessment_id: lmsCurrentFinalAssessment.id,
+            p_answers: answers
+          });
+          if (res.error) {
+            alert(res.error.message || 'Could not submit. Please contact an administrator if this continues.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+            return;
+          }
+          showFinalMcqResult(res.data);
+        } catch (e) {
+          console.error('SHAOOR LMS: final assessment submission failed', e);
+          alert('Could not submit. Please try again.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+        }
+      } else {
+        var textContent = document.getElementById('lmsFinalTextContent').value.trim();
+        var fileUrl = document.getElementById('lmsFinalFileUrl').value.trim();
+        if (!textContent && !fileUrl) {
+          alert('Please write a submission or provide a file link.');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+        try {
+          var insertRes = await sb.from('assessment_submissions').insert({
+            assessment_id: lmsCurrentFinalAssessment.id,
+            member_id: user.id,
+            submission_type: fileUrl ? 'file' : 'text',
+            text_content: textContent || null,
+            file_url: fileUrl || null,
+            review_status: 'pending'
+          });
+          if (insertRes.error) {
+            alert(insertRes.error.message || 'Could not submit. Please contact an administrator if this continues.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+            return;
+          }
+          document.getElementById('lmsFinalResult').innerHTML =
+            '<div class="lms-quiz-result" style="background:#FBF4E4;color:#8a6d1f;">' +
+            '<h3 style="margin:0 0 .3rem;">Submitted</h3>' +
+            '<p style="margin:0;">Your submission has been sent for admin review. Check My Learning for the result.</p>' +
+            '</div>';
+          document.getElementById('lmsFinalSubmissionForm').style.display = 'none';
+          btn.style.display = 'none';
+        } catch (e) {
+          console.error('SHAOOR LMS: final assessment submission failed', e);
+          alert('Could not submit. Please try again.');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit';
+        }
+      }
+    }
+
+    function showFinalMcqResult(result) {
+      var passed = result.passed;
+      document.getElementById('lmsFinalResult').innerHTML =
+        '<div class="lms-quiz-result ' + (passed ? 'pass' : 'fail') + '">' +
+        '<h3 style="margin:0 0 .3rem;">' + (passed ? 'Passed!' : 'Not Passed') + '</h3>' +
+        '<p style="margin:0;">Score: ' + result.score + '% (passing: ' + result.passing_score + '%)</p>' +
+        '<p style="margin:.3rem 0 0;font-size:.8rem;">Attempt ' + result.attempt_number + ' of ' + result.attempt_limit + '</p>' +
+        '</div>';
+
+      (result.details || []).forEach(function (d) {
+        var qDiv = document.querySelector('#lmsFinalMcqQuestions .lms-quiz-question[data-question-id="' + d.question_id + '"]');
+        if (!qDiv) return;
+        qDiv.querySelectorAll('input[type="radio"]').forEach(function (input) {
+          input.disabled = true;
+          var label = input.closest('.lms-quiz-option');
+          if (input.value === d.correct_answer) label.classList.add('correct');
+          else if (input.checked && !d.is_correct) label.classList.add('incorrect');
+        });
+        if (d.explanation) {
+          var expBox = document.getElementById('lmsFQExplain_' + d.question_id);
+          if (expBox) { expBox.textContent = d.explanation; expBox.classList.add('show'); }
+        }
+      });
+
+      document.getElementById('lmsFinalSubmitBtn').style.display = 'none';
+    }
+
+    function closeFinalPanel() {
+      document.getElementById('lmsFinalPanel').classList.remove('active');
     }
     let lmsAllLessons = [];       // flat, ordered list of lessons for the current course
     let lmsCompletedLessonIds = new Set(); // lesson_id set completed by the current user
@@ -5651,6 +5886,8 @@ select.form-input {
     let lmsCurrentQuiz = null;
     let lmsQuizQuestions = [];
     let lmsPassedModuleQuizIds = new Set(); // quiz_id set the user has already passed
+    let lmsCurrentFinalAssessment = null; // {id, title, assessment_type, passing_score, attempt_limit}
+    let lmsFinalQuestions = [];
 
     function renderModules(modules, lessons) {
       var container = document.getElementById('cdModules');
@@ -5881,6 +6118,7 @@ select.form-input {
 
         lmsCompletedLessonIds.add(lmsCurrentLessonId);
         renderModules(lmsCurrentModules, lmsAllLessons); // refresh lock/complete icons in the sidebar list
+        renderFinalAssessmentRow(); // may now be eligible if this was the last lesson
         openLesson(lmsCurrentLessonId); // refresh player button state (Prev/Next/Complete)
       } catch (e) {
         console.error('SHAOOR LMS: unexpected error saving lesson progress', e);
