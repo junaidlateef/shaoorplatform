@@ -5008,6 +5008,17 @@ select.form-input {
             </div>
 
             <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">About Section Image</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandAboutImagePreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandAboutImagePlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
+                <input type="file" id="brandAboutImageInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandAboutImageStatus" style="font-size:.75rem;color:var(--muted);"></span>
+              <span style="display:block;font-size:.7rem;color:var(--muted);margin-top:.2rem;">Separate from the Founder Photo — used only in the "About SHAOOR" section.</span>
+            </div>
+
+            <div>
               <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Signature</label>
               <div style="display:flex;align-items:center;gap:.75rem;">
                 <img id="brandSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
@@ -7953,7 +7964,7 @@ select.form-input {
     <div class="footer-bottom">
       <span>© 2026 SHAOOR | شعور · Sahiwal, Pakistan · All rights reserved.</span>
       <div style="display:flex;gap:1.5rem;">
-        <a href="#" onclick="openAdmin()">Admin Login</a>
+        <a href="#" onclick="openAdmin();return false;">Admin Login</a>
         <a href="#" onclick="openModal('policyModal');return false;">Privacy Policy | رازداری</a>
         <a href="#" onclick="openModal('termsModal');return false;">Terms | شرائط</a>
       </div>
@@ -11132,7 +11143,7 @@ select.form-input {
 
   /* ── Admin: load all certificates into the admin table ── */
   /* ── Branding Assets ── */
-  let brandLogoFile = null, brandSealFile = null, brandSigFile = null, brandFounderPhotoFile = null;
+  let brandLogoFile = null, brandSealFile = null, brandSigFile = null, brandFounderPhotoFile = null, brandAboutImageFile = null;
   let brandingRowId = null;
 
   function setBrandPreview(prefix, url) {
@@ -11181,6 +11192,7 @@ select.form-input {
     setBrandPreview('brandSeal', data.seal_url);
     setBrandPreview('brandSig', data.founder_signature_url);
     setBrandPreview('brandFounderPhoto', data.founder_photo_url);
+    setBrandPreview('brandAboutImage', data.about_image_url);
 
     const note = document.getElementById('brandingSavedNote');
     note.textContent = data.updated_at ? ('آخری بار محفوظ: ' + new Date(data.updated_at).toLocaleString()) : '';
@@ -11207,6 +11219,7 @@ select.form-input {
       ['brandSealInput', 'brandSeal', f => brandSealFile = f],
       ['brandSigInput', 'brandSig', f => brandSigFile = f],
       ['brandFounderPhotoInput', 'brandFounderPhoto', f => brandFounderPhotoFile = f],
+      ['brandAboutImageInput', 'brandAboutImage', f => brandAboutImageFile = f],
     ];
     fileMap.forEach(([inputId, prefix, setFile]) => {
       const input = document.getElementById(inputId);
@@ -11267,6 +11280,7 @@ select.form-input {
       if (brandSealFile) payload.seal_url = await uploadBrandAsset(brandSealFile, 'seal');
       if (brandSigFile) payload.founder_signature_url = await uploadBrandAsset(brandSigFile, 'signature');
       if (brandFounderPhotoFile) payload.founder_photo_url = await uploadBrandAsset(brandFounderPhotoFile, 'founder-photo');
+      if (brandAboutImageFile) payload.about_image_url = await uploadBrandAsset(brandAboutImageFile, 'about-image');
     } catch (err) {
       console.error('Branding asset upload failed:', err);
       showToast('اپلوڈ ناکام: ' + err.message, 'error');
@@ -11282,7 +11296,7 @@ select.form-input {
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
 
-    brandLogoFile = null; brandSealFile = null; brandSigFile = null; brandFounderPhotoFile = null;
+    brandLogoFile = null; brandSealFile = null; brandSigFile = null; brandFounderPhotoFile = null; brandAboutImageFile = null;
     showToast('Branding محفوظ ہو گئی');
     await loadBrandingAdmin();
   }));
@@ -12746,7 +12760,7 @@ select.form-input {
   /* ── Public About + Founder content loader ── */
   window.addEventListener('DOMContentLoaded', async () => {
     try {
-      const { data, error } = await sb.from('brand_settings').select('founder_name, founder_title, founder_bio, founder_quote, founder_photo_url, about_intro, about_para1, about_para2').limit(1).maybeSingle();
+      const { data, error } = await sb.from('brand_settings').select('founder_name, founder_title, founder_bio, founder_quote, founder_photo_url, about_image_url, about_intro, about_para1, about_para2').limit(1).maybeSingle();
       if (error || !data) return;
       const setText = (id, val) => { if (val) { const el = document.getElementById(id); if (el) el.textContent = val; } };
       setText('founderName', data.founder_name);
@@ -12761,10 +12775,11 @@ select.form-input {
         const founderPh = document.getElementById('founderImgPlaceholder');
         if (founderImg) { founderImg.src = data.founder_photo_url; founderImg.style.display = ''; }
         if (founderPh) founderPh.style.display = 'none';
-
+      }
+      if (data.about_image_url) {
         const aboutImg = document.getElementById('aboutImg');
         const aboutPh = document.getElementById('aboutImgPlaceholder');
-        if (aboutImg) { aboutImg.src = data.founder_photo_url; aboutImg.style.display = ''; }
+        if (aboutImg) { aboutImg.src = data.about_image_url; aboutImg.style.display = ''; }
         if (aboutPh) aboutPh.style.display = 'none';
       }
     } catch (e) { console.error('[Public Content] load error:', e); }
