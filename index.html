@@ -5375,6 +5375,11 @@ select.form-input {
             <div class="lms-player-frame" id="lmsPlayerFrameWrap">
               <iframe id="lmsPlayerIframe" src="" title="Lesson video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
+            <p id="lmsPlayerFallbackLink" style="display:none;margin-top:.5rem;text-align:center;">
+              <a href="#" target="_blank" rel="noopener" class="btn btn-outline" style="font-size:.85rem;">
+                <i class="fab fa-youtube"></i> اگر ویڈیو یہاں نظر نہ آئے تو براہِ راست YouTube پر دیکھیں
+              </a>
+            </p>
             <p id="lmsPlayerLessonDesc" style="font-size:.9rem;color:#555;"></p>
             <div id="lmsPlayerLockedMsg" class="lms-locked-msg" style="display:none;"></div>
             <div class="lms-player-nav">
@@ -6143,6 +6148,12 @@ select.form-input {
       return null;
     }
 
+    function ytWatchUrlFromLesson(lesson) {
+      if (lesson.youtube_url) return lesson.youtube_url;
+      if (lesson.youtube_video_id) return 'https://www.youtube.com/watch?v=' + lesson.youtube_video_id;
+      return null;
+    }
+
     function openLesson(lessonId) {
       var lesson = lmsAllLessons.find(function (l) { return l.id === lessonId; });
       if (!lesson) return;
@@ -6157,19 +6168,35 @@ select.form-input {
       document.getElementById('lmsPlayerLessonDesc').textContent = lesson.description || '';
 
       var embedUrl = ytEmbedFromLesson(lesson);
+      var watchUrl = ytWatchUrlFromLesson(lesson);
       var frameWrap = document.getElementById('lmsPlayerFrameWrap');
       var lockedMsg = document.getElementById('lmsPlayerLockedMsg');
       var iframe = document.getElementById('lmsPlayerIframe');
+      var fallbackWrap = document.getElementById('lmsPlayerFallbackLink');
 
       if (embedUrl) {
         frameWrap.style.display = '';
         lockedMsg.style.display = 'none';
         iframe.src = embedUrl;
+        // Embedding restrictions (private video, owner disabled embedding, or the
+        // page being viewed inside a nested/sandboxed iframe) can make the YouTube
+        // player show its own "An error occurred" message with no way for our code
+        // to detect that failure from the outside — a cross-origin iframe never
+        // reports its internal errors to the parent page. So instead of trying to
+        // catch that failure, we always show a direct "watch on YouTube" link as a
+        // guaranteed fallback the student can use no matter what.
+        if (fallbackWrap && watchUrl) {
+          fallbackWrap.style.display = '';
+          fallbackWrap.querySelector('a').href = watchUrl;
+        } else if (fallbackWrap) {
+          fallbackWrap.style.display = 'none';
+        }
       } else {
         frameWrap.style.display = 'none';
         iframe.src = '';
         lockedMsg.style.display = '';
         lockedMsg.textContent = 'Video for this lesson has not been added yet.';
+        if (fallbackWrap) fallbackWrap.style.display = 'none';
       }
 
       var isCompleted = lmsCompletedLessonIds.has(lessonId);
@@ -7071,8 +7098,81 @@ select.form-input {
           <input type="number" id="questionOrderInput" class="form-input" min="0" step="1" placeholder="0" />
         </div>
         <p style="font-size:.78rem;color:var(--muted);">نوٹ: صحیح جواب کبھی بھی طالب علم کو submission سے پہلے نہیں دکھایا جاتا — یہ صرف Admin کے لیے یہاں محفوظ ہوتا ہے۔</p>
-        <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+        <button type="button" id="questionSaveBtn" onclick="saveQuestionDirect()" class="btn btn-gold" style="width:100%;margin-top:.5rem;">محفوظ کریں</button>
+        <p id="questionSaveStatus" style="font-size:.8rem;margin-top:.5rem;"></p>
       </form>
+      <script>
+        // Direct, self-contained save path — completely separate from secureSubmit /
+        // form 'submit' event / rate limiter. type="button" (not "submit") means no
+        // native form submission and no HTML5 required-field validation can ever
+        // block this. Every step reports its own visible status right on the modal,
+        // so nothing can fail silently again.
+        window.saveQuestionDirect = async function () {
+          var statusEl = document.getElementById('questionSaveStatus');
+          var btn = document.getElementById('questionSaveBtn');
+          statusEl.style.color = 'var(--muted)';
+          statusEl.textContent = 'محفوظ ہو رہا ہے…';
+          btn.disabled = true;
+
+          try {
+            if (!lmsAdminQuestionTarget || !lmsAdminQuestionTarget.id) {
+              statusEl.style.color = 'var(--ruby)';
+              statusEl.textContent = 'خرابی: کوئی quiz/assessment منتخب نہیں (lmsAdminQuestionTarget خالی ہے)۔';
+              return;
+            }
+
+            var editId = document.getElementById('questionEditId').value;
+            var question_text = document.getElementById('questionTextInput').value.trim();
+            var question_type = document.getElementById('questionTypeInput').value;
+            var optionsRaw = document.getElementById('questionOptionsInput').value;
+            var options = question_type === 'true_false' ? ['True', 'False'] :
+              optionsRaw.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+            var correct_answer = document.getElementById('questionCorrectInput').value.trim();
+            var marksRaw = document.getElementById('questionMarksInput').value;
+            var marks = parseInt(marksRaw, 10) || 1;
+            var orderVal = document.getElementById('questionOrderInput').value;
+
+            if (!question_text) { statusEl.style.color = 'var(--ruby)'; statusEl.textContent = 'سوال کا متن درج کریں۔'; return; }
+            if (question_type !== 'true_false' && options.length < 2) { statusEl.style.color = 'var(--ruby)'; statusEl.textContent = 'کم از کم دو options درج کریں۔'; return; }
+            if (!correct_answer) { statusEl.style.color = 'var(--ruby)'; statusEl.textContent = 'صحیح جواب درج کریں۔'; return; }
+            if (!options.includes(correct_answer)) { statusEl.style.color = 'var(--ruby)'; statusEl.textContent = 'صحیح جواب لفظ بہ لفظ options میں سے ایک جیسا ہونا چاہیے۔ Options: ' + options.join(' | '); return; }
+
+            var table = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_questions' : 'assessment_questions';
+            var fk = lmsAdminQuestionTarget.kind === 'quiz' ? 'quiz_id' : 'assessment_id';
+            var payload = { question_text: question_text, question_type: question_type, options: options, correct_answer: correct_answer, marks: marks, question_order: orderVal ? parseInt(orderVal, 10) : 0 };
+            payload[fk] = lmsAdminQuestionTarget.id;
+
+            if (!sb) { statusEl.style.color = 'var(--ruby)'; statusEl.textContent = 'خرابی: Supabase client (sb) موجود نہیں۔'; return; }
+
+            var res;
+            if (editId) { res = await sb.from(table).update(payload).eq('id', editId).select('id'); }
+            else { res = await sb.from(table).insert(payload).select('id'); }
+
+            if (res.error) {
+              statusEl.style.color = 'var(--ruby)';
+              statusEl.textContent = 'Supabase error: ' + res.error.message + (res.error.details ? ' | ' + res.error.details : '') + (res.error.hint ? ' | hint: ' + res.error.hint : '');
+              return;
+            }
+            if (!res.data || !res.data.length) {
+              statusEl.style.color = 'var(--ruby)';
+              statusEl.textContent = 'کوئی error نہیں آیا مگر کوئی row بھی واپس نہیں آئی — RLS پالیسی (' + table + ') insert/select کو خاموشی سے روک رہی ہے۔';
+              return;
+            }
+
+            statusEl.style.color = 'var(--teal)';
+            statusEl.textContent = '✓ سوال محفوظ ہو گیا! (id: ' + res.data[0].id + ')';
+            if (typeof showToast === 'function') showToast('✓ سوال محفوظ ہو گیا!');
+            if (typeof loadQuestionsAdmin === 'function') loadQuestionsAdmin();
+            setTimeout(function () { if (typeof closeModal === 'function') closeModal('questionModal'); }, 600);
+          } catch (e) {
+            statusEl.style.color = 'var(--ruby)';
+            statusEl.textContent = 'JS Exception: ' + e.message;
+            console.error('[saveQuestionDirect]', e);
+          } finally {
+            btn.disabled = false;
+          }
+        };
+      </script>
     </div>
   </div>
 </div>
@@ -12516,12 +12616,17 @@ select.form-input {
       const frame = embed
         ? `<iframe src="${embed}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px 12px 0 0;" loading="lazy" allowfullscreen></iframe>`
         : `<div style="width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--cream2);border-radius:12px 12px 0 0;color:var(--muted);">${icon}</div>`;
+      // Facebook's plugin, and a private/embed-disabled YouTube video, can both refuse
+      // to render inside the iframe with no way for us to detect that failure from the
+      // parent page (cross-origin iframes don't report their internal errors back).
+      // So every card also gets a guaranteed, always-visible direct link — this is the
+      // one fallback that works regardless of embedding restrictions.
       return `
         <div class="gallery-item">
           ${frame}
           <div class="gallery-caption">
             <strong>${icon} ${sanitize(item.title)}</strong>
-            <span><a href="${sanitize(item.url)}" target="_blank" rel="noopener" style="color:var(--gold);">اصل پوسٹ دیکھیں <i class="fas fa-external-link-alt"></i></a></span>
+            <span><a href="${sanitize(item.url)}" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700;">اگر یہاں نظر نہ آئے تو براہِ راست ${item.platform === 'youtube' ? 'YouTube' : 'Facebook'} پر دیکھیں <i class="fas fa-external-link-alt"></i></a></span>
           </div>
         </div>`;
     }).join('');
