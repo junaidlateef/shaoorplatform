@@ -5324,7 +5324,7 @@ select.form-input {
     .lms-quiz-panel.active { display:block; }
     .lms-quiz-question { border:1px solid rgba(0,0,0,.08); border-radius:10px; padding:.9rem 1rem; margin-bottom:.8rem; }
     .lms-quiz-question h4 { font-size:.9rem; margin:0 0 .6rem; }
-    .lms-quiz-option { display:flex; align-items:center; gap:.5rem; padding:.4rem .5rem; border-radius:6px; font-size:.85rem; cursor:pointer; }
+    .lms-quiz-option { display:flex; align-items:center; gap:.6rem; padding:.75rem .8rem; min-height:44px; border-radius:6px; font-size:.85rem; cursor:pointer; }
     .lms-quiz-option:hover { background:#F8F5EE; }
     .lms-quiz-option.correct { background:#E7F6EC; }
     .lms-quiz-option.incorrect { background:#FBEAEA; }
@@ -5481,6 +5481,8 @@ select.form-input {
         document.getElementById('cdCertLine').textContent = course.certificate_available
           ? 'Certificate available on completion'
           : 'No certificate for this course';
+
+        applyCourseSeoMeta(course);
 
         renderListItems('cdOutcomes', course.learning_outcomes, 'fa-check-circle');
         renderListItems('cdRequirements', course.requirements, 'fa-info-circle');
@@ -6329,6 +6331,46 @@ select.form-input {
       document.getElementById('courses').style.display = '';
       history.pushState('', document.title, window.location.pathname + window.location.search);
       document.getElementById('courses').scrollIntoView({ behavior: 'smooth' });
+      resetCourseSeoMeta();
+    }
+
+    /* ── SEO meta for course detail pages (Phase 13 addition) ──
+       Published courses may set seo_title / seo_description / seo_og_image;
+       falls back to the course's own title/description/thumbnail, and never
+       touches the tags for unpublished courses (they are excluded by the
+       .eq('status','published') filter in showCourseDetail already). */
+    var lmsDefaultTitle = document.title;
+    var lmsDefaultDescMeta = document.querySelector('meta[name="description"]');
+    var lmsDefaultDesc = lmsDefaultDescMeta ? lmsDefaultDescMeta.getAttribute('content') : '';
+
+    function setMetaTag(attr, key, content) {
+      if (!content) return;
+      var el = document.querySelector('meta[' + attr + '="' + key + '"]');
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    }
+
+    function applyCourseSeoMeta(course) {
+      var title = course.seo_title || course.title || lmsDefaultTitle;
+      var desc = course.seo_description || course.description || lmsDefaultDesc;
+      var image = course.seo_og_image || course.thumbnail_url || '';
+
+      document.title = title;
+      setMetaTag('name', 'description', desc);
+      setMetaTag('property', 'og:title', title);
+      setMetaTag('property', 'og:description', desc);
+      if (image) setMetaTag('property', 'og:image', image);
+    }
+
+    function resetCourseSeoMeta() {
+      document.title = lmsDefaultTitle;
+      setMetaTag('name', 'description', lmsDefaultDesc);
+      setMetaTag('property', 'og:title', lmsDefaultTitle);
+      setMetaTag('property', 'og:description', lmsDefaultDesc);
     }
 
     async function enrollInCourse() {
@@ -6855,6 +6897,24 @@ select.form-input {
           <label for="courseWhatsappLink">Course کا WhatsApp Group لنک (اختیاری)</label>
           <input type="url" id="courseWhatsappLink" class="form-input" placeholder="https://chat.whatsapp.com/..." />
         </div>
+
+        <!-- SEO fields (Phase 13 addition) — optional; only used for published courses' <head> meta tags -->
+        <details style="margin-bottom:1rem;border:1px solid var(--border);border-radius:8px;padding:.2rem .8rem;">
+          <summary style="cursor:pointer;padding:.6rem 0;font-weight:600;font-size:.88rem;">SEO Settings (اختیاری)</summary>
+          <div class="form-group">
+            <label for="courseSeoTitle">SEO Title</label>
+            <input type="text" id="courseSeoTitle" class="form-input" maxlength="70" placeholder="خالی چھوڑنے پر Course Title استعمال ہو گا" />
+          </div>
+          <div class="form-group">
+            <label for="courseSeoDescription">Meta Description</label>
+            <textarea id="courseSeoDescription" class="form-input" rows="2" maxlength="160" placeholder="خالی چھوڑنے پر مختصر تفصیل استعمال ہو گی (زیادہ سے زیادہ 160 حروف)"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="courseSeoOgImage">Social Share Image URL (Open Graph، اختیاری)</label>
+            <input type="url" id="courseSeoOgImage" class="form-input" placeholder="خالی چھوڑنے پر Thumbnail استعمال ہو گی" />
+          </div>
+        </details>
+
         <div class="form-group">
           <label for="courseStatus">Status *</label>
           <select id="courseStatus" class="form-input" required>
@@ -7733,6 +7793,13 @@ select.form-input {
         </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">Log In</button>
       </form>
+      <div style="display:flex;align-items:center;gap:.6rem;margin:1rem 0;color:var(--muted);font-size:.8rem;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>OR<div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:grid;gap:.6rem;">
+        <button type="button" onclick="socialAuth('facebook')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-facebook" style="color:#1877F2;"></i> Continue with Facebook</button>
+        <button type="button" onclick="socialAuth('google')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-google" style="color:#EA4335;"></i> Continue with Google</button>
+      </div>
       <p class="modal-hint">New to SHAOOR? <a href="#" onclick="closeModal('loginModal');openModal('signupModal');return false;">Register as a member →</a></p>
     </div>
   </div>
@@ -7758,6 +7825,7 @@ select.form-input {
           <small id="sAvatarStatus" style="display:block;margin-top:.4rem;color:var(--muted);font-size:.78rem;"></small>
         </div>
         <div class="form-group"><label for="sEmail">Email Address</label><input type="email" id="sEmail" class="form-input" required placeholder="your@email.com" /></div>
+        <div class="form-group"><label for="sPhone">Phone</label><input type="tel" id="sPhone" class="form-input" required placeholder="+92 300 1234567" /></div>
         <div class="form-group"><label for="sPass">Password</label>
           <div style="position:relative;">
             <input type="password" id="sPass" class="form-input" required minlength="8" placeholder="At least 8 characters" style="padding-right:2.6rem;" />
@@ -7782,6 +7850,13 @@ select.form-input {
         </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">Create Account</button>
       </form>
+      <div style="display:flex;align-items:center;gap:.6rem;margin:1rem 0;color:var(--muted);font-size:.8rem;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>OR<div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:grid;gap:.6rem;">
+        <button type="button" onclick="socialAuth('facebook')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-facebook" style="color:#1877F2;"></i> Sign up with Facebook</button>
+        <button type="button" onclick="socialAuth('google')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-google" style="color:#EA4335;"></i> Sign up with Google</button>
+      </div>
       <p class="modal-hint">Already a member? <a href="#" onclick="closeModal('signupModal');openModal('loginModal');return false;">Sign in →</a></p>
     </div>
   </div>
@@ -8796,6 +8871,9 @@ select.form-input {
     document.getElementById('courseCode').value = c.course_code || '';
     document.getElementById('courseCertificateAvailable').value = c.certificate_available ? 'true' : 'false';
     document.getElementById('courseWhatsappLink').value = c.whatsapp_group_link || '';
+    document.getElementById('courseSeoTitle').value = c.seo_title || '';
+    document.getElementById('courseSeoDescription').value = c.seo_description || '';
+    document.getElementById('courseSeoOgImage').value = c.seo_og_image || '';
     document.getElementById('courseStatus').value = c.status || 'draft';
     if (c.thumbnail_url) {
       document.getElementById('courseExistingThumbUrl').value = c.thumbnail_url;
@@ -8876,6 +8954,10 @@ select.form-input {
     const certificate_available = frm.querySelector('#courseCertificateAvailable').value === 'true';
     const whatsapp_group_link = frm.querySelector('#courseWhatsappLink').value.trim() || null;
     const status = frm.querySelector('#courseStatus').value;
+    // SEO fields (Phase 13 addition) — optional, fall back to core content if left blank
+    const seo_title = frm.querySelector('#courseSeoTitle').value.trim() || null;
+    const seo_description = frm.querySelector('#courseSeoDescription').value.trim() || null;
+    const seo_og_image = frm.querySelector('#courseSeoOgImage').value.trim() || null;
 
     if (!title) { showToast('براہ کرم Course کا عنوان درج کریں', 'error'); return; }
     if (!slug) slug = slugifyCourseTitle(title);
@@ -8902,6 +8984,7 @@ select.form-input {
       title, slug, description, category, level,
       is_paid, price, currency, duration_label, course_code,
       certificate_available, status, thumbnail_url, whatsapp_group_link,
+      seo_title, seo_description, seo_og_image,
       // These columns are NOT NULL in the DB with no admin-facing UI yet — safe defaults for now.
       quiz_frequency: 4, passing_score: 70
     };
@@ -10601,6 +10684,24 @@ select.form-input {
   }
 
   // ── Apply secure handlers to all forms ──
+  // Social sign-in / sign-up (Facebook, Google). This ONLY works once the provider is enabled
+  // in Supabase Dashboard → Authentication → Providers, with that provider's own App ID/Secret
+  // and the Supabase callback URL registered on Facebook/Google's side. Until then it will
+  // return an error like "Unsupported provider" — that is expected, not a bug in this code.
+  window.socialAuth = async function (provider) {
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: provider,
+      options: { redirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) {
+      alert('Could not start ' + provider + ' sign-in: ' + error.message +
+        (error.message && error.message.toLowerCase().includes('provider') ? '\n\n(This provider may not be enabled yet in the Supabase dashboard.)' : ''));
+    }
+    // On success the browser is redirected to the provider, then back here — no further
+    // code runs in this call. Profile completion (phone, society, etc.) after a social
+    // sign-in should be handled the next time the member opens their dashboard.
+  };
+
   secureSubmit('loginForm', async frm => {
     const email = frm.querySelector('#lEmail').value.trim();
     const password = frm.querySelector('#lPass').value;
@@ -11692,12 +11793,19 @@ select.form-input {
   secureSubmit('signupForm', async frm => {
     const full_name = frm.querySelector('#sName').value.trim();
     const email = frm.querySelector('#sEmail').value.trim();
+    const phone = frm.querySelector('#sPhone').value.trim();
     const password = frm.querySelector('#sPass').value;
     const society_id = frm.querySelector('#sSociety').value || null;
     const chapter_id = frm.querySelector('#sChapter').value || null;
     const province = frm.querySelector('#sProvince').value.trim() || null;
     const avatarFileCheck = frm.querySelector('#sAvatar')?.files?.[0];
     const err = document.getElementById('signupError');
+
+    if (!isValidPhone(phone)) {
+      document.getElementById('signupErrMsg').textContent = 'Please enter a valid Pakistani phone number (e.g. +92 300 1234567).';
+      err.style.display = 'flex'; err.style.alignItems = 'center'; err.style.gap = '.5rem';
+      return;
+    }
 
     if (!avatarFileCheck) {
       document.getElementById('signupErrMsg').textContent = 'Profile picture is required.';
@@ -11721,7 +11829,7 @@ select.form-input {
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: { data: { full_name } }
+      options: { data: { full_name, phone } }
     });
 
     if (error) {
@@ -11732,9 +11840,9 @@ select.form-input {
 
     err.style.display = 'none';
 
-    if (data.user && (society_id || chapter_id || province)) {
+    if (data.user) {
       try {
-        await sb.from('profiles').update({ society_id, chapter_id, province }).eq('id', data.user.id);
+        await sb.from('profiles').update({ phone, society_id, chapter_id, province }).eq('id', data.user.id);
       } catch (e) { /* best effort — RLS may block until email confirmed/logged in */ }
     }
 
@@ -13398,4 +13506,3 @@ select.form-input {
   </style>
 </body>
 </html>
-  
