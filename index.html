@@ -5572,6 +5572,13 @@ select.form-input {
     </div>
 
     <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);margin-top:1.5rem;">
+      <h3 style="font-weight:700;margin-bottom:1.5rem;color:var(--navy);"><i class="fas fa-graduation-cap" style="color:var(--gold);margin-right:.5rem;"></i> My Learning</h3>
+      <div id="myLearningList" style="display:grid;gap:.85rem;">
+        <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);margin-top:1.5rem;">
       <h3 style="font-weight:700;margin-bottom:1.5rem;color:var(--navy);"><i class="fas fa-calendar-check" style="color:var(--gold);margin-right:.5rem;"></i> Events — Attendance</h3>
       <div id="myEventsAttendanceList" style="display:grid;gap:.75rem;">
         <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
@@ -8308,7 +8315,71 @@ select.form-input {
 
     loadMyCertificates(userId);
     loadMyEventsAttendance(userId);
+    loadMyLearning(userId);
   }
+
+  /* ── My Learning (enrolled courses) ── */
+  async function loadMyLearning(userId) {
+    const wrap = document.getElementById('myLearningList');
+    if (!wrap) return;
+    try {
+      const { data: enrollments, error } = await sb
+        .from('course_enrollments')
+        .select('id, status, payment_status, progress, enrollment_date, course:course_id (id, slug, title, level, duration_label, is_paid, certificate_available)')
+        .eq('member_id', userId)
+        .order('enrollment_date', { ascending: false });
+
+      if (error) throw error;
+
+      const list = enrollments || [];
+      if (list.length === 0) {
+        wrap.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">آپ نے ابھی تک کسی کورس میں داخلہ نہیں لیا۔ <a href="#courses" onclick="document.getElementById(\'memberDash\').classList.remove(\'open\');document.body.style.overflow=\'\';">کورسز دیکھیں</a></div>';
+        return;
+      }
+
+      wrap.innerHTML = list.map(en => {
+        const course = en.course || {};
+        const title = (course.title || 'Untitled Course').replace(/</g, '&lt;');
+        const level = course.level ? course.level : '';
+        const duration = course.duration_label ? course.duration_label : '';
+        const progress = Number.isFinite(en.progress) ? Math.max(0, Math.min(100, en.progress)) : 0;
+
+        let statusBadge = '';
+        let ctaHtml = '';
+        if (en.status === 'pending' || en.payment_status === 'pending') {
+          statusBadge = '<span style="background:#FEF3C7;color:#92400E;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap;"><i class="fas fa-clock"></i> PENDING APPROVAL</span>';
+          ctaHtml = '<span style="color:var(--muted);font-size:.8rem;">Awaiting payment approval</span>';
+        } else if (en.status === 'completed') {
+          statusBadge = '<span style="background:#DCFCE7;color:#166534;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap;"><i class="fas fa-check-circle"></i> COMPLETED</span>';
+          ctaHtml = '<button class="btn btn-gold" style="padding:.4rem .9rem;font-size:.8rem;white-space:nowrap;" onclick="document.getElementById(\'memberDash\').classList.remove(\'open\');document.body.style.overflow=\'\';showCourseDetail(\'' + (course.slug || '') + '\')"><i class="fas fa-eye"></i> VIEW COURSE</button>';
+        } else {
+          statusBadge = '<span style="background:#E7F5F3;color:var(--teal);padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:700;white-space:nowrap;"><i class="fas fa-play-circle"></i> ACTIVE</span>';
+          ctaHtml = '<button class="btn btn-gold" style="padding:.4rem .9rem;font-size:.8rem;white-space:nowrap;" onclick="document.getElementById(\'memberDash\').classList.remove(\'open\');document.body.style.overflow=\'\';showCourseDetail(\'' + (course.slug || '') + '\')"><i class="fas fa-play"></i> CONTINUE LEARNING</button>';
+        }
+
+        return '<div style="border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;">' +
+          '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;flex-wrap:wrap;">' +
+            '<div>' +
+              '<div style="font-weight:700;color:var(--navy);margin-bottom:.15rem;">' + title + '</div>' +
+              '<div style="font-size:.78rem;color:var(--muted);">' + [level, duration].filter(Boolean).join(' · ') + '</div>' +
+            '</div>' +
+            statusBadge +
+          '</div>' +
+          '<div style="margin-top:.75rem;background:var(--cream);border-radius:8px;height:8px;overflow:hidden;">' +
+            '<div style="height:100%;background:var(--gold);width:' + progress + '%;"></div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:.6rem;">' +
+            '<span style="font-size:.78rem;color:var(--muted);">' + progress + '% complete</span>' +
+            ctaHtml +
+          '</div>' +
+        '</div>';
+      }).join('');
+    } catch (err) {
+      console.error('My Learning load error:', err);
+      wrap.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">کورسز لوڈ نہیں ہو سکے۔</div>';
+    }
+  }
+  window.loadMyLearning = loadMyLearning;
 
   /* ── Events / Self Attendance ── */
   async function loadMyEventsAttendance(userId) {
