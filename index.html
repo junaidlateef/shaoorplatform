@@ -4901,9 +4901,12 @@ select.form-input {
 
       <!-- New/Edit Official Document Modal -->
       <div class="modal" id="documentModal">
-        <div class="modal-content">
-          <button class="modal-close" onclick="closeModal('documentModal')">&times;</button>
-          <h3 style="margin-bottom:1rem;">Official Document</h3>
+        <div class="modal-box" style="max-width:560px;">
+          <div class="modal-head">
+            <h3>Official Document</h3>
+            <button class="modal-close" onclick="closeModal('documentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="modal-body">
           <form class="modal-form" id="documentForm">
             <input type="hidden" id="docId" />
             <div class="form-group">
@@ -4941,19 +4944,25 @@ select.form-input {
             </div>
             <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">Save Document</button>
           </form>
+          </div>
         </div>
       </div>
 
       <!-- Official Document View/Print Modal -->
       <div class="modal" id="viewDocumentModal">
-        <div class="modal-content" style="max-width:900px;">
-          <button class="modal-close" onclick="closeModal('viewDocumentModal')">&times;</button>
+        <div class="modal-box" style="max-width:900px;">
+          <div class="modal-head">
+            <h3>Document Preview</h3>
+            <button class="modal-close" onclick="closeModal('viewDocumentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="modal-body">
           <div style="display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
             <button class="btn btn-outline" onclick="printGeneratedDocument()"><i class="fas fa-print"></i> Print / PDF</button>
             <button class="btn btn-outline" onclick="downloadGeneratedDocumentWord()"><i class="fas fa-file-word"></i> Download Word</button>
           </div>
           <div id="documentPrintArea" style="background:#fff;color:#1a1a1a;padding:2.2rem 2.5rem;border:1px solid #d9d0bd;border-radius:4px;font-family:Georgia,serif;min-height:600px;position:relative;">
             <!-- populated dynamically by renderGeneratedDocumentView() -->
+          </div>
           </div>
         </div>
       </div>
