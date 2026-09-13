@@ -12633,20 +12633,20 @@ select.form-input {
      style change here fixes it everywhere at once, per the "shared renderer" requirement. ── */
   function renderDocumentHeader(brand, society, chapter, docTitle, docNumber, docDate) {
     const orgLogo = brand && brand.logo_url
-      ? `<img src="${brand.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />`
+      ? `<img src="${brand.logo_url}" style="height:92px;max-width:190px;object-fit:contain;" />`
       : '';
     const rightLogo = (chapter && chapter.logo_url)
       ? `<img src="${chapter.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />`
       : (society && society.logo_url ? `<img src="${society.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />` : '');
     return `
       <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--navy);padding-bottom:.8rem;margin-bottom:1.2rem;">
-        <div style="width:130px;display:flex;align-items:center;">${orgLogo}</div>
+        <div style="width:190px;display:flex;align-items:center;">${orgLogo}</div>
         <div style="text-align:center;flex:1;">
           <div style="font-family:Georgia,serif;font-weight:700;font-size:1.4rem;letter-spacing:.06em;color:var(--navy);">${sanitize((brand && brand.organization_name) || 'SHAOOR')}</div>
           <div style="font-size:1rem;color:var(--navy);">شعور</div>
           <div style="font-size:.72rem;color:#555;letter-spacing:.04em;">Professional Arts &amp; Culture Organization</div>
         </div>
-        <div style="width:130px;display:flex;align-items:center;justify-content:flex-end;">${rightLogo}</div>
+        <div style="width:190px;display:flex;align-items:center;justify-content:flex-end;">${rightLogo}</div>
       </div>
       <div style="text-align:center;margin-bottom:1.2rem;">
         <div style="font-family:Georgia,serif;font-weight:700;font-size:1.15rem;text-transform:uppercase;letter-spacing:.05em;">${sanitize(docTitle)}</div>
@@ -12673,11 +12673,12 @@ select.form-input {
     // visible in preview, print, and download output. Gracefully omitted when unset.
     const sealBlock = (brand && brand.seal_url)
       ? `<div style="text-align:center;">
-          <img src="${brand.seal_url}" style="height:58px;width:58px;object-fit:contain;display:block;margin:0 auto;" alt="Official Seal" />
+          <img src="${brand.seal_url}" style="height:80px;width:80px;object-fit:contain;display:block;margin:0 auto .3rem;" alt="Official Seal" />
+          <div style="font-size:.68rem;color:#666;border-top:1px solid #999;padding-top:.2rem;min-width:100px;">Official Seal</div>
         </div>`
       : '';
     if (!blocks && !sealBlock) return '';
-    return `<div style="display:flex;justify-content:center;align-items:flex-end;gap:2rem;margin-top:2.5rem;flex-wrap:wrap;">${blocks}${sealBlock}</div>`;
+    return `<div style="display:flex;justify-content:center;align-items:flex-end;gap:2.5rem;margin-top:2.5rem;flex-wrap:wrap;">${blocks}${sealBlock}</div>`;
   }
 
   function renderDocumentFooter(brand, docNumber) {
