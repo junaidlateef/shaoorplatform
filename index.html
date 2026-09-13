@@ -1025,6 +1025,16 @@
     .anim-d6 { animation-delay:.6s; }
 
     /* Intersection observer — animate on scroll */
+    /* Safety net: inside the admin panel (and anywhere the observer might not
+       fire — slow JS, browser quirks, nested scroll containers) .reveal items
+       must never stay permanently invisible. Content inside #adminDash always
+       shows immediately; the fade/slide-in effect is a public-site nicety only. */
+    #adminDash .reveal,
+    #adminDash .reveal-left,
+    #adminDash .reveal-right {
+      opacity: 1 !important;
+      transform: none !important;
+    }
     .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
     .reveal-left  { opacity:0; transform:translateX(-30px); transition:opacity .6s ease, transform .6s ease; }
@@ -1507,7 +1517,7 @@ footer{background:#0B1224!important}
 .dash-user span{color:rgba(255,255,255,.58)!important}
 .dash-logout{background:rgba(181,72,93,.18)!important;border-color:rgba(181,72,93,.32)!important}
 .dash-logout:hover{background:var(--ruby)!important}
-.admin-shell{grid-template-columns:238px 1fr!important;background:#fff!important;border:0!important;border-radius:0!important;min-height:calc(100vh - 62px)!important}
+.admin-shell{grid-template-columns:238px 1fr!important;background:var(--card)!important;border:0!important;border-radius:0!important;min-height:calc(100vh - 62px)!important}
 .admin-side{background:var(--navy)!important;color:#fff!important;padding:1.35rem 1rem!important;display:flex!important;flex-direction:column!important;gap:.18rem!important;overflow:visible!important}
 .admin-side-logo{font-family:Arial,Helvetica,sans-serif!important;font-weight:900!important;font-size:1.35rem!important;color:#fff!important;padding:.2rem .6rem 1.25rem!important;letter-spacing:-.04em!important}
 .admin-side-logo span{color:var(--gold3)!important;font-size:.68em!important;font-weight:700!important;margin-left:.25rem}
@@ -13210,6 +13220,12 @@ select.form-input {
 
   /* ── SCROLL REVEAL ── */
   function initReveal() {
+    // Use the admin panel's own scroll container as the intersection root when it's
+    // open; fall back to the browser viewport (root: null) for the public site.
+    // Without this, elements below the fold of the internally-scrolling admin panel
+    // never intersect the (wrong) viewport root and stay stuck at opacity:0 forever.
+    const adminDash = document.getElementById('adminDash');
+    const useAdminRoot = adminDash && adminDash.classList.contains('open');
     const obs = new IntersectionObserver((entries) => {
       entries.forEach(en => {
         if (en.isIntersecting) {
@@ -13217,8 +13233,11 @@ select.form-input {
           obs.unobserve(en.target);
         }
       });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => obs.observe(el));
+    }, { root: useAdminRoot ? adminDash : null, threshold: 0.01, rootMargin: '200px' });
+    document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => {
+      if (el.classList.contains('visible')) return;
+      obs.observe(el);
+    });
   }
   document.addEventListener('DOMContentLoaded', initReveal);
 
