@@ -3042,38 +3042,76 @@ footer { background: #080D1C !important; }
 }
 .foot-copy { color: rgba(255,255,255,.35) !important; font-size: .82rem !important; }
 
-/* ── 19. ADMIN PANEL ── */
+/* ── 19. ADMIN PANEL — Premium Gold Theme ── */
 .admin-page {
+  position: relative;
+  overflow: hidden;
   background:
-    radial-gradient(ellipse at 82% 12%, rgba(79,143,138,.14), transparent 30%),
-    radial-gradient(ellipse at 16% 85%, rgba(155,89,100,.10), transparent 28%),
-    linear-gradient(140deg, #06101F, #0A1220 55%, #0B1F33) !important;
+    radial-gradient(ellipse at 82% 10%, rgba(200,146,42,.20), transparent 32%),
+    radial-gradient(ellipse at 14% 88%, rgba(200,146,42,.12), transparent 30%),
+    radial-gradient(ellipse at 50% 50%, rgba(200,146,42,.06), transparent 60%),
+    linear-gradient(140deg, #0A0704, #120D06 55%, #1A1200) !important;
+}
+.admin-page::before,
+.admin-page::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(212,168,83,.22);
+  pointer-events: none;
+  z-index: 0;
+}
+.admin-page::before {
+  width: 620px; height: 620px;
+  top: -220px; right: -180px;
+  border-color: rgba(212,168,83,.28);
+  background: radial-gradient(circle at 30% 30%, rgba(212,168,83,.10), transparent 70%);
+}
+.admin-page::after {
+  width: 420px; height: 420px;
+  bottom: -160px; left: -140px;
+  border-color: rgba(212,168,83,.16);
 }
 .admin-box {
-  border-radius: 14px !important;
-  background: rgba(255,255,255,.05) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-  box-shadow: 0 28px 80px rgba(0,0,0,.44) !important;
+  position: relative;
+  z-index: 1;
+  border-radius: 20px !important;
+  background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.02)) !important;
+  border: 1px solid rgba(212,168,83,.35) !important;
+  box-shadow:
+    0 30px 90px rgba(0,0,0,.55),
+    0 0 0 1px rgba(212,168,83,.06) inset,
+    0 0 60px rgba(200,146,42,.10) !important;
   backdrop-filter: blur(16px) !important;
+}
+.admin-box::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 14%; right: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,168,83,.65), transparent);
 }
 .admin-input {
   border-radius: 8px !important;
-  background: rgba(255,255,255,.07) !important;
-  border: 1px solid rgba(255,255,255,.12) !important;
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(212,168,83,.20) !important;
   color: #fff !important;
 }
 .admin-input:focus {
-  border-color: var(--teal) !important;
-  box-shadow: 0 0 0 3px rgba(79,143,138,.15) !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(200,146,42,.20) !important;
   outline: none !important;
 }
 .admin-btn {
-  background: var(--gold) !important;
+  background: linear-gradient(135deg, var(--gold), #E8B84B) !important;
   border-radius: 8px !important;
-  color: #fff !important;
+  color: #1a1200 !important;
   font-weight: 700 !important;
+  box-shadow: 0 10px 26px rgba(200,146,42,.28) !important;
 }
-.admin-btn:hover { background: #A8905A !important; }
+.admin-btn:hover {
+  background: linear-gradient(135deg, #E8B84B, var(--gold)) !important;
+}
 
 /* Admin dashboard — .admin-shell/.admin-side/.admin-nav-btn/.admin-main:
    see SINGLE SOURCE OF TRUTH block. */
