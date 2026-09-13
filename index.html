@@ -7913,6 +7913,16 @@ select.form-input {
           </select>
         </div>
 
+        <div class="form-group">
+          <label for="chapterLogoInput">Chapter Logo</label>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <img id="chapterLogoPreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border);" alt="" />
+            <div id="chapterLogoPlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1.3rem;"><i class="fas fa-image"></i></div>
+            <input type="file" id="chapterLogoInput" accept="image/png,image/jpeg,image/webp" style="flex:1;" />
+          </div>
+          <span id="chapterLogoStatus" style="font-size:.78rem;color:var(--muted);"></span>
+        </div>
+
         <div style="margin:1rem 0 .5rem;padding-top:.75rem;border-top:1px solid var(--border);">
           <strong style="font-size:.9rem;color:var(--ink);">Cabinet — عہدیدار منتخب کریں</strong>
           <p style="font-size:.78rem;color:var(--muted);margin:.25rem 0 0;">ہر عہدے کے لیے رکن کا نام لکھ کر منتخب کریں (خالی چھوڑا جا سکتا ہے)</p>
@@ -8611,8 +8621,11 @@ select.form-input {
         const statusBg = c.status === 'active' ? 'var(--teal)' : c.status === 'forming' ? '#fbbf24' : '#9ca3af';
         const statusLabel = c.status === 'active' ? 'فعال' : c.status === 'forming' ? 'تشکیل' : 'محفوظ';
 
+        const logoImg = c.logo_url
+          ? `<img src="${c.logo_url}" alt="" style="width:28px;height:28px;object-fit:cover;border-radius:6px;border:1px solid var(--border);vertical-align:middle;margin-inline-end:.5rem;" />`
+          : `<span style="display:inline-flex;width:28px;height:28px;border-radius:6px;border:1px dashed var(--border);align-items:center;justify-content:center;color:var(--muted);font-size:.7rem;vertical-align:middle;margin-inline-end:.5rem;"><i class="fas fa-image"></i></span>`;
         return `<tr>
-          <td><strong>${sanitize(c.name)}</strong><br><span style="font-size:.75rem;color:var(--muted);text-transform:capitalize;">${sanitize(c.province || '—')}</span></td>
+          <td>${logoImg}<strong>${sanitize(c.name)}</strong><br><span style="font-size:.75rem;color:var(--muted);text-transform:capitalize;">${sanitize(c.province || '—')}</span></td>
           <td>${sanitize(c.hq_city || '—')}</td>
           <td>${sanitize(headName)}</td>
           <td>${memberCount}</td>
@@ -8874,10 +8887,98 @@ select.form-input {
   }
 
   /* ── CHAPTER: create / edit ── */
+  let chapterLogoFile = null;
+  function resetChapterLogoUI(existingUrl) {
+    chapterLogoFile = null;
+    const input = document.getElementById('chapterLogoInput');
+    if (input) input.value = '';
+    const statusEl = document.getElementById('chapterLogoStatus');
+    if (statusEl) statusEl.textContent = '';
+    const img = document.getElementById('chapterLogoPreview');
+    const placeholder = document.getElementById('chapterLogoPlaceholder');
+    if (existingUrl) {
+      img.src = existingUrl;
+      img.style.display = 'block';
+      placeholder.style.display = 'none';
+    } else {
+      img.src = '';
+      img.style.display = 'none';
+      placeholder.style.display = 'flex';
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const logoInput = document.getElementById('chapterLogoInput');
+    if (logoInput) {
+      logoInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+          showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
+          logoInput.value = '';
+          return;
+        }
+        if (file.size > 3 * 1024 * 1024) {
+          showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
+          logoInput.value = '';
+          return;
+        }
+        chapterLogoFile = file;
+        const img = document.getElementById('chapterLogoPreview');
+        const placeholder = document.getElementById('chapterLogoPlaceholder');
+        img.src = URL.createObjectURL(file);
+        img.style.display = 'block';
+        placeholder.style.display = 'none';
+      });
+    }
+  });
+
+  async function uploadChapterLogo(chapterId) {
+    if (!chapterLogoFile) return;
+    const statusEl = document.getElementById('chapterLogoStatus');
+    statusEl.textContent = 'اپلوڈ ہو رہا ہے…';
+
+    const ext = chapterLogoFile.name.split('.').pop();
+    // Reuses the existing 'shaoor-uploads' bucket (same one branding/events/courses
+    // already use) — no new storage bucket created.
+    const filePath = `chapter-logos/${chapterId}/logo.${ext}`;
+
+    const { error: uploadError } = await sb.storage
+      .from('shaoor-uploads')
+      .upload(filePath, chapterLogoFile, { upsert: true, cacheControl: '3600' });
+
+    if (uploadError) {
+      console.error('Chapter logo upload failed:', uploadError);
+      statusEl.textContent = '';
+      showToast('لوگو اپلوڈ ناکام: ' + uploadError.message, 'error');
+      return;
+    }
+
+    const { data: publicUrlData } = sb.storage.from('shaoor-uploads').getPublicUrl(filePath);
+    const publicUrl = publicUrlData.publicUrl + '?t=' + Date.now();
+
+    const { error: updateError } = await sb
+      .from('chapters')
+      .update({ logo_url: publicUrl })
+      .eq('id', chapterId);
+
+    if (updateError) {
+      console.error('Chapter logo_url update failed:', updateError);
+      statusEl.textContent = '';
+      showToast('Chapter ریکارڈ اپڈیٹ ناکام: ' + updateError.message, 'error');
+      return;
+    }
+
+    statusEl.textContent = '';
+    chapterLogoFile = null;
+  }
+
   async function openCreateChapterModal() {
     document.getElementById('chapterForm').reset();
     document.getElementById('chapterEditId').value = '';
     document.getElementById('chapterModalTitle').textContent = 'نیا Chapter';
+    resetChapterLogoUI(null);
     await populateCabinetFields('chCab', 'chapter', null);
     openModal('chapterModal');
   }
@@ -8892,6 +8993,7 @@ select.form-input {
     document.getElementById('chapterProvince').value = c.province || '';
     document.getElementById('chapterHqCity').value = c.hq_city || '';
     document.getElementById('chapterStatus').value = c.status || 'active';
+    resetChapterLogoUI(c.logo_url || null);
     await populateCabinetFields('chCab', 'chapter', c.id);
     openModal('chapterModal');
   }
@@ -8918,6 +9020,7 @@ select.form-input {
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
 
+    await uploadChapterLogo(savedId);
     await saveCabinetFields('chCab', 'chapter', savedId);
 
     showToast('✓ Chapter محفوظ ہو گیا!');
