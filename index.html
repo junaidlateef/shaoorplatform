@@ -13280,6 +13280,7 @@ select.form-input {
     // visitor — reuses the same renderer the admin/member "view" actions already use.
     const verifyDocToken = ++_docRenderToken;
     await renderGeneratedDocumentView(d, verifyDocToken);
+    openModal('viewDocumentModal');
   })();
 
   /* If a member's session is already active on page load, show their dashboard automatically */
