@@ -4009,6 +4009,7 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Punjab Chapter</div>
+            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4033,6 +4034,7 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">KPK Chapter</div>
+            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4057,6 +4059,7 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Sindh Chapter</div>
+            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4081,6 +4084,7 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Balochistan Chapter</div>
+            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4105,6 +4109,7 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Azad Kashmir Chapter</div>
+            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4129,6 +4134,7 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Gilgit-Baltistan Chapter</div>
+            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -6732,7 +6738,10 @@ select.form-input {
           </div>
           <div>
             <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Society / Chapter</small>
-            <div id="mdMemberSociety" style="font-weight:600;font-size:.9rem;margin-top:.2rem;color:var(--teal);">—</div>
+            <div style="display:flex;align-items:center;gap:.5rem;margin-top:.2rem;">
+              <img id="mdChapterLogo" src="" alt="" style="display:none;height:26px;width:26px;object-fit:contain;border-radius:4px;" />
+              <div id="mdMemberSociety" style="font-weight:600;font-size:.9rem;color:var(--teal);">—</div>
+            </div>
           </div>
         </div>
       </div>
@@ -10484,11 +10493,13 @@ select.form-input {
     const provNameEl = panel.querySelector('.ch-province');
     const taglineEl = panel.querySelector('.ch-tagline');
     const badgeEl = panel.querySelector('.ch-badge');
+    const logoEl = panel.querySelector('.ch-logo');
     const dslEl = document.getElementById('dsl-' + prov);
     const seatsGridEl = panel.querySelector('.seats-grid');
     const csTitleEl = panel.querySelector('.cs-title');
 
     if (!chapter) {
+      if (logoEl) logoEl.style.display = 'none';
       if (taglineEl) taglineEl.textContent = 'یہ Chapter ابھی رجسٹرڈ نہیں۔';
       if (badgeEl) badgeEl.innerHTML = '<i class="fas fa-hourglass-half"></i> Coming Soon';
       if (dslEl) dslEl.innerHTML = '<div style="color:rgba(255,255,255,.5);font-size:.85rem;">ابھی کوئی Society شامل نہیں۔</div>';
@@ -10497,6 +10508,11 @@ select.form-input {
     }
 
     if (provNameEl && chapter.name) provNameEl.textContent = chapter.name;
+    // FIX: chapter logo was fetched (select('*') already includes logo_url) but never rendered anywhere in this panel.
+    if (logoEl) {
+      if (chapter.logo_url) { logoEl.src = chapter.logo_url; logoEl.style.display = ''; }
+      else { logoEl.style.display = 'none'; }
+    }
     if (taglineEl) taglineEl.textContent = chapter.hq_city ? ('HQ: ' + chapter.hq_city) : '—';
     if (badgeEl) {
       if (chapter.status === 'active') badgeEl.innerHTML = '<i class="fas fa-check-circle"></i> Active Chapter';
@@ -14553,23 +14569,33 @@ select.form-input {
         .eq('id', userId)
         .single();
 
-      let societyName = '', chapterName = '';
+      let societyName = '', chapterName = '', chapterLogoUrl = '', societyLogoUrl = '';
       if (appData && appData.society_id) {
-        const { data: soc } = await sb.from('societies').select('name').eq('id', appData.society_id).single();
+        const { data: soc } = await sb.from('societies').select('name, logo_url').eq('id', appData.society_id).single();
         societyName = soc ? soc.name : '';
+        societyLogoUrl = soc ? soc.logo_url : '';
       }
       if (appData && appData.chapter_id) {
-        const { data: chap } = await sb.from('chapters').select('name').eq('id', appData.chapter_id).single();
+        const { data: chap } = await sb.from('chapters').select('name, logo_url').eq('id', appData.chapter_id).single();
         chapterName = chap ? chap.name : '';
+        chapterLogoUrl = chap ? chap.logo_url : '';
       }
 
       if (appData) {
         const statusEl = document.getElementById('mdMembershipStatus');
         const tierEl   = document.getElementById('mdMembershipTier');
         const socEl    = document.getElementById('mdMemberSociety');
+        const chapLogoEl = document.getElementById('mdChapterLogo');
         if (statusEl) statusEl.textContent = appData.status || '—';
         if (tierEl)   tierEl.textContent   = appData.membership_type || '—';
         if (socEl)    socEl.textContent    = (societyName || '') + (chapterName ? ' · ' + chapterName : '') || '—';
+        // FIX: chapter logo — prefer chapter's own logo, fall back to society logo, else hide (same
+        // preference order already used by Generated Documents' renderDocumentHeader).
+        if (chapLogoEl) {
+          const logoToShow = chapterLogoUrl || societyLogoUrl || '';
+          if (logoToShow) { chapLogoEl.src = logoToShow; chapLogoEl.style.display = ''; }
+          else { chapLogoEl.style.display = 'none'; }
+        }
 
         // Status badge color
         if (statusEl) {
