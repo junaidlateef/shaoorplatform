@@ -12137,12 +12137,14 @@ select.form-input {
       subject: frm.querySelector('#docSubject').value.trim() || null,
       body: frm.querySelector('#docBody').value.trim(),
       authority: frm.querySelector('#docAuthority').value.trim() || null,
-      extra: { signature_keys: signatureKeys },
-      status: 'active'
+      extra: { signature_keys: signatureKeys }
     };
 
     let error;
     if (id) {
+      // Editing an existing document must never touch its status — the form has no
+      // status control, so silently resetting it here would clobber a document that
+      // was already 'revoked' or 'archived' back to an active-looking state.
       ({ error } = await sb.from('generated_documents').update(payload).eq('id', id));
     } else {
       // document_number is generated server-side (generate_document_number RPC) so numbering
@@ -12150,6 +12152,9 @@ select.form-input {
       const { data: numData, error: numErr } = await sb.rpc('generate_document_number', { doc_type: document_type });
       if (numErr) { showToast('Document number تیار نہیں ہو سکا: ' + numErr.message, 'error'); return; }
       payload.document_number = numData;
+      // DB check constraint (generated_documents_status_check) only allows
+      // draft / issued / revoked / archived — a freshly created document is 'issued'.
+      payload.status = 'issued';
       ({ error } = await sb.from('generated_documents').insert(payload));
     }
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
@@ -12162,7 +12167,9 @@ select.form-input {
     switch (status) {
       case 'revoked': return { bg: 'var(--ruby)', label: 'Revoked' };
       case 'draft': return { bg: 'var(--muted)', label: 'Draft' };
-      default: return { bg: 'var(--teal)', label: 'Active' };
+      case 'archived': return { bg: 'var(--navy)', label: 'Archived' };
+      case 'issued': return { bg: 'var(--teal)', label: 'Issued' };
+      default: return { bg: 'var(--teal)', label: sanitize(status || 'Issued') };
     }
   }
 
