@@ -47,57 +47,44 @@
   <style>
     /* ─── TOKENS ─── */
     :root {
-      /* ── CONSOLIDATED SOURCE OF TRUTH (Global Theme Fix) ──
-           This file previously had 8 separate :root blocks scattered across the
-           stylesheet, several using !important, each redefining the same tokens
-           to different values. Per CSS cascade rules, the LAST !important
-           declaration for each property was what actually rendered — meaning
-           the values below are the values that were ALREADY live on screen.
-           This block simply consolidates them into one place; no rendered
-           color has been changed except --saffron-soft (see note below), which
-           was out of sync with its own --saffron value. ── */
-
-      /* ── Core Brand ── */
+      /* ── Core Brand (Phase 4: aligned to SHAOOR Final Design System spec) ── */
       --navy:      #0B1F33;  /* Deep Navy */
-      --navy2:     #172340;  /* Secondary Navy */
-      --navy3:     #1E3055;  /* Tertiary Navy */
+      --navy2:     #142F4A;  /* Secondary Navy */
+      --navy3:     #1C3A5C;  /* derived — slightly lighter tint of Secondary Navy, unchanged role */
 
       /* ── Gold Spectrum ── */
-      --gold:      #B8A06A;  /* Muted Champagne Gold */
-      --gold2:     #C8B07A;
-      --gold3:     #D4C7A3;
-      --gold-soft: rgba(184,160,106,.13);
+      --gold:      #C8A96B;  /* Champagne Gold */
+      --gold2:     #D8BD87;  /* derived — midpoint toward Light Gold, unchanged role */
+      --gold3:     #E5D2A3;  /* Light Gold */
+      --gold-soft: rgba(200,169,107,.14);
 
-      /* ── Cultural Accent Colors (used for Societies/Chapters/Cabinet
-           color-coding and semantic status: teal=success/active,
-           saffron=warning/pending, ruby=danger/revoked, indigo=info) ── */
-      --ruby:      #9B5964;   /* گہرا سرخ */
-      --ruby-soft: rgba(155,89,100,.10);
-      --teal:      #4F8F8A;   /* مور پنکھی */
-      --teal-soft: rgba(79,143,138,.11);
-      --saffron:   #C07830;   /* زعفران */
-      --saffron-soft: rgba(192,120,48,.12); /* FIX: was rgba(226,138,43,.12), out of sync with --saffron */
-      --indigo:    #5060A8;   /* نیلا */
-      --indigo-soft: rgba(80,96,168,.12);
+      /* ── Cultural Accent Colors (unchanged — used for Societies/Chapters/Cabinet
+           color-coding; not part of the Phase 4 institutional palette, left as-is
+           on purpose to avoid an unrequested redesign of that system) ── */
+      --ruby:      #B5485D;   /* گہرا سرخ */
+      --ruby-soft: rgba(181,72,93,.12);
+      --teal:      #168A86;   /* مور پنکھی */
+      --teal-soft: rgba(22,138,134,.12);
+      --saffron:   #E28A2B;   /* زعفران */
+      --saffron-soft: rgba(226,138,43,.12);
+      --indigo:    #4A5BC7;   /* نیلا */
       --henna:     #8A3D24;   /* مہندی */
 
       /* ── Surfaces ── */
-      --cream:     #F5F2EA;  /* Ivory */
-      --cream2:    #EDE9DF;
-      --sand:      #E8E3D8;
-      --white:     #FDFBF7;
+      --cream:     #F8F5EE;  /* Ivory */
+      --cream2:    #EFE9DA;  /* derived — slightly deeper Ivory tint, unchanged role */
+      --white:     #FFFFFF;
       --ink:       #20252B;  /* Charcoal */
-      --muted:     #6B7280;  /* Muted Text */
-      --border:    #DDD8CE;  /* Border */
-      --card:      #FDFBF7;
+      --muted:     #667085;  /* Muted Text */
+      --border:    #E5E7EB;  /* Border */
+      --card:      #FFFFFF;
 
-      --radius: 10px;
-      --shadow:    0 6px 24px rgba(11,31,51,.07);
-      --shadow-lg: 0 16px 52px rgba(11,31,51,.12);
-      --ff-display: 'Manrope', 'Inter', Georgia, sans-serif;
+      --radius: 12px;
+      --shadow:    0 8px 30px rgba(11,31,51,.10);
+      --shadow-lg: 0 18px 60px rgba(11,31,51,.16);
+      --ff-display: 'Playfair Display', Georgia, serif;
       --ff-body:    'Inter', system-ui, sans-serif;
-      --ff-urdu:    'Noto Nastaliq Urdu', serif;
-      --trans: .25s ease;
+      --trans: .28s ease;
     }
     [data-theme="dark"] {
       --cream:  #0A121E;
@@ -325,15 +312,12 @@
     .ev-table tr:last-child td { border-bottom: none; }
     .ev-table tr:hover td { background: rgba(201,151,43,.04); }
     .badge { display: inline-block; padding: .25rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
-    /* ALIGNED to theme semantic tokens (was raw Tailwind hex, disconnected from the rest of the
-       status/badge system which already uses var(--teal)/var(--ruby) elsewhere) — see Global
-       Theme Fix Report. Semantic meaning preserved: blue=info, yellow=warning/pending, green=success/active. */
-    .badge-blue   { background: var(--indigo-soft); color: var(--indigo); }
-    .badge-yellow { background: var(--saffron-soft); color: var(--saffron); }
-    .badge-green  { background: var(--teal-soft); color: var(--teal); }
-    [data-theme="dark"] .badge-blue   { background: var(--indigo-soft); color: var(--indigo); }
-    [data-theme="dark"] .badge-yellow { background: var(--saffron-soft); color: var(--saffron); }
-    [data-theme="dark"] .badge-green  { background: var(--teal-soft); color: var(--teal); }
+    .badge-blue   { background: #dbeafe; color: #1e40af; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-green  { background: #dcfce7; color: #166534; }
+    [data-theme="dark"] .badge-blue   { background: rgba(30,64,175,.25); color: #93c5fd; }
+    [data-theme="dark"] .badge-yellow { background: rgba(146,64,14,.25); color: #fcd34d; }
+    [data-theme="dark"] .badge-green  { background: rgba(22,101,52,.25); color: #86efac; }
 
     /* ─── MEMBERSHIP ─── */
     .mem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
@@ -1006,12 +990,9 @@
     .admin-table tr:last-child td { border-bottom:none; }
     .admin-table tr:hover td { background:rgba(200,146,42,.04); }
     .status-pill { display:inline-block; padding:.2rem .65rem; border-radius:999px; font-size:.72rem; font-weight:700; }
-    /* ALIGNED to theme semantic tokens — see Global Theme Fix Report. .sp-sold left as-is:
-       purple has no existing equivalent in the theme's semantic set and inventing one
-       would be a new design decision, out of scope for this fix. */
-    .sp-active   { background: var(--teal-soft); color: var(--teal); }
-    .sp-pending  { background: var(--saffron-soft); color: var(--saffron); }
-    .sp-listed   { background: var(--indigo-soft); color: var(--indigo); }
+    .sp-active   { background:#dcfce7; color:#166534; }
+    .sp-pending  { background:#fef3c7; color:#92400e; }
+    .sp-listed   { background:#dbeafe; color:#1e40af; }
     .sp-sold     { background:#f3e8ff; color:#6b21a8; }
 
     /* Analytics Panel */
@@ -1306,7 +1287,11 @@
 
   
 /* ── FINAL PROFESSIONAL STRUCTURE PATCH ── */
-/* CONSOLIDATED: duplicate :root (font tokens) merged into main :root above — see Global Theme Fix Report */
+:root{
+  --ff-display:'Manrope','Inter',Arial,sans-serif;
+  --ff-body:'Inter',system-ui,sans-serif;
+  --ff-urdu:'Noto Nastaliq Urdu','Noto Nastaliq','Jameel Noori Nastaleeq','Noto Naskh Arabic',serif;
+}
 .hero-title{
   direction:ltr !important;
   text-align:center;
@@ -1377,7 +1362,11 @@
 
   
 /* FINAL POLISH — animated front page, English-first, professional typography */
-/* CONSOLIDATED: duplicate :root (font tokens) merged into main :root above — see Global Theme Fix Report */
+:root{
+  --ff-display:'Manrope','Inter',Arial,sans-serif;
+  --ff-body:'Inter',system-ui,sans-serif;
+  --ff-urdu:'Noto Nastaliq Urdu',serif;
+}
 body{font-family:var(--ff-body);}
 .hero{
   min-height:100vh;
@@ -1458,7 +1447,15 @@ body{font-family:var(--ff-body);}
    SHAOOR V5 — INSTITUTIONAL BRAND / UX OVERRIDES
    Visual layer only: existing HTML structure, IDs, Supabase and JS remain.
    ================================================================ */
-/* CONSOLIDATED: duplicate/conflicting :root token override merged into main :root above — see Global Theme Fix Report */
+:root{
+  --navy:#0B1F33 !important; --navy2:#182544 !important; --navy3:#205072 !important;
+  --teal:#168A86 !important; --indigo:#4A5BC7 !important; --ruby:#B5485D !important;
+  --gold:#C8A96B !important; --gold2:#E6BD59 !important; --gold3:#F6D98E !important;
+  --cream:#F8F5EE !important; --cream2:#EEE8DC !important; --ink:#20252B !important;
+  --muted:#667085 !important; --border:#DDD7CB !important; --card:#FFFFFF !important;
+  --radius:16px !important; --shadow:0 10px 32px rgba(11,31,51,.08) !important;
+  --shadow-lg:0 22px 60px rgba(11,31,51,.14) !important;
+}
 body{background:var(--cream);color:var(--ink)}
 
 /* Shared institutional surfaces */
@@ -1616,7 +1613,26 @@ footer{background:#0B1224!important}
    Content / IDs / JS / Supabase intentionally preserved.
    This layer changes presentation, not the application logic.
    ============================================================ */
-/* CONSOLIDATED: duplicate/conflicting :root token override merged into main :root above — see Global Theme Fix Report */
+:root{
+  --navy:#0B1F33!important;
+  --navy2:#182544!important;
+  --navy3:#205072!important;
+  --teal:#168A86!important;
+  --indigo:#4A5BC7!important;
+  --ruby:#B5485D!important;
+  --gold:#C8A96B!important;
+  --gold2:#E6BD59!important;
+  --gold3:#F6D98E!important;
+  --cream:#F8F5EE!important;
+  --cream2:#EEE8DC!important;
+  --ink:#20252B!important;
+  --muted:#667085!important;
+  --border:#DED8CC!important;
+  --card:#FFFFFF!important;
+  --radius:18px!important;
+  --shadow:0 12px 36px rgba(11,31,51,.08)!important;
+  --shadow-lg:0 24px 70px rgba(11,31,51,.16)!important;
+}
 body{
   background:var(--cream)!important;
   color:var(--ink)!important;
@@ -2174,7 +2190,21 @@ footer{background:#0B1224!important}
    Existing copy, IDs, links, Supabase and JS behavior remain intact.
    ================================================================ */
 :root{
-  /* CONSOLIDATED: color/surface tokens merged into main :root above — see Global Theme Fix Report */
+  --navy:#0B1F33;
+  --navy2:#182544;
+  --navy3:#205072;
+  --teal:#168A86;
+  --indigo:#4A5BC7;
+  --ruby:#B5485D;
+  --gold:#C8A96B;
+  --gold2:#E6BD59;
+  --gold3:#F6D98E;
+  --cream:#F8F5EE;
+  --cream2:#EEE8DC;
+  --ink:#20252B;
+  --muted:#667085;
+  --border:#E5E7EB;
+  --card:#FFFFFF;
   --page-shadow:0 14px 40px rgba(11,31,51,.10);
   --page-shadow-lg:0 24px 70px rgba(11,31,51,.16);
 }
@@ -2415,8 +2445,7 @@ td{color:var(--ink)!important;border-bottom-color:var(--border)!important;}
 }
 
 /* ═══ SHAOOR V5.1 — SOFT DAY / REFINED INSTITUTIONAL POLISH ═══ */
-/* REMOVED (dead code): this :root block had no !important and was fully overridden by later !important
-   blocks — it never actually rendered. Consolidated/removed per Global Theme Fix Report. */
+:root{--navy:#15223A;--navy2:#213452;--navy3:#2B4966;--gold:#B98E39;--gold2:#D7B567;--gold3:#E8CF97;--teal:#4F8582;--ruby:#935566;--indigo:#5968B7;--cream:#F4F1EA;--cream2:#ECE7DC;--card:#FBFAF7;--ink:#334056;--muted:#737D8D;--border:#DDD8CC;--shadow:0 12px 32px rgba(21,34,58,.07);--shadow-lg:0 24px 64px rgba(21,34,58,.11)}
 [data-theme="dark"]{--cream:#080F1C;--cream2:#0D1829;--card:#101E35;--ink:#F0E8D8;--muted:#A7A99F;--border:#1C2E4A;--navy:#0B1F33;--navy2:#182544;--navy3:#274462;--teal:#4FA09B;--gold:#C8A96B;--gold2:#F0C75E;--gold3:#E5D2A3;--ruby:#C46A7D;--shadow:0 12px 38px rgba(0,0,0,.36);--shadow-lg:0 22px 70px rgba(0,0,0,.46)}
 body{background:var(--cream);color:var(--ink)}
 .navbar{background:color-mix(in srgb,var(--cream) 92%,transparent)!important;backdrop-filter:blur(16px)}[data-theme="dark"] .navbar{background:rgba(8,15,28,.88)!important}
@@ -2445,10 +2474,50 @@ body{background:var(--cream);color:var(--ink)}
    ================================================================ */
 
 /* ── 1. DESIGN TOKENS ── */
-/* CONSOLIDATED: this was the final, actually-live !important override block — its values are
-   now the canonical values in the main :root at the top of this stylesheet. See Global Theme
-   Fix Report. (--saffron-soft has been corrected there to match --saffron; this block never
-   set --saffron-soft, which is what caused the mismatch.) */
+:root {
+  /* Muted Champagne Gold — replaces bright gold */
+  --gold:      #B8A06A !important;
+  --gold2:     #C8B07A !important;
+  --gold3:     #D4C7A3 !important;
+  --gold-soft: rgba(184,160,106,.13) !important;
+
+  /* Navy — unchanged, refined shadows */
+  --navy:      #0B1F33 !important;
+  --navy2:     #172340 !important;
+  --navy3:     #1E3055 !important;
+
+  /* Cultural accents — muted */
+  --teal:      #4F8F8A !important;
+  --teal-soft: rgba(79,143,138,.11) !important;
+  --ruby:      #9B5964 !important;
+  --ruby-soft: rgba(155,89,100,.10) !important;
+  --indigo:    #5060A8 !important;
+  --saffron:   #C07830 !important;
+
+  /* Surfaces — warm ivory system */
+  --cream:     #F5F2EA !important;
+  --cream2:    #EDE9DF !important;
+  --sand:      #E8E3D8 !important;
+  --white:     #FDFBF7 !important;
+  --card:      #FDFBF7 !important;
+
+  /* Typography */
+  --ink:       #20252B !important;
+  --muted:     #6B7280 !important;
+  --border:    #DDD8CE !important;
+
+  /* Spacing & shape */
+  --radius:    10px !important;
+  --shadow:    0 6px 24px rgba(11,31,51,.07) !important;
+  --shadow-lg: 0 16px 52px rgba(11,31,51,.12) !important;
+
+  /* Typography */
+  --ff-display: 'Manrope', 'Inter', Georgia, sans-serif !important;
+  --ff-body:    'Inter', system-ui, sans-serif !important;
+  --ff-urdu:    'Noto Nastaliq Urdu', serif !important;
+
+  --trans: .25s ease !important;
+}
 
 [data-theme="dark"] {
   --cream:     #0A1020 !important;
@@ -4009,7 +4078,6 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Punjab Chapter</div>
-            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4034,7 +4102,6 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">KPK Chapter</div>
-            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4059,7 +4126,6 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Sindh Chapter</div>
-            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4084,7 +4150,6 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Balochistan Chapter</div>
-            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4109,7 +4174,6 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Azad Kashmir Chapter</div>
-            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -4134,7 +4198,6 @@ select.form-input {
         <div class="chapter-hero">
           <div>
             <div class="ch-province">Gilgit-Baltistan Chapter</div>
-            <img class="ch-logo" src="" alt="" style="display:none;height:44px;width:44px;object-fit:contain;border-radius:8px;margin-top:.5rem;" />
             <div class="ch-tagline">HQ loading…</div>
           </div>
           <div class="ch-badge"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</div>
@@ -6738,10 +6801,7 @@ select.form-input {
           </div>
           <div>
             <small style="color:var(--muted);font-size:.76rem;letter-spacing:.05em;text-transform:uppercase;">Society / Chapter</small>
-            <div style="display:flex;align-items:center;gap:.5rem;margin-top:.2rem;">
-              <img id="mdChapterLogo" src="" alt="" style="display:none;height:26px;width:26px;object-fit:contain;border-radius:4px;" />
-              <div id="mdMemberSociety" style="font-weight:600;font-size:.9rem;color:var(--teal);">—</div>
-            </div>
+            <div id="mdMemberSociety" style="font-weight:600;font-size:.9rem;margin-top:.2rem;color:var(--teal);">—</div>
           </div>
         </div>
       </div>
@@ -8486,6 +8546,7 @@ select.form-input {
           <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
           <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
             <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editSociety('${s.id}')">Edit</button>
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForSociety('${s.id}')"><i class="fas fa-file-signature"></i> Document</button>
             <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteSociety('${s.id}')">حذف</button>
           </td>
         </tr>`;
@@ -9065,6 +9126,7 @@ select.form-input {
           <td><span class="status-pill ${statusClass[st] || 'sp-listed'}">${statusLabel[st] || st}</span></td>
           <td>
             <button onclick="viewEventAttendance('${ev.id}', '${(ev.title||'').replace(/'/g,"\\'")}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;"><i class="fas fa-clipboard-check"></i> Attendance</button>
+            <button onclick="openDocumentForEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;"><i class="fas fa-file-signature"></i> Invitation</button>
             <button onclick="editEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
             <button onclick="deleteEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
           </td>
@@ -10395,7 +10457,7 @@ select.form-input {
 
     const { data: seats, error } = await sb
       .from('chapter_society_cabinet')
-      .select('id, role, status, societies(name), profiles(full_name)')
+      .select('id, role, status, member_id, society_id, societies(name), profiles(full_name)')
       .eq('chapter_id', chapterId)
       .order('role');
 
@@ -10407,7 +10469,10 @@ select.form-input {
       list.innerHTML = seats.map(s => `
         <div style="display:flex;justify-content:space-between;align-items:center;background:var(--cream2);padding:.5rem .75rem;border-radius:8px;">
           <span style="font-size:.85rem;"><strong>${sanitize(s.societies?.name || '—')}</strong> — ${sanitize(s.role)}: ${sanitize(s.profiles?.full_name || 'خالی نشست')}</span>
-          <button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--ruby);" onclick="removeCabinetSeat('${s.id}', '${chapterId}')">ہٹائیں</button>
+          <span style="display:flex;gap:.4rem;">
+            ${s.member_id ? `<button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForLeadership('${s.member_id}', '${sanitize(s.role).replace(/'/g, "\\'")}', '${s.society_id || ''}', '${chapterId}')"><i class="fas fa-file-signature"></i></button>` : ''}
+            <button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--ruby);" onclick="removeCabinetSeat('${s.id}', '${chapterId}')">ہٹائیں</button>
+          </span>
         </div>`).join('');
     }
 
@@ -10493,13 +10558,11 @@ select.form-input {
     const provNameEl = panel.querySelector('.ch-province');
     const taglineEl = panel.querySelector('.ch-tagline');
     const badgeEl = panel.querySelector('.ch-badge');
-    const logoEl = panel.querySelector('.ch-logo');
     const dslEl = document.getElementById('dsl-' + prov);
     const seatsGridEl = panel.querySelector('.seats-grid');
     const csTitleEl = panel.querySelector('.cs-title');
 
     if (!chapter) {
-      if (logoEl) logoEl.style.display = 'none';
       if (taglineEl) taglineEl.textContent = 'یہ Chapter ابھی رجسٹرڈ نہیں۔';
       if (badgeEl) badgeEl.innerHTML = '<i class="fas fa-hourglass-half"></i> Coming Soon';
       if (dslEl) dslEl.innerHTML = '<div style="color:rgba(255,255,255,.5);font-size:.85rem;">ابھی کوئی Society شامل نہیں۔</div>';
@@ -10508,11 +10571,6 @@ select.form-input {
     }
 
     if (provNameEl && chapter.name) provNameEl.textContent = chapter.name;
-    // FIX: chapter logo was fetched (select('*') already includes logo_url) but never rendered anywhere in this panel.
-    if (logoEl) {
-      if (chapter.logo_url) { logoEl.src = chapter.logo_url; logoEl.style.display = ''; }
-      else { logoEl.style.display = 'none'; }
-    }
     if (taglineEl) taglineEl.textContent = chapter.hq_city ? ('HQ: ' + chapter.hq_city) : '—';
     if (badgeEl) {
       if (chapter.status === 'active') badgeEl.innerHTML = '<i class="fas fa-check-circle"></i> Active Chapter';
@@ -10555,7 +10613,7 @@ select.form-input {
 
     const { data: seats, error } = await sb
       .from('cabinet_members')
-      .select('id, position, bio, photo_url, profiles(full_name, avatar_url)')
+      .select('id, position, bio, photo_url, member_id, profiles(full_name, avatar_url)')
       .is('chapter_id', null)
       .is('society_id', null)
       .order('position');
@@ -10575,6 +10633,7 @@ select.form-input {
         '<td>' + sanitize(s.position || '') + '</td>' +
         '<td style="max-width:260px;">' + sanitize((s.bio || '').slice(0, 80)) + (s.bio && s.bio.length > 80 ? '…' : '') + '</td>' +
         '<td>' +
+          (s.member_id ? '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;margin-left:.3rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForCentralCabinet(\'' + s.member_id + '\', \'' + sanitize(s.position || '').replace(/'/g, "\\'") + '\')"><i class="fas fa-file-signature"></i></button>' : '') +
           '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;margin-left:.3rem;" onclick="editCentralCabinetSeat(\'' + s.id + '\')"><i class="fas fa-edit"></i></button>' +
           '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCentralCabinetSeat(\'' + s.id + '\')"><i class="fas fa-trash"></i></button>' +
         '</td>' +
@@ -12021,13 +12080,107 @@ select.form-input {
     recipientField.value = label.replace(/\s*\([^)]*\)\s*$/, '').trim();
   }
 
-  async function openGeneratedDocumentModal() {
+  // Context-aware entry point for the ONE existing Generated Documents modal.
+  // `ctx` is optional and every key is optional — this is what lets Society /
+  // Society Member / Leadership / Central Cabinet / Event entry points reuse
+  // the exact same modal, dropdowns, DOC_TYPE_FIELD_GROUPS, numbering and save
+  // logic instead of a second document system. Called with no args (the plain
+  // "New Document" button) it behaves exactly as before.
+  async function openGeneratedDocumentModal(ctx) {
+    ctx = ctx || {};
     await populateDocumentDropdowns();
     document.getElementById('documentForm').reset();
     document.getElementById('docId').value = '';
-    document.getElementById('docType').value = 'note';
+    document.getElementById('docType').value = ctx.docType || 'note';
     onDocumentTypeChange();
+
+    const socSel = document.getElementById('docSocietySelect');
+    if (socSel && ctx.societyId) socSel.value = ctx.societyId;
+    const chapSel = document.getElementById('docChapterSelect');
+    if (chapSel && ctx.chapterId) chapSel.value = ctx.chapterId;
+
+    const memberSel = document.getElementById('docMemberSelect');
+    if (memberSel && ctx.memberId) {
+      memberSel.value = ctx.memberId;
+      // Only follow through if the member actually exists in the dropdown
+      // (guards against a stale/removed profile id being passed in).
+      if (memberSel.value === ctx.memberId) onDocMemberSelected();
+    }
+    // Recipient name as plain text fallback — used when there is a real name
+    // (e.g. from an Event's stored data) but no matching profile id to select.
+    const recipientField = document.getElementById('docRecipient');
+    if (recipientField && ctx.recipientName && !ctx.memberId) recipientField.value = ctx.recipientName;
+
+    const desigField = document.getElementById('docDesignation');
+    if (desigField && ctx.designation) desigField.value = ctx.designation;
+
+    const evNameField = document.getElementById('docEventName');
+    if (evNameField && ctx.eventName) evNameField.value = ctx.eventName;
+    const evDateField = document.getElementById('docEventDate');
+    if (evDateField && ctx.eventDate) evDateField.value = ctx.eventDate;
+    const evTimeField = document.getElementById('docEventTime');
+    if (evTimeField && ctx.eventTime) evTimeField.value = ctx.eventTime;
+    const venueField = document.getElementById('docVenue');
+    if (venueField && ctx.venue) venueField.value = ctx.venue;
+
     openModal('documentModal');
+  }
+
+  /* ── Organizational entry points — each is a thin wrapper that gathers real,
+     already-existing context and hands it to the ONE openGeneratedDocumentModal()
+     above. No new modal, no new document system. ── */
+
+  // Society row (Organization panel) — prefills society, defaults to Note.
+  function openDocumentForSociety(societyId) {
+    openGeneratedDocumentModal({ societyId, docType: 'note' });
+  }
+
+  // Society Member row (All Members panel) — uses the same _membersCache the
+  // table itself was rendered from, so no extra query is needed.
+  function openDocumentForMember(memberId) {
+    const m = (_membersCache || []).find(x => x.id === memberId);
+    openGeneratedDocumentModal({
+      memberId,
+      societyId: m ? m.society_id : undefined,
+      chapterId: m ? m.chapter_id : undefined,
+      docType: 'note'
+    });
+  }
+
+  // Society/Chapter leadership seat (Chapter Manage modal → cabinet list) —
+  // prefills member, society, chapter and designation (=seat role); defaults
+  // to Appointment since that is the primary leadership document type.
+  function openDocumentForLeadership(memberId, role, societyId, chapterId) {
+    openGeneratedDocumentModal({
+      memberId, designation: role || '', societyId, chapterId,
+      docType: 'appointment'
+    });
+  }
+
+  // Central Cabinet seat — organization-wide, no society/chapter context.
+  function openDocumentForCentralCabinet(memberId, position) {
+    openGeneratedDocumentModal({ memberId, designation: position || '', docType: 'appointment' });
+  }
+
+  // Event row — prefills the Invitation fields already stored on the event.
+  // events.society/chapter are free-text (not FK columns — see Phase-1 known-issue
+  // notes), so society_id is only set when the text exactly matches an existing
+  // society name; otherwise it's left for the admin to pick, rather than guessing.
+  async function openDocumentForEvent(eventId) {
+    const { data: ev, error } = await sb.from('events').select('title, event_date, venue, society').eq('id', eventId).single();
+    if (error || !ev) { showToast('Event لوڈ نہیں ہو سکا', 'error'); return; }
+    let societyId;
+    if (ev.society) {
+      const { data: match } = await sb.from('societies').select('id').eq('name', ev.society).maybeSingle();
+      if (match) societyId = match.id;
+    }
+    openGeneratedDocumentModal({
+      docType: 'invitation',
+      eventName: ev.title || '',
+      eventDate: ev.event_date || '',
+      venue: ev.venue || '',
+      societyId
+    });
   }
 
   async function editGeneratedDocument(id) {
@@ -13191,6 +13344,7 @@ select.form-input {
       const actions = [];
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="openEditMember('${m.id}')">Edit</button>`);
+      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForMember('${m.id}')"><i class="fas fa-file-signature"></i> Document</button>`);
       if (m.status !== 'active') {
         actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="setMemberStatus('${m.id}','active')">Approve</button>`);
       }
@@ -14569,33 +14723,23 @@ select.form-input {
         .eq('id', userId)
         .single();
 
-      let societyName = '', chapterName = '', chapterLogoUrl = '', societyLogoUrl = '';
+      let societyName = '', chapterName = '';
       if (appData && appData.society_id) {
-        const { data: soc } = await sb.from('societies').select('name, logo_url').eq('id', appData.society_id).single();
+        const { data: soc } = await sb.from('societies').select('name').eq('id', appData.society_id).single();
         societyName = soc ? soc.name : '';
-        societyLogoUrl = soc ? soc.logo_url : '';
       }
       if (appData && appData.chapter_id) {
-        const { data: chap } = await sb.from('chapters').select('name, logo_url').eq('id', appData.chapter_id).single();
+        const { data: chap } = await sb.from('chapters').select('name').eq('id', appData.chapter_id).single();
         chapterName = chap ? chap.name : '';
-        chapterLogoUrl = chap ? chap.logo_url : '';
       }
 
       if (appData) {
         const statusEl = document.getElementById('mdMembershipStatus');
         const tierEl   = document.getElementById('mdMembershipTier');
         const socEl    = document.getElementById('mdMemberSociety');
-        const chapLogoEl = document.getElementById('mdChapterLogo');
         if (statusEl) statusEl.textContent = appData.status || '—';
         if (tierEl)   tierEl.textContent   = appData.membership_type || '—';
         if (socEl)    socEl.textContent    = (societyName || '') + (chapterName ? ' · ' + chapterName : '') || '—';
-        // FIX: chapter logo — prefer chapter's own logo, fall back to society logo, else hide (same
-        // preference order already used by Generated Documents' renderDocumentHeader).
-        if (chapLogoEl) {
-          const logoToShow = chapterLogoUrl || societyLogoUrl || '';
-          if (logoToShow) { chapLogoEl.src = logoToShow; chapLogoEl.style.display = ''; }
-          else { chapLogoEl.style.display = 'none'; }
-        }
 
         // Status badge color
         if (statusEl) {
