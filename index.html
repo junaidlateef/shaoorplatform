@@ -12143,13 +12143,28 @@ select.form-input {
         '<div style="font-size:.65rem;color:rgba(255,255,255,.7);border-top:1px solid rgba(255,255,255,.35);padding-top:.15rem;">' + sanitize(label) + '</div>';
       sigHolder.appendChild(block);
     });
+
+    // Official seal — a distinct authentication mark, added alongside the signature
+    // blocks (never merged into any signature, never substituting the logo). Unlike the
+    // signature images above, the seal keeps its own colors/detail, so no invert filter
+    // is applied. Gracefully omitted when brand_settings.seal_url is unset.
+    if (brand.seal_url) {
+      const sealBlock = document.createElement('div');
+      sealBlock.style.cssText = 'text-align:center;';
+      sealBlock.innerHTML = '<img src="' + brand.seal_url + '" alt="Official Seal" style="height:52px;width:52px;object-fit:contain;display:block;margin:0 auto;" />';
+      sigHolder.appendChild(sealBlock);
+    }
   }
 
   /* ── Shared renderer: populates the certificate view/print area for a given certificate row
      and its member profile, applies its template + signatures, and opens the modal.
      Used by both the admin "view certificate" action AND the public ?verify_cert= flow,
-     so a public visitor sees the same templated design an admin would. ── */
-  async function renderCertificateView(c, prof) {
+     so a public visitor sees the same templated design an admin would.
+     `token` is the caller's active-request token (see _certRenderToken below) — if a newer
+     certificate view has started by the time our async work finishes, we discard our result
+     instead of overwriting whatever the newer view already rendered. ── */
+  async function renderCertificateView(c, prof, token) {
+    if (token !== _certRenderToken) return; // a newer certificate view has already started
     document.getElementById('vcTitle').textContent = c.certificate_title;
     document.getElementById('vcId').textContent = c.certificate_id;
     document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + (prof.member_id || '')) : '—';
@@ -12170,27 +12185,33 @@ select.form-input {
 
     // Apply template design (if any) and signature blocks (from brand_settings)
     const { data: brand } = await sb.from('brand_settings').select('*').limit(1).maybeSingle();
+    if (token !== _certRenderToken) return; // stale by the time brand_settings resolved — discard
     let templateConfig = null;
     if (c.template_id) {
       const { data: tmpl } = await sb.from('certificate_templates').select('config').eq('id', c.template_id).maybeSingle();
       templateConfig = tmpl ? tmpl.config : null;
     }
+    if (token !== _certRenderToken) return; // stale by the time the template resolved — discard
     applyCertificateTemplate(templateConfig, brand);
 
     openModal('viewCertificateModal');
   }
 
+  var _certRenderToken = 0;
   async function viewCertificate(id) {
+    const myToken = ++_certRenderToken;
     const { data: c, error } = await sb
       .from('certificates')
       .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name')
       .eq('id', id)
       .single();
 
+    if (myToken !== _certRenderToken) return; // a newer certificate view started while this was loading
     if (error || !c) { showToast('سرٹیفکیٹ لوڈ نہیں ہو سکا', 'error'); return; }
 
     const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
-    await renderCertificateView(c, prof);
+    if (myToken !== _certRenderToken) return; // stale — a newer view has since started
+    await renderCertificateView(c, prof, myToken);
   }
 
   /* ══════════════════════════════════════════════════════════════════════
@@ -12548,8 +12569,16 @@ select.form-input {
         <div style="font-size:.72rem;border-top:1px solid #999;padding-top:.2rem;min-width:120px;">${sanitize(authorityLabel || label)}</div>
       </div>`;
     }).join('');
-    if (!blocks) return '';
-    return `<div style="display:flex;justify-content:center;gap:2rem;margin-top:2.5rem;flex-wrap:wrap;">${blocks}</div>`;
+    // Official seal — a separate authentication mark, not a signature. Rendered alongside
+    // the signature blocks (never merged into any of them) so it stays independently
+    // visible in preview, print, and download output. Gracefully omitted when unset.
+    const sealBlock = (brand && brand.seal_url)
+      ? `<div style="text-align:center;">
+          <img src="${brand.seal_url}" style="height:58px;width:58px;object-fit:contain;display:block;margin:0 auto;" alt="Official Seal" />
+        </div>`
+      : '';
+    if (!blocks && !sealBlock) return '';
+    return `<div style="display:flex;justify-content:center;align-items:flex-end;gap:2rem;margin-top:2.5rem;flex-wrap:wrap;">${blocks}${sealBlock}</div>`;
   }
 
   function renderDocumentFooter(brand, docNumber) {
@@ -12587,12 +12616,17 @@ select.form-input {
     return `<div style="font-size:.92rem;line-height:1.7;">${meta}${subject}<div style="margin-top:.8rem;white-space:pre-wrap;">${bodyText}</div></div>`;
   }
 
-  async function renderGeneratedDocumentView(d) {
+  /* `token` is the caller's active-request token (see _docRenderToken below) — if a newer
+     document view/download has started by the time our async work finishes, we discard our
+     result instead of overwriting whatever the newer request already rendered. Returns
+     true if the write happened, false if it was discarded as stale. */
+  async function renderGeneratedDocumentView(d, token) {
     const [{ data: brand }, societyRes, chapterRes] = await Promise.all([
       sb.from('brand_settings').select('*').limit(1).maybeSingle(),
       d.society_id ? sb.from('societies').select('name, logo_url').eq('id', d.society_id).maybeSingle() : Promise.resolve({ data: null }),
       d.chapter_id ? sb.from('chapters').select('name, logo_url').eq('id', d.chapter_id).maybeSingle() : Promise.resolve({ data: null })
     ]);
+    if (token !== _docRenderToken) return false; // a newer document view/download has since started
     const society = societyRes.data;
     const chapter = chapterRes.data;
     const sigKeys = (d.extra && d.extra.signature_keys) || [];
@@ -12603,14 +12637,19 @@ select.form-input {
       renderDocumentFooter(brand, d.document_number);
 
     document.getElementById('documentPrintArea').innerHTML = html;
+    return true;
   }
 
+  var _docRenderToken = 0;
   var _currentViewedDocId = null;
   async function viewGeneratedDocument(id) {
+    const myToken = ++_docRenderToken;
     const { data: d, error } = await sb.from('generated_documents').select('*').eq('id', id).single();
+    if (myToken !== _docRenderToken) return; // a newer document view/download started while this loaded
     if (error || !d) { showToast('دستاویز لوڈ نہیں ہو سکی', 'error'); return; }
     _currentViewedDocId = id;
-    await renderGeneratedDocumentView(d);
+    const rendered = await renderGeneratedDocumentView(d, myToken);
+    if (!rendered || myToken !== _docRenderToken) return; // stale — don't pop the modal for a superseded view
     openModal('viewDocumentModal');
   }
 
@@ -12618,9 +12657,12 @@ select.form-input {
   // Renders the document into the (hidden) print area, then triggers the same
   // popup-print-to-PDF flow the View modal's button uses.
   async function downloadRowDocument(id) {
+    const myToken = ++_docRenderToken;
     const { data: d, error } = await sb.from('generated_documents').select('*').eq('id', id).single();
+    if (myToken !== _docRenderToken) return; // superseded by a newer view/download click
     if (error || !d) { showToast('دستاویز لوڈ نہیں ہو سکی', 'error'); return; }
-    await renderGeneratedDocumentView(d);
+    const rendered = await renderGeneratedDocumentView(d, myToken);
+    if (!rendered || myToken !== _docRenderToken) return; // stale — don't print a superseded render
     printGeneratedDocument();
   }
 
@@ -13113,7 +13155,8 @@ select.form-input {
 
     // Show the actual certificate (with its assigned template applied) to the public visitor,
     // not just a status toast — reuses the same renderer the admin "view" action uses.
-    await renderCertificateView(c, prof);
+    const verifyToken = ++_certRenderToken;
+    await renderCertificateView(c, prof, verifyToken);
   })();
 
   /* ── Public verification: if URL has ?verify_doc=DOCUMENT_NUMBER, look it up and show result.
@@ -13148,7 +13191,8 @@ select.form-input {
 
     // Show the actual generated document (with official branding applied) to the public
     // visitor — reuses the same renderer the admin/member "view" actions already use.
-    await renderGeneratedDocumentView(d);
+    const verifyDocToken = ++_docRenderToken;
+    await renderGeneratedDocumentView(d, verifyDocToken);
   })();
 
   /* If a member's session is already active on page load, show their dashboard automatically */
