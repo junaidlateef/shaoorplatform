@@ -4887,10 +4887,7 @@ select.form-input {
       <div class="dash-panel" id="dp-documents">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
           <h3 style="font-weight:700;">Official Documents</h3>
-          <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
-            <button class="btn btn-outline" style="font-size:.85rem;" onclick="exportGeneratedDocumentsCSV()"><i class="fas fa-file-csv"></i> Export CSV</button>
-            <button class="btn btn-gold" style="font-size:.85rem;" onclick="openGeneratedDocumentModal()"><i class="fas fa-plus"></i> New Document</button>
-          </div>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openGeneratedDocumentModal()"><i class="fas fa-plus"></i> New Document</button>
         </div>
         <div style="overflow-x:auto;">
           <table class="admin-table" id="generatedDocumentsTable">
@@ -12193,37 +12190,13 @@ select.form-input {
         <td>${sanitize((d.created_at || '').slice(0, 10))}</td>
         <td><span class="status-pill" style="background:${sc.bg};color:#fff;">${sc.label}</span></td>
         <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewGeneratedDocument('${d.id}')">View / Print</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewGeneratedDocument('${d.id}')">View</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="editGeneratedDocument('${d.id}')">Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="downloadRowDocument('${d.id}')"><i class="fas fa-download"></i> Download</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteGeneratedDocument('${d.id}')">Delete</button>
         </td>
       </tr>`;
     }).join('');
-  }
-
-  /* ── Export the Official Documents list (whatever is currently loaded) as CSV ── */
-  function exportGeneratedDocumentsCSV() {
-    if (!_generatedDocumentsCache || _generatedDocumentsCache.length === 0) {
-      showToast('کوئی دستاویز موجود نہیں جسے ایکسپورٹ کیا جا سکے', 'error');
-      return;
-    }
-    const headers = ['Document Number', 'Type', 'Title', 'Recipient', 'Society', 'Chapter', 'Date', 'Status'];
-    const esc = v => '"' + String(v === null || v === undefined ? '' : v).replace(/"/g, '""') + '"';
-    const lines = [headers.map(esc).join(',')];
-    _generatedDocumentsCache.forEach(d => {
-      lines.push([
-        d.document_number || '', DOC_TYPE_LABELS[d.document_type] || d.document_type, d.title || '', d.recipient || '',
-        d.societies ? d.societies.name : '', d.chapters ? d.chapters.name : '', (d.created_at || '').slice(0, 10), d.status || ''
-      ].map(esc).join(','));
-    });
-    const csvContent = '\uFEFF' + lines.join('\r\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'SHAOOR-Documents-' + new Date().toISOString().slice(0, 10) + '.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('✓ ' + _generatedDocumentsCache.length + ' دستاویزیں ایکسپورٹ ہو گئیں');
   }
 
   /* ── Shared branding building blocks — reused by every document type, so a fix or
@@ -12318,6 +12291,16 @@ select.form-input {
     _currentViewedDocId = id;
     await renderGeneratedDocumentView(d);
     openModal('viewDocumentModal');
+  }
+
+  // One-click download straight from the table row — no need to open View first.
+  // Renders the document into the (hidden) print area, then triggers the same
+  // popup-print-to-PDF flow the View modal's button uses.
+  async function downloadRowDocument(id) {
+    const { data: d, error } = await sb.from('generated_documents').select('*').eq('id', id).single();
+    if (error || !d) { showToast('دستاویز لوڈ نہیں ہو سکی', 'error'); return; }
+    await renderGeneratedDocumentView(d);
+    printGeneratedDocument();
   }
 
   // Same popup-window print/PDF technique as downloadCertificateAsPDF() — kept
