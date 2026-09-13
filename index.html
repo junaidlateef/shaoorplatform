@@ -8546,6 +8546,7 @@ select.form-input {
           <td><span class="status-pill" style="background:${statusBg};color:#fff;padding:.3rem .7rem;font-size:.75rem;border-radius:4px;">${statusLabel}</span></td>
           <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
             <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy2);" onclick="editSociety('${s.id}')">Edit</button>
+            <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForSociety('${s.id}')"><i class="fas fa-file-signature"></i> Document</button>
             <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteSociety('${s.id}')">حذف</button>
           </td>
         </tr>`;
@@ -9125,6 +9126,7 @@ select.form-input {
           <td><span class="status-pill ${statusClass[st] || 'sp-listed'}">${statusLabel[st] || st}</span></td>
           <td>
             <button onclick="viewEventAttendance('${ev.id}', '${(ev.title||'').replace(/'/g,"\\'")}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;"><i class="fas fa-clipboard-check"></i> Attendance</button>
+            <button onclick="openDocumentForEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;"><i class="fas fa-file-signature"></i> Invitation</button>
             <button onclick="editEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
             <button onclick="deleteEvent('${ev.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
           </td>
@@ -10455,7 +10457,7 @@ select.form-input {
 
     const { data: seats, error } = await sb
       .from('chapter_society_cabinet')
-      .select('id, role, status, societies(name), profiles(full_name)')
+      .select('id, role, status, member_id, society_id, societies(name), profiles(full_name)')
       .eq('chapter_id', chapterId)
       .order('role');
 
@@ -10467,7 +10469,10 @@ select.form-input {
       list.innerHTML = seats.map(s => `
         <div style="display:flex;justify-content:space-between;align-items:center;background:var(--cream2);padding:.5rem .75rem;border-radius:8px;">
           <span style="font-size:.85rem;"><strong>${sanitize(s.societies?.name || '—')}</strong> — ${sanitize(s.role)}: ${sanitize(s.profiles?.full_name || 'خالی نشست')}</span>
-          <button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--ruby);" onclick="removeCabinetSeat('${s.id}', '${chapterId}')">ہٹائیں</button>
+          <span style="display:flex;gap:.4rem;">
+            ${s.member_id ? `<button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForLeadership('${s.member_id}', '${sanitize(s.role).replace(/'/g, "\\'")}', '${s.society_id || ''}', '${chapterId}')"><i class="fas fa-file-signature"></i></button>` : ''}
+            <button class="art-buy" style="padding:.25rem .6rem;font-size:.72rem;background:var(--ruby);" onclick="removeCabinetSeat('${s.id}', '${chapterId}')">ہٹائیں</button>
+          </span>
         </div>`).join('');
     }
 
@@ -10608,7 +10613,7 @@ select.form-input {
 
     const { data: seats, error } = await sb
       .from('cabinet_members')
-      .select('id, position, bio, photo_url, profiles(full_name, avatar_url)')
+      .select('id, position, bio, photo_url, member_id, profiles(full_name, avatar_url)')
       .is('chapter_id', null)
       .is('society_id', null)
       .order('position');
@@ -10628,6 +10633,7 @@ select.form-input {
         '<td>' + sanitize(s.position || '') + '</td>' +
         '<td style="max-width:260px;">' + sanitize((s.bio || '').slice(0, 80)) + (s.bio && s.bio.length > 80 ? '…' : '') + '</td>' +
         '<td>' +
+          (s.member_id ? '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;margin-left:.3rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForCentralCabinet(\'' + s.member_id + '\', \'' + sanitize(s.position || '').replace(/'/g, "\\'") + '\')"><i class="fas fa-file-signature"></i></button>' : '') +
           '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;margin-left:.3rem;" onclick="editCentralCabinetSeat(\'' + s.id + '\')"><i class="fas fa-edit"></i></button>' +
           '<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCentralCabinetSeat(\'' + s.id + '\')"><i class="fas fa-trash"></i></button>' +
         '</td>' +
@@ -12074,13 +12080,107 @@ select.form-input {
     recipientField.value = label.replace(/\s*\([^)]*\)\s*$/, '').trim();
   }
 
-  async function openGeneratedDocumentModal() {
+  // Context-aware entry point for the ONE existing Generated Documents modal.
+  // `ctx` is optional and every key is optional — this is what lets Society /
+  // Society Member / Leadership / Central Cabinet / Event entry points reuse
+  // the exact same modal, dropdowns, DOC_TYPE_FIELD_GROUPS, numbering and save
+  // logic instead of a second document system. Called with no args (the plain
+  // "New Document" button) it behaves exactly as before.
+  async function openGeneratedDocumentModal(ctx) {
+    ctx = ctx || {};
     await populateDocumentDropdowns();
     document.getElementById('documentForm').reset();
     document.getElementById('docId').value = '';
-    document.getElementById('docType').value = 'note';
+    document.getElementById('docType').value = ctx.docType || 'note';
     onDocumentTypeChange();
+
+    const socSel = document.getElementById('docSocietySelect');
+    if (socSel && ctx.societyId) socSel.value = ctx.societyId;
+    const chapSel = document.getElementById('docChapterSelect');
+    if (chapSel && ctx.chapterId) chapSel.value = ctx.chapterId;
+
+    const memberSel = document.getElementById('docMemberSelect');
+    if (memberSel && ctx.memberId) {
+      memberSel.value = ctx.memberId;
+      // Only follow through if the member actually exists in the dropdown
+      // (guards against a stale/removed profile id being passed in).
+      if (memberSel.value === ctx.memberId) onDocMemberSelected();
+    }
+    // Recipient name as plain text fallback — used when there is a real name
+    // (e.g. from an Event's stored data) but no matching profile id to select.
+    const recipientField = document.getElementById('docRecipient');
+    if (recipientField && ctx.recipientName && !ctx.memberId) recipientField.value = ctx.recipientName;
+
+    const desigField = document.getElementById('docDesignation');
+    if (desigField && ctx.designation) desigField.value = ctx.designation;
+
+    const evNameField = document.getElementById('docEventName');
+    if (evNameField && ctx.eventName) evNameField.value = ctx.eventName;
+    const evDateField = document.getElementById('docEventDate');
+    if (evDateField && ctx.eventDate) evDateField.value = ctx.eventDate;
+    const evTimeField = document.getElementById('docEventTime');
+    if (evTimeField && ctx.eventTime) evTimeField.value = ctx.eventTime;
+    const venueField = document.getElementById('docVenue');
+    if (venueField && ctx.venue) venueField.value = ctx.venue;
+
     openModal('documentModal');
+  }
+
+  /* ── Organizational entry points — each is a thin wrapper that gathers real,
+     already-existing context and hands it to the ONE openGeneratedDocumentModal()
+     above. No new modal, no new document system. ── */
+
+  // Society row (Organization panel) — prefills society, defaults to Note.
+  function openDocumentForSociety(societyId) {
+    openGeneratedDocumentModal({ societyId, docType: 'note' });
+  }
+
+  // Society Member row (All Members panel) — uses the same _membersCache the
+  // table itself was rendered from, so no extra query is needed.
+  function openDocumentForMember(memberId) {
+    const m = (_membersCache || []).find(x => x.id === memberId);
+    openGeneratedDocumentModal({
+      memberId,
+      societyId: m ? m.society_id : undefined,
+      chapterId: m ? m.chapter_id : undefined,
+      docType: 'note'
+    });
+  }
+
+  // Society/Chapter leadership seat (Chapter Manage modal → cabinet list) —
+  // prefills member, society, chapter and designation (=seat role); defaults
+  // to Appointment since that is the primary leadership document type.
+  function openDocumentForLeadership(memberId, role, societyId, chapterId) {
+    openGeneratedDocumentModal({
+      memberId, designation: role || '', societyId, chapterId,
+      docType: 'appointment'
+    });
+  }
+
+  // Central Cabinet seat — organization-wide, no society/chapter context.
+  function openDocumentForCentralCabinet(memberId, position) {
+    openGeneratedDocumentModal({ memberId, designation: position || '', docType: 'appointment' });
+  }
+
+  // Event row — prefills the Invitation fields already stored on the event.
+  // events.society/chapter are free-text (not FK columns — see Phase-1 known-issue
+  // notes), so society_id is only set when the text exactly matches an existing
+  // society name; otherwise it's left for the admin to pick, rather than guessing.
+  async function openDocumentForEvent(eventId) {
+    const { data: ev, error } = await sb.from('events').select('title, event_date, venue, society').eq('id', eventId).single();
+    if (error || !ev) { showToast('Event لوڈ نہیں ہو سکا', 'error'); return; }
+    let societyId;
+    if (ev.society) {
+      const { data: match } = await sb.from('societies').select('id').eq('name', ev.society).maybeSingle();
+      if (match) societyId = match.id;
+    }
+    openGeneratedDocumentModal({
+      docType: 'invitation',
+      eventName: ev.title || '',
+      eventDate: ev.event_date || '',
+      venue: ev.venue || '',
+      societyId
+    });
   }
 
   async function editGeneratedDocument(id) {
@@ -13244,6 +13344,7 @@ select.form-input {
       const actions = [];
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="openEditMember('${m.id}')">Edit</button>`);
+      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForMember('${m.id}')"><i class="fas fa-file-signature"></i> Document</button>`);
       if (m.status !== 'active') {
         actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="setMemberStatus('${m.id}','active')">Approve</button>`);
       }
