@@ -5346,22 +5346,38 @@ select.form-input {
       transition: all .2s;
     }
     .lms-filter-btn.active, .lms-filter-btn:hover { background: var(--teal, #4f8582); color: #fff; }
+    /* Phase 3A — LMS card visuals aligned to the existing .blog-card design system
+       (same border/shadow/theme tokens as Media/Posts) instead of hardcoded rgba values.
+       Markup structure, business logic and click targets are unchanged. */
     .lms-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.5rem;
     }
     .lms-card {
-      border: 1px solid rgba(0,0,0,.08); border-radius: 14px; overflow: hidden;
-      background: var(--card-bg, #fff); transition: transform .2s, box-shadow .2s;
+      border-radius: var(--radius) !important;
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: var(--shadow) !important;
+      overflow: hidden; transition: all var(--trans);
       display: flex; flex-direction: column;
     }
-    .lms-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,.08); }
-    .lms-card-thumb {
-      height: 160px; background: linear-gradient(135deg, var(--teal, #4f8582), var(--gold, #c9a44c));
-      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.2rem;
+    .lms-card:hover {
+      transform: translateY(-4px) !important;
+      box-shadow: var(--shadow-lg) !important;
+      border-color: rgba(184,160,106,.30) !important;
     }
+    .lms-card-thumb {
+      height: 160px; background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.2rem;
+      overflow: hidden; position: relative; flex-shrink: 0;
+    }
+    .lms-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .lms-card-body { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
-    .lms-card-title { font-weight: 700; font-size: 1.05rem; }
+    .lms-card-title { font-weight: 700; font-size: 1.05rem; color: var(--ink); line-height: 1.4; }
+    .lms-card-desc {
+      font-size: .85rem; color: var(--muted); line-height: 1.5; margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
     .lms-card-meta { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: var(--muted); }
     .lms-badge { padding: .2rem .6rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
     .lms-badge-free { background: #e4f5ec; color: #1f8b4c; }
@@ -5475,7 +5491,7 @@ select.form-input {
       try {
         var result = await sb
           .from('courses')
-          .select('id, slug, title, category, level, duration_label, is_paid, price, currency, thumbnail_url, certificate_available, course_code, status')
+          .select('id, slug, title, description, category, level, duration_label, is_paid, price, currency, thumbnail_url, certificate_available, course_code, status')
           .eq('status', 'published')
           .order('created_at', { ascending: false });
 
@@ -5527,20 +5543,27 @@ select.form-input {
           ? '<span class="lms-badge" style="background:#eef1f7;color:#3a4a6b;">Certificate</span>'
           : '';
 
+        // Phase 3A: short description on the card — reuses the existing single
+        // `description` column (lead paragraph before the first blank line, the
+        // same "short + full" convention the admin form already writes), sanitized
+        // like every other user-entered field rendered elsewhere in this file.
+        var shortDesc = (course.description || '').split('\n\n')[0];
+
         card.innerHTML =
           '<div class="lms-card-thumb">' +
             (course.thumbnail_url
-              ? '<img src="' + course.thumbnail_url + '" alt="" style="width:100%;height:100%;object-fit:cover;">'
+              ? '<img src="' + sanitize(course.thumbnail_url) + '" alt="' + sanitize(course.title || '') + '" loading="lazy">'
               : '<i class="fas fa-palette"></i>') +
           '</div>' +
           '<div class="lms-card-body">' +
-            '<div class="lms-card-title">' + (course.title || 'Untitled Course') + '</div>' +
+            '<div class="lms-card-title">' + sanitize(course.title || 'Untitled Course') + '</div>' +
+            (shortDesc ? '<p class="lms-card-desc">' + sanitize(shortDesc) + '</p>' : '') +
             '<div class="lms-card-meta">' +
               priceBadge + certBadge +
-              (course.level ? '<span class="lms-badge" style="background:#f2f2f2;">' + course.level + '</span>' : '') +
-              (course.duration_label ? '<span>' + course.duration_label + '</span>' : '') +
+              (course.level ? '<span class="lms-badge" style="background:#f2f2f2;">' + sanitize(course.level) + '</span>' : '') +
+              (course.duration_label ? '<span>' + sanitize(course.duration_label) + '</span>' : '') +
             '</div>' +
-            '<a href="#course/' + course.slug + '" class="lms-card-cta" onclick="showCourseDetail(\'' + course.slug + '\');return false;">VIEW COURSE</a>' +
+            '<a href="#course/' + encodeURIComponent(course.slug) + '" class="lms-card-cta" onclick="showCourseDetail(\'' + course.slug.replace(/'/g, "\\'") + '\');return false;">VIEW COURSE</a>' +
           '</div>';
         grid.appendChild(card);
       });
