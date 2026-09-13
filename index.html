@@ -1120,22 +1120,15 @@
 .market-tag { display:inline-flex; font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#8C6500; background:#FFF4CB; padding:.28rem .55rem; border-radius:999px; }
 .seat-pill { font-size:.72rem; padding:.32rem .6rem; border-radius:999px; background:#F7F4EC; color:#3d382f; border:1px solid rgba(17,17,17,.07); }
 .seat-row { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.8rem; }
-.admin-shell { display:grid; grid-template-columns:220px 1fr; min-height:520px; }
-.admin-shell { grid-template-columns:1fr; }
-.admin-side { background:#111; color:#fff; padding:1rem; }
-.admin-side h4 { color:var(--gold); margin:.4rem .6rem 1rem; }
-.admin-side { display:flex; gap:.5rem; overflow:auto; }
+/* .admin-shell / .admin-side / .admin-main: consolidated into ONE definition — see
+   "ADMIN SIDEBAR — SINGLE SOURCE OF TRUTH" block further down. Do not re-add rules here. */
 .admin-side h4 { display:none; }
-.admin-main { padding:1.25rem; background:var(--cream); overflow:auto; }
 .admin-stat { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1rem; }
 .admin-stat b { display:block; font-size:1.55rem; font-family:var(--ff-display); color:var(--gold); }
 .admin-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; margin-bottom:1rem; }
 .admin-cards { grid-template-columns:1fr 1fr; }
 .admin-cards { grid-template-columns:1fr; }
 .admin-badge { display:inline-block; padding:.2rem .55rem; border-radius:999px; font-size:.7rem; font-weight:700; background:rgba(255,191,0,.15); color:var(--gold); }
-.admin-nav-btn { width:100%; text-align:left; border:0; background:transparent; color:rgba(255,255,255,.75); padding:.75rem .7rem; border-radius:8px; cursor:pointer; font-weight:600; }
-.admin-nav-btn:hover,.admin-nav-btn.active { background:rgba(255,191,0,.14); color:#fff; }
-.admin-nav-btn { width:auto; white-space:nowrap; }
 .admin-link { display:inline-flex; align-items:center; gap:.4rem; padding:.55rem .8rem; border:1px solid rgba(255,191,0,.65); border-radius:8px; color:var(--navy); font-size:.78rem; font-weight:800; }
 .admin-link:hover { background:var(--gold); }
 .admin-link { font-size:.78rem; font-weight:700; color:var(--gold); border:1px solid var(--gold); border-radius:999px; padding:.42rem .8rem; }
@@ -1226,29 +1219,46 @@
     .ch-st-soon { background: rgba(139,92,246,.15); color: #c4b5fd; border: 1px solid rgba(139,92,246,.25); }
 
 
-    /* ═══ ADMIN SIDEBAR ═══ */
+    /* ══════════════════════════════════════════════════════════════════════
+       ADMIN SIDEBAR — SINGLE SOURCE OF TRUTH
+       This project previously had .admin-shell / .admin-side / .admin-side-logo /
+       .admin-nav-btn / .admin-main / .dtab redefined in ~9 separate places across
+       this file, each with !important, each slightly different, all fighting the
+       cascade. That is what caused the recurring layout glitches. Every one of
+       those duplicates has been removed — this is now the ONLY place these
+       selectors are defined. If the admin panel ever needs a layout change,
+       make it HERE and nowhere else.
+       ══════════════════════════════════════════════════════════════════════ */
     .admin-shell {
-      display: flex; height: 100%;
+      display: flex; height: 100%; min-height: calc(100vh - 62px);
+      background: var(--card); border-color: var(--border);
     }
     .admin-side {
       width: 220px; background: var(--navy); flex-shrink: 0;
       padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: .4rem;
       border-right: 1px solid rgba(255,255,255,.08);
-      height: 100vh; position: sticky; top: 0; overflow-y: auto;
+      height: 100vh; position: sticky; top: 0; overflow-y: auto; overflow-x: visible;
+      color: #fff;
     }
-    .admin-side-logo { font-family: var(--ff-display); font-size: 1.2rem; font-weight: 900; color: #fff; padding: .5rem .75rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: .5rem; }
+    .admin-side-logo {
+      font-family: var(--ff-display); font-size: 1.2rem; font-weight: 900; color: #fff;
+      padding: .5rem .75rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.08);
+      margin-bottom: .5rem;
+    }
     .admin-side-logo span { color: var(--gold2); }
     .admin-nav-btn {
       display: flex; align-items: center; gap: .65rem;
       padding: .65rem .85rem; border-radius: 8px; border: none;
-      background: transparent; color: rgba(255,255,255,.55);
+      background: transparent; color: rgba(255,255,255,.82);
       font-size: .88rem; font-weight: 500; cursor: pointer; width: 100%;
-      text-align: left; transition: all .22s;
+      text-align: left; transition: all .22s; white-space: nowrap;
     }
     .admin-nav-btn:hover { background: rgba(255,255,255,.07); color: #fff; }
     .admin-nav-btn.active { background: rgba(200,146,42,.18); color: var(--gold2); }
-    .admin-nav-btn i { width: 16px; text-align: center; }
-    .admin-main { flex: 1; overflow-y: auto; }
+    .admin-nav-btn i { width: 16px; text-align: center; color: var(--gold3, var(--gold)); flex: 0 0 auto; }
+    .admin-nav-btn.active i, .admin-nav-btn:hover i { color: var(--gold3, var(--gold)); }
+    .admin-main { flex: 1; overflow-y: auto; background: var(--cream); }
+    [data-theme="dark"] .admin-main { background: #0D1829; }
     .admin-stat {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 10px; padding: 1.25rem;
@@ -1258,9 +1268,19 @@
     .admin-stat:nth-child(3) { border-top-color: var(--ruby); }
     .admin-stat:nth-child(4) { border-top-color: var(--indigo); }
     .admin-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .7rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+    .dtab {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--muted); font-weight: 600;
+      transition: all var(--trans, .22s);
+    }
+    .dtab.active { background: var(--navy); border-color: var(--navy); color: #fff; }
     @media(max-width:768px){
       .admin-shell { flex-direction: column; }
-      .admin-side { width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; padding: .75rem; position: relative; }
+      .admin-side {
+        width: 100%; height: auto; position: relative;
+        flex-direction: row; flex-wrap: wrap; gap: .35rem;
+        padding: .75rem; overflow-x: auto;
+      }
       .admin-side-logo { display: none; }
       .admin-nav-btn { width: auto; font-size: .78rem; padding: .5rem .75rem; }
     }
@@ -1529,22 +1549,14 @@ footer{background:#0B1224!important}
 .dash-user span{color:rgba(255,255,255,.58)!important}
 .dash-logout{background:rgba(181,72,93,.18)!important;border-color:rgba(181,72,93,.32)!important}
 .dash-logout:hover{background:var(--ruby)!important}
-.admin-shell{grid-template-columns:238px 1fr!important;background:#fff!important;border:0!important;border-radius:0!important;min-height:calc(100vh - 62px)!important}
-.admin-side{background:var(--navy)!important;color:#fff!important;padding:1.35rem 1rem!important;display:flex!important;flex-direction:column!important;gap:.18rem!important;overflow:visible!important}
-.admin-side-logo{font-family:Arial,Helvetica,sans-serif!important;font-weight:900!important;font-size:1.35rem!important;color:#fff!important;padding:.2rem .6rem 1.25rem!important;letter-spacing:-.04em!important}
-.admin-side-logo span{color:var(--gold3)!important;font-size:.68em!important;font-weight:700!important;margin-left:.25rem}
-.admin-nav-btn{border-radius:10px!important;padding:.72rem .8rem!important;color:rgba(255,255,255,.68)!important}
-.admin-nav-btn:hover,.admin-nav-btn.active{background:rgba(200,169,107,.13)!important;color:#fff!important}
-.admin-nav-btn i{width:18px!important;text-align:center!important;color:var(--gold3)!important}
-.admin-main{background:var(--cream)!important;overflow:auto!important}
+/* .admin-shell/.admin-side/.admin-nav-btn/.admin-main: see SINGLE SOURCE OF TRUTH block. */
 .dash-body{max-width:1280px!important;padding:2rem 1.6rem!important}
 .dash-stats{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:1rem!important;margin-bottom:1.25rem!important}
 .ds-card{border-radius:14px!important;border:1px solid var(--border)!important;border-left:4px solid var(--gold)!important;box-shadow:0 6px 18px rgba(11,31,51,.04)!important}
 .ds-card:nth-child(2){border-left-color:var(--teal)!important} .ds-card:nth-child(3){border-left-color:var(--indigo)!important} .ds-card:nth-child(4){border-left-color:var(--ruby)!important}
 .ds-num{color:var(--navy)!important}
 .dash-tabs{gap:.55rem!important}
-.dtab{border-radius:10px!important;background:#fff!important;border-color:var(--border)!important}
-.dtab.active{background:var(--navy)!important;border-color:var(--navy)!important}
+/* .dtab: see SINGLE SOURCE OF TRUTH block. */
 .admin-table{border-radius:14px!important;box-shadow:0 8px 24px rgba(11,31,51,.05)!important}
 .admin-table th{background:var(--navy)!important;padding:1rem!important}
 .admin-table td{padding:.95rem 1rem!important}
@@ -1582,10 +1594,7 @@ footer{background:#0B1224!important}
 :focus-visible{outline:3px solid rgba(22,138,134,.42)!important;outline-offset:3px!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 @media (max-width: 980px){
- .admin-shell{grid-template-columns:1fr!important}
- .admin-side{flex-direction:row!important;overflow:auto!important;padding:.75rem!important;white-space:nowrap!important}
- .admin-side-logo{display:none!important}
- .admin-nav-btn{width:auto!important;white-space:nowrap!important}
+ /* .admin-shell/.admin-side/.admin-nav-btn responsive rules: see SINGLE SOURCE OF TRUTH block. */
  .dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media (max-width: 640px){
@@ -1997,26 +2006,7 @@ footer{background:#0B1224!important}
   background:var(--navy)!important;
   border-bottom:1px solid rgba(255,255,255,.09)!important;
 }
-.admin-shell{
-  grid-template-columns:245px minmax(0,1fr)!important;
-  background:#fff!important;
-}
-.admin-side{
-  background:var(--navy)!important;
-  padding:1.2rem!important;
-  color:#fff!important;
-}
-.admin-nav-btn{
-  border-radius:11px!important;
-  color:rgba(255,255,255,.68)!important;
-  padding:.75rem .85rem!important;
-}
-.admin-nav-btn:hover,.admin-nav-btn.active{
-  background:rgba(200,169,107,.14)!important;
-  color:#fff!important;
-}
-.admin-nav-btn i{color:var(--gold3)!important;width:20px!important}
-.admin-main{background:var(--cream)!important;padding:0!important}
+/* .admin-shell/.admin-side/.admin-nav-btn/.admin-main: see SINGLE SOURCE OF TRUTH block. */
 .dash-body{max-width:1320px!important;padding:2.1rem 1.7rem!important}
 .dash-stats{gap:1rem!important}
 .ds-card{
@@ -2026,12 +2016,7 @@ footer{background:#0B1224!important}
   box-shadow:0 8px 22px rgba(11,31,51,.05)!important;
 }
 .ds-num{color:var(--navy)!important}
-.dtab{
-  background:#fff!important;
-  border:1px solid var(--border)!important;
-  border-radius:10px!important;
-}
-.dtab.active{background:var(--navy)!important;border-color:var(--navy)!important}
+/* .dtab: see SINGLE SOURCE OF TRUTH block. */
 .admin-table{
   background:#fff!important;
   border:1px solid var(--border)!important;
@@ -2173,9 +2158,7 @@ footer{background:#0B1224!important}
 /* ---------- RESPONSIVE ---------- */
 @media (max-width:1050px){
   .nav-links{gap:.9rem!important}
-  .admin-shell{grid-template-columns:1fr!important}
-  .admin-side{display:flex!important;flex-direction:row!important;overflow:auto!important;gap:.35rem!important}
-  .admin-side > *{flex:0 0 auto!important}
+  /* .admin-shell/.admin-side responsive rules: see SINGLE SOURCE OF TRUTH block. */
   .dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media (max-width:700px){
@@ -2439,12 +2422,9 @@ td{color:var(--ink)!important;border-bottom-color:var(--border)!important;}
 [data-theme="dark"] th{background:#0D1829!important;color:#AEB8C7!important;}
 [data-theme="dark"] td{color:#EDE9E1!important;border-bottom-color:#233551!important;}
 
-/* ADMIN / MEMBER */
-.admin-shell,.member-shell{background:var(--card)!important;border-color:var(--border)!important;box-shadow:var(--page-shadow-lg)!important;}
-.admin-side{background:#0B1F33!important;}
-.admin-main{background:var(--cream2)!important;}
+/* ADMIN / MEMBER — .admin-shell/.admin-side/.admin-main: see SINGLE SOURCE OF TRUTH block. */
+.member-shell{background:var(--card)!important;border-color:var(--border)!important;box-shadow:var(--page-shadow-lg)!important;}
 .dash-stat,.dash-card,.admin-table,.member-panel{background:var(--card)!important;border-color:var(--border)!important;color:var(--ink)!important;}
-[data-theme="dark"] .admin-main{background:#0D1829!important;}
 .admin-table td,.admin-table th,.dtab,.member-panel *{color:inherit;}
 
 /* MOBILE */
@@ -3095,36 +3075,8 @@ footer { background: #080D1C !important; }
 }
 .admin-btn:hover { background: #A8905A !important; }
 
-/* Admin dashboard */
-.admin-shell {
-  grid-template-columns: 230px minmax(0,1fr) !important;
-}
-.admin-side {
-  background: var(--navy) !important;
-  border-right: 1px solid rgba(255,255,255,.07) !important;
-  padding: 1.25rem 1rem !important;
-}
-.admin-side-logo {
-  font-family: var(--ff-display) !important;
-  color: #fff !important;
-  border-bottom-color: rgba(255,255,255,.07) !important;
-  padding-bottom: 1rem !important;
-  margin-bottom: .6rem !important;
-}
-.admin-side-logo span { color: var(--gold2) !important; }
-.admin-nav-btn {
-  color: rgba(255,255,255,.55) !important;
-  border-radius: 8px !important;
-  font-size: .86rem !important;
-  font-weight: 500 !important;
-  padding: .65rem .8rem !important;
-  gap: .6rem !important;
-}
-.admin-nav-btn:hover { background: rgba(255,255,255,.06) !important; color: #fff !important; }
-.admin-nav-btn.active { background: rgba(184,160,106,.14) !important; color: #fff !important; }
-.admin-nav-btn i { color: var(--gold2) !important; }
-.admin-main { background: var(--cream) !important; }
-[data-theme="dark"] .admin-main { background: var(--cream) !important; }
+/* Admin dashboard — .admin-shell/.admin-side/.admin-nav-btn/.admin-main:
+   see SINGLE SOURCE OF TRUTH block. */
 .dash-top { background: var(--navy) !important; border-bottom: 1px solid rgba(255,255,255,.08) !important; }
 .ds-card {
   background: var(--card) !important;
@@ -3165,19 +3117,7 @@ footer { background: #080D1C !important; }
   color: var(--gold) !important;
   border-radius: 999px !important;
 }
-.dtab {
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 7px !important;
-  color: var(--muted) !important;
-  font-weight: 600 !important;
-  transition: all var(--trans) !important;
-}
-.dtab.active {
-  background: var(--navy) !important;
-  border-color: var(--navy) !important;
-  color: #fff !important;
-}
+/* .dtab: see SINGLE SOURCE OF TRUTH block. */
 .status-pill { border-radius: 999px !important; font-size: .72rem !important; font-weight: 700 !important; }
 
 /* ── 20. MEMBER DASHBOARD ── */
@@ -3288,17 +3228,7 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
 }
 
 /* ── 28. RESPONSIVE ── */
-@media (max-width: 1024px) {
-  .admin-shell { grid-template-columns: 1fr !important; }
-  .admin-side {
-    display: flex !important; flex-direction: row !important;
-    flex-wrap: wrap !important; gap: .3rem !important;
-    height: auto !important; position: relative !important;
-    width: 100% !important; overflow-x: auto !important;
-  }
-  .admin-side-logo { display: none !important; }
-  .admin-nav-btn { width: auto !important; font-size: .78rem !important; padding: .5rem .7rem !important; }
-}
+/* .admin-shell/.admin-side responsive rules @1024px: see SINGLE SOURCE OF TRUTH block. */
 @media (max-width: 768px) {
   .hero-inner { grid-template-columns: 1fr !important; text-align: center !important; }
   .institutional-hero-copy { align-items: center !important; }
@@ -3817,18 +3747,7 @@ select.form-input {
 }
 </style>
 <style id="shaoor-contrast-fix-patch">
-/* Additive: guarantee visible text for admin sidebar nav buttons and footer-bottom links,
-   regardless of which earlier cascade layer was winning before. */
-.admin-nav-btn, .admin-nav-btn i {
-  color: rgba(255,255,255,.82) !important;
-}
-.admin-nav-btn:hover, .admin-nav-btn.active {
-  color: #fff !important;
-  background: rgba(200,169,107,.20) !important;
-}
-.admin-nav-btn.active i, .admin-nav-btn:hover i {
-  color: var(--gold3, var(--gold)) !important;
-}
+/* .admin-nav-btn text/hover contrast: see SINGLE SOURCE OF TRUTH block (already includes this). */
 .footer-bottom, .footer-bottom span {
   color: rgba(255,255,255,.55) !important;
 }
@@ -3848,40 +3767,7 @@ select.form-input {
   color: #111 !important;
 }
 
-/* Admin sidebar nav: guarantee each item is a clearly separated, readable row
-   (icon + label) on the dark navy background, on every breakpoint. */
-.admin-side {
-  background: var(--navy) !important;
-}
-.admin-side .admin-nav-btn {
-  display: flex !important;
-  align-items: center !important;
-  gap: .55rem !important;
-  color: rgba(255,255,255,.85) !important;
-  background: transparent !important;
-  white-space: nowrap !important;
-  margin-bottom: .2rem !important;
-}
-.admin-side .admin-nav-btn i {
-  color: var(--gold3, var(--gold)) !important;
-  flex: 0 0 auto !important;
-}
-.admin-side .admin-nav-btn:hover,
-.admin-side .admin-nav-btn.active {
-  background: rgba(200,169,107,.22) !important;
-  color: #fff !important;
-}
-@media (max-width: 1024px) {
-  .admin-side {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    gap: .4rem !important;
-  }
-  .admin-side .admin-nav-btn {
-    width: auto !important;
-  }
-}
+/* .admin-side / .admin-nav-btn (all states, all breakpoints): see SINGLE SOURCE OF TRUTH block. */
 .footer-bottom a {
   color: rgba(255,255,255,.85) !important;
 }
@@ -14158,15 +14044,10 @@ select.form-input {
   /* ═══════════════════════════════════════════ END V6 ADDITIONS ═══ */
 
 </script>  <style>
-    /* Admin sidebar width fix — appended last so it wins the cascade
-       over the existing repeated .admin-shell/.admin-side rules above. */
-    .admin-shell { grid-template-columns: 190px minmax(0,1fr) !important; }
-    .admin-side { padding: 1rem .75rem !important; }
-    .admin-nav-btn { font-size: .8rem !important; padding: .6rem .65rem !important; }
-    .admin-nav-btn i { width: 16px !important; }
-    @media (max-width: 900px) {
-      .admin-shell { grid-template-columns: 1fr !important; }
-    }
+    /* No longer needed — .admin-shell/.admin-side/.admin-nav-btn now have exactly ONE
+       definition (search "SINGLE SOURCE OF TRUTH" near the top of the stylesheet).
+       This trailing "appended last so it wins the cascade" patch, and the 8 other
+       conflicting copies it was fighting, have all been removed. */
   </style>
 </body>
 </html>
