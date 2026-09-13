@@ -4887,7 +4887,10 @@ select.form-input {
       <div class="dash-panel" id="dp-documents">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
           <h3 style="font-weight:700;">Official Documents</h3>
-          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openGeneratedDocumentModal()"><i class="fas fa-plus"></i> New Document</button>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+            <button class="btn btn-outline" style="font-size:.85rem;" onclick="exportGeneratedDocumentsCSV()"><i class="fas fa-file-csv"></i> Export CSV</button>
+            <button class="btn btn-gold" style="font-size:.85rem;" onclick="openGeneratedDocumentModal()"><i class="fas fa-plus"></i> New Document</button>
+          </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="admin-table" id="generatedDocumentsTable">
@@ -4915,12 +4918,12 @@ select.form-input {
                 <option value="invitation">Invitation Letter</option>
               </select>
             </div>
-            <div class="form-group"><label for="docMemberSelect">Member (optional)</label><select id="docMemberSelect" class="form-input"><option value="">— No specific member —</option></select></div>
+            <div class="form-group"><label for="docMemberSelect">Member (optional)</label><select id="docMemberSelect" class="form-input" onchange="onDocMemberSelected()"><option value="">— No specific member —</option></select></div>
             <div class="form-group"><label for="docSocietySelect">Society (optional)</label><select id="docSocietySelect" class="form-input"><option value="">— No specific society —</option></select></div>
             <div class="form-group"><label for="docChapterSelect">Chapter (optional)</label><select id="docChapterSelect" class="form-input"><option value="">— No specific chapter —</option></select></div>
             <div class="form-group"><label for="docTitle">Document Title</label><input type="text" id="docTitle" class="form-input" required placeholder="e.g. Official Note / Appointment Letter" /></div>
             <div class="form-group" id="docRecipientGroup"><label for="docRecipient">Recipient (name)</label><input type="text" id="docRecipient" class="form-input" /></div>
-            <div class="form-group" id="docDesignationGroup"><label for="docDesignation">Designation</label><input type="text" id="docDesignation" class="form-input" placeholder="e.g. Chapter President" /></div>
+            <div class="form-group" id="docDesignationGroup"><label for="docDesignation">Designation</label><input type="text" id="docDesignation" class="form-input" list="docDesignationOptions" placeholder="e.g. Chapter President" /><datalist id="docDesignationOptions"></datalist></div>
             <div class="form-group" id="docEffectiveDateGroup"><label for="docEffectiveDate">Effective Date</label><input type="date" id="docEffectiveDate" class="form-input" /></div>
             <div class="form-group" id="docEventNameGroup"><label for="docEventName">Event / Program Name</label><input type="text" id="docEventName" class="form-input" /></div>
             <div class="form-group" id="docEventDateGroup"><label for="docEventDate">Event Date</label><input type="date" id="docEventDate" class="form-input" /></div>
@@ -4950,6 +4953,7 @@ select.form-input {
           <button class="modal-close" onclick="closeModal('viewDocumentModal')">&times;</button>
           <div style="display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
             <button class="btn btn-outline" onclick="printGeneratedDocument()"><i class="fas fa-print"></i> Print / PDF</button>
+            <button class="btn btn-outline" onclick="downloadGeneratedDocumentWord()"><i class="fas fa-file-word"></i> Download Word</button>
           </div>
           <div id="documentPrintArea" style="background:#fff;color:#1a1a1a;padding:2.2rem 2.5rem;border:1px solid #d9d0bd;border-radius:4px;font-family:Georgia,serif;min-height:600px;position:relative;">
             <!-- populated dynamically by renderGeneratedDocumentView() -->
@@ -12041,7 +12045,27 @@ select.form-input {
       const { data: chaps } = await sb.from('chapters').select('id, name').order('name');
       (chaps || []).forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; chapSel.appendChild(o); });
     }
+    // Designation datalist — sourced from real, existing cabinet_members.position values only
+    // (never invented labels), so the field behaves like a dropdown of actual designations
+    // in use while still allowing a free-text one-off if genuinely needed.
+    const desigList = document.getElementById('docDesignationOptions');
+    if (desigList) {
+      const { data: cabRows } = await sb.from('cabinet_members').select('position');
+      const uniquePositions = [...new Set((cabRows || []).map(r => r.position).filter(Boolean))];
+      desigList.innerHTML = uniquePositions.map(p => `<option value="${sanitize(p)}"></option>`).join('');
+    }
     _docDropdownsPopulated = true;
+  }
+
+  // When a member is picked from the dropdown, auto-fill the Recipient name from their
+  // real profile — the admin can still overwrite it, but it's never left to be retyped.
+  function onDocMemberSelected() {
+    const sel = document.getElementById('docMemberSelect');
+    const recipientField = document.getElementById('docRecipient');
+    if (!sel || !recipientField || !sel.value) return;
+    const label = sel.options[sel.selectedIndex].textContent || '';
+    // label is "Full Name (MEMBER-ID)" — strip the trailing "(...)" to get just the name
+    recipientField.value = label.replace(/\s*\([^)]*\)\s*$/, '').trim();
   }
 
   async function openGeneratedDocumentModal() {
@@ -12136,6 +12160,8 @@ select.form-input {
     }
   }
 
+  var _generatedDocumentsCache = [];
+
   async function loadGeneratedDocumentsAdmin() {
     const tbody = document.getElementById('generatedDocumentsBody');
     if (!tbody) return;
@@ -12148,8 +12174,10 @@ select.form-input {
 
     if (error) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ruby);padding:1.5rem;">Failed to load: ' + sanitize(error.message) + '</td></tr>';
+      _generatedDocumentsCache = [];
       return;
     }
+    _generatedDocumentsCache = data || [];
     if (!data || data.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">ابھی کوئی دستاویز نہیں بنائی گئی۔</td></tr>';
       return;
@@ -12171,6 +12199,31 @@ select.form-input {
         </td>
       </tr>`;
     }).join('');
+  }
+
+  /* ── Export the Official Documents list (whatever is currently loaded) as CSV ── */
+  function exportGeneratedDocumentsCSV() {
+    if (!_generatedDocumentsCache || _generatedDocumentsCache.length === 0) {
+      showToast('کوئی دستاویز موجود نہیں جسے ایکسپورٹ کیا جا سکے', 'error');
+      return;
+    }
+    const headers = ['Document Number', 'Type', 'Title', 'Recipient', 'Society', 'Chapter', 'Date', 'Status'];
+    const esc = v => '"' + String(v === null || v === undefined ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [headers.map(esc).join(',')];
+    _generatedDocumentsCache.forEach(d => {
+      lines.push([
+        d.document_number || '', DOC_TYPE_LABELS[d.document_type] || d.document_type, d.title || '', d.recipient || '',
+        d.societies ? d.societies.name : '', d.chapters ? d.chapters.name : '', (d.created_at || '').slice(0, 10), d.status || ''
+      ].map(esc).join(','));
+    });
+    const csvContent = '\uFEFF' + lines.join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'SHAOOR-Documents-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✓ ' + _generatedDocumentsCache.length + ' دستاویزیں ایکسپورٹ ہو گئیں');
   }
 
   /* ── Shared branding building blocks — reused by every document type, so a fix or
@@ -12277,6 +12330,25 @@ select.form-input {
     popup.document.open();
     popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>SHAOOR Document</title><style>@page{size:A4;margin:18mm;}body{background:#fff;font-family:Georgia,serif;}</style></head><body>' + area.outerHTML + '<' + 'script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<' + '/script></body></html>');
     popup.document.close();
+  }
+
+  // A real, openable .doc file — uses the Word-compatible-HTML technique (same content the
+  // print view uses, wrapped in a minimal Word XML namespace declaration), not a fake
+  // renamed .txt file. Opens correctly in Microsoft Word and Google Docs.
+  function downloadGeneratedDocumentWord() {
+    const area = document.getElementById('documentPrintArea');
+    if (!area || !area.innerHTML.trim()) { showToast('دستاویز دستیاب نہیں', 'error'); return; }
+    const htmlDoc = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+      '<head><meta charset="utf-8"><title>SHAOOR Document</title>' +
+      '<style>body{font-family:Georgia,serif;} @page{size:A4;margin:2cm;}</style></head>' +
+      '<body>' + area.innerHTML + '</body></html>';
+    const blob = new Blob(['\ufeff', htmlDoc], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const docNumPart = (document.getElementById('vcId') && document.getElementById('vcId').textContent) || 'SHAOOR-Document';
+    a.href = url; a.download = 'SHAOOR-Document-' + new Date().toISOString().slice(0, 10) + '.doc';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   /* ══════════ Certificate & Card Template Management (Admin) ══════════ */
