@@ -12552,10 +12552,21 @@ select.form-input {
     return `<div style="display:flex;justify-content:center;gap:2rem;margin-top:2.5rem;flex-wrap:wrap;">${blocks}</div>`;
   }
 
-  function renderDocumentFooter(brand) {
+  function renderDocumentFooter(brand, docNumber) {
     const contact = [brand && brand.official_email, brand && brand.official_phone].filter(Boolean).join(' · ');
+    const verifyUrl = docNumber
+      ? window.location.origin + window.location.pathname + '?verify_doc=' + encodeURIComponent(docNumber)
+      : '';
+    const verifyBlock = docNumber
+      ? `<div style="margin-top:1rem;padding-top:.8rem;border-top:1px dashed #ccc;font-size:.72rem;color:#555;">
+          <strong>VERIFY AUTHENTICITY</strong><br>
+          Document ID: ${sanitize(docNumber)}<br>
+          ${sanitize(verifyUrl)}
+        </div>`
+      : '';
     return `<div style="margin-top:2.5rem;border-top:1px solid #ccc;padding-top:.6rem;font-size:.68rem;color:#777;text-align:center;">
       ${sanitize(contact || 'SHAOOR — Professional Arts & Culture Organization')}
+      ${verifyBlock}
     </div>`;
   }
 
@@ -12589,7 +12600,7 @@ select.form-input {
     const html = renderDocumentHeader(brand, society, chapter, d.title, d.document_number, (d.created_at || '').slice(0, 10)) +
       renderDocumentBody(d) +
       renderDocumentSignatures(brand, sigKeys, d.authority) +
-      renderDocumentFooter(brand);
+      renderDocumentFooter(brand, d.document_number);
 
     document.getElementById('documentPrintArea').innerHTML = html;
   }
@@ -13103,6 +13114,41 @@ select.form-input {
     // Show the actual certificate (with its assigned template applied) to the public visitor,
     // not just a status toast — reuses the same renderer the admin "view" action uses.
     await renderCertificateView(c, prof);
+  })();
+
+  /* ── Public verification: if URL has ?verify_doc=DOCUMENT_NUMBER, look it up and show result.
+     Phase 3C: official documents are now verifiable the same way certificates already are.
+     Only non-sensitive fields are exposed (no storage paths, no internal IDs, no private
+     member data beyond the recipient's name) — matches the certificate verification pattern. ── */
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const docNumber = params.get('verify_doc');
+    if (!docNumber) return;
+
+    const { data: d, error } = await sb
+      .from('generated_documents')
+      .select('document_number, document_type, title, status, created_at, member_id')
+      .eq('document_number', docNumber)
+      .single();
+
+    if (error || !d) {
+      showToast('یہ دستاویز موجود نہیں: ' + docNumber, 'error');
+      return;
+    }
+
+    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', d.member_id).single();
+
+    if (d.status === 'issued') {
+      showToast('✓ دستاویز تصدیق شدہ' + (prof ? ' — ' + prof.full_name : ''));
+    } else if (d.status === 'revoked') {
+      showToast('⚠ یہ دستاویز منسوخ کر دی گئی ہے', 'error');
+    } else {
+      showToast('⚠ یہ دستاویز فی الحال جاری کردہ نہیں (status: ' + d.status + ')', 'error');
+    }
+
+    // Show the actual generated document (with official branding applied) to the public
+    // visitor — reuses the same renderer the admin/member "view" actions already use.
+    await renderGeneratedDocumentView(d);
   })();
 
   /* If a member's session is already active on page load, show their dashboard automatically */
