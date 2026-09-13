@@ -4999,234 +4999,208 @@ select.form-input {
       </div>
 
       <!-- Learning Academy Panel (Phase 11) -->
-      <div class="dash-panel" id="dp-learning" style="display:flex;flex-direction:column;gap:1.5rem;">
-
-        <div class="brand-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
-            <h4 class="brand-card-title" style="margin:0;"><i class="fas fa-graduation-cap"></i> Courses</h4>
-            <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCreateCourseModal()"><i class="fas fa-plus"></i> نیا Course</button>
-          </div>
-          <div style="overflow-x:auto;">
-            <table class="admin-table" id="coursesAdminTable">
-              <thead><tr><th>Title</th><th>Category</th><th>Level</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
-              <tbody id="coursesAdminBody">
-                <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Courses لوڈ ہو رہے ہیں…</td></tr>
-              </tbody>
-            </table>
-          </div>
+      <div class="dash-panel" id="dp-learning">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Learning Academy — Courses</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCreateCourseModal()"><i class="fas fa-plus"></i> نیا Course</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="coursesAdminTable">
+            <thead><tr><th>Title</th><th>Category</th><th>Level</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="coursesAdminBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Courses لوڈ ہو رہے ہیں…</td></tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="brand-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
-            <h4 class="brand-card-title" style="margin:0;"><i class="fas fa-user-check"></i> Course Enrollments</h4>
-            <select id="enrollFilterStatus" class="form-input" style="width:auto;font-size:.82rem;" onchange="loadEnrollmentsAdmin()">
-              <option value="">All statuses</option>
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="suspended">Suspended</option>
-            </select>
-          </div>
-          <div style="overflow-x:auto;">
-            <table class="admin-table" id="enrollmentsAdminTable">
-              <thead><tr><th>Member</th><th>Course</th><th>Status</th><th>Payment</th><th>Enrolled On</th><th>Actions</th></tr></thead>
-              <tbody id="enrollmentsAdminBody">
-                <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Enrollments لوڈ ہو رہے ہیں…</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:2rem 0 1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Course Enrollments</h3>
+          <select id="enrollFilterStatus" class="form-input" style="width:auto;font-size:.82rem;" onchange="loadEnrollmentsAdmin()">
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="enrollmentsAdminTable">
+            <thead><tr><th>Member</th><th>Course</th><th>Status</th><th>Payment</th><th>Enrolled On</th><th>Actions</th></tr></thead>
+            <tbody id="enrollmentsAdminBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Enrollments لوڈ ہو رہے ہیں…</td></tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="brand-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
-            <h4 class="brand-card-title" style="margin:0;"><i class="fas fa-video"></i> Live Classes (Google Meet)</h4>
-            <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCreateLiveSessionModal()"><i class="fas fa-plus"></i> نیا Live Session</button>
-          </div>
-          <div style="overflow-x:auto;">
-            <table class="admin-table" id="liveSessionsAdminTable">
-              <thead><tr><th>Course</th><th>Title</th><th>Scheduled</th><th>Status</th><th>Recording</th><th>Actions</th></tr></thead>
-              <tbody id="liveSessionsAdminBody">
-                <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Live Sessions لوڈ ہو رہے ہیں…</td></tr>
-              </tbody>
-            </table>
-          </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:2rem 0 1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Live Classes (Google Meet)</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCreateLiveSessionModal()"><i class="fas fa-plus"></i> نیا Live Session</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="liveSessionsAdminTable">
+            <thead><tr><th>Course</th><th>Title</th><th>Scheduled</th><th>Status</th><th>Recording</th><th>Actions</th></tr></thead>
+            <tbody id="liveSessionsAdminBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Live Sessions لوڈ ہو رہے ہیں…</td></tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="brand-card">
-          <h4 class="brand-card-title"><i class="fab fa-whatsapp"></i> Platform WhatsApp Group (عمومی)</h4>
-          <p style="font-size:.82rem;color:var(--muted);margin:-.4rem 0 .9rem;">یہ لنک تمام enrolled ممبرز کو My Learning میں نظر آئے گا — کسی مخصوص کورس کے لیے نہیں، بلکہ پورے Learning Academy کے لیے۔</p>
-          <form id="platformSettingsForm" style="max-width:520px;display:flex;gap:.6rem;align-items:flex-end;flex-wrap:wrap;">
-            <div class="form-group" style="flex:1;min-width:240px;margin:0;">
-              <label for="generalWhatsappLink">General WhatsApp Group لنک</label>
-              <input type="url" id="generalWhatsappLink" class="form-input" placeholder="https://chat.whatsapp.com/..." />
-            </div>
-            <button type="submit" class="btn btn-gold" style="font-size:.85rem;">محفوظ کریں</button>
-          </form>
+        <div style="margin:2rem 0 1rem;">
+          <h3 style="font-weight:700;">Platform WhatsApp Group (عمومی)</h3>
+          <p style="font-size:.82rem;color:var(--muted);margin-top:.2rem;">یہ لنک تمام enrolled ممبرز کو My Learning میں نظر آئے گا — کسی مخصوص کورس کے لیے نہیں، بلکہ پورے Learning Academy کے لیے۔</p>
         </div>
-
+        <form id="platformSettingsForm" style="max-width:520px;display:flex;gap:.6rem;align-items:flex-end;flex-wrap:wrap;">
+          <div class="form-group" style="flex:1;min-width:240px;margin:0;">
+            <label for="generalWhatsappLink">General WhatsApp Group لنک</label>
+            <input type="url" id="generalWhatsappLink" class="form-input" placeholder="https://chat.whatsapp.com/..." />
+          </div>
+          <button type="submit" class="btn btn-gold" style="font-size:.85rem;">محفوظ کریں</button>
+        </form>
       </div>
 
       <div class="dash-panel" id="dp-branding">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
           <h3 style="font-weight:700;">Branding Assets</h3>
           <span id="brandingSavedNote" style="font-size:.78rem;color:var(--muted);"></span>
         </div>
 
-        <form id="brandingForm" style="max-width:900px;display:flex;flex-direction:column;gap:1.25rem;">
+        <form id="brandingForm" style="max-width:760px;">
+          <div class="form-group">
+            <label for="brandOrgName">Organization Name</label>
+            <input type="text" id="brandOrgName" class="form-input" placeholder="SHAOOR | شعور" />
+          </div>
 
-          <!-- Card: Organization Identity -->
-          <div class="brand-card">
-            <h4 class="brand-card-title"><i class="fas fa-building"></i> Organization Identity</h4>
-            <div class="form-group">
-              <label for="brandOrgName">Organization Name</label>
-              <input type="text" id="brandOrgName" class="form-input" placeholder="SHAOOR | شعور" />
+          <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Logo</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandLogoPreview" src="" style="display:none;width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandLogoPlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
+                <input type="file" id="brandLogoInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandLogoStatus" style="font-size:.75rem;color:var(--muted);"></span>
             </div>
-            <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
-              <div>
-                <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Logo</label>
-                <div style="display:flex;align-items:center;gap:.75rem;">
-                  <img id="brandLogoPreview" src="" style="display:none;width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
-                  <div id="brandLogoPlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
-                  <input type="file" id="brandLogoInput" accept="image/png,image/jpeg,image/webp" />
-                </div>
-                <span id="brandLogoStatus" style="font-size:.75rem;color:var(--muted);"></span>
-              </div>
 
-              <div>
-                <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Official Seal</label>
-                <div style="display:flex;align-items:center;gap:.75rem;">
-                  <img id="brandSealPreview" src="" style="display:none;width:64px;height:64px;object-fit:contain;border-radius:50%;border:1px solid var(--border);background:#fff;" alt="" />
-                  <div id="brandSealPlaceholder" style="width:64px;height:64px;border-radius:50%;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-stamp"></i></div>
-                  <input type="file" id="brandSealInput" accept="image/png,image/jpeg,image/webp" />
-                </div>
-                <span id="brandSealStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Official Seal</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandSealPreview" src="" style="display:none;width:64px;height:64px;object-fit:contain;border-radius:50%;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandSealPlaceholder" style="width:64px;height:64px;border-radius:50%;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-stamp"></i></div>
+                <input type="file" id="brandSealInput" accept="image/png,image/jpeg,image/webp" />
               </div>
+              <span id="brandSealStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
 
-              <div>
-                <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">About Section Image</label>
-                <div style="display:flex;align-items:center;gap:.75rem;">
-                  <img id="brandAboutImagePreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
-                  <div id="brandAboutImagePlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
-                  <input type="file" id="brandAboutImageInput" accept="image/png,image/jpeg,image/webp" />
-                </div>
-                <span id="brandAboutImageStatus" style="font-size:.75rem;color:var(--muted);"></span>
-                <span style="display:block;font-size:.7rem;color:var(--muted);margin-top:.2rem;">Separate from the Founder Photo — used only in the "About SHAOOR" section.</span>
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Photo</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandFounderPhotoPreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;object-position:top;border-radius:50%;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandFounderPhotoPlaceholder" style="width:64px;height:64px;border-radius:50%;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-user"></i></div>
+                <input type="file" id="brandFounderPhotoInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandFounderPhotoStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
+
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">About Section Image</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandAboutImagePreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandAboutImagePlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
+                <input type="file" id="brandAboutImageInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandAboutImageStatus" style="font-size:.75rem;color:var(--muted);"></span>
+              <span style="display:block;font-size:.7rem;color:var(--muted);margin-top:.2rem;">Separate from the Founder Photo — used only in the "About SHAOOR" section.</span>
+            </div>
+
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Signature</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandSigPlaceholder" style="width:96px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-signature"></i></div>
+                <input type="file" id="brandSigInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+            <div class="form-group" style="flex:1;min-width:150px;">
+              <label for="brandPrimaryColor">Primary Color</label>
+              <div style="display:flex;gap:.5rem;align-items:center;">
+                <input type="color" id="brandPrimaryColor" value="#0d1b3d" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
+                <input type="text" id="brandPrimaryColorHex" class="form-input" placeholder="#0d1b3d" />
+              </div>
+            </div>
+            <div class="form-group" style="flex:1;min-width:150px;">
+              <label for="brandAccentColor">Accent Color</label>
+              <div style="display:flex;gap:.5rem;align-items:center;">
+                <input type="color" id="brandAccentColor" value="#c99723" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
+                <input type="text" id="brandAccentColorHex" class="form-input" placeholder="#c99723" />
+              </div>
+            </div>
+            <div class="form-group" style="flex:1;min-width:150px;">
+              <label for="brandBackgroundColor">Background Color</label>
+              <div style="display:flex;gap:.5rem;align-items:center;">
+                <input type="color" id="brandBackgroundColor" value="#f8f6f0" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
+                <input type="text" id="brandBackgroundColorHex" class="form-input" placeholder="#f8f6f0" />
               </div>
             </div>
           </div>
 
-          <!-- Card: Founder -->
-          <div class="brand-card">
-            <h4 class="brand-card-title"><i class="fas fa-user-tie"></i> Founder</h4>
-            <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
-              <div>
-                <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Photo</label>
-                <div style="display:flex;align-items:center;gap:.75rem;">
-                  <img id="brandFounderPhotoPreview" src="" style="display:none;width:64px;height:64px;object-fit:cover;object-position:top;border-radius:50%;border:1px solid var(--border);background:#fff;" alt="" />
-                  <div id="brandFounderPhotoPlaceholder" style="width:64px;height:64px;border-radius:50%;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-user"></i></div>
-                  <input type="file" id="brandFounderPhotoInput" accept="image/png,image/jpeg,image/webp" />
-                </div>
-                <span id="brandFounderPhotoStatus" style="font-size:.75rem;color:var(--muted);"></span>
-              </div>
-
-              <div>
-                <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Founder Signature</label>
-                <div style="display:flex;align-items:center;gap:.75rem;">
-                  <img id="brandSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
-                  <div id="brandSigPlaceholder" style="width:96px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-signature"></i></div>
-                  <input type="file" id="brandSigInput" accept="image/png,image/jpeg,image/webp" />
-                </div>
-                <span id="brandSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
-              </div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div class="form-group" style="flex:1;min-width:220px;">
+              <label for="brandOfficialEmail">Official Email</label>
+              <input type="email" id="brandOfficialEmail" class="form-input" placeholder="info@shaoor.org" />
             </div>
-
-            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-              <div class="form-group" style="flex:1;min-width:220px;">
-                <label for="brandFounderName">Founder Name</label>
-                <input type="text" id="brandFounderName" class="form-input" placeholder="Fatima Tu Zahra" />
-              </div>
-              <div class="form-group" style="flex:1;min-width:220px;">
-                <label for="brandFounderTitle">Founder Title</label>
-                <input type="text" id="brandFounderTitle" class="form-input" placeholder="Founding Director" />
-              </div>
-              <div class="form-group" style="flex:1;min-width:220px;">
-                <label for="brandDefaultAuthority">Default Authority (for documents)</label>
-                <input type="text" id="brandDefaultAuthority" class="form-input" placeholder="Founder" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="brandFounderQuote">Founder Quote (no quotation marks needed)</label>
-              <textarea id="brandFounderQuote" class="form-input" style="min-height:70px;"></textarea>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label for="brandFounderBio">Founder Bio</label>
-              <textarea id="brandFounderBio" class="form-input" style="min-height:100px;"></textarea>
+            <div class="form-group" style="flex:1;min-width:220px;">
+              <label for="brandOfficialPhone">Official Phone</label>
+              <input type="text" id="brandOfficialPhone" class="form-input" placeholder="+92…" />
             </div>
           </div>
 
-          <!-- Card: Colors -->
-          <div class="brand-card">
-            <h4 class="brand-card-title"><i class="fas fa-palette"></i> Colors</h4>
-            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-              <div class="form-group" style="flex:1;min-width:150px;">
-                <label for="brandPrimaryColor">Primary Color</label>
-                <div style="display:flex;gap:.5rem;align-items:center;">
-                  <input type="color" id="brandPrimaryColor" value="#0d1b3d" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
-                  <input type="text" id="brandPrimaryColorHex" class="form-input" placeholder="#0d1b3d" />
-                </div>
-              </div>
-              <div class="form-group" style="flex:1;min-width:150px;">
-                <label for="brandAccentColor">Accent Color</label>
-                <div style="display:flex;gap:.5rem;align-items:center;">
-                  <input type="color" id="brandAccentColor" value="#c99723" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
-                  <input type="text" id="brandAccentColorHex" class="form-input" placeholder="#c99723" />
-                </div>
-              </div>
-              <div class="form-group" style="flex:1;min-width:150px;margin-bottom:0;">
-                <label for="brandBackgroundColor">Background Color</label>
-                <div style="display:flex;gap:.5rem;align-items:center;">
-                  <input type="color" id="brandBackgroundColor" value="#f8f6f0" style="width:44px;height:38px;padding:2px;border-radius:6px;border:1px solid var(--border);" />
-                  <input type="text" id="brandBackgroundColorHex" class="form-input" placeholder="#f8f6f0" />
-                </div>
-              </div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div class="form-group" style="flex:1;min-width:220px;">
+              <label for="brandFounderName">Founder Name</label>
+              <input type="text" id="brandFounderName" class="form-input" placeholder="Fatima Tu Zahra" />
+            </div>
+            <div class="form-group" style="flex:1;min-width:220px;">
+              <label for="brandDefaultAuthority">Default Authority (for documents)</label>
+              <input type="text" id="brandDefaultAuthority" class="form-input" placeholder="Founder" />
             </div>
           </div>
 
-          <!-- Card: Contact -->
-          <div class="brand-card">
-            <h4 class="brand-card-title"><i class="fas fa-address-card"></i> Contact</h4>
-            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-              <div class="form-group" style="flex:1;min-width:220px;">
-                <label for="brandOfficialEmail">Official Email</label>
-                <input type="email" id="brandOfficialEmail" class="form-input" placeholder="info@shaoor.org" />
-              </div>
-              <div class="form-group" style="flex:1;min-width:220px;margin-bottom:0;">
-                <label for="brandOfficialPhone">Official Phone</label>
-                <input type="text" id="brandOfficialPhone" class="form-input" placeholder="+92…" />
-              </div>
+          <h4 style="margin:1.25rem 0 .5rem;font-weight:700;">Founder Section (Public Site)</h4>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div class="form-group" style="flex:1;min-width:220px;">
+              <label for="brandFounderTitle">Founder Title</label>
+              <input type="text" id="brandFounderTitle" class="form-input" placeholder="Founding Director" />
             </div>
           </div>
-
-          <!-- Card: Public Page Text -->
-          <div class="brand-card">
-            <h4 class="brand-card-title"><i class="fas fa-file-alt"></i> Public Page Text</h4>
-            <p style="font-size:.75rem;color:var(--muted);margin:-.4rem 0 .9rem;">Shown on the public website's Founder and About SHAOOR sections.</p>
-            <div class="form-group">
-              <label for="brandAboutIntro">About — Intro Paragraph</label>
-              <textarea id="brandAboutIntro" class="form-input" style="min-height:70px;"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="brandAboutPara1">About — Paragraph 2</label>
-              <textarea id="brandAboutPara1" class="form-input" style="min-height:70px;"></textarea>
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label for="brandAboutPara2">About — Paragraph 3</label>
-              <textarea id="brandAboutPara2" class="form-input" style="min-height:70px;"></textarea>
-            </div>
+          <div class="form-group">
+            <label for="brandFounderQuote">Founder Quote (no quotation marks needed)</label>
+            <textarea id="brandFounderQuote" class="form-input" style="min-height:70px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="brandFounderBio">Founder Bio</label>
+            <textarea id="brandFounderBio" class="form-input" style="min-height:100px;"></textarea>
           </div>
 
-          <button type="submit" class="btn btn-gold" style="align-self:flex-start;"><i class="fas fa-save"></i> Save Branding</button>
+          <h4 style="margin:1.25rem 0 .5rem;font-weight:700;">About SHAOOR Section (Public Site)</h4>
+          <div class="form-group">
+            <label for="brandAboutIntro">About — Intro Paragraph</label>
+            <textarea id="brandAboutIntro" class="form-input" style="min-height:70px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="brandAboutPara1">About — Paragraph 2</label>
+            <textarea id="brandAboutPara1" class="form-input" style="min-height:70px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="brandAboutPara2">About — Paragraph 3</label>
+            <textarea id="brandAboutPara2" class="form-input" style="min-height:70px;"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-gold" style="margin-top:.5rem;"><i class="fas fa-save"></i> Save Branding</button>
         </form>
       </div>
 
@@ -14204,27 +14178,6 @@ select.form-input {
     @media (max-width: 900px) {
       .admin-nav-group-label { display: none !important; }
       .admin-nav-subitem { padding-left: .65rem !important; }
-    }
-    /* Reusable card wrapper for Branding / Learning Academy groupings — presentation only */
-    .brand-card {
-      background: var(--card) !important;
-      border: 1px solid var(--border) !important;
-      border-radius: var(--radius) !important;
-      padding: 1.25rem 1.5rem !important;
-      box-shadow: var(--shadow) !important;
-    }
-    .brand-card-title {
-      font-weight: 700 !important;
-      font-size: .95rem !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: .5rem !important;
-      margin: 0 0 1rem !important;
-      color: var(--ink) !important;
-    }
-    .brand-card-title i { color: var(--gold) !important; width: 18px; text-align: center; }
-    @media (max-width: 640px) {
-      .brand-card { padding: 1rem !important; }
     }
   </style>
 </body>
