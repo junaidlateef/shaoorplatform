@@ -5614,9 +5614,9 @@ select.form-input {
     .lms-detail-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
     .lms-detail-list li { display: flex; gap: .5rem; align-items: flex-start; font-size: .92rem; }
     .lms-detail-list li i { color: var(--teal, #4f8582); margin-top: .2rem; }
-    .lms-module { border: 1px solid rgba(0,0,0,.08); border-radius: 10px; padding: .9rem 1.1rem; margin-bottom: .7rem; }
-    .lms-module-title { font-weight: 700; font-size: .95rem; display: flex; justify-content: space-between; }
-    .lms-lesson-row { display:flex; align-items:center; gap:.6rem; padding:.55rem .3rem; border-top:1px solid rgba(0,0,0,.06); font-size:.85rem; cursor:pointer; }
+    .lms-module { border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; margin-bottom: .7rem; background: var(--card); }
+    .lms-module-title { font-weight: 700; font-size: .95rem; display: flex; justify-content: space-between; color: var(--ink); }
+    .lms-lesson-row { display:flex; align-items:center; gap:.6rem; padding:.55rem .3rem; border-top:1px solid var(--border); font-size:.85rem; cursor:pointer; color: var(--ink); }
     .lms-lesson-row:first-of-type { border-top:none; margin-top:.5rem; }
     .lms-lesson-row.locked { cursor:not-allowed; opacity:.55; }
     .lms-lesson-row .lms-lesson-icon { width:20px; text-align:center; flex-shrink:0; color:var(--gold); }
@@ -5633,30 +5633,45 @@ select.form-input {
     .lms-quiz-badge { display:inline-flex; align-items:center; gap:.3rem; font-size:.72rem; color:#8a6d1f; background:#FBF4E4; border:1px solid #E5D2A3; border-radius:6px; padding:.15rem .5rem; margin-left:.4rem; }
     .lms-quiz-panel { display:none; }
     .lms-quiz-panel.active { display:block; }
-    .lms-quiz-question { border:1px solid rgba(0,0,0,.08); border-radius:10px; padding:.9rem 1rem; margin-bottom:.8rem; }
-    .lms-quiz-question h4 { font-size:.9rem; margin:0 0 .6rem; }
-    .lms-quiz-option { display:flex; align-items:center; gap:.6rem; padding:.75rem .8rem; min-height:44px; border-radius:6px; font-size:.85rem; cursor:pointer; }
+    .lms-quiz-question { border:1px solid var(--border); border-radius:10px; padding:.9rem 1rem; margin-bottom:.8rem; background: var(--card); }
+    .lms-quiz-question h4 { font-size:.9rem; margin:0 0 .6rem; color: var(--ink); }
+    .lms-quiz-option { display:flex; align-items:center; gap:.6rem; padding:.75rem .8rem; min-height:44px; border-radius:6px; font-size:.85rem; cursor:pointer; color: var(--ink); }
     .lms-quiz-option:hover { background:var(--cream); }
-    .lms-quiz-option.correct { background:#E7F6EC; }
-    .lms-quiz-option.incorrect { background:#FBEAEA; }
-    .lms-quiz-explanation { font-size:.8rem; color:var(--muted); margin-top:.4rem; padding-top:.4rem; border-top:1px dashed rgba(0,0,0,.1); display:none; }
+    .lms-quiz-option.correct { background:#E7F6EC; color:#1e8e5a; }
+    .lms-quiz-option.incorrect { background:#FBEAEA; color:#b3392c; }
+    .lms-quiz-explanation { font-size:.8rem; color:var(--muted); margin-top:.4rem; padding-top:.4rem; border-top:1px dashed var(--border); display:none; }
     .lms-quiz-explanation.show { display:block; }
     .lms-quiz-result { text-align:center; padding:1.2rem; border-radius:10px; margin-bottom:1rem; }
     .lms-quiz-result.pass { background:#E7F6EC; color:#1e8e5a; }
     .lms-quiz-result.fail { background:#FBEAEA; color:#b3392c; }
     .lms-sidebar-card {
-      border: 1px solid rgba(0,0,0,.08); border-radius: 14px; padding: 1.2rem;
-      position: sticky; top: 100px; background: var(--card-bg, #fff);
-      max-width: 300px; margin-left: auto; font-size: .88rem;
+      border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem;
+      position: sticky; top: 100px; background: var(--card);
+      max-width: 300px; margin-left: auto; font-size: .88rem; color: var(--ink);
+      box-shadow: var(--shadow);
     }
-    .lms-sidebar-price { font-size: 1.3rem; font-weight: 800; margin-bottom: .3rem; }
+    .lms-sidebar-price { font-size: 1.3rem; font-weight: 800; margin-bottom: .3rem; color: var(--ink); }
     .lms-back-link { display: inline-flex; align-items: center; gap: .4rem; color: #fff; opacity: .85; margin-bottom: 1rem; cursor: pointer; font-size: .85rem; }
+    .lms-back-link:hover { opacity: 1; }
+    /* Phase 3B — hero thumbnail, same visual language as the course card thumbnail */
+    .lms-detail-thumb {
+      width: 100%; max-width: 760px; aspect-ratio: 16 / 7; margin: 0 auto 1.4rem;
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal, #4f8582) 100%);
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.4rem;
+    }
+    .lms-detail-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media (max-width: 600px) { .lms-detail-thumb { aspect-ratio: 16 / 9; font-size: 1.8rem; } }
   </style>
 
   <section id="courseDetail">
     <div class="lms-detail-hero">
       <div class="container">
         <a class="lms-back-link" onclick="closeCourseDetail();"><i class="fas fa-arrow-left"></i> Back to Courses</a>
+        <div class="lms-detail-thumb" id="cdThumbWrap">
+          <i class="fas fa-palette" id="cdThumbIcon"></i>
+          <img id="cdThumbImg" src="" alt="" style="display:none;" onerror="this.style.display='none';var ic=document.getElementById('cdThumbIcon');if(ic)ic.style.display='';">
+        </div>
         <div class="hero-badge" style="margin:0 auto 1rem;display:inline-flex;" id="cdCategory">Course</div>
         <h1 id="cdTitle">Loading…</h1>
         <p id="cdDescription" style="opacity:.85;max-width:640px;margin:0 auto;"></p>
@@ -5756,6 +5771,17 @@ select.form-input {
     /* LMS COURSE DETAIL — Phase 3 */
     let lmsCurrentCourse = null;
     let lmsPendingEnrollCourseId = null; // set when a signed-out user clicks Enroll, so login/signup can resume it
+    // Phase 3B — when set, showCourseDetail() will auto-open the learner's next
+    // incomplete lesson once modules/lessons/progress finish loading (Continue Learning fix).
+    let lmsAutoResumeLesson = false;
+
+    // My Learning → "Continue Learning" now resumes at the learner's actual next lesson
+    // instead of only opening Course Detail, reusing existing lesson_progress/unlock logic.
+    function continueLearningToCourse(slug) {
+      lmsAutoResumeLesson = true;
+      closeModal('memberDash');
+      showCourseDetail(slug);
+    }
 
     async function showCourseDetail(slug) {
       document.getElementById('lmsAcademyOverlay').classList.add('active'); // safety: ensure the academy overlay is open
@@ -5782,6 +5808,20 @@ select.form-input {
         }
         var course = courseRes.data;
         lmsCurrentCourse = course;
+
+        // Phase 3B — hero thumbnail: reuse existing thumbnail_url, safe fallback to icon
+        var cdThumbImg = document.getElementById('cdThumbImg');
+        var cdThumbIcon = document.getElementById('cdThumbIcon');
+        if (course.thumbnail_url) {
+          cdThumbImg.src = course.thumbnail_url;
+          cdThumbImg.alt = course.title || 'Course thumbnail';
+          cdThumbImg.style.display = 'block';
+          if (cdThumbIcon) cdThumbIcon.style.display = 'none';
+        } else {
+          cdThumbImg.removeAttribute('src');
+          cdThumbImg.style.display = 'none';
+          if (cdThumbIcon) cdThumbIcon.style.display = '';
+        }
 
         document.getElementById('cdCategory').innerHTML =
           '<i class="fas fa-palette"></i> ' + (course.category || 'Course');
@@ -5863,8 +5903,24 @@ select.form-input {
         renderFinalAssessmentRow(); // Phase 9 — shown/locked based on course completion state
         // Reflect existing enrollment status on the button, if any.
         await refreshEnrollButtonState();
+
+        // Phase 3B — Continue Learning resume: jump straight to the next incomplete,
+        // unlocked lesson. Falls back to doing nothing (stays on Course Detail) if no
+        // lesson qualifies (e.g. no lessons published, or everything already locked).
+        if (lmsAutoResumeLesson) {
+          lmsAutoResumeLesson = false;
+          try {
+            var resumeTarget = (lmsAllLessons || []).find(function (l) {
+              return !lmsCompletedLessonIds.has(l.id) && !isLessonLocked(l);
+            });
+            if (resumeTarget) openLesson(resumeTarget.id);
+          } catch (e) {
+            console.warn('SHAOOR LMS: Continue Learning resume could not open a lesson', e);
+          }
+        }
       } catch (e) {
         console.error('SHAOOR LMS: unexpected error loading course detail', e);
+        lmsAutoResumeLesson = false;
       }
     }
 
@@ -5897,6 +5953,10 @@ select.form-input {
 
     function resetCourseDetailView() {
       lmsCurrentCourse = null;
+      var cdThumbImgReset = document.getElementById('cdThumbImg');
+      var cdThumbIconReset = document.getElementById('cdThumbIcon');
+      if (cdThumbImgReset) { cdThumbImgReset.style.display = 'none'; cdThumbImgReset.removeAttribute('src'); }
+      if (cdThumbIconReset) cdThumbIconReset.style.display = '';
       document.getElementById('cdTitle').textContent = 'Loading…';
       document.getElementById('cdDescription').textContent = '';
       document.getElementById('cdMeta').innerHTML = '';
@@ -12976,7 +13036,11 @@ select.form-input {
           : '') +
         liveHtml +
         courseWhatsappHtml +
-        '<button class="btn btn-outline" style="margin-top:.7rem;padding:.35rem .8rem;font-size:.78rem;" onclick="closeModal(\'memberDash\');showCourseDetail(\'' + (course.slug || '') + '\');">' + actionLabel + '</button>' +
+        '<button class="btn btn-outline" style="margin-top:.7rem;padding:.35rem .8rem;font-size:.78rem;" onclick="' +
+          (e.status === 'pending'
+            ? "closeModal('memberDash');showCourseDetail('" + (course.slug || '') + "');"
+            : "continueLearningToCourse('" + (course.slug || '') + "');") +
+        '">' + actionLabel + '</button>' +
         '</div>';
     }).join('');
   }
