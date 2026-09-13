@@ -4934,6 +4934,12 @@ select.form-input {
             <div class="form-group"><label for="docSocietySelect">Society (optional)</label><select id="docSocietySelect" class="form-input"><option value="">— No specific society —</option></select></div>
             <div class="form-group"><label for="docChapterSelect">Chapter (optional)</label><select id="docChapterSelect" class="form-input"><option value="">— No specific chapter —</option></select></div>
             <div class="form-group"><label for="docTitle">Document Title</label><input type="text" id="docTitle" class="form-input" required placeholder="e.g. Official Note / Appointment Letter" /></div>
+            <div class="form-group"><label for="docLanguage">Document Language</label>
+              <select id="docLanguage" class="form-input">
+                <option value="en">English</option>
+                <option value="ur">اردو (Urdu)</option>
+              </select>
+            </div>
             <div class="form-group" id="docRecipientGroup"><label for="docRecipient">Recipient (name)</label><input type="text" id="docRecipient" class="form-input" /></div>
             <div class="form-group" id="docDesignationGroup"><label for="docDesignation">Designation</label><input type="text" id="docDesignation" class="form-input" list="docDesignationOptions" placeholder="e.g. Chapter President" /><datalist id="docDesignationOptions"></datalist></div>
             <div class="form-group" id="docEffectiveDateGroup"><label for="docEffectiveDate">Effective Date</label><input type="date" id="docEffectiveDate" class="form-input" /></div>
@@ -4954,6 +4960,39 @@ select.form-input {
               </select>
               <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">Ctrl/Cmd-click to select more than one. Only signatures that actually have an uploaded image (in Branding) will show, even if selected here.</div>
             </div>
+
+            <h4 style="margin:.6rem 0;">Paper Size</h4>
+            <div class="form-group" style="display:flex;gap:.6rem;">
+              <div style="flex:1;"><label for="docPaperSize">Paper Size</label>
+                <select id="docPaperSize" class="form-input">
+                  <option value="a4">A4 (210 × 297 mm)</option>
+                  <option value="legal">Legal (216 × 356 mm)</option>
+                  <option value="letter">Letter (216 × 279 mm)</option>
+                </select>
+              </div>
+              <div style="flex:1;"><label for="docOrientation">Orientation</label>
+                <select id="docOrientation" class="form-input">
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </div>
+            </div>
+
+            <h4 style="margin:.6rem 0;">Header — Logo &amp; Seal</h4>
+            <div style="font-size:.72rem;color:var(--muted);margin:-.3rem 0 .5rem;">The header itself, and the SHAOOR logo/official seal images, always come from Branding — these controls only change size/alignment/spacing.</div>
+            <div class="form-group" style="display:flex;gap:.6rem;">
+              <div style="flex:1;"><label for="docLogoWidth">Logo Width (px)</label><input type="number" id="docLogoWidth" class="form-input" min="24" max="260" placeholder="e.g. 130 (default 130)" /></div>
+              <div style="flex:1;"><label for="docLogoAlign">Logo Alignment</label>
+                <select id="docLogoAlign" class="form-input">
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </div>
+              <div style="flex:1;"><label for="docHeaderSpacing">Header Spacing (px)</label><input type="number" id="docHeaderSpacing" class="form-input" min="0" max="60" placeholder="e.g. 13 (default)" /></div>
+            </div>
+            <div class="form-group"><label for="docSealWidth">Official Seal Size (px)</label><input type="number" id="docSealWidth" class="form-input" min="24" max="200" placeholder="e.g. 80 (default)" /></div>
+
             <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">Save Document</button>
           </form>
           </div>
@@ -4992,17 +5031,25 @@ select.form-input {
 
             <h4 style="margin:.5rem 0;">Size / Layout</h4>
             <div class="form-group" style="display:flex;gap:.6rem;">
+              <div style="flex:1;"><label for="ctplPaperSize">Paper Size</label>
+                <select id="ctplPaperSize" class="form-input">
+                  <option value="a4">A4 (210 × 297 mm)</option>
+                  <option value="legal">Legal (216 × 356 mm)</option>
+                  <option value="letter">Letter (216 × 279 mm)</option>
+                  <option value="custom">Custom (screen preview width only)</option>
+                </select>
+              </div>
               <div style="flex:1;"><label for="ctplOrientation">Orientation</label>
                 <select id="ctplOrientation" class="form-input">
-                  <option value="">Default</option>
                   <option value="landscape">Landscape</option>
                   <option value="portrait">Portrait</option>
                 </select>
               </div>
-              <div style="flex:1;"><label for="ctplWidth">Width (px, optional)</label>
+              <div style="flex:1;" id="ctplWidthGroup"><label for="ctplWidth">Custom Width (px, screen only)</label>
                 <input type="number" id="ctplWidth" class="form-input" min="240" max="1400" placeholder="e.g. 700" />
               </div>
             </div>
+            <div style="font-size:.72rem;color:var(--muted);margin:-.3rem 0 .6rem;">Paper Size + Orientation set the real printed/PDF dimensions (A4/Legal/Letter). Custom Width only affects the on-screen preview size, not physical print output.</div>
 
             <h4 style="margin:.5rem 0;">Background</h4>
             <div class="form-group"><label for="ctplBackgroundUrl">Background Image URL</label><input type="url" id="ctplBackgroundUrl" class="form-input" placeholder="https://…" /></div>
@@ -12213,13 +12260,30 @@ select.form-input {
     if (!popup) { showToast('براوزر نے نئی ونڈو بلاک کر دی ہے۔', 'error'); return; }
     const styles = Array.from(document.querySelectorAll('style')).map(el => el.textContent).join('\n');
     const safeTitle = title.replace(/[<>]/g,'');
+    // Real print dimensions come from the template that was actually applied to this
+    // certificate (see applyCertificateTemplate), defaulting to A4/landscape when unset —
+    // never a hard-coded certificate size.
+    const cfg = window._lastCertTemplateConfig || {};
+    const pageCss = paperPageCss(cfg.paper_size || 'a4', cfg.orientation || 'landscape');
     popup.document.open();
-    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+styles+'</style></head><body style="background:#fff;padding:24px"><div style="max-width:1000px;margin:0 auto">'+area.outerHTML+'</div><script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<\/script></body></html>');
+    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+pageCss+'</style><style>'+styles+'</style></head><body style="background:#fff;padding:24px"><div style="max-width:1000px;margin:0 auto">'+area.outerHTML+'</div><script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<\/script></body></html>');
     popup.document.close();
   }
 
   const CERT_FIELD_IDS = { title: 'vcTitle', member: 'vcMember', meta: 'vcMeta', qr: 'vcQrCode', signatures: 'vcSignatures', logo: 'vcLogo', seal: 'vcSeal' };
   const CERT_PREVIEW_FIELD_IDS = { title: 'ctplPvTitle', member: 'ctplPvMember', meta: 'ctplPvMeta', qr: 'ctplPvQr', signatures: 'ctplPvSig', logo: 'ctplPvLogo', seal: 'ctplPvSeal' };
+
+  // ── Shared paper-size architecture, used by BOTH document print/Word export and certificate
+  // PDF export. Standard sizes are real mm dimensions, so @page renders true A4/Legal/Letter —
+  // not just a browser-preview illusion. 'custom' has no physical @page meaning; callers fall
+  // back to A4 for the actual print page in that case (screen-only sizing is a separate concern).
+  const PAPER_SIZES = { a4: { w: 210, h: 297 }, legal: { w: 216, h: 356 }, letter: { w: 216, h: 279 } };
+  function paperPageCss(size, orientation, marginMm) {
+    const dims = PAPER_SIZES[size] || PAPER_SIZES.a4;
+    let w = dims.w, h = dims.h;
+    if (orientation === 'landscape') { const t = w; w = h; h = t; }
+    return '@page{size:' + w + 'mm ' + h + 'mm;margin:' + (marginMm == null ? 18 : marginMm) + 'mm;}';
+  }
   // Config keys an admin can control from the Template Editor. Kept as the single list both the
   // structured editor controls and the JSON textarea serialize against.
   const CERT_FIELD_KEYS = ['title', 'member', 'meta', 'qr', 'signatures', 'logo', 'seal'];
@@ -12265,6 +12329,9 @@ select.form-input {
     idMap = idMap || CERT_FIELD_IDS;
     const area = document.getElementById(areaId);
     if (!area) return;
+    // Remember the config that was actually applied to the real certificate, so the PDF/print
+    // export can use the same paper size/orientation. Never set for the editor's preview area.
+    if (areaId === 'certificatePrintArea') window._lastCertTemplateConfig = config || {};
 
     // Reset background image from any previous template before applying this one.
     area.style.backgroundImage = '';
@@ -12591,6 +12658,7 @@ select.form-input {
     document.getElementById('docSocietySelect').value = d.society_id || '';
     document.getElementById('docChapterSelect').value = d.chapter_id || '';
     document.getElementById('docTitle').value = d.title || '';
+    document.getElementById('docLanguage').value = (d.extra && d.extra.language) || 'en';
     document.getElementById('docRecipient').value = d.recipient || '';
     document.getElementById('docDesignation').value = d.designation || '';
     document.getElementById('docEffectiveDate').value = d.effective_date || '';
@@ -12603,6 +12671,13 @@ select.form-input {
     document.getElementById('docAuthority').value = d.authority || '';
     const sigKeys = (d.extra && d.extra.signature_keys) || [];
     Array.from(document.getElementById('docSignatureKeys').options).forEach(o => { o.selected = sigKeys.includes(o.value); });
+    const ex = d.extra || {};
+    document.getElementById('docPaperSize').value = ex.paper_size || 'a4';
+    document.getElementById('docOrientation').value = ex.orientation || 'portrait';
+    document.getElementById('docLogoWidth').value = ex.logo_width || '';
+    document.getElementById('docLogoAlign').value = ex.logo_align || 'left';
+    document.getElementById('docHeaderSpacing').value = (ex.header_spacing != null) ? ex.header_spacing : '';
+    document.getElementById('docSealWidth').value = ex.seal_width || '';
     openModal('documentModal');
   }
 
@@ -12634,7 +12709,16 @@ select.form-input {
       subject: frm.querySelector('#docSubject').value.trim() || null,
       body: frm.querySelector('#docBody').value.trim(),
       authority: frm.querySelector('#docAuthority').value.trim() || null,
-      extra: { signature_keys: signatureKeys }
+      extra: {
+        signature_keys: signatureKeys,
+        language: frm.querySelector('#docLanguage').value || 'en',
+        paper_size: frm.querySelector('#docPaperSize').value || 'a4',
+        orientation: frm.querySelector('#docOrientation').value || 'portrait',
+        logo_width: frm.querySelector('#docLogoWidth').value.trim() || null,
+        logo_align: frm.querySelector('#docLogoAlign').value || 'left',
+        header_spacing: frm.querySelector('#docHeaderSpacing').value.trim() || null,
+        seal_width: frm.querySelector('#docSealWidth').value.trim() || null
+      }
     };
 
     let error;
@@ -12713,32 +12797,65 @@ select.form-input {
   }
 
   /* ── Shared branding building blocks — reused by every document type, so a fix or
-     style change here fixes it everywhere at once, per the "shared renderer" requirement. ── */
-  function renderDocumentHeader(brand, society, chapter, docTitle, docNumber, docDate) {
+     style change here fixes it everywhere at once, per the "shared renderer" requirement.
+     `extra` (generated_documents.extra, already used for signature_keys) now also carries
+     admin-controlled logo/seal size, logo alignment, and header spacing — the header
+     structure and brand.logo_url/seal_url sourcing themselves are unchanged. ── */
+  function renderDocumentHeader(brand, society, chapter, docTitle, docNumber, docDate, extra, lang) {
+    extra = extra || {};
+    lang = lang || 'en';
+    const isUr = lang === 'ur';
+    const logoWidth = extra.logo_width || 130;
+    const logoAlign = extra.logo_align || 'left';
+    const spacing = (extra.header_spacing != null && extra.header_spacing !== '') ? extra.header_spacing : 13;
+    const justify = logoAlign === 'center' ? 'center' : (logoAlign === 'right' ? 'flex-end' : 'flex-start');
     const orgLogo = brand && brand.logo_url
-      ? `<img src="${brand.logo_url}" style="height:92px;max-width:190px;object-fit:contain;" />`
+      ? `<img src="${brand.logo_url}" style="max-width:${logoWidth}px;max-height:${Math.round(logoWidth * 0.6)}px;object-fit:contain;" />`
       : '';
     const rightLogo = (chapter && chapter.logo_url)
       ? `<img src="${chapter.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />`
       : (society && society.logo_url ? `<img src="${society.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />` : '');
+    // Only the actual uploaded SHAOOR logo carries the brand mark here — the previously
+    // duplicated "شعور" text line that sat beneath the organization name has been removed
+    // per the "clean header, one visual identity" requirement. The organization name/title
+    // itself is genuine document heading content and stays.
+    const subtitle = isUr
+      ? 'پیشہ ورانہ فنون و ثقافت کی تنظیم'
+      : 'Professional Arts &amp; Culture Organization';
+    const refLabel = isUr ? 'حوالہ نمبر' : 'Ref';
+    const dateLabel = isUr ? 'تاریخ' : 'Date';
     return `
-      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--navy);padding-bottom:.8rem;margin-bottom:1.2rem;">
-        <div style="width:190px;display:flex;align-items:center;">${orgLogo}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--navy);padding-bottom:${spacing}px;margin-bottom:${spacing * 1.5}px;">
+        <div style="width:190px;display:flex;align-items:center;justify-content:${justify};">${orgLogo}</div>
         <div style="text-align:center;flex:1;">
           <div style="font-family:Georgia,serif;font-weight:700;font-size:1.4rem;letter-spacing:.06em;color:var(--navy);">${sanitize((brand && brand.organization_name) || 'SHAOOR')}</div>
-          <div style="font-size:1rem;color:var(--navy);">شعور</div>
-          <div style="font-size:.72rem;color:#555;letter-spacing:.04em;">Professional Arts &amp; Culture Organization</div>
+          <div style="font-size:.72rem;color:#555;letter-spacing:.04em;${isUr ? "font-family:var(--ff-urdu);font-size:.85rem;line-height:1.9;" : ""}">${isUr ? sanitize(subtitle) : subtitle}</div>
         </div>
         <div style="width:190px;display:flex;align-items:center;justify-content:flex-end;">${rightLogo}</div>
       </div>
       <div style="text-align:center;margin-bottom:1.2rem;">
-        <div style="font-family:Georgia,serif;font-weight:700;font-size:1.15rem;text-transform:uppercase;letter-spacing:.05em;">${sanitize(docTitle)}</div>
-        <div style="font-size:.75rem;color:#666;margin-top:.2rem;">Ref: ${sanitize(docNumber || '—')} &nbsp;·&nbsp; Date: ${sanitize(docDate || '—')}</div>
+        <div style="font-family:${isUr ? 'var(--ff-urdu)' : 'Georgia,serif'};font-weight:700;font-size:${isUr ? '1.35rem' : '1.15rem'};text-transform:${isUr ? 'none' : 'uppercase'};letter-spacing:.05em;line-height:${isUr ? '2' : '1.4'};">${sanitize(docTitle)}</div>
+        <div style="font-size:.75rem;color:#666;margin-top:.2rem;" dir="ltr">${sanitize(refLabel)}: ${sanitize(docNumber || '—')} &nbsp;·&nbsp; ${sanitize(dateLabel)}: ${sanitize(docDate || '—')}</div>
       </div>`;
   }
 
-  function renderDocumentSignatures(brand, selectedKeys, authorityLabel) {
-    if (!brand || !selectedKeys || !selectedKeys.length) return '';
+  function renderDocumentSignatures(brand, selectedKeys, authorityLabel, extra, lang) {
+    extra = extra || {};
+    lang = lang || 'en';
+    const isUr = lang === 'ur';
+    const sealCaption = isUr ? 'سرکاری مہر' : 'Official Seal';
+    const sealWidth = extra.seal_width || 80;
+    if (!brand || !selectedKeys || !selectedKeys.length) {
+      // Even with no signatures selected, the seal (a separate authentication mark) may
+      // still need to render on its own.
+      if (!brand || !brand.seal_url) return '';
+      return `<div style="display:flex;justify-content:center;align-items:flex-end;margin-top:2.5rem;">
+        <div style="text-align:center;">
+          <img src="${brand.seal_url}" style="height:${sealWidth}px;width:${sealWidth}px;object-fit:contain;display:block;margin:0 auto .3rem;" alt="Official Seal" />
+          <div style="font-size:.68rem;color:#666;border-top:1px solid #999;padding-top:.2rem;min-width:100px;${isUr ? 'font-family:var(--ff-urdu);' : ''}">${sanitize(sealCaption)}</div>
+        </div>
+      </div>`;
+    }
     const labels = brand.signature_labels || {};
     const urlMap = {
       founder: brand.founder_signature_url, president: brand.president_signature_url,
@@ -12748,7 +12865,7 @@ select.form-input {
       const label = labels[k] || (k.charAt(0).toUpperCase() + k.slice(1));
       return `<div style="text-align:center;">
         <img src="${urlMap[k]}" style="height:44px;object-fit:contain;display:block;margin:0 auto .3rem;" />
-        <div style="font-size:.72rem;border-top:1px solid #999;padding-top:.2rem;min-width:120px;">${sanitize(authorityLabel || label)}</div>
+        <div style="font-size:.72rem;border-top:1px solid #999;padding-top:.2rem;min-width:120px;${isUr ? 'font-family:var(--ff-urdu);font-size:.85rem;' : ''}">${sanitize(authorityLabel || label)}</div>
       </div>`;
     }).join('');
     // Official seal — a separate authentication mark, not a signature. Rendered alongside
@@ -12756,47 +12873,62 @@ select.form-input {
     // visible in preview, print, and download output. Gracefully omitted when unset.
     const sealBlock = (brand && brand.seal_url)
       ? `<div style="text-align:center;">
-          <img src="${brand.seal_url}" style="height:80px;width:80px;object-fit:contain;display:block;margin:0 auto .3rem;" alt="Official Seal" />
-          <div style="font-size:.68rem;color:#666;border-top:1px solid #999;padding-top:.2rem;min-width:100px;">Official Seal</div>
+          <img src="${brand.seal_url}" style="height:${sealWidth}px;width:${sealWidth}px;object-fit:contain;display:block;margin:0 auto .3rem;" alt="Official Seal" />
+          <div style="font-size:.68rem;color:#666;border-top:1px solid #999;padding-top:.2rem;min-width:100px;${isUr ? 'font-family:var(--ff-urdu);' : ''}">${sanitize(sealCaption)}</div>
         </div>`
       : '';
     if (!blocks && !sealBlock) return '';
     return `<div style="display:flex;justify-content:center;align-items:flex-end;gap:2.5rem;margin-top:2.5rem;flex-wrap:wrap;">${blocks}${sealBlock}</div>`;
   }
 
-  function renderDocumentFooter(brand, docNumber) {
+  function renderDocumentFooter(brand, docNumber, lang) {
+    lang = lang || 'en';
+    const isUr = lang === 'ur';
     const contact = [brand && brand.official_email, brand && brand.official_phone].filter(Boolean).join(' · ');
     const verifyUrl = docNumber
       ? window.location.origin + window.location.pathname + '?verify_doc=' + encodeURIComponent(docNumber)
       : '';
+    const verifyTitle = isUr ? 'تصدیقِ اصلیت' : 'VERIFY AUTHENTICITY';
+    const docIdLabel = isUr ? 'دستاویز نمبر' : 'Document ID';
     const verifyBlock = docNumber
-      ? `<div style="margin-top:1rem;padding-top:.8rem;border-top:1px dashed #ccc;font-size:.72rem;color:#555;">
-          <strong>VERIFY AUTHENTICITY</strong><br>
-          Document ID: ${sanitize(docNumber)}<br>
-          ${sanitize(verifyUrl)}
+      ? `<div style="margin-top:1rem;padding-top:.8rem;border-top:1px dashed #ccc;font-size:.72rem;color:#555;${isUr ? 'font-family:var(--ff-urdu);font-size:.85rem;' : ''}">
+          <strong>${sanitize(verifyTitle)}</strong><br>
+          <span dir="ltr" style="unicode-bidi:isolate;">${sanitize(docIdLabel)}: ${sanitize(docNumber)}<br>
+          ${sanitize(verifyUrl)}</span>
         </div>`
       : '';
+    const orgLine = (brand && brand.organization_name) ? sanitize(contact || `${brand.organization_name}${isUr ? '' : ' — Professional Arts & Culture Organization'}`) : sanitize(contact || 'SHAOOR — Professional Arts & Culture Organization');
     return `<div style="margin-top:2.5rem;border-top:1px solid #ccc;padding-top:.6rem;font-size:.68rem;color:#777;text-align:center;">
-      ${sanitize(contact || 'SHAOOR — Professional Arts & Culture Organization')}
+      ${orgLine}
       ${verifyBlock}
     </div>`;
   }
 
   // Builds the body HTML for each document type using only real, stored data —
   // never invented text — per the "do not invent information" rule.
-  function renderDocumentBody(d) {
+  function renderDocumentBody(d, lang) {
+    lang = lang || 'en';
+    const isUr = lang === 'ur';
+    const L = isUr ? {
+      recipient: 'مستفید', designation: 'عہدہ', effective: 'تاریخ نفاذ',
+      event: 'تقریب/پروگرام', date: 'تاریخ', time: 'وقت', venue: 'مقام', subject: 'موضوع'
+    } : {
+      recipient: 'Recipient', designation: 'Designation', effective: 'Effective Date',
+      event: 'Event/Program', date: 'Date', time: 'Time', venue: 'Venue', subject: 'Subject'
+    };
     const p = (label, val) => val ? `<div style="margin-bottom:.5rem;"><strong>${sanitize(label)}:</strong> ${sanitize(val)}</div>` : '';
     let meta = '';
     if (d.document_type === 'appointment' || d.document_type === 'removal') {
-      meta = p('Recipient', d.recipient) + p('Designation', d.designation) + p('Effective Date', d.effective_date);
+      meta = p(L.recipient, d.recipient) + p(L.designation, d.designation) + p(L.effective, d.effective_date);
     } else if (d.document_type === 'invitation') {
-      meta = p('Recipient', d.recipient) + p('Event/Program', d.event_name) + p('Date', d.event_date) + p('Time', d.event_time) + p('Venue', d.venue);
+      meta = p(L.recipient, d.recipient) + p(L.event, d.event_name) + p(L.date, d.event_date) + p(L.time, d.event_time) + p(L.venue, d.venue);
     } else {
-      meta = p('Recipient', d.recipient);
+      meta = p(L.recipient, d.recipient);
     }
-    const subject = d.subject ? `<div style="margin-bottom:1rem;"><strong>Subject:</strong> ${sanitize(d.subject)}</div>` : '';
+    const subject = d.subject ? `<div style="margin-bottom:1rem;"><strong>${sanitize(L.subject)}:</strong> ${sanitize(d.subject)}</div>` : '';
     const bodyText = sanitize(d.body || '').replace(/\n/g, '<br>');
-    return `<div style="font-size:.92rem;line-height:1.7;">${meta}${subject}<div style="margin-top:.8rem;white-space:pre-wrap;">${bodyText}</div></div>`;
+    const bodyFont = isUr ? "font-family:var(--ff-urdu);line-height:2.1;font-size:1.05rem;" : "line-height:1.7;font-size:.92rem;";
+    return `<div style="${bodyFont}" dir="${isUr ? 'rtl' : 'ltr'}">${meta}${subject}<div style="margin-top:.8rem;white-space:pre-wrap;">${bodyText}</div></div>`;
   }
 
   /* `token` is the caller's active-request token (see _docRenderToken below) — if a newer
@@ -12813,13 +12945,25 @@ select.form-input {
     const society = societyRes.data;
     const chapter = chapterRes.data;
     const sigKeys = (d.extra && d.extra.signature_keys) || [];
+    // Existing documents saved before this language field existed have no extra.language —
+    // they must keep rendering exactly as before, so default safely to English.
+    const lang = (d.extra && d.extra.language) || 'en';
+    const isUr = lang === 'ur';
+    // Cached so printGeneratedDocument/downloadGeneratedDocumentWord can size the real
+    // print page (@page) to whatever paper size/orientation this document was saved with.
+    window._lastDocExtra = d.extra || {};
 
-    const html = renderDocumentHeader(brand, society, chapter, d.title, d.document_number, (d.created_at || '').slice(0, 10)) +
-      renderDocumentBody(d) +
-      renderDocumentSignatures(brand, sigKeys, d.authority) +
-      renderDocumentFooter(brand, d.document_number);
+    const html = renderDocumentHeader(brand, society, chapter, d.title, d.document_number, (d.created_at || '').slice(0, 10), d.extra, lang) +
+      renderDocumentBody(d, lang) +
+      renderDocumentSignatures(brand, sigKeys, d.authority, d.extra, lang) +
+      renderDocumentFooter(brand, d.document_number, lang);
 
-    document.getElementById('documentPrintArea').innerHTML = html;
+    const area = document.getElementById('documentPrintArea');
+    area.innerHTML = html;
+    // Language-aware layout: Urdu flips the whole document to RTL composition with
+    // Nastaleeq typography; English keeps the existing LTR institutional layout untouched.
+    area.setAttribute('dir', isUr ? 'rtl' : 'ltr');
+    area.style.fontFamily = isUr ? "var(--ff-urdu)" : "Georgia,serif";
     return true;
   }
 
@@ -12856,8 +13000,10 @@ select.form-input {
     if (!area || !area.innerHTML.trim()) { showToast('دستاویز دستیاب نہیں', 'error'); return; }
     const popup = window.open('', '_blank', 'width=1000,height=1200');
     if (!popup) { showToast('براوزر نے نئی ونڈو بلاک کر دی ہے۔', 'error'); return; }
+    const extra = window._lastDocExtra || {};
+    const pageCss = paperPageCss(extra.paper_size || 'a4', extra.orientation || 'portrait', 18);
     popup.document.open();
-    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>SHAOOR Document</title><style>@page{size:A4;margin:18mm;}body{background:#fff;font-family:Georgia,serif;}</style></head><body>' + area.outerHTML + '<' + 'script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<' + '/script></body></html>');
+    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>SHAOOR Document</title><style>'+pageCss+'body{background:#fff;font-family:Georgia,serif;}</style></head><body>' + area.outerHTML + '<' + 'script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<' + '/script></body></html>');
     popup.document.close();
   }
 
@@ -12867,9 +13013,11 @@ select.form-input {
   function downloadGeneratedDocumentWord() {
     const area = document.getElementById('documentPrintArea');
     if (!area || !area.innerHTML.trim()) { showToast('دستاویز دستیاب نہیں', 'error'); return; }
+    const extra = window._lastDocExtra || {};
+    const pageCss = paperPageCss(extra.paper_size || 'a4', extra.orientation || 'portrait', 20);
     const htmlDoc = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
       '<head><meta charset="utf-8"><title>SHAOOR Document</title>' +
-      '<style>body{font-family:Georgia,serif;} @page{size:A4;margin:2cm;}</style></head>' +
+      '<style>body{font-family:Georgia,serif;} '+pageCss+'</style></head>' +
       '<body>' + area.innerHTML + '</body></html>';
     const blob = new Blob(['\ufeff', htmlDoc], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
@@ -13001,8 +13149,9 @@ select.form-input {
       text_color: document.getElementById('ctplTextColor').value.trim() || null,
       accent_color: document.getElementById('ctplAccentColor').value.trim() || null,
       background_url: document.getElementById('ctplBackgroundUrl').value.trim() || null,
-      width: document.getElementById('ctplWidth').value.trim() || null,
-      orientation: document.getElementById('ctplOrientation').value || null,
+      paper_size: document.getElementById('ctplPaperSize').value || 'a4',
+      orientation: document.getElementById('ctplOrientation').value || 'landscape',
+      width: document.getElementById('ctplPaperSize').value === 'custom' ? (document.getElementById('ctplWidth').value.trim() || null) : null,
       fields
     };
   }
@@ -13030,10 +13179,17 @@ select.form-input {
       p.addEventListener('input', () => { t.value = p.value; renderCtplPreview(); });
       t.addEventListener('input', () => { if (/^#[0-9a-fA-F]{6}$/.test(t.value.trim())) p.value = t.value.trim(); renderCtplPreview(); });
     });
-    ['ctplBackgroundUrl', 'ctplWidth', 'ctplOrientation'].forEach(id => {
+    ['ctplBackgroundUrl', 'ctplWidth', 'ctplOrientation', 'ctplPaperSize'].forEach(id => {
       const el = document.getElementById(id);
       if (el && !el.dataset.wired) { el.dataset.wired = '1'; el.addEventListener('input', renderCtplPreview); el.addEventListener('change', renderCtplPreview); }
     });
+    const paperSel = document.getElementById('ctplPaperSize');
+    if (paperSel && !paperSel.dataset.wiredWidthToggle) {
+      paperSel.dataset.wiredWidthToggle = '1';
+      const toggle = () => { document.getElementById('ctplWidthGroup').style.display = paperSel.value === 'custom' ? '' : 'none'; };
+      paperSel.addEventListener('change', toggle);
+      toggle();
+    }
     const fieldsJson = document.getElementById('ctplFieldsJson');
     if (fieldsJson && !fieldsJson.dataset.wired) { fieldsJson.dataset.wired = '1'; fieldsJson.addEventListener('blur', onCtplFieldsJsonBlur); }
     const bgFile = document.getElementById('ctplBackgroundFile');
@@ -13052,6 +13208,8 @@ select.form-input {
   async function openCertTemplateModal() {
     document.getElementById('certTemplateForm').reset();
     document.getElementById('ctplId').value = '';
+    document.getElementById('ctplPaperSize').value = 'a4';
+    document.getElementById('ctplOrientation').value = 'landscape';
     buildCtplFieldControls();
     populateCtplFieldControls({});
     document.getElementById('ctplFieldsJson').value = '';
@@ -13070,14 +13228,16 @@ select.form-input {
     document.getElementById('ctplBgColor').value = cfg.background_color || '';
     document.getElementById('ctplTextColor').value = cfg.text_color || '';
     document.getElementById('ctplAccentColor').value = cfg.accent_color || '';
+    document.getElementById('ctplPaperSize').value = cfg.paper_size || 'a4';
+    document.getElementById('ctplOrientation').value = cfg.orientation || 'landscape';
     document.getElementById('ctplWidth').value = cfg.width || '';
-    document.getElementById('ctplOrientation').value = cfg.orientation || '';
     document.getElementById('ctplFieldsJson').value = cfg.fields ? JSON.stringify(cfg.fields, null, 2) : '';
     document.getElementById('ctplIsDefault').checked = !!t.is_default;
     document.getElementById('ctplIsActive').checked = !!t.is_active;
     buildCtplFieldControls();
     populateCtplFieldControls(cfg.fields || {});
     wireCtplColorPickers();
+    document.getElementById('ctplWidthGroup').style.display = document.getElementById('ctplPaperSize').value === 'custom' ? '' : 'none';
     if (!window._brandCache) { const { data } = await sb.from('brand_settings').select('logo_url, seal_url').limit(1).maybeSingle(); window._brandCache = data || {}; }
     renderCtplPreview();
     openModal('certTemplateModal');
@@ -13109,14 +13269,16 @@ select.form-input {
       try { fields = JSON.parse(fieldsRaw); }
       catch (e) { showToast('Field Layout JSON is invalid: ' + e.message, 'error'); return; }
     }
-    const width = frm.querySelector('#ctplWidth').value.trim() || null;
-    const orientation = frm.querySelector('#ctplOrientation').value || null;
+    const width = frm.querySelector('#ctplPaperSize').value === 'custom' ? (frm.querySelector('#ctplWidth').value.trim() || null) : null;
+    const orientation = frm.querySelector('#ctplOrientation').value || 'landscape';
+    const paper_size = frm.querySelector('#ctplPaperSize').value || 'a4';
     const config = {
       background_color: frm.querySelector('#ctplBgColor').value.trim() || null,
       text_color: frm.querySelector('#ctplTextColor').value.trim() || null,
       accent_color: frm.querySelector('#ctplAccentColor').value.trim() || null,
+      paper_size,
+      orientation,
       width: width || undefined,
-      orientation: orientation || undefined,
       fields: fields || undefined
     };
     const payload = { name, description, background_url, is_default, is_active, config };
