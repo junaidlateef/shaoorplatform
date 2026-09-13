@@ -5233,9 +5233,9 @@ select.form-input {
         </div>
         <div style="overflow-x:auto;">
           <table class="admin-table">
-            <thead><tr><th>Platform</th><th>Title</th><th>URL</th><th>Order</th><th>Status</th><th>ایکشن</th></tr></thead>
+            <thead><tr><th>تھمب نیل</th><th>Platform</th><th>Title</th><th>URL</th><th>Order</th><th>Status</th><th>ایکشن</th></tr></thead>
             <tbody id="mediaLinksAdminBody">
-              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Links لوڈ ہو رہے ہیں…</td></tr>
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Links لوڈ ہو رہے ہیں…</td></tr>
             </tbody>
           </table>
         </div>
@@ -7875,6 +7875,7 @@ select.form-input {
     <div class="modal-body">
       <form class="modal-form" id="mediaLinkForm" novalidate>
         <input type="hidden" id="mlEditId" value="" />
+        <input type="hidden" id="mlExistingThumbUrl" value="" />
         <div class="form-group">
           <label for="mlPlatform">Platform *</label>
           <select id="mlPlatform" class="form-input" required>
@@ -7895,6 +7896,22 @@ select.form-input {
           <label for="mlUrl">Link (URL) *</label>
           <input type="url" id="mlUrl" class="form-input" required placeholder="https://www.youtube.com/watch?v=... یا https://www.facebook.com/.../posts/..." />
         </div>
+
+        <!-- Thumbnail Upload (optional) — used as-is for Instagram/TikTok/X/LinkedIn/Other cards;
+             YouTube/Facebook keep their existing live iframe embed and don't display this image. -->
+        <div class="form-group">
+          <label>Thumbnail / تھمب نیل (اختیاری)</label>
+          <div id="mlThumbUploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;" onclick="document.getElementById('mlThumbInput').click()">
+            <img id="mlThumbPreview" src="" alt="" style="display:none;max-height:140px;border-radius:8px;margin:0 auto .5rem;object-fit:cover;width:100%;" />
+            <div id="mlThumbPlaceholder" style="color:var(--muted);">
+              <i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:.4rem;"></i>
+              <span style="font-size:.85rem;">تھمب نیل منتخب کریں (PNG, JPG, WEBP — زیادہ سے زیادہ 3MB)</span>
+            </div>
+            <input type="file" id="mlThumbInput" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+          </div>
+          <div id="mlThumbStatus" style="font-size:.8rem;color:var(--muted);margin-top:.3rem;"></div>
+        </div>
+
         <div class="form-group">
           <label for="mlOrder">ترتیب (Order — چھوٹا نمبر پہلے دکھے گا)</label>
           <input type="number" id="mlOrder" class="form-input" value="0" />
@@ -10461,8 +10478,50 @@ select.form-input {
   };
 
   /* ══════════════ MEDIA LINKS (YouTube / Facebook) — Admin ══════════════ */
+  let mediaLinkSelectedThumbFile = null;
+
+  function resetMediaLinkThumbUI() {
+    mediaLinkSelectedThumbFile = null;
+    document.getElementById('mlExistingThumbUrl').value = '';
+    document.getElementById('mlThumbPreview').style.display = 'none';
+    document.getElementById('mlThumbPreview').src = '';
+    document.getElementById('mlThumbPlaceholder').style.display = 'block';
+    document.getElementById('mlThumbStatus').textContent = '';
+    document.getElementById('mlThumbInput').value = '';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const thumbInput = document.getElementById('mlThumbInput');
+    if (thumbInput) {
+      thumbInput.addEventListener('change', () => {
+        const file = thumbInput.files[0];
+        if (!file) return;
+        if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+          showToast('صرف PNG, JPG, یا WEBP تصویر منتخب کریں', 'error');
+          thumbInput.value = '';
+          return;
+        }
+        if (file.size > 3 * 1024 * 1024) {
+          showToast('تصویر 3MB سے چھوٹی ہونی چاہیے', 'error');
+          thumbInput.value = '';
+          return;
+        }
+        mediaLinkSelectedThumbFile = file;
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('mlThumbPreview').src = e.target.result;
+          document.getElementById('mlThumbPreview').style.display = 'block';
+          document.getElementById('mlThumbPlaceholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+        document.getElementById('mlThumbStatus').textContent = 'نئی تھمب نیل منتخب ہو گئی — محفوظ کرنے پر اپلوڈ ہوگی۔';
+      });
+    }
+  });
+
   window.openCreateMediaLinkModal = function() {
     document.getElementById('mediaLinkForm').reset();
+    resetMediaLinkThumbUI();
     document.getElementById('mlEditId').value = '';
     document.getElementById('mediaLinkModalTitle').textContent = 'نیا Media Link';
     document.getElementById('mlStatus').value = 'published';
@@ -10474,6 +10533,7 @@ select.form-input {
     const { data: link, error } = await sb.from('media_links').select('*').eq('id', id).single();
     if (error || !link) { showToast('Link نہیں ملا: ' + (error?.message || ''), 'error'); return; }
     document.getElementById('mediaLinkForm').reset();
+    resetMediaLinkThumbUI();
     document.getElementById('mlEditId').value = link.id;
     document.getElementById('mediaLinkModalTitle').textContent = 'Media Link میں ترمیم';
     document.getElementById('mlPlatform').value = link.platform || 'youtube';
@@ -10481,6 +10541,12 @@ select.form-input {
     document.getElementById('mlUrl').value = link.url || '';
     document.getElementById('mlOrder').value = link.sort_order ?? 0;
     document.getElementById('mlStatus').value = link.status || 'published';
+    if (link.thumbnail_url) {
+      document.getElementById('mlExistingThumbUrl').value = link.thumbnail_url;
+      document.getElementById('mlThumbPreview').src = link.thumbnail_url;
+      document.getElementById('mlThumbPreview').style.display = 'block';
+      document.getElementById('mlThumbPlaceholder').style.display = 'none';
+    }
     openModal('mediaLinkModal');
   };
 
@@ -10503,7 +10569,24 @@ select.form-input {
 
     if (!title || !url) { showToast('براہ کرم عنوان اور Link درج کریں', 'error'); return; }
 
-    const payload = { platform, title, url, sort_order, status };
+    const thumbStatusEl = document.getElementById('mlThumbStatus');
+    let thumbnail_url = document.getElementById('mlExistingThumbUrl').value || null;
+
+    if (mediaLinkSelectedThumbFile) {
+      if (thumbStatusEl) thumbStatusEl.textContent = 'تھمب نیل اپلوڈ ہو رہی ہے…';
+      const ext = mediaLinkSelectedThumbFile.name.split('.').pop();
+      const filePath = 'media-links/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+      const { error: uploadError } = await sb.storage.from('shaoor-uploads').upload(filePath, mediaLinkSelectedThumbFile);
+      if (uploadError) {
+        showToast('تھمب نیل اپلوڈ ناکام: ' + uploadError.message, 'error');
+        if (thumbStatusEl) thumbStatusEl.textContent = '';
+        return;
+      }
+      const { data: publicUrlData } = sb.storage.from('shaoor-uploads').getPublicUrl(filePath);
+      thumbnail_url = publicUrlData.publicUrl;
+    }
+
+    const payload = { platform, title, url, sort_order, status, thumbnail_url };
     let error;
     if (editId) {
       ({ error } = await sb.from('media_links').update(payload).eq('id', editId));
@@ -10521,7 +10604,7 @@ select.form-input {
   window.loadMediaLinksAdmin = async function() {
     const tbody = document.getElementById('mediaLinksAdminBody');
     if (!tbody || !sb) return;
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
 
     let data, error;
     try {
@@ -10530,11 +10613,11 @@ select.form-input {
     } catch(e) { error = { message: e.message }; }
 
     if (error) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">لوڈ ناکام: ${sanitize(error.message)}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ruby);padding:1.5rem;">لوڈ ناکام: ${sanitize(error.message)}</td></tr>`;
       return;
     }
     if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Media Link نہیں ملا۔</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Media Link نہیں ملا۔</td></tr>';
       return;
     }
 
@@ -10552,8 +10635,12 @@ select.form-input {
 
     tbody.innerHTML = data.map(l => {
       const st = (l.status || 'published');
+      const thumb = l.thumbnail_url
+        ? `<img src="${sanitize(l.thumbnail_url)}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;" />`
+        : `<div style="width:50px;height:50px;border-radius:6px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>`;
       return `
         <tr>
+          <td>${thumb}</td>
           <td>${platformIcon[l.platform] || sanitize(l.platform || '—')}</td>
           <td style="font-weight:600;">${sanitize(l.title || '—')}</td>
           <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><a href="${sanitize(l.url)}" target="_blank" rel="noopener">${sanitize(l.url || '—')}</a></td>
@@ -13170,7 +13257,7 @@ select.form-input {
 
     const { data: d, error } = await sb
       .from('generated_documents')
-      .select('document_number, document_type, title, status, created_at, member_id')
+      .select('document_number, document_type, title, status, created_at, member_id, recipient, subject, body, designation, effective_date, event_name, event_date, event_time, venue, society_id, chapter_id, authority, extra')
       .eq('document_number', docNumber)
       .single();
 
@@ -14404,6 +14491,29 @@ select.form-input {
     return `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(normalized)}&show_text=true&width=500`;
   }
 
+  // Shared by loadPublicMediaLinks below — hoisted to module scope so the onerror
+  // fallback handler (mediaLinkThumbError) can also reach it.
+  const MEDIA_PLATFORM_META = {
+    youtube:   { label: 'YouTube',    icon: '<i class="fab fa-youtube" style="color:#FF0000;"></i>' },
+    facebook:  { label: 'Facebook',   icon: '<i class="fab fa-facebook" style="color:#1877F2;"></i>' },
+    instagram: { label: 'Instagram',  icon: '<i class="fab fa-instagram" style="color:#C13584;"></i>' },
+    tiktok:    { label: 'TikTok',     icon: '<i class="fab fa-tiktok" style="color:#000;"></i>' },
+    twitter:   { label: 'Twitter/X',  icon: '<i class="fab fa-x-twitter" style="color:#000;"></i>' },
+    linkedin:  { label: 'LinkedIn',   icon: '<i class="fab fa-linkedin" style="color:#0A66C2;"></i>' },
+    other:     { label: 'Link',       icon: '<i class="fas fa-link"></i>' }
+  };
+  function mediaLinkThumbFallbackBlock(platform) {
+    const meta = MEDIA_PLATFORM_META[platform] || MEDIA_PLATFORM_META.other;
+    return `<div style="width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--cream2);border-radius:12px 12px 0 0;color:var(--muted);font-size:2rem;">${meta.icon}</div>`;
+  }
+  // A missing, deleted, or broken admin-uploaded thumbnail must never show a broken-image
+  // icon — swap it for the same generic platform-icon placeholder used when no thumbnail
+  // was ever provided at all.
+  window.mediaLinkThumbError = function(imgEl, platform) {
+    const wrap = imgEl.closest('.ml-thumb-wrap') || imgEl.parentElement;
+    if (wrap) wrap.outerHTML = mediaLinkThumbFallbackBlock(platform);
+  };
+
   window.loadPublicMediaLinks = async function loadPublicMediaLinks() {
     const grid = document.getElementById('mediaLinksGrid');
     if (!grid) return;
@@ -14416,7 +14526,7 @@ select.form-input {
 
     let items, error;
     try {
-      const res = await sb.from('media_links').select('id, platform, title, url, status')
+      const res = await sb.from('media_links').select('id, platform, title, url, status, thumbnail_url')
         .eq('status', 'published')
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
@@ -14433,28 +14543,25 @@ select.form-input {
       return;
     }
 
-    const platformMeta = {
-      youtube:   { label: 'YouTube',    icon: '<i class="fab fa-youtube" style="color:#FF0000;"></i>' },
-      facebook:  { label: 'Facebook',   icon: '<i class="fab fa-facebook" style="color:#1877F2;"></i>' },
-      instagram: { label: 'Instagram',  icon: '<i class="fab fa-instagram" style="color:#C13584;"></i>' },
-      tiktok:    { label: 'TikTok',     icon: '<i class="fab fa-tiktok" style="color:#000;"></i>' },
-      twitter:   { label: 'Twitter/X',  icon: '<i class="fab fa-x-twitter" style="color:#000;"></i>' },
-      linkedin:  { label: 'LinkedIn',   icon: '<i class="fab fa-linkedin" style="color:#0A66C2;"></i>' },
-      other:     { label: 'Link',       icon: '<i class="fas fa-link"></i>' }
-    };
+    const platformMeta = MEDIA_PLATFORM_META;
     grid.innerHTML = items.map(item => {
       const meta = platformMeta[item.platform] || platformMeta.other;
       // Only YouTube and Facebook have an actual embeddable iframe URL builder.
       // Every other platform (Instagram, TikTok, X, LinkedIn, etc.) does not support
-      // simple public iframe embedding at all, so for those we always show a clean
-      // icon card + direct link rather than a broken/blank iframe attempt.
+      // simple public iframe embedding at all, so for those we show the admin-provided
+      // thumbnail when available, or the existing icon-card fallback otherwise. YouTube/
+      // Facebook keep their live iframe unchanged regardless of whether a thumbnail exists.
       const embed = item.platform === 'youtube' ? ytEmbedUrl(item.url)
                   : item.platform === 'facebook' ? fbEmbedUrl(item.url)
                   : null;
       const icon = meta.icon;
       const frame = embed
         ? `<iframe src="${embed}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px 12px 0 0;" loading="lazy" allowfullscreen></iframe>`
-        : `<div style="width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:var(--cream2);border-radius:12px 12px 0 0;color:var(--muted);font-size:2rem;">${icon}</div>`;
+        : (item.thumbnail_url
+            ? `<div class="ml-thumb-wrap" style="width:100%;aspect-ratio:16/9;border-radius:12px 12px 0 0;overflow:hidden;">
+                 <img src="${sanitize(item.thumbnail_url)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="mediaLinkThumbError(this,'${item.platform}')" />
+               </div>`
+            : mediaLinkThumbFallbackBlock(item.platform));
       // Decode first (repairs old rows saved with &#x2F; instead of /), then only
       // escape double-quotes for safe attribute embedding — sanitize() would just
       // re-corrupt the slashes all over again.
