@@ -4679,6 +4679,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
       <button class="admin-nav-btn" onclick="switchDashTab('analytics',this);loadAnalyticsAdmin();"><i class="fas fa-chart-line"></i> Analytics</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('documents',this);loadGeneratedDocumentsAdmin();"><i class="fas fa-file-signature"></i> Official Documents</button>
       <div style="margin-top:auto;padding-top:1rem;">
         <button class="admin-nav-btn" onclick="adminLogout()" style="color:rgba(252,165,165,.7);"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -4698,9 +4699,21 @@ select.form-input {
       <div class="dash-panel active" id="dp-members">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
           <h3 style="font-weight:700;">All Members</h3>
-          <div style="display:flex;gap:.75rem;">
-            <input type="text" placeholder="Search member..." style="padding:.45rem .9rem;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:.85rem;" oninput="searchMembers(this.value)" />
-            <button class="btn btn-gold" style="font-size:.85rem;" onclick="showToast('Export feature coming in next update!')"><i class="fas fa-download"></i> Export</button>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+            <input type="text" id="memberSearchInput" placeholder="Search member..." style="padding:.45rem .9rem;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:.85rem;" oninput="searchMembers(this.value)" />
+            <select id="memberFilterStatus" onchange="loadMembersAdmin()" style="padding:.45rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:.8rem;">
+              <option value="">Status: All</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="suspended">Suspended</option>
+            </select>
+            <select id="memberFilterSociety" onchange="loadMembersAdmin()" style="padding:.45rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:.8rem;">
+              <option value="">Society: All</option>
+            </select>
+            <select id="memberFilterChapter" onchange="loadMembersAdmin()" style="padding:.45rem .7rem;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:.8rem;">
+              <option value="">Chapter: All</option>
+            </select>
+            <button class="btn btn-gold" style="font-size:.85rem;" onclick="exportMembersCSV()"><i class="fas fa-download"></i> Export CSV</button>
           </div>
         </div>
         <div style="overflow-x:auto;">
@@ -4867,6 +4880,80 @@ select.form-input {
               <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Official Documents Panel (Notes / Appointments / Removal-Termination / Invitations) -->
+      <div class="dash-panel" id="dp-documents">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Official Documents</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openGeneratedDocumentModal()"><i class="fas fa-plus"></i> New Document</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="generatedDocumentsTable">
+            <thead><tr><th>Doc #</th><th>Type</th><th>Title / Recipient</th><th>Society / Chapter</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="generatedDocumentsBody">
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading documents…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- New/Edit Official Document Modal -->
+      <div class="modal" id="documentModal">
+        <div class="modal-content">
+          <button class="modal-close" onclick="closeModal('documentModal')">&times;</button>
+          <h3 style="margin-bottom:1rem;">Official Document</h3>
+          <form class="modal-form" id="documentForm">
+            <input type="hidden" id="docId" />
+            <div class="form-group">
+              <label for="docType">Document Type</label>
+              <select id="docType" class="form-input" required onchange="onDocumentTypeChange()">
+                <option value="note">Official Note</option>
+                <option value="appointment">Appointment Letter</option>
+                <option value="removal">Removal / Termination Letter</option>
+                <option value="invitation">Invitation Letter</option>
+              </select>
+            </div>
+            <div class="form-group"><label for="docMemberSelect">Member (optional)</label><select id="docMemberSelect" class="form-input"><option value="">— No specific member —</option></select></div>
+            <div class="form-group"><label for="docSocietySelect">Society (optional)</label><select id="docSocietySelect" class="form-input"><option value="">— No specific society —</option></select></div>
+            <div class="form-group"><label for="docChapterSelect">Chapter (optional)</label><select id="docChapterSelect" class="form-input"><option value="">— No specific chapter —</option></select></div>
+            <div class="form-group"><label for="docTitle">Document Title</label><input type="text" id="docTitle" class="form-input" required placeholder="e.g. Official Note / Appointment Letter" /></div>
+            <div class="form-group" id="docRecipientGroup"><label for="docRecipient">Recipient (name)</label><input type="text" id="docRecipient" class="form-input" /></div>
+            <div class="form-group" id="docDesignationGroup"><label for="docDesignation">Designation</label><input type="text" id="docDesignation" class="form-input" placeholder="e.g. Chapter President" /></div>
+            <div class="form-group" id="docEffectiveDateGroup"><label for="docEffectiveDate">Effective Date</label><input type="date" id="docEffectiveDate" class="form-input" /></div>
+            <div class="form-group" id="docEventNameGroup"><label for="docEventName">Event / Program Name</label><input type="text" id="docEventName" class="form-input" /></div>
+            <div class="form-group" id="docEventDateGroup"><label for="docEventDate">Event Date</label><input type="date" id="docEventDate" class="form-input" /></div>
+            <div class="form-group" id="docEventTimeGroup"><label for="docEventTime">Event Time</label><input type="time" id="docEventTime" class="form-input" /></div>
+            <div class="form-group" id="docVenueGroup"><label for="docVenue">Venue</label><input type="text" id="docVenue" class="form-input" /></div>
+            <div class="form-group"><label for="docSubject">Subject</label><input type="text" id="docSubject" class="form-input" /></div>
+            <div class="form-group"><label for="docBody">Body / Message</label><textarea id="docBody" class="form-input" rows="6" required></textarea></div>
+            <div class="form-group"><label for="docAuthority">Signing Authority (label)</label><input type="text" id="docAuthority" class="form-input" placeholder="e.g. President, SHAOOR" /></div>
+            <div class="form-group">
+              <label for="docSignatureKeys">Signatures to show</label>
+              <select id="docSignatureKeys" class="form-input" multiple size="4">
+                <option value="founder">Founder</option>
+                <option value="president">President</option>
+                <option value="society">Society</option>
+                <option value="chapter">Chapter</option>
+              </select>
+              <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">Ctrl/Cmd-click to select more than one. Only signatures that actually have an uploaded image (in Branding) will show, even if selected here.</div>
+            </div>
+            <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.5rem;">Save Document</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Official Document View/Print Modal -->
+      <div class="modal" id="viewDocumentModal">
+        <div class="modal-content" style="max-width:900px;">
+          <button class="modal-close" onclick="closeModal('viewDocumentModal')">&times;</button>
+          <div style="display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
+            <button class="btn btn-outline" onclick="printGeneratedDocument()"><i class="fas fa-print"></i> Print / PDF</button>
+          </div>
+          <div id="documentPrintArea" style="background:#fff;color:#1a1a1a;padding:2.2rem 2.5rem;border:1px solid #d9d0bd;border-radius:4px;font-family:Georgia,serif;min-height:600px;position:relative;">
+            <!-- populated dynamically by renderGeneratedDocumentView() -->
+          </div>
         </div>
       </div>
 
@@ -11896,6 +11983,302 @@ select.form-input {
     await renderCertificateView(c, prof);
   }
 
+  /* ══════════════════════════════════════════════════════════════════════
+     PHASE 1 — OFFICIAL DOCUMENT SYSTEM (Notes / Appointments / Removal /
+     Termination / Invitations), built on the new `generated_documents`
+     table. Shares the SHAOOR/Society/Chapter branding already stored in
+     brand_settings + chapters.logo_url — the same source certificates use —
+     and reuses the exact popup-print-to-PDF pattern already proven by
+     downloadCertificateAsPDF(), so behaviour stays consistent across the app.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  const DOC_TYPE_LABELS = {
+    note: 'Official Note',
+    appointment: 'Appointment Letter',
+    removal: 'Removal / Termination Letter',
+    invitation: 'Invitation Letter'
+  };
+
+  // Which optional field-groups are relevant per document type — keeps the form
+  // from asking for irrelevant information (per the branding-hierarchy / "don't force
+  // fields where they don't belong" rule in the Phase 1 spec).
+  const DOC_TYPE_FIELD_GROUPS = {
+    note: ['docRecipientGroup'],
+    appointment: ['docRecipientGroup', 'docDesignationGroup', 'docEffectiveDateGroup'],
+    removal: ['docRecipientGroup', 'docDesignationGroup', 'docEffectiveDateGroup'],
+    invitation: ['docRecipientGroup', 'docEventNameGroup', 'docEventDateGroup', 'docEventTimeGroup', 'docVenueGroup']
+  };
+  const ALL_DOC_OPTIONAL_GROUPS = ['docRecipientGroup', 'docDesignationGroup', 'docEffectiveDateGroup', 'docEventNameGroup', 'docEventDateGroup', 'docEventTimeGroup', 'docVenueGroup'];
+
+  function onDocumentTypeChange() {
+    const type = document.getElementById('docType').value;
+    const visible = DOC_TYPE_FIELD_GROUPS[type] || [];
+    ALL_DOC_OPTIONAL_GROUPS.forEach(gid => {
+      const el = document.getElementById(gid);
+      if (el) el.style.display = visible.includes(gid) ? '' : 'none';
+    });
+  }
+
+  var _docDropdownsPopulated = false;
+  async function populateDocumentDropdowns() {
+    if (_docDropdownsPopulated) return;
+    const memberSel = document.getElementById('docMemberSelect');
+    const socSel = document.getElementById('docSocietySelect');
+    const chapSel = document.getElementById('docChapterSelect');
+    if (memberSel) {
+      const { data: members } = await sb.from('profiles').select('id, full_name, member_id').order('full_name');
+      (members || []).forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id; opt.textContent = m.full_name + (m.member_id ? ' (' + m.member_id + ')' : '');
+        memberSel.appendChild(opt);
+      });
+    }
+    if (socSel) {
+      const { data: socs } = await sb.from('societies').select('id, name').order('name');
+      (socs || []).forEach(s => { const o = document.createElement('option'); o.value = s.id; o.textContent = s.name; socSel.appendChild(o); });
+    }
+    if (chapSel) {
+      const { data: chaps } = await sb.from('chapters').select('id, name').order('name');
+      (chaps || []).forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; chapSel.appendChild(o); });
+    }
+    _docDropdownsPopulated = true;
+  }
+
+  async function openGeneratedDocumentModal() {
+    await populateDocumentDropdowns();
+    document.getElementById('documentForm').reset();
+    document.getElementById('docId').value = '';
+    document.getElementById('docType').value = 'note';
+    onDocumentTypeChange();
+    openModal('documentModal');
+  }
+
+  async function editGeneratedDocument(id) {
+    await populateDocumentDropdowns();
+    const { data: d, error } = await sb.from('generated_documents').select('*').eq('id', id).single();
+    if (error || !d) { showToast('دستاویز لوڈ نہیں ہو سکی', 'error'); return; }
+    document.getElementById('docId').value = d.id;
+    document.getElementById('docType').value = d.document_type;
+    onDocumentTypeChange();
+    document.getElementById('docMemberSelect').value = d.member_id || '';
+    document.getElementById('docSocietySelect').value = d.society_id || '';
+    document.getElementById('docChapterSelect').value = d.chapter_id || '';
+    document.getElementById('docTitle').value = d.title || '';
+    document.getElementById('docRecipient').value = d.recipient || '';
+    document.getElementById('docDesignation').value = d.designation || '';
+    document.getElementById('docEffectiveDate').value = d.effective_date || '';
+    document.getElementById('docEventName').value = d.event_name || '';
+    document.getElementById('docEventDate').value = d.event_date || '';
+    document.getElementById('docEventTime').value = d.event_time || '';
+    document.getElementById('docVenue').value = d.venue || '';
+    document.getElementById('docSubject').value = d.subject || '';
+    document.getElementById('docBody').value = d.body || '';
+    document.getElementById('docAuthority').value = d.authority || '';
+    const sigKeys = (d.extra && d.extra.signature_keys) || [];
+    Array.from(document.getElementById('docSignatureKeys').options).forEach(o => { o.selected = sigKeys.includes(o.value); });
+    openModal('documentModal');
+  }
+
+  async function deleteGeneratedDocument(id) {
+    if (!confirm('کیا آپ واقعی یہ دستاویز حذف کرنا چاہتے ہیں؟')) return;
+    const { error } = await sb.from('generated_documents').delete().eq('id', id);
+    if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('دستاویز حذف کر دی گئی۔');
+    loadGeneratedDocumentsAdmin();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => secureSubmit('documentForm', async frm => {
+    const id = frm.querySelector('#docId').value || null;
+    const document_type = frm.querySelector('#docType').value;
+    const signatureKeys = Array.from(frm.querySelector('#docSignatureKeys').selectedOptions).map(o => o.value);
+    const payload = {
+      document_type,
+      member_id: frm.querySelector('#docMemberSelect').value || null,
+      society_id: frm.querySelector('#docSocietySelect').value || null,
+      chapter_id: frm.querySelector('#docChapterSelect').value || null,
+      title: frm.querySelector('#docTitle').value.trim(),
+      recipient: frm.querySelector('#docRecipient').value.trim() || null,
+      designation: frm.querySelector('#docDesignation').value.trim() || null,
+      effective_date: frm.querySelector('#docEffectiveDate').value || null,
+      event_name: frm.querySelector('#docEventName').value.trim() || null,
+      event_date: frm.querySelector('#docEventDate').value || null,
+      event_time: frm.querySelector('#docEventTime').value || null,
+      venue: frm.querySelector('#docVenue').value.trim() || null,
+      subject: frm.querySelector('#docSubject').value.trim() || null,
+      body: frm.querySelector('#docBody').value.trim(),
+      authority: frm.querySelector('#docAuthority').value.trim() || null,
+      extra: { signature_keys: signatureKeys },
+      status: 'active'
+    };
+
+    let error;
+    if (id) {
+      ({ error } = await sb.from('generated_documents').update(payload).eq('id', id));
+    } else {
+      // document_number is generated server-side (generate_document_number RPC) so numbering
+      // stays sequential and collision-free even with concurrent admins — never assigned client-side.
+      const { data: numData, error: numErr } = await sb.rpc('generate_document_number', { doc_type: document_type });
+      if (numErr) { showToast('Document number تیار نہیں ہو سکا: ' + numErr.message, 'error'); return; }
+      payload.document_number = numData;
+      ({ error } = await sb.from('generated_documents').insert(payload));
+    }
+    if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
+    showToast('✓ دستاویز محفوظ ہو گئی');
+    closeModal('documentModal');
+    loadGeneratedDocumentsAdmin();
+  }));
+
+  function documentStatusColor(status) {
+    switch (status) {
+      case 'revoked': return { bg: 'var(--ruby)', label: 'Revoked' };
+      case 'draft': return { bg: 'var(--muted)', label: 'Draft' };
+      default: return { bg: 'var(--teal)', label: 'Active' };
+    }
+  }
+
+  async function loadGeneratedDocumentsAdmin() {
+    const tbody = document.getElementById('generatedDocumentsBody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading documents…</td></tr>';
+
+    const { data, error } = await sb
+      .from('generated_documents')
+      .select('id, document_number, document_type, title, recipient, status, created_at, societies(name), chapters(name)')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ruby);padding:1.5rem;">Failed to load: ' + sanitize(error.message) + '</td></tr>';
+      return;
+    }
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">ابھی کوئی دستاویز نہیں بنائی گئی۔</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(d => {
+      const sc = documentStatusColor(d.status);
+      const societyChapter = [(d.societies ? d.societies.name : null), (d.chapters ? d.chapters.name : null)].filter(Boolean).join(' · ') || '—';
+      return `<tr>
+        <td>${sanitize(d.document_number || '—')}</td>
+        <td>${sanitize(DOC_TYPE_LABELS[d.document_type] || d.document_type)}</td>
+        <td>${sanitize(d.title || '—')}${d.recipient ? '<br><span style="font-size:.72rem;color:var(--muted);">' + sanitize(d.recipient) + '</span>' : ''}</td>
+        <td>${sanitize(societyChapter)}</td>
+        <td>${sanitize((d.created_at || '').slice(0, 10))}</td>
+        <td><span class="status-pill" style="background:${sc.bg};color:#fff;">${sc.label}</span></td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewGeneratedDocument('${d.id}')">View / Print</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="editGeneratedDocument('${d.id}')">Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteGeneratedDocument('${d.id}')">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ── Shared branding building blocks — reused by every document type, so a fix or
+     style change here fixes it everywhere at once, per the "shared renderer" requirement. ── */
+  function renderDocumentHeader(brand, society, chapter, docTitle, docNumber, docDate) {
+    const orgLogo = brand && brand.logo_url
+      ? `<img src="${brand.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />`
+      : '';
+    const rightLogo = (chapter && chapter.logo_url)
+      ? `<img src="${chapter.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />`
+      : (society && society.logo_url ? `<img src="${society.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />` : '');
+    return `
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0B1F33;padding-bottom:.8rem;margin-bottom:1.2rem;">
+        <div style="width:130px;display:flex;align-items:center;">${orgLogo}</div>
+        <div style="text-align:center;flex:1;">
+          <div style="font-family:Georgia,serif;font-weight:700;font-size:1.4rem;letter-spacing:.06em;color:#0B1F33;">${sanitize((brand && brand.organization_name) || 'SHAOOR')}</div>
+          <div style="font-size:1rem;color:#0B1F33;">شعور</div>
+          <div style="font-size:.72rem;color:#555;letter-spacing:.04em;">Professional Arts &amp; Culture Organization</div>
+        </div>
+        <div style="width:130px;display:flex;align-items:center;justify-content:flex-end;">${rightLogo}</div>
+      </div>
+      <div style="text-align:center;margin-bottom:1.2rem;">
+        <div style="font-family:Georgia,serif;font-weight:700;font-size:1.15rem;text-transform:uppercase;letter-spacing:.05em;">${sanitize(docTitle)}</div>
+        <div style="font-size:.75rem;color:#666;margin-top:.2rem;">Ref: ${sanitize(docNumber || '—')} &nbsp;·&nbsp; Date: ${sanitize(docDate || '—')}</div>
+      </div>`;
+  }
+
+  function renderDocumentSignatures(brand, selectedKeys, authorityLabel) {
+    if (!brand || !selectedKeys || !selectedKeys.length) return '';
+    const labels = brand.signature_labels || {};
+    const urlMap = {
+      founder: brand.founder_signature_url, president: brand.president_signature_url,
+      society: brand.society_signature_url, chapter: brand.chapter_signature_url
+    };
+    const blocks = selectedKeys.filter(k => urlMap[k]).map(k => {
+      const label = labels[k] || (k.charAt(0).toUpperCase() + k.slice(1));
+      return `<div style="text-align:center;">
+        <img src="${urlMap[k]}" style="height:44px;object-fit:contain;display:block;margin:0 auto .3rem;" />
+        <div style="font-size:.72rem;border-top:1px solid #999;padding-top:.2rem;min-width:120px;">${sanitize(authorityLabel || label)}</div>
+      </div>`;
+    }).join('');
+    if (!blocks) return '';
+    return `<div style="display:flex;justify-content:center;gap:2rem;margin-top:2.5rem;flex-wrap:wrap;">${blocks}</div>`;
+  }
+
+  function renderDocumentFooter(brand) {
+    const contact = [brand && brand.official_email, brand && brand.official_phone].filter(Boolean).join(' · ');
+    return `<div style="margin-top:2.5rem;border-top:1px solid #ccc;padding-top:.6rem;font-size:.68rem;color:#777;text-align:center;">
+      ${sanitize(contact || 'SHAOOR — Professional Arts & Culture Organization')}
+    </div>`;
+  }
+
+  // Builds the body HTML for each document type using only real, stored data —
+  // never invented text — per the "do not invent information" rule.
+  function renderDocumentBody(d) {
+    const p = (label, val) => val ? `<div style="margin-bottom:.5rem;"><strong>${sanitize(label)}:</strong> ${sanitize(val)}</div>` : '';
+    let meta = '';
+    if (d.document_type === 'appointment' || d.document_type === 'removal') {
+      meta = p('Recipient', d.recipient) + p('Designation', d.designation) + p('Effective Date', d.effective_date);
+    } else if (d.document_type === 'invitation') {
+      meta = p('Recipient', d.recipient) + p('Event/Program', d.event_name) + p('Date', d.event_date) + p('Time', d.event_time) + p('Venue', d.venue);
+    } else {
+      meta = p('Recipient', d.recipient);
+    }
+    const subject = d.subject ? `<div style="margin-bottom:1rem;"><strong>Subject:</strong> ${sanitize(d.subject)}</div>` : '';
+    const bodyText = sanitize(d.body || '').replace(/\n/g, '<br>');
+    return `<div style="font-size:.92rem;line-height:1.7;">${meta}${subject}<div style="margin-top:.8rem;white-space:pre-wrap;">${bodyText}</div></div>`;
+  }
+
+  async function renderGeneratedDocumentView(d) {
+    const [{ data: brand }, societyRes, chapterRes] = await Promise.all([
+      sb.from('brand_settings').select('*').limit(1).maybeSingle(),
+      d.society_id ? sb.from('societies').select('name, logo_url').eq('id', d.society_id).maybeSingle() : Promise.resolve({ data: null }),
+      d.chapter_id ? sb.from('chapters').select('name, logo_url').eq('id', d.chapter_id).maybeSingle() : Promise.resolve({ data: null })
+    ]);
+    const society = societyRes.data;
+    const chapter = chapterRes.data;
+    const sigKeys = (d.extra && d.extra.signature_keys) || [];
+
+    const html = renderDocumentHeader(brand, society, chapter, d.title, d.document_number, (d.created_at || '').slice(0, 10)) +
+      renderDocumentBody(d) +
+      renderDocumentSignatures(brand, sigKeys, d.authority) +
+      renderDocumentFooter(brand);
+
+    document.getElementById('documentPrintArea').innerHTML = html;
+  }
+
+  var _currentViewedDocId = null;
+  async function viewGeneratedDocument(id) {
+    const { data: d, error } = await sb.from('generated_documents').select('*').eq('id', id).single();
+    if (error || !d) { showToast('دستاویز لوڈ نہیں ہو سکی', 'error'); return; }
+    _currentViewedDocId = id;
+    await renderGeneratedDocumentView(d);
+    openModal('viewDocumentModal');
+  }
+
+  // Same popup-window print/PDF technique as downloadCertificateAsPDF() — kept
+  // identical so behaviour (and browser compatibility) stays consistent app-wide.
+  function printGeneratedDocument() {
+    const area = document.getElementById('documentPrintArea');
+    if (!area || !area.innerHTML.trim()) { showToast('دستاویز دستیاب نہیں', 'error'); return; }
+    const popup = window.open('', '_blank', 'width=1000,height=1200');
+    if (!popup) { showToast('براوزر نے نئی ونڈو بلاک کر دی ہے۔', 'error'); return; }
+    popup.document.open();
+    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>SHAOOR Document</title><style>@page{size:A4;margin:18mm;}body{background:#fff;font-family:Georgia,serif;}</style></head><body>' + area.outerHTML + '<' + 'script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<' + '/script></body></html>');
+    popup.document.close();
+  }
+
   /* ══════════ Certificate & Card Template Management (Admin) ══════════ */
 
   async function loadCertTemplatesAdmin() {
@@ -12723,20 +13106,63 @@ select.form-input {
     return '<span class="status-pill" style="background:#f3e8ff;color:#6b21a8;">' + sanitize(status || '—') + '</span>';
   }
 
+  /* ── Members Export: holds the last successfully loaded (server-filtered) member set,
+     kept in sync with loadMembersAdmin() so Export always reflects the active filters. ── */
+  var _membersCache = [];
+  var _membersFilterDropdownsPopulated = false;
+
+  async function populateMemberFilterDropdowns() {
+    if (_membersFilterDropdownsPopulated) return;
+    const socSel = document.getElementById('memberFilterSociety');
+    const chapSel = document.getElementById('memberFilterChapter');
+    if (socSel) {
+      const { data: socs } = await sb.from('societies').select('id, name').order('name');
+      (socs || []).forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id; opt.textContent = s.name;
+        socSel.appendChild(opt);
+      });
+    }
+    if (chapSel) {
+      const { data: chaps } = await sb.from('chapters').select('id, name').order('name');
+      (chaps || []).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id; opt.textContent = c.name;
+        chapSel.appendChild(opt);
+      });
+    }
+    _membersFilterDropdownsPopulated = true;
+  }
+
   async function loadMembersAdmin() {
     const tbody = document.getElementById('membersBody');
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading members…</td></tr>';
 
-    const { data: members, error } = await sb
+    await populateMemberFilterDropdowns();
+
+    const statusFilter = document.getElementById('memberFilterStatus') ? document.getElementById('memberFilterStatus').value : '';
+    const societyFilter = document.getElementById('memberFilterSociety') ? document.getElementById('memberFilterSociety').value : '';
+    const chapterFilter = document.getElementById('memberFilterChapter') ? document.getElementById('memberFilterChapter').value : '';
+
+    let query = sb
       .from('profiles')
-      .select('id, member_id, full_name, phone, role, status, province, society_id, chapter_id, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('id, member_id, full_name, phone, role, status, province, membership_type, created_at, society_id, chapter_id, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .order('member_id', { ascending: true });
+
+    if (statusFilter) query = query.eq('status', statusFilter);
+    if (societyFilter) query = query.eq('society_id', societyFilter);
+    if (chapterFilter) query = query.eq('chapter_id', chapterFilter);
+
+    const { data: members, error } = await query;
 
     if (error) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">Failed to load: ' + sanitize(error.message) + '</td></tr>';
+      _membersCache = [];
       return;
     }
+
+    _membersCache = members || [];
 
     if (!members || members.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">No members found.</td></tr>';
@@ -12904,6 +13330,77 @@ select.form-input {
     document.querySelectorAll('#membersBody tr').forEach(row => {
       row.style.display = row.textContent.toLowerCase().includes(s) ? '' : 'none';
     });
+  }
+
+  /* ── Members Export: real, working CSV export.
+     Exports whatever is currently loaded in _membersCache (i.e. respects the
+     Status/Society/Chapter dropdown filters) AND further respects the live search box text,
+     the same way the on-screen table is filtered — so "what you see is what you export".
+     Only fields that actually exist on profiles are included; fields the schema does not
+     currently store (email, WhatsApp, membership start/expiry date, a separate membership
+     code) are intentionally left out rather than faked — see the Phase 1 report. ── */
+  function exportMembersCSV() {
+    if (!_membersCache || _membersCache.length === 0) {
+      showToast('کوئی ممبرز موجود نہیں جنہیں ایکسپورٹ کیا جا سکے', 'error');
+      return;
+    }
+
+    const searchInput = document.getElementById('memberSearchInput');
+    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    let rows = _membersCache;
+    if (searchTerm) {
+      rows = rows.filter(m => {
+        const hay = [
+          m.member_id, m.full_name, m.phone, m.role, m.status, m.province, m.membership_type,
+          m.societies ? m.societies.name : '', m.chapters ? m.chapters.name : ''
+        ].join(' ').toLowerCase();
+        return hay.includes(searchTerm);
+      });
+    }
+
+    if (rows.length === 0) {
+      showToast('موجودہ فلٹرز کے مطابق کوئی ممبر نہیں ملا', 'error');
+      return;
+    }
+
+    const headers = ['Member ID', 'Full Name', 'Phone', 'Role', 'Status', 'Society', 'Chapter', 'Province', 'Membership Type', 'Joined'];
+    const csvEscape = v => {
+      const s = (v === null || v === undefined) ? '' : String(v);
+      return '"' + s.replace(/"/g, '""') + '"';
+    };
+    const lines = [headers.map(csvEscape).join(',')];
+    rows.forEach(m => {
+      lines.push([
+        m.member_id || '', m.full_name || '', m.phone || '', m.role || '', m.status || '',
+        m.societies ? m.societies.name : '', m.chapters ? m.chapters.name : '', m.province || '',
+        m.membership_type || '', m.created_at ? String(m.created_at).slice(0, 10) : ''
+      ].map(csvEscape).join(','));
+    });
+
+    // Professional, dynamic filename reflecting the active filters — never hardcoded.
+    const statusFilter = document.getElementById('memberFilterStatus') ? document.getElementById('memberFilterStatus').value : '';
+    const societySel = document.getElementById('memberFilterSociety');
+    const chapterSel = document.getElementById('memberFilterChapter');
+    const societyLabel = (societySel && societySel.value) ? societySel.options[societySel.selectedIndex].textContent.trim().replace(/[^a-zA-Z0-9]+/g, '-') : '';
+    const chapterLabel = (chapterSel && chapterSel.value) ? chapterSel.options[chapterSel.selectedIndex].textContent.trim().replace(/[^a-zA-Z0-9]+/g, '-') : '';
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    let nameParts = ['SHAOOR-Members'];
+    if (statusFilter) nameParts.push(statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1));
+    if (societyLabel) nameParts.push('Society-' + societyLabel);
+    if (chapterLabel) nameParts.push('Chapter-' + chapterLabel);
+    nameParts.push(todayStr);
+    const filename = nameParts.join('-') + '.csv';
+
+    const csvContent = '\uFEFF' + lines.join('\r\n'); // BOM so Urdu/Arabic text opens correctly in Excel
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✓ ' + rows.length + ' ممبرز ایکسپورٹ ہو گئے: ' + filename);
   }
 
   /* ── ADMIN ── */
