@@ -7986,6 +7986,14 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.1rem;" role="tablist" aria-label="Sign in as">
+        <button type="button" id="loginTabMember" onclick="switchLoginTab('member')" style="padding:.7rem .5rem;border-radius:10px;border:2px solid var(--gold);background:var(--gold);color:#1a1200;font-weight:700;cursor:pointer;text-align:center;">
+          <i class="fas fa-user"></i><br>Member
+        </button>
+        <button type="button" id="loginTabAdmin" onclick="closeModal('loginModal');openAdmin();" style="padding:.7rem .5rem;border-radius:10px;border:2px solid var(--border);background:transparent;color:var(--text);font-weight:700;cursor:pointer;text-align:center;">
+          <i class="fas fa-shield-halved"></i><br>Admin / Founder
+        </button>
+      </div>
       <form class="modal-form" id="loginForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
         <div class="form-group"><label for="lEmail">Email Address</label><input type="email" id="lEmail" class="form-input" required placeholder="your@email.com" /></div>
         <div class="form-group"><label for="lPass">Password</label>
@@ -12861,6 +12869,15 @@ select.form-input {
   }
 
   /* ── ADMIN ── */
+  function switchLoginTab(which) {
+    var m = document.getElementById('loginTabMember');
+    var a = document.getElementById('loginTabAdmin');
+    if (!m || !a) return;
+    if (which === 'member') {
+      m.style.background = 'var(--gold)'; m.style.borderColor = 'var(--gold)'; m.style.color = '#1a1200';
+      a.style.background = 'transparent'; a.style.borderColor = 'var(--border)'; a.style.color = 'var(--text)';
+    }
+  }
   function openAdmin() {
     document.getElementById('adminPage').classList.add('open');
     document.body.style.overflow = 'hidden';
