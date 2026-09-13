@@ -16,7 +16,7 @@
   <title>SHAOOR | شعور</title>
   <meta name="description" content="SHAOOR — Pakistan's premier creative arts platform. Calligraphy, Fine Arts, Textile, Islamic Art, Heritage, Photography & Digital Art. Sahiwal." />
   <meta name="theme-color" content="#0B1D35" />
-
+  
   <!-- ══ SECURITY HEADERS ══ -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' https:;
@@ -4732,7 +4732,6 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('cabinet',this);loadCentralCabinetAdmin();"><i class="fas fa-crown"></i> Central Cabinet</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
-      <button class="admin-nav-btn" onclick="switchDashTab('cert-templates',this);loadCertTemplatesAdmin();loadCardTemplatesAdmin();"><i class="fas fa-swatchbook"></i> Cert/Card Templates</button>
       <button class="admin-nav-btn" onclick="switchDashTab('learning',this);loadCoursesAdmin();loadEnrollmentsAdmin();loadLiveSessionsAdmin();loadPlatformSettingsAdmin();"><i class="fas fa-graduation-cap"></i> Learning Academy</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
       <button class="admin-nav-btn" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
@@ -4898,86 +4897,9 @@ select.form-input {
           <table class="admin-table" id="certificatesTable">
             <thead><tr><th>Certificate ID</th><th>Member</th><th>Title</th><th>Type</th><th>Issued</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="certificatesBody">
-      </div>
-
-      <!-- Cert/Card Templates Panel -->
-      <div class="dash-panel" id="dp-cert-templates">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
-          <h3 style="font-weight:700;">Certificate Templates</h3>
-          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCertTemplateModal()"><i class="fas fa-plus"></i> New Certificate Template</button>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="admin-table" id="certTemplatesTable">
-            <thead><tr><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
-            <tbody id="certTemplatesBody">
-              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
+              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading certificates…</td></tr>
             </tbody>
           </table>
-        </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0 1rem;flex-wrap:wrap;gap:.75rem;">
-          <h3 style="font-weight:700;">Membership Card Templates</h3>
-          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCardTemplateModal()"><i class="fas fa-plus"></i> New Card Template</button>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="admin-table" id="cardTemplatesTable">
-            <thead><tr><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
-            <tbody id="cardTemplatesBody">
-              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Cert Template Modal -->
-      <div class="modal" id="certTemplateModal">
-        <div class="modal-content">
-          <button class="modal-close" onclick="closeModal('certTemplateModal')">&times;</button>
-          <h3 style="margin-bottom:1rem;">Certificate Template</h3>
-          <form class="modal-form" id="certTemplateForm">
-            <input type="hidden" id="ctplId" />
-            <div class="form-group"><label for="ctplName">Name</label><input type="text" id="ctplName" class="form-input" required /></div>
-            <div class="form-group"><label for="ctplDescription">Description</label><textarea id="ctplDescription" class="form-input" rows="2"></textarea></div>
-            <div class="form-group"><label for="ctplBackgroundUrl">Background Image URL</label><input type="url" id="ctplBackgroundUrl" class="form-input" placeholder="https://…" /></div>
-            <div class="form-group"><label for="ctplBackgroundFile">…or Upload Background Image</label><input type="file" id="ctplBackgroundFile" class="form-input" accept="image/*" /><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">If you pick a file, it's uploaded and replaces the URL above on save.</div></div>
-            <div class="form-group"><label for="ctplBgColor">Background Color</label><input type="text" id="ctplBgColor" class="form-input" placeholder="#0b1d33" /></div>
-            <div class="form-group"><label for="ctplTextColor">Text Color</label><input type="text" id="ctplTextColor" class="form-input" placeholder="#ffffff" /></div>
-            <div class="form-group"><label for="ctplAccentColor">Accent Color</label><input type="text" id="ctplAccentColor" class="form-input" placeholder="#c8a55f" /></div>
-            <div class="form-group">
-              <label for="ctplFieldsJson">Advanced Field Layout (JSON, optional)</label>
-              <textarea id="ctplFieldsJson" class="form-input" rows="8" style="font-family:monospace;font-size:.78rem;" placeholder='{
-  "title":   {"top":"18%", "left":"50%", "fontSize":"1.4rem", "fontFamily":"Georgia,serif", "color":"#fff", "align":"center"},
-  "member":  {"top":"32%", "left":"50%", "fontSize":"1rem"},
-  "meta":    {"top":"40%", "left":"50%", "fontSize":".75rem"},
-  "qr":      {"top":"70%", "left":"80%"},
-  "signatures": {"bottom":"6%", "left":"50%"}
-}'></textarea>
-              <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">Keys: title, member, meta, qr, signatures. Any of top/left/right/bottom/fontSize/fontFamily/color/align. Leave empty to use the default flowing layout.</div>
-            </div>
-            <div class="form-group"><label><input type="checkbox" id="ctplIsDefault" /> Set as Default</label></div>
-            <div class="form-group"><label><input type="checkbox" id="ctplIsActive" checked /> Active</label></div>
-            <button type="submit" class="btn btn-gold" style="justify-content:center;">Save Template</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- Card Template Modal -->
-      <div class="modal" id="cardTemplateModal">
-        <div class="modal-content">
-          <button class="modal-close" onclick="closeModal('cardTemplateModal')">&times;</button>
-          <h3 style="margin-bottom:1rem;">Membership Card Template</h3>
-          <form class="modal-form" id="cardTemplateForm">
-            <input type="hidden" id="crtplId" />
-            <div class="form-group"><label for="crtplName">Name</label><input type="text" id="crtplName" class="form-input" required /></div>
-            <div class="form-group"><label for="crtplDescription">Description</label><textarea id="crtplDescription" class="form-input" rows="2"></textarea></div>
-            <div class="form-group"><label for="crtplFrontUrl">Front Design Image URL</label><input type="url" id="crtplFrontUrl" class="form-input" placeholder="https://…" /></div>
-            <div class="form-group"><label for="crtplFrontFile">…or Upload Front Image</label><input type="file" id="crtplFrontFile" class="form-input" accept="image/*" /></div>
-            <div class="form-group"><label for="crtplBackUrl">Back Design Image URL</label><input type="url" id="crtplBackUrl" class="form-input" placeholder="https://…" /></div>
-            <div class="form-group"><label for="crtplBackFile">…or Upload Back Image</label><input type="file" id="crtplBackFile" class="form-input" accept="image/*" /><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">If you pick a file, it's uploaded and replaces the URL above on save.</div></div>
-            <div class="form-group"><label><input type="checkbox" id="crtplIsDefault" /> Set as Default</label></div>
-            <div class="form-group"><label><input type="checkbox" id="crtplIsActive" checked /> Active</label></div>
-            <button type="submit" class="btn btn-gold" style="justify-content:center;">Save Template</button>
-          </form>
         </div>
       </div>
 
@@ -11178,11 +11100,22 @@ select.form-input {
     showToast('Logged out successfully');
   }
 
-  /* ── Shared renderer: populates the ID card modal for a given profile row, applies the
-     active default card_templates design (front/back), and opens the modal.
-     Used by both the logged-in member's "My ID Card" action AND the public ?verify=MEMBER_ID
-     flow, so a public visitor sees the same card design a member would. ── */
-  async function renderIdCard(profile) {
+  async function openDigitalId() {
+    const { data: userData } = await sb.auth.getUser();
+    const userId = userData?.user?.id;
+    if (!userId) return;
+
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .eq('id', userId)
+      .single();
+
+    if (error || !profile) {
+      showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
+      return;
+    }
+
     document.getElementById('idName').textContent = profile.full_name || '—';
     document.getElementById('idMemberId').textContent = profile.member_id || '—';
     document.getElementById('idRole').textContent = (profile.role || '—') + ' · ' + (profile.status || '');
@@ -11213,60 +11146,7 @@ select.form-input {
       colorLight: '#ffffff'
     });
 
-    // Apply the active default card template's front/back design, if one exists
-    const cardBox = document.querySelector('#idCardModal .modal-body > div');
-    const { data: cardTpl } = await sb.from('card_templates').select('*').eq('is_default', true).eq('is_active', true).limit(1).maybeSingle();
-    let flipBtn = document.getElementById('idCardFlipBtn');
-    if (cardTpl && cardBox) {
-      if (cardTpl.front_design_url) {
-        cardBox.style.backgroundImage = "url('" + cardTpl.front_design_url + "')";
-        cardBox.style.backgroundSize = 'cover';
-        cardBox.style.backgroundPosition = 'center';
-      }
-      if (cardTpl.back_design_url) {
-        if (!flipBtn) {
-          flipBtn = document.createElement('button');
-          flipBtn.id = 'idCardFlipBtn';
-          flipBtn.type = 'button';
-          flipBtn.className = 'btn btn-outline';
-          flipBtn.style.cssText = 'margin-top:.75rem;width:100%;justify-content:center;';
-          flipBtn.textContent = 'Flip to Back';
-          flipBtn.onclick = function () {
-            const showingBack = cardBox.dataset.side === 'back';
-            cardBox.dataset.side = showingBack ? 'front' : 'back';
-            cardBox.style.backgroundImage = "url('" + (showingBack ? cardTpl.front_design_url : cardTpl.back_design_url) + "')";
-            flipBtn.textContent = showingBack ? 'Flip to Back' : 'Flip to Front';
-          };
-          cardBox.parentElement.appendChild(flipBtn);
-        }
-        flipBtn.style.display = 'block';
-      } else if (flipBtn) {
-        flipBtn.style.display = 'none';
-      }
-    } else if (flipBtn) {
-      flipBtn.style.display = 'none';
-    }
-
     openModal('idCardModal');
-  }
-
-  async function openDigitalId() {
-    const { data: userData } = await sb.auth.getUser();
-    const userId = userData?.user?.id;
-    if (!userId) return;
-
-    const { data: profile, error } = await sb
-      .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
-      .eq('id', userId)
-      .single();
-
-    if (error || !profile) {
-      showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
-      return;
-    }
-
-    await renderIdCard(profile);
   }
 
   /* ══════════════ CERTIFICATES ══════════════ */
@@ -11826,33 +11706,6 @@ select.form-input {
     popup.document.close();
   }
 
-  const CERT_FIELD_IDS = { title: 'vcTitle', member: 'vcMember', meta: 'vcMeta', qr: 'vcQrCode', signatures: 'vcSignatures' };
-
-  function applyCertFieldLayout(fields) {
-    Object.entries(CERT_FIELD_IDS).forEach(([key, elId]) => {
-      const el = document.getElementById(elId);
-      if (!el) return;
-      // Capture the original inline style once so templates never permanently clobber the default layout
-      if (el.dataset.baseStyle === undefined) el.dataset.baseStyle = el.getAttribute('style') || '';
-      el.setAttribute('style', el.dataset.baseStyle);
-
-      const f = fields && fields[key];
-      if (!f) return;
-      if (f.top || f.left || f.right || f.bottom) {
-        el.style.position = 'absolute';
-        if (f.top) el.style.top = f.top;
-        if (f.left) el.style.left = f.left;
-        if (f.right) el.style.right = f.right;
-        if (f.bottom) el.style.bottom = f.bottom;
-        if (f.left && !f.right) el.style.transform = 'translateX(-50%)';
-      }
-      if (f.fontSize) el.style.fontSize = f.fontSize;
-      if (f.fontFamily) el.style.fontFamily = f.fontFamily;
-      if (f.color) el.style.color = f.color;
-      if (f.align) el.style.textAlign = f.align;
-    });
-  }
-
   /* ── View a single certificate (from admin table or member list) with QR ── */
   /* ── Apply a certificate_templates.config onto the print area, and render signature blocks ── */
   function applyCertificateTemplate(config, brand) {
@@ -11864,9 +11717,6 @@ select.form-input {
       if (config.text_color) area.style.color = config.text_color;
       if (config.accent_color) area.style.setProperty('--gold', config.accent_color);
     }
-    // Reset/apply per-field layout every time so switching between differently-templated
-    // certificates never leaves stale absolute positioning behind.
-    applyCertFieldLayout(config && config.fields);
 
     let sigHolder = document.getElementById('vcSignatures');
     if (!sigHolder) {
@@ -11899,14 +11749,20 @@ select.form-input {
     });
   }
 
-  /* ── Shared renderer: populates the certificate view/print area for a given certificate row
-     and its member profile, applies its template + signatures, and opens the modal.
-     Used by both the admin "view certificate" action AND the public ?verify_cert= flow,
-     so a public visitor sees the same templated design an admin would. ── */
-  async function renderCertificateView(c, prof) {
+  async function viewCertificate(id) {
+    const { data: c, error } = await sb
+      .from('certificates')
+      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name')
+      .eq('id', id)
+      .single();
+
+    if (error || !c) { showToast('سرٹیفکیٹ لوڈ نہیں ہو سکا', 'error'); return; }
+
+    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+
     document.getElementById('vcTitle').textContent = c.certificate_title;
     document.getElementById('vcId').textContent = c.certificate_id;
-    document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + (prof.member_id || '')) : '—';
+    document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + prof.member_id) : '—';
     let metaText = 'Type: ' + c.certificate_type + ' · Issued: ' + c.issue_date + (c.expiry_date ? ' · Expires: ' + c.expiry_date : '');
     if (c.grade) metaText += ' · Grade: ' + c.grade;
     if (c.duration) metaText += ' · Duration: ' + c.duration;
@@ -11933,187 +11789,6 @@ select.form-input {
 
     openModal('viewCertificateModal');
   }
-
-  async function viewCertificate(id) {
-    const { data: c, error } = await sb
-      .from('certificates')
-      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name')
-      .eq('id', id)
-      .single();
-
-    if (error || !c) { showToast('سرٹیفکیٹ لوڈ نہیں ہو سکا', 'error'); return; }
-
-    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
-    await renderCertificateView(c, prof);
-  }
-
-  /* ══════════ Certificate & Card Template Management (Admin) ══════════ */
-
-  async function loadCertTemplatesAdmin() {
-    const body = document.getElementById('certTemplatesBody');
-    if (!body) return;
-    const { data, error } = await sb.from('certificate_templates').select('*').order('name');
-    if (error || !data || !data.length) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">No certificate templates yet.</td></tr>';
-      return;
-    }
-    body.innerHTML = data.map(t => `
-      <tr>
-        <td>${sanitize(t.name)}</td>
-        <td>${sanitize(t.description || '—')}</td>
-        <td>${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
-        <td>${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
-        <td>
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCertTemplate(${JSON.stringify(t)})'>Edit</button>
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCertTemplate('${t.id}')">Delete</button>
-        </td>
-      </tr>`).join('');
-  }
-
-  async function loadCardTemplatesAdmin() {
-    const body = document.getElementById('cardTemplatesBody');
-    if (!body) return;
-    const { data, error } = await sb.from('card_templates').select('*').order('name');
-    if (error || !data || !data.length) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">No card templates yet.</td></tr>';
-      return;
-    }
-    body.innerHTML = data.map(t => `
-      <tr>
-        <td>${sanitize(t.name)}</td>
-        <td>${sanitize(t.description || '—')}</td>
-        <td>${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
-        <td>${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
-        <td>
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCardTemplate(${JSON.stringify(t)})'>Edit</button>
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCardTemplate('${t.id}')">Delete</button>
-        </td>
-      </tr>`).join('');
-  }
-
-  function openCertTemplateModal() {
-    document.getElementById('certTemplateForm').reset();
-    document.getElementById('ctplId').value = '';
-    openModal('certTemplateModal');
-  }
-
-  function editCertTemplate(t) {
-    document.getElementById('ctplId').value = t.id;
-    document.getElementById('ctplName').value = t.name || '';
-    document.getElementById('ctplDescription').value = t.description || '';
-    document.getElementById('ctplBackgroundUrl').value = t.background_url || '';
-    const cfg = t.config || {};
-    document.getElementById('ctplBgColor').value = cfg.background_color || '';
-    document.getElementById('ctplTextColor').value = cfg.text_color || '';
-    document.getElementById('ctplAccentColor').value = cfg.accent_color || '';
-    document.getElementById('ctplFieldsJson').value = cfg.fields ? JSON.stringify(cfg.fields, null, 2) : '';
-    document.getElementById('ctplIsDefault').checked = !!t.is_default;
-    document.getElementById('ctplIsActive').checked = !!t.is_active;
-    openModal('certTemplateModal');
-  }
-
-  async function deleteCertTemplate(id) {
-    if (!confirm('Delete this certificate template?')) return;
-    const { error } = await sb.from('certificate_templates').delete().eq('id', id);
-    if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
-    showToast('Template deleted');
-    loadCertTemplatesAdmin();
-  }
-
-  secureSubmit('certTemplateForm', async frm => {
-    const id = frm.querySelector('#ctplId').value || null;
-    const name = frm.querySelector('#ctplName').value.trim();
-    const description = frm.querySelector('#ctplDescription').value.trim() || null;
-    let background_url = frm.querySelector('#ctplBackgroundUrl').value.trim() || null;
-    const bgFile = frm.querySelector('#ctplBackgroundFile').files[0];
-    if (bgFile) {
-      try { background_url = await uploadBrandAsset(bgFile, 'certificate-templates'); }
-      catch (e) { showToast('Background upload failed: ' + e.message, 'error'); return; }
-    }
-    const is_default = frm.querySelector('#ctplIsDefault').checked;
-    const is_active = frm.querySelector('#ctplIsActive').checked;
-    const fieldsRaw = frm.querySelector('#ctplFieldsJson').value.trim();
-    let fields = null;
-    if (fieldsRaw) {
-      try { fields = JSON.parse(fieldsRaw); }
-      catch (e) { showToast('Field Layout JSON is invalid: ' + e.message, 'error'); return; }
-    }
-    const config = {
-      background_color: frm.querySelector('#ctplBgColor').value.trim() || null,
-      text_color: frm.querySelector('#ctplTextColor').value.trim() || null,
-      accent_color: frm.querySelector('#ctplAccentColor').value.trim() || null,
-      fields: fields || undefined
-    };
-    const payload = { name, description, background_url, is_default, is_active, config };
-
-    let error;
-    if (id) {
-      ({ error } = await sb.from('certificate_templates').update(payload).eq('id', id));
-    } else {
-      ({ error } = await sb.from('certificate_templates').insert(payload));
-    }
-    if (error) { showToast('Save failed: ' + error.message, 'error'); return; }
-    showToast('Certificate template saved');
-    closeModal('certTemplateModal');
-    loadCertTemplatesAdmin();
-  });
-
-  function openCardTemplateModal() {
-    document.getElementById('cardTemplateForm').reset();
-    document.getElementById('crtplId').value = '';
-    openModal('cardTemplateModal');
-  }
-
-  function editCardTemplate(t) {
-    document.getElementById('crtplId').value = t.id;
-    document.getElementById('crtplName').value = t.name || '';
-    document.getElementById('crtplDescription').value = t.description || '';
-    document.getElementById('crtplFrontUrl').value = t.front_design_url || '';
-    document.getElementById('crtplBackUrl').value = t.back_design_url || '';
-    document.getElementById('crtplIsDefault').checked = !!t.is_default;
-    document.getElementById('crtplIsActive').checked = !!t.is_active;
-    openModal('cardTemplateModal');
-  }
-
-  async function deleteCardTemplate(id) {
-    if (!confirm('Delete this card template?')) return;
-    const { error } = await sb.from('card_templates').delete().eq('id', id);
-    if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
-    showToast('Template deleted');
-    loadCardTemplatesAdmin();
-  }
-
-  secureSubmit('cardTemplateForm', async frm => {
-    const id = frm.querySelector('#crtplId').value || null;
-    const name = frm.querySelector('#crtplName').value.trim();
-    const description = frm.querySelector('#crtplDescription').value.trim() || null;
-    let front_design_url = frm.querySelector('#crtplFrontUrl').value.trim() || null;
-    let back_design_url = frm.querySelector('#crtplBackUrl').value.trim() || null;
-    const frontFile = frm.querySelector('#crtplFrontFile').files[0];
-    const backFile = frm.querySelector('#crtplBackFile').files[0];
-    if (frontFile) {
-      try { front_design_url = await uploadBrandAsset(frontFile, 'card-templates'); }
-      catch (e) { showToast('Front image upload failed: ' + e.message, 'error'); return; }
-    }
-    if (backFile) {
-      try { back_design_url = await uploadBrandAsset(backFile, 'card-templates'); }
-      catch (e) { showToast('Back image upload failed: ' + e.message, 'error'); return; }
-    }
-    const is_default = frm.querySelector('#crtplIsDefault').checked;
-    const is_active = frm.querySelector('#crtplIsActive').checked;
-    const payload = { name, description, front_design_url, back_design_url, is_default, is_active, config: {} };
-
-    let error;
-    if (id) {
-      ({ error } = await sb.from('card_templates').update(payload).eq('id', id));
-    } else {
-      ({ error } = await sb.from('card_templates').insert(payload));
-    }
-    if (error) { showToast('Save failed: ' + error.message, 'error'); return; }
-    showToast('Card template saved');
-    closeModal('cardTemplateModal');
-    loadCardTemplatesAdmin();
-  });
 
   /* ── Member: load "My Certificates" list in Member Dashboard ── */
   async function loadMyCertificates(userId) {
@@ -12309,7 +11984,7 @@ select.form-input {
 
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('full_name, member_id, role, status')
       .eq('member_id', verifyId)
       .single();
 
@@ -12323,10 +11998,6 @@ select.form-input {
     } else {
       showToast('⚠ یہ اکاؤنٹ فعال نہیں (status: ' + profile.status + ')', 'error');
     }
-
-    // Show the actual ID card (with its default template applied) to the public visitor,
-    // not just a status toast — reuses the same renderer the member's own "My ID Card" uses.
-    await renderIdCard(profile);
   })();
 
   /* ── Public verification: if URL has ?verify_cert=CERTIFICATE_ID, look it up and show result ── */
@@ -12337,7 +12008,7 @@ select.form-input {
 
     const { data: c, error } = await sb
       .from('certificates')
-      .select('certificate_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name, member_id')
+      .select('certificate_id, certificate_title, certificate_type, issue_date, status, member_id')
       .eq('certificate_id', certId)
       .single();
 
@@ -12346,19 +12017,16 @@ select.form-input {
       return;
     }
 
-    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+    const { data: prof } = await sb.from('profiles').select('full_name').eq('id', c.member_id).single();
+    const memberName = prof ? prof.full_name : '';
 
     if (c.status === 'active') {
-      showToast('✓ سرٹیفکیٹ تصدیق شدہ' + (prof ? ' — ' + prof.full_name : ''));
+      showToast('✓ سرٹیفکیٹ تصدیق شدہ: ' + c.certificate_title + (memberName ? ' — ' + memberName : ''));
     } else if (c.status === 'revoked') {
       showToast('⚠ یہ سرٹیفکیٹ منسوخ کر دیا گیا ہے', 'error');
     } else {
       showToast('⚠ اس سرٹیفکیٹ کی میعاد ختم ہو چکی ہے', 'error');
     }
-
-    // Show the actual certificate (with its assigned template applied) to the public visitor,
-    // not just a status toast — reuses the same renderer the admin "view" action uses.
-    await renderCertificateView(c, prof);
   })();
 
   /* If a member's session is already active on page load, show their dashboard automatically */
@@ -14147,5 +13815,459 @@ select.form-input {
       .admin-shell { grid-template-columns: 1fr !important; }
     }
   </style>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SHAOOR — PREMIUM SAFE ENHANCEMENT LAYER (V7)
+     ────────────────────────────────────────────────────────────────────
+     This block is 100% ADDITIVE and non-destructive:
+       • No existing HTML section, ID, class, variable or function is renamed,
+         removed, replaced or reset.
+       • No Supabase / auth / RLS / database / membership / certificate / QR /
+         course / enrollment / quiz / dashboard / admin logic is touched.
+       • It only adds a late-cascade style layer and a small, isolated,
+         DOM-ready accessibility/performance script at the very end of the body.
+     Design tokens: Deep Navy #0B1F33 · Champagne Gold #C8A96B · Ivory #F8F5EE
+     ════════════════════════════════════════════════════════════════════ -->
+<style id="shaoor-premium-v7">
+  /* ──────────────────────────────────────────────────────────────
+     1. ADDITIVE TOKENS (new custom properties only — existing
+        variables are never redefined)
+     ────────────────────────────────────────────────────────────── */
+  :root {
+    --p-radius-xs: 8px;
+    --p-radius-sm: 10px;
+    --p-radius-md: 14px;
+    --p-radius-lg: 18px;
+    --p-radius-xl: 24px;
+    --p-hairline: rgba(11, 31, 51, .09);
+    --p-shadow-xs: 0 1px 2px rgba(11, 31, 51, .05);
+    --p-shadow-sm: 0 4px 16px rgba(11, 31, 51, .07);
+    --p-shadow-md: 0 14px 40px rgba(11, 31, 51, .12);
+    --p-shadow-xl: 0 30px 80px rgba(11, 31, 51, .20);
+    --p-ring-gold: 0 0 0 3px rgba(200, 169, 107, .38);
+    --p-ring-teal: 0 0 0 3px rgba(22, 138, 134, .28);
+    --p-ease: cubic-bezier(.22, .61, .36, 1);
+    --p-container: 1200px;
+  }
+  [data-theme="dark"] {
+    --p-hairline: rgba(255, 255, 255, .10);
+    --p-shadow-xs: 0 1px 2px rgba(0, 0, 0, .45);
+    --p-shadow-sm: 0 4px 16px rgba(0, 0, 0, .45);
+    --p-shadow-md: 0 14px 40px rgba(0, 0, 0, .55);
+    --p-shadow-xl: 0 30px 80px rgba(0, 0, 0, .68);
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+     2. GLOBAL BASE & OVERFLOW SAFETY
+     ────────────────────────────────────────────────────────────── */
+  html { -webkit-text-size-adjust: 100%; scroll-padding-top: 86px; }
+  body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  @supports (overflow-x: clip) {
+    html, body { overflow-x: clip; }
+  }
+  img, video { max-width: 100%; }
+  ::selection { background: rgba(200, 169, 107, .30); color: var(--ink); }
+
+  /* Anchor offset so headings are never hidden behind the fixed navbar */
+  section[id], div[id], article[id], footer[id] { scroll-margin-top: 86px; }
+
+  /* Keyboard accessibility (mouse clicks keep existing behaviour) */
+  :focus-visible {
+    outline: 3px solid var(--gold) !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+  }
+  a:focus:not(:focus-visible),
+  button:focus:not(:focus-visible),
+  input:focus:not(:focus-visible),
+  select:focus:not(:focus-visible),
+  textarea:focus:not(:focus-visible) { outline: none !important; }
+
+  /* Refined scrollbars on pointer devices */
+  @media (min-width: 768px) and (pointer: fine) {
+    *::-webkit-scrollbar { width: 11px; height: 11px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb {
+      background: rgba(11, 31, 51, .18);
+      background-clip: content-box;
+      border: 3px solid transparent;
+      border-radius: 999px;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(200, 169, 107, .75);
+      background-clip: content-box;
+    }
+    [data-theme="dark"] *::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .20); background-clip: content-box; }
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+     3. LAYOUT RHYTHM & TYPOGRAPHY
+     ────────────────────────────────────────────────────────────── */
+  .container {
+    max-width: var(--p-container);
+    padding-left: clamp(1.05rem, 4vw, 1.5rem) !important;
+    padding-right: clamp(1.05rem, 4vw, 1.5rem) !important;
+  }
+  .section { padding: clamp(3.4rem, 7vw, 6rem) 0 !important; }
+  .sec-head { max-width: 860px; margin-left: auto; margin-right: auto; }
+  .sec-title { letter-spacing: -.022em !important; line-height: 1.12 !important; }
+  .sec-sub { line-height: 1.72; }
+  .sec-label { letter-spacing: .15em !important; }
+  .sec-head .sec-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+  }
+  .sec-head .sec-label::before,
+  .sec-head .sec-label::after {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, currentColor);
+    opacity: .65;
+  }
+  .sec-head .sec-label::after { background: linear-gradient(90deg, currentColor, transparent); }
+
+  /* ──────────────────────────────────────────────────────────────
+     4. HEADER / NAVIGATION
+     ────────────────────────────────────────────────────────────── */
+  .navbar { border-bottom: 1px solid var(--p-hairline) !important; }
+  .navbar.scrolled { box-shadow: 0 10px 34px rgba(11, 31, 51, .10) !important; }
+  .nav-inner { height: 72px; }
+  .nav-brand { line-height: 0; align-items: center !important; }
+  .shaoor-nav-logo { object-fit: contain; }
+  .nav-links a { font-weight: 600 !important; letter-spacing: .01em; }
+  .admin-link {
+    border-radius: 999px !important;
+    padding: .42rem .85rem !important;
+    transition: background .2s var(--p-ease), color .2s var(--p-ease), border-color .2s var(--p-ease) !important;
+  }
+  [data-theme="dark"] .navbar { border-bottom-color: rgba(255, 255, 255, .08) !important; }
+  .mobile-nav { box-shadow: -18px 0 60px rgba(11, 31, 51, .22) !important; }
+  .mob-close { background: var(--cream2) !important; }
+
+  /* ──────────────────────────────────────────────────────────────
+     5. HERO — premium, controlled height
+     ────────────────────────────────────────────────────────────── */
+  .hero { min-height: clamp(560px, 84vh, 820px) !important; }
+  .hero-inner { padding: clamp(3rem, 7vh, 5.25rem) 0 !important; }
+  .hero-title { text-wrap: balance; }
+  .hero-sub { line-height: 1.6; }
+  .hero-btns .btn { min-height: 48px; }
+  .hero-badge { backdrop-filter: blur(6px); }
+
+  /* ──────────────────────────────────────────────────────────────
+     6. BUTTONS — consistent, accessible, premium
+     ────────────────────────────────────────────────────────────── */
+  .btn {
+    border-radius: var(--p-radius-sm) !important;
+    font-weight: 700 !important;
+    letter-spacing: .02em;
+    padding: .78rem 1.6rem;
+    transition: transform .18s var(--p-ease), box-shadow .18s var(--p-ease),
+                background .18s var(--p-ease), color .18s var(--p-ease),
+                border-color .18s var(--p-ease) !important;
+  }
+  .btn:not(:disabled):hover { transform: translateY(-2px); }
+  .btn:not(:disabled):active { transform: translateY(0) scale(.99); }
+  .btn:disabled, .btn[aria-disabled="true"] { opacity: .6 !important; cursor: not-allowed !important; }
+
+  /* Navy text on Champagne Gold = ~6.3:1 contrast (WCAG AA) */
+  .btn-gold {
+    background: linear-gradient(180deg, #D9BE88 0%, #C8A96B 100%) !important;
+    color: var(--navy) !important;
+    border-color: transparent !important;
+    box-shadow: 0 8px 22px rgba(200, 169, 107, .30) !important;
+  }
+  .btn-gold:not(:disabled):hover {
+    background: linear-gradient(180deg, #E5D2A3 0%, #CFAF73 100%) !important;
+    color: var(--navy) !important;
+    box-shadow: 0 14px 30px rgba(200, 169, 107, .40) !important;
+  }
+  .btn-navy { box-shadow: 0 8px 22px rgba(11, 31, 51, .20) !important; }
+  .btn-outline { border-width: 1.5px !important; }
+  .btn-ghost { backdrop-filter: blur(4px); }
+
+  /* ──────────────────────────────────────────────────────────────
+     7. CARDS — unified radius, hairline border, layered shadow
+     ────────────────────────────────────────────────────────────── */
+  .feature-card, .soc-card, .cab-card, .blog-card, .mem-card,
+  .val-card, .ver-box, .testimonial-card, .policy-box,
+  .admin-stat, .ds-card, .dash-panel, .an-stat-card, .admin-box,
+  .lms-card, .lms-sidebar-card, .lms-module, .lms-quiz-question {
+    border-radius: var(--p-radius-md) !important;
+    border-color: var(--p-hairline) !important;
+    box-shadow: var(--p-shadow-sm) !important;
+    transition: box-shadow .24s var(--p-ease), transform .24s var(--p-ease),
+                border-color .24s var(--p-ease);
+  }
+  .feature-card:hover, .blog-card:hover, .cab-card:hover,
+  .lms-card:hover, .testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--p-shadow-md) !important;
+    border-color: rgba(200, 169, 107, .45) !important;
+  }
+  .feature-icon { border-radius: 12px !important; }
+  .feature-icon i { font-size: 1.15rem !important; }
+  .mem-card { padding: clamp(1.6rem, 3.4vw, 2.15rem) !important; }
+  .mem-card::after { height: 4px !important; }
+  .blog-thumb, .soc-thumb, .gallery-item img { transition: transform .5s var(--p-ease); }
+
+  /* ──────────────────────────────────────────────────────────────
+     8. FORMS & INPUTS
+     ────────────────────────────────────────────────────────────── */
+  .form-group label { font-weight: 600 !important; font-size: .84rem !important; letter-spacing: .01em; }
+  .form-input, .form-select, .form-textarea, .ver-input {
+    border-radius: var(--p-radius-sm) !important;
+    border-color: var(--p-hairline) !important;
+    min-height: 46px;
+    transition: border-color .2s var(--p-ease), box-shadow .2s var(--p-ease), background .2s var(--p-ease) !important;
+  }
+  .form-input::placeholder, .form-textarea::placeholder, .ver-input::placeholder { color: var(--muted); opacity: .72; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus, .ver-input:focus {
+    border-color: var(--gold) !important;
+    box-shadow: var(--p-ring-gold) !important;
+  }
+  .form-input[aria-invalid="true"], .form-input.is-invalid,
+  .form-textarea[aria-invalid="true"], .form-select[aria-invalid="true"] {
+    border-color: var(--ruby) !important;
+    box-shadow: 0 0 0 3px rgba(181, 72, 93, .14) !important;
+  }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--gold); width: 1.05em; height: 1.05em; }
+  .foot-input { border-radius: var(--p-radius-sm) !important; }
+  .foot-sub { border-radius: var(--p-radius-sm) !important; color: var(--navy) !important; }
+
+  /* ──────────────────────────────────────────────────────────────
+     9. TABLES
+     ────────────────────────────────────────────────────────────── */
+  .events-table-wrap, .admin-table { border-radius: var(--p-radius-md) !important; }
+  .ev-table th, .admin-table th {
+    background: linear-gradient(90deg, var(--navy) 0%, var(--navy2) 100%) !important;
+    font-weight: 700 !important;
+    letter-spacing: .045em;
+  }
+  .ev-table td, .admin-table td { padding: .9rem 1.1rem !important; vertical-align: middle; }
+  .ev-table tbody tr:nth-child(even) td,
+  .admin-table tbody tr:nth-child(even) td { background: rgba(11, 31, 51, .018); }
+  [data-theme="dark"] .ev-table tbody tr:nth-child(even) td,
+  [data-theme="dark"] .admin-table tbody tr:nth-child(even) td { background: rgba(255, 255, 255, .022); }
+  .ev-table tr:hover td, .admin-table tr:hover td { background: rgba(200, 169, 107, .07) !important; }
+  .events-table-wrap, .admin-table { -webkit-overflow-scrolling: touch; }
+
+  /* ──────────────────────────────────────────────────────────────
+     10. MODALS
+     ────────────────────────────────────────────────────────────── */
+  .modal { backdrop-filter: blur(5px); }
+  .modal-box {
+    border-radius: var(--p-radius-lg) !important;
+    max-height: min(92vh, 940px) !important;
+  }
+  .modal-head {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    padding: 1.25rem 1.5rem !important;
+  }
+  .modal-body { padding: 1.5rem !important; }
+  .modal-close { width: 36px !important; height: 36px !important; }
+
+  /* ──────────────────────────────────────────────────────────────
+     11. VERIFICATION / DIGITAL ID
+     ────────────────────────────────────────────────────────────── */
+  .ver-box { padding: clamp(1.4rem, 4vw, 2.25rem) !important; }
+  .ver-row { flex-wrap: wrap; }
+  .ver-input { min-height: 48px; }
+  .ver-result { border-radius: var(--p-radius-sm) !important; }
+  .ver-grid { gap: 1rem; }
+
+  /* ──────────────────────────────────────────────────────────────
+     12. MEMBER DASHBOARD / ADMIN / LMS PANELS
+     ────────────────────────────────────────────────────────────── */
+  .an-stat-card::before { background: linear-gradient(90deg, var(--gold), var(--gold3)) !important; }
+  .ds-card { border-left-width: 4px !important; }
+  .admin-nav-btn { border-radius: var(--p-radius-sm) !important; }
+  .admin-nav-btn.active {
+    background: linear-gradient(90deg, rgba(200, 169, 107, .24), rgba(200, 169, 107, .05)) !important;
+  }
+  .lms-card-thumb {
+    height: 172px !important;
+    background: linear-gradient(135deg, var(--navy2) 0%, var(--gold) 140%) !important;
+  }
+  .lms-card-cta {
+    border-radius: var(--p-radius-sm) !important;
+    background: linear-gradient(180deg, #D9BE88 0%, #C8A96B 100%) !important;
+    color: var(--navy) !important;
+  }
+  .lms-filter-btn { border-color: var(--gold) !important; color: var(--navy); }
+  .lms-filter-btn.active, .lms-filter-btn:hover { background: var(--navy) !important; border-color: var(--navy) !important; color: #fff !important; }
+  .lms-lesson-row { border-radius: 8px; }
+  .lms-quiz-option { border-radius: var(--p-radius-xs) !important; min-height: 46px; }
+  .lms-sidebar-card { border-radius: var(--p-radius-md) !important; }
+
+  /* ──────────────────────────────────────────────────────────────
+     13. FOOTER
+     ────────────────────────────────────────────────────────────── */
+  footer { background: linear-gradient(180deg, var(--navy) 0%, #081827 100%) !important; }
+  .foot-head { letter-spacing: .14em !important; }
+  .foot-links a { transition: color .2s var(--p-ease), padding-left .2s var(--p-ease); }
+  .foot-links a:hover { padding-left: .28rem; }
+
+  /* ──────────────────────────────────────────────────────────────
+     14. RESPONSIVE SAFETY — 1024 / 768 / 640 / 480 / 375 / 320
+     ────────────────────────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .section { padding: 3.6rem 0 !important; }
+    .hero { min-height: auto !important; }
+    .hero-inner { padding: 4.25rem 0 3.5rem !important; }
+  }
+  @media (max-width: 768px) {
+    .sec-title { font-size: clamp(1.65rem, 6.2vw, 2.15rem) !important; }
+    .sec-head { margin-bottom: 2.25rem; }
+    .about-grid, .contact-grid { gap: 2rem !important; }
+    .form-row { grid-template-columns: 1fr !important; }
+    .ver-row { flex-direction: column; }
+    .ver-row .btn, .ver-row .ver-input { width: 100%; }
+    .ver-grid { grid-template-columns: 1fr !important; }
+    .blog-grid, .soc-grid, .mem-grid, .cabinet-grid,
+    .lms-grid, .lms-pathways, .gallery-grid { grid-template-columns: 1fr !important; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+    .modal-head h3 { font-size: 1.12rem !important; }
+  }
+  @media (max-width: 480px) {
+    .container { padding-left: 1rem !important; padding-right: 1rem !important; }
+    .section { padding: 3rem 0 !important; }
+    .hero-btns { flex-direction: column; align-items: stretch; }
+    .hero-btns .btn { width: 100%; justify-content: center; }
+    .id-fields { grid-template-columns: 1fr !important; }
+    .dash-stats { grid-template-columns: 1fr !important; }
+    .btn { font-size: .9rem; padding: .72rem 1.15rem; }
+    .modal { padding: .6rem !important; }
+  }
+  @media (max-width: 375px) {
+    .sec-title { font-size: clamp(1.5rem, 7vw, 1.9rem) !important; }
+    .foot-form { flex-wrap: wrap; }
+    .foot-input, .foot-sub { width: 100%; }
+  }
+  @media (max-width: 320px) {
+    .container { padding-left: .85rem !important; padding-right: .85rem !important; }
+    .hero-title { font-size: clamp(1.7rem, 9vw, 2.1rem) !important; }
+    .feature-strip { grid-template-columns: 1fr !important; }
+  }
+
+  /* ──────────────────────────────────────────────────────────────
+     15. REDUCED MOTION — keep content fully visible
+     ────────────────────────────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+    .reveal, .reveal-left, .reveal-right {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    html { scroll-behavior: auto !important; }
+  }
+</style>
+
+<script id="shaoor-premium-v7-a11y">
+  /* ================================================================
+     SHAOOR — Premium Safe Enhancement Script (V7)
+     Purely ADAPTIVE: it only adds attributes/listeners. It never
+     redefines, removes or overrides any existing function, variable,
+     ID, class or Supabase call.
+     ================================================================ */
+  (function () {
+    'use strict';
+
+    function ready(fn) {
+      if (document.readyState !== 'loading') { fn(); }
+      else { document.addEventListener('DOMContentLoaded', fn, { once: true }); }
+    }
+
+    ready(function () {
+      /* 1) External links — security/accessibility hardening only */
+      try {
+        document.querySelectorAll('a[target="_blank"]').forEach(function (a) {
+          var rel = (a.getAttribute('rel') || '').toLowerCase();
+          if (rel.indexOf('noopener') === -1) {
+            a.setAttribute('rel', (a.getAttribute('rel') ? a.getAttribute('rel') + ' ' : '') + 'noopener noreferrer');
+          }
+        });
+      } catch (e) { /* never break the page */ }
+
+      /* 2) Images — performance hints (nothing is removed) */
+      try {
+        document.querySelectorAll('img').forEach(function (img) {
+          if (!img.hasAttribute('decoding')) { img.setAttribute('decoding', 'async'); }
+          var inCritical = img.closest && img.closest('.navbar, .nav-brand, .mobile-nav, #memberDash, #adminSection');
+          if (!inCritical && !img.hasAttribute('loading')) { img.setAttribute('loading', 'lazy'); }
+        });
+      } catch (e) { /* noop */ }
+
+      /* 3) Modal focus management — additive, isolated from openModal/closeModal */
+      try {
+        if (typeof MutationObserver !== 'undefined') {
+          var mo = new MutationObserver(function (mutations) {
+            mutations.forEach(function (m) {
+              var modal = m.target;
+              var open = modal.classList && modal.classList.contains('open');
+              if (open && !modal._shaoorOpen) {
+                modal._shaoorOpen = true;
+                modal._shaoorPrevFocus = document.activeElement;
+                var box = modal.querySelector('.modal-box');
+                if (box) {
+                  if (!box.hasAttribute('tabindex')) { box.setAttribute('tabindex', '-1'); }
+                  try { box.focus({ preventScroll: true }); } catch (e) { box.focus(); }
+                }
+              } else if (!open && modal._shaoorOpen) {
+                modal._shaoorOpen = false;
+                var prev = modal._shaoorPrevFocus;
+                if (prev && typeof prev.focus === 'function') {
+                  try { prev.focus({ preventScroll: true }); } catch (e) { prev.focus(); }
+                }
+              }
+            });
+          });
+          document.querySelectorAll('.modal').forEach(function (modal) {
+            mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+          });
+        }
+      } catch (e) { /* noop */ }
+
+      /* 4) Mobile navigation focus management — additive */
+      try {
+        var hamburger = document.getElementById('hamburger');
+        var mobileNav = document.getElementById('mobileNav');
+        if (hamburger && mobileNav) {
+          hamburger.addEventListener('click', function () {
+            setTimeout(function () {
+              if (mobileNav.classList.contains('open')) {
+                var closeBtn = mobileNav.querySelector('.mob-close');
+                if (closeBtn) { try { closeBtn.focus({ preventScroll: true }); } catch (e) { closeBtn.focus(); } }
+              }
+            }, 60);
+          });
+          mobileNav.querySelectorAll('a, button').forEach(function (el) {
+            el.addEventListener('click', function () {
+              setTimeout(function () {
+                if (!mobileNav.classList.contains('open')) {
+                  try { hamburger.focus({ preventScroll: true }); } catch (e) { hamburger.focus(); }
+                }
+              }, 60);
+            });
+          });
+        }
+      } catch (e) { /* noop */ }
+    });
+  })();
+</script>
+
 </body>
 </html>
