@@ -6818,6 +6818,13 @@ select.form-input {
       </div>
 
       <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
+        <h3 class="dash-card-title"><i class="fas fa-file-signature"></i> My Documents</h3>
+        <div id="myDocumentsList" style="display:grid;gap:.75rem;">
+          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
         <h3 class="dash-card-title"><i class="fas fa-graduation-cap"></i> My Learning</h3>
         <div id="myLearningList" style="display:grid;gap:.75rem;">
           <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
@@ -11206,6 +11213,7 @@ select.form-input {
     showToast('خوش آمدید، ' + (profile.full_name || 'Member') + '!');
 
     loadMyCertificates(userId);
+    loadMyDocuments(userId);
     loadMyLearning(userId);
     loadMyEventsAttendance(userId);
   }
@@ -12752,6 +12760,49 @@ select.form-input {
         <div style="display:flex;align-items:center;gap:.6rem;">
           <span class="status-pill" style="background:${sc.bg};color:#fff;font-size:.72rem;">${sc.label}</span>
           <button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.78rem;" onclick="viewCertificate(${c.id})">View</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── Member: load "My Documents" list in Member Dashboard.
+     Reuses the existing generated_documents.member_id column (already
+     populated by the admin "Issue Document" form) — no schema change,
+     no new table, no new renderer. View/Download/Print reuse the exact
+     same functions the admin Official Documents screen already uses. ── */
+  async function loadMyDocuments(userId) {
+    const container = document.getElementById('myDocumentsList');
+    if (!container) return;
+
+    const { data: docs, error } = await sb
+      .from('generated_documents')
+      .select('id, document_number, document_type, title, status, created_at, societies(name), chapters(name)')
+      .eq('member_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      container.innerHTML = '<div style="color:var(--ruby);font-size:.9rem;text-align:center;">لوڈ نہیں ہو سکا</div>';
+      console.error('SHAOOR: could not load member documents', error);
+      return;
+    }
+
+    if (!docs || docs.length === 0) {
+      container.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">No documents available yet.</div>';
+      return;
+    }
+
+    container.innerHTML = docs.map(d => {
+      const statusBg = d.status === 'issued' ? 'var(--teal)' : d.status === 'draft' ? '#9ca3af' : 'var(--muted)';
+      const societyChapter = [(d.societies ? d.societies.name : null), (d.chapters ? d.chapters.name : null)].filter(Boolean).join(' · ') || '—';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.9rem 1rem;border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;gap:.5rem;">
+        <div>
+          <div style="font-weight:600;">${sanitize(d.title || '—')}</div>
+          <div style="font-size:.78rem;color:var(--muted);">${sanitize(d.document_type || '—')} · ${sanitize(d.document_number || '—')} · ${sanitize((d.created_at || '').slice(0, 10))}${societyChapter !== '—' ? ' · ' + sanitize(societyChapter) : ''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+          <span class="status-pill" style="background:${statusBg};color:#fff;font-size:.72rem;">${sanitize(d.status || '—')}</span>
+          <button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.78rem;" onclick="viewGeneratedDocument('${d.id}')">View</button>
+          <button class="btn btn-outline" style="padding:.35rem .8rem;font-size:.78rem;" onclick="downloadRowDocument('${d.id}')">Download</button>
         </div>
       </div>`;
     }).join('');
