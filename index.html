@@ -4939,6 +4939,7 @@ select.form-input {
             <div class="form-group"><label for="ctplName">Name</label><input type="text" id="ctplName" class="form-input" required /></div>
             <div class="form-group"><label for="ctplDescription">Description</label><textarea id="ctplDescription" class="form-input" rows="2"></textarea></div>
             <div class="form-group"><label for="ctplBackgroundUrl">Background Image URL</label><input type="url" id="ctplBackgroundUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label for="ctplBackgroundFile">…or Upload Background Image</label><input type="file" id="ctplBackgroundFile" class="form-input" accept="image/*" /><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">If you pick a file, it's uploaded and replaces the URL above on save.</div></div>
             <div class="form-group"><label for="ctplBgColor">Background Color</label><input type="text" id="ctplBgColor" class="form-input" placeholder="#0b1d33" /></div>
             <div class="form-group"><label for="ctplTextColor">Text Color</label><input type="text" id="ctplTextColor" class="form-input" placeholder="#ffffff" /></div>
             <div class="form-group"><label for="ctplAccentColor">Accent Color</label><input type="text" id="ctplAccentColor" class="form-input" placeholder="#c8a55f" /></div>
@@ -4970,7 +4971,9 @@ select.form-input {
             <div class="form-group"><label for="crtplName">Name</label><input type="text" id="crtplName" class="form-input" required /></div>
             <div class="form-group"><label for="crtplDescription">Description</label><textarea id="crtplDescription" class="form-input" rows="2"></textarea></div>
             <div class="form-group"><label for="crtplFrontUrl">Front Design Image URL</label><input type="url" id="crtplFrontUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label for="crtplFrontFile">…or Upload Front Image</label><input type="file" id="crtplFrontFile" class="form-input" accept="image/*" /></div>
             <div class="form-group"><label for="crtplBackUrl">Back Design Image URL</label><input type="url" id="crtplBackUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label for="crtplBackFile">…or Upload Back Image</label><input type="file" id="crtplBackFile" class="form-input" accept="image/*" /><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">If you pick a file, it's uploaded and replaces the URL above on save.</div></div>
             <div class="form-group"><label><input type="checkbox" id="crtplIsDefault" /> Set as Default</label></div>
             <div class="form-group"><label><input type="checkbox" id="crtplIsActive" checked /> Active</label></div>
             <button type="submit" class="btn btn-gold" style="justify-content:center;">Save Template</button>
@@ -11175,22 +11178,11 @@ select.form-input {
     showToast('Logged out successfully');
   }
 
-  async function openDigitalId() {
-    const { data: userData } = await sb.auth.getUser();
-    const userId = userData?.user?.id;
-    if (!userId) return;
-
-    const { data: profile, error } = await sb
-      .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
-      .eq('id', userId)
-      .single();
-
-    if (error || !profile) {
-      showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
-      return;
-    }
-
+  /* ── Shared renderer: populates the ID card modal for a given profile row, applies the
+     active default card_templates design (front/back), and opens the modal.
+     Used by both the logged-in member's "My ID Card" action AND the public ?verify=MEMBER_ID
+     flow, so a public visitor sees the same card design a member would. ── */
+  async function renderIdCard(profile) {
     document.getElementById('idName').textContent = profile.full_name || '—';
     document.getElementById('idMemberId').textContent = profile.member_id || '—';
     document.getElementById('idRole').textContent = (profile.role || '—') + ' · ' + (profile.status || '');
@@ -11256,6 +11248,25 @@ select.form-input {
     }
 
     openModal('idCardModal');
+  }
+
+  async function openDigitalId() {
+    const { data: userData } = await sb.auth.getUser();
+    const userId = userData?.user?.id;
+    if (!userId) return;
+
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .eq('id', userId)
+      .single();
+
+    if (error || !profile) {
+      showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
+      return;
+    }
+
+    await renderIdCard(profile);
   }
 
   /* ══════════════ CERTIFICATES ══════════════ */
@@ -12013,7 +12024,12 @@ select.form-input {
     const id = frm.querySelector('#ctplId').value || null;
     const name = frm.querySelector('#ctplName').value.trim();
     const description = frm.querySelector('#ctplDescription').value.trim() || null;
-    const background_url = frm.querySelector('#ctplBackgroundUrl').value.trim() || null;
+    let background_url = frm.querySelector('#ctplBackgroundUrl').value.trim() || null;
+    const bgFile = frm.querySelector('#ctplBackgroundFile').files[0];
+    if (bgFile) {
+      try { background_url = await uploadBrandAsset(bgFile, 'certificate-templates'); }
+      catch (e) { showToast('Background upload failed: ' + e.message, 'error'); return; }
+    }
     const is_default = frm.querySelector('#ctplIsDefault').checked;
     const is_active = frm.querySelector('#ctplIsActive').checked;
     const fieldsRaw = frm.querySelector('#ctplFieldsJson').value.trim();
@@ -12071,8 +12087,18 @@ select.form-input {
     const id = frm.querySelector('#crtplId').value || null;
     const name = frm.querySelector('#crtplName').value.trim();
     const description = frm.querySelector('#crtplDescription').value.trim() || null;
-    const front_design_url = frm.querySelector('#crtplFrontUrl').value.trim() || null;
-    const back_design_url = frm.querySelector('#crtplBackUrl').value.trim() || null;
+    let front_design_url = frm.querySelector('#crtplFrontUrl').value.trim() || null;
+    let back_design_url = frm.querySelector('#crtplBackUrl').value.trim() || null;
+    const frontFile = frm.querySelector('#crtplFrontFile').files[0];
+    const backFile = frm.querySelector('#crtplBackFile').files[0];
+    if (frontFile) {
+      try { front_design_url = await uploadBrandAsset(frontFile, 'card-templates'); }
+      catch (e) { showToast('Front image upload failed: ' + e.message, 'error'); return; }
+    }
+    if (backFile) {
+      try { back_design_url = await uploadBrandAsset(backFile, 'card-templates'); }
+      catch (e) { showToast('Back image upload failed: ' + e.message, 'error'); return; }
+    }
     const is_default = frm.querySelector('#crtplIsDefault').checked;
     const is_active = frm.querySelector('#crtplIsActive').checked;
     const payload = { name, description, front_design_url, back_design_url, is_default, is_active, config: {} };
@@ -12283,7 +12309,7 @@ select.form-input {
 
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status')
+      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('member_id', verifyId)
       .single();
 
@@ -12297,6 +12323,10 @@ select.form-input {
     } else {
       showToast('⚠ یہ اکاؤنٹ فعال نہیں (status: ' + profile.status + ')', 'error');
     }
+
+    // Show the actual ID card (with its default template applied) to the public visitor,
+    // not just a status toast — reuses the same renderer the member's own "My ID Card" uses.
+    await renderIdCard(profile);
   })();
 
   /* ── Public verification: if URL has ?verify_cert=CERTIFICATE_ID, look it up and show result ── */
