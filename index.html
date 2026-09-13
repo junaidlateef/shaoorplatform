@@ -4732,6 +4732,7 @@ select.form-input {
       <button class="admin-nav-btn" onclick="switchDashTab('cabinet',this);loadCentralCabinetAdmin();"><i class="fas fa-crown"></i> Central Cabinet</button>
       <button class="admin-nav-btn" onclick="switchDashTab('events',this);loadEventsAdmin();"><i class="fas fa-calendar"></i> Events</button>
       <button class="admin-nav-btn" onclick="switchDashTab('certificates',this)"><i class="fas fa-certificate"></i> Certificates</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('cert-templates',this);loadCertTemplatesAdmin();loadCardTemplatesAdmin();"><i class="fas fa-swatchbook"></i> Cert/Card Templates</button>
       <button class="admin-nav-btn" onclick="switchDashTab('learning',this);loadCoursesAdmin();loadEnrollmentsAdmin();loadLiveSessionsAdmin();loadPlatformSettingsAdmin();"><i class="fas fa-graduation-cap"></i> Learning Academy</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
       <button class="admin-nav-btn" onclick="switchDashTab('blog',this);loadBlogAdmin();"><i class="fas fa-newspaper"></i> Blog</button>
@@ -4897,9 +4898,83 @@ select.form-input {
           <table class="admin-table" id="certificatesTable">
             <thead><tr><th>Certificate ID</th><th>Member</th><th>Title</th><th>Type</th><th>Issued</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="certificatesBody">
-              <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading certificates…</td></tr>
+      </div>
+
+      <!-- Cert/Card Templates Panel -->
+      <div class="dash-panel" id="dp-cert-templates">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Certificate Templates</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCertTemplateModal()"><i class="fas fa-plus"></i> New Certificate Template</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="certTemplatesTable">
+            <thead><tr><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
+            <tbody id="certTemplatesBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
             </tbody>
           </table>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0 1rem;flex-wrap:wrap;gap:.75rem;">
+          <h3 style="font-weight:700;">Membership Card Templates</h3>
+          <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCardTemplateModal()"><i class="fas fa-plus"></i> New Card Template</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="cardTemplatesTable">
+            <thead><tr><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
+            <tbody id="cardTemplatesBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cert Template Modal -->
+      <div class="modal" id="certTemplateModal">
+        <div class="modal-content">
+          <button class="modal-close" onclick="closeModal('certTemplateModal')">&times;</button>
+          <h3 style="margin-bottom:1rem;">Certificate Template</h3>
+          <form class="modal-form" id="certTemplateForm">
+            <input type="hidden" id="ctplId" />
+            <div class="form-group"><label for="ctplName">Name</label><input type="text" id="ctplName" class="form-input" required /></div>
+            <div class="form-group"><label for="ctplDescription">Description</label><textarea id="ctplDescription" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label for="ctplBackgroundUrl">Background Image URL</label><input type="url" id="ctplBackgroundUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label for="ctplBgColor">Background Color</label><input type="text" id="ctplBgColor" class="form-input" placeholder="#0b1d33" /></div>
+            <div class="form-group"><label for="ctplTextColor">Text Color</label><input type="text" id="ctplTextColor" class="form-input" placeholder="#ffffff" /></div>
+            <div class="form-group"><label for="ctplAccentColor">Accent Color</label><input type="text" id="ctplAccentColor" class="form-input" placeholder="#c8a55f" /></div>
+            <div class="form-group">
+              <label for="ctplFieldsJson">Advanced Field Layout (JSON, optional)</label>
+              <textarea id="ctplFieldsJson" class="form-input" rows="8" style="font-family:monospace;font-size:.78rem;" placeholder='{
+  "title":   {"top":"18%", "left":"50%", "fontSize":"1.4rem", "fontFamily":"Georgia,serif", "color":"#fff", "align":"center"},
+  "member":  {"top":"32%", "left":"50%", "fontSize":"1rem"},
+  "meta":    {"top":"40%", "left":"50%", "fontSize":".75rem"},
+  "qr":      {"top":"70%", "left":"80%"},
+  "signatures": {"bottom":"6%", "left":"50%"}
+}'></textarea>
+              <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">Keys: title, member, meta, qr, signatures. Any of top/left/right/bottom/fontSize/fontFamily/color/align. Leave empty to use the default flowing layout.</div>
+            </div>
+            <div class="form-group"><label><input type="checkbox" id="ctplIsDefault" /> Set as Default</label></div>
+            <div class="form-group"><label><input type="checkbox" id="ctplIsActive" checked /> Active</label></div>
+            <button type="submit" class="btn btn-gold" style="justify-content:center;">Save Template</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Card Template Modal -->
+      <div class="modal" id="cardTemplateModal">
+        <div class="modal-content">
+          <button class="modal-close" onclick="closeModal('cardTemplateModal')">&times;</button>
+          <h3 style="margin-bottom:1rem;">Membership Card Template</h3>
+          <form class="modal-form" id="cardTemplateForm">
+            <input type="hidden" id="crtplId" />
+            <div class="form-group"><label for="crtplName">Name</label><input type="text" id="crtplName" class="form-input" required /></div>
+            <div class="form-group"><label for="crtplDescription">Description</label><textarea id="crtplDescription" class="form-input" rows="2"></textarea></div>
+            <div class="form-group"><label for="crtplFrontUrl">Front Design Image URL</label><input type="url" id="crtplFrontUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label for="crtplBackUrl">Back Design Image URL</label><input type="url" id="crtplBackUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label><input type="checkbox" id="crtplIsDefault" /> Set as Default</label></div>
+            <div class="form-group"><label><input type="checkbox" id="crtplIsActive" checked /> Active</label></div>
+            <button type="submit" class="btn btn-gold" style="justify-content:center;">Save Template</button>
+          </form>
         </div>
       </div>
 
@@ -11146,6 +11221,40 @@ select.form-input {
       colorLight: '#ffffff'
     });
 
+    // Apply the active default card template's front/back design, if one exists
+    const cardBox = document.querySelector('#idCardModal .modal-body > div');
+    const { data: cardTpl } = await sb.from('card_templates').select('*').eq('is_default', true).eq('is_active', true).limit(1).maybeSingle();
+    let flipBtn = document.getElementById('idCardFlipBtn');
+    if (cardTpl && cardBox) {
+      if (cardTpl.front_design_url) {
+        cardBox.style.backgroundImage = "url('" + cardTpl.front_design_url + "')";
+        cardBox.style.backgroundSize = 'cover';
+        cardBox.style.backgroundPosition = 'center';
+      }
+      if (cardTpl.back_design_url) {
+        if (!flipBtn) {
+          flipBtn = document.createElement('button');
+          flipBtn.id = 'idCardFlipBtn';
+          flipBtn.type = 'button';
+          flipBtn.className = 'btn btn-outline';
+          flipBtn.style.cssText = 'margin-top:.75rem;width:100%;justify-content:center;';
+          flipBtn.textContent = 'Flip to Back';
+          flipBtn.onclick = function () {
+            const showingBack = cardBox.dataset.side === 'back';
+            cardBox.dataset.side = showingBack ? 'front' : 'back';
+            cardBox.style.backgroundImage = "url('" + (showingBack ? cardTpl.front_design_url : cardTpl.back_design_url) + "')";
+            flipBtn.textContent = showingBack ? 'Flip to Back' : 'Flip to Front';
+          };
+          cardBox.parentElement.appendChild(flipBtn);
+        }
+        flipBtn.style.display = 'block';
+      } else if (flipBtn) {
+        flipBtn.style.display = 'none';
+      }
+    } else if (flipBtn) {
+      flipBtn.style.display = 'none';
+    }
+
     openModal('idCardModal');
   }
 
@@ -11706,6 +11815,33 @@ select.form-input {
     popup.document.close();
   }
 
+  const CERT_FIELD_IDS = { title: 'vcTitle', member: 'vcMember', meta: 'vcMeta', qr: 'vcQrCode', signatures: 'vcSignatures' };
+
+  function applyCertFieldLayout(fields) {
+    Object.entries(CERT_FIELD_IDS).forEach(([key, elId]) => {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      // Capture the original inline style once so templates never permanently clobber the default layout
+      if (el.dataset.baseStyle === undefined) el.dataset.baseStyle = el.getAttribute('style') || '';
+      el.setAttribute('style', el.dataset.baseStyle);
+
+      const f = fields && fields[key];
+      if (!f) return;
+      if (f.top || f.left || f.right || f.bottom) {
+        el.style.position = 'absolute';
+        if (f.top) el.style.top = f.top;
+        if (f.left) el.style.left = f.left;
+        if (f.right) el.style.right = f.right;
+        if (f.bottom) el.style.bottom = f.bottom;
+        if (f.left && !f.right) el.style.transform = 'translateX(-50%)';
+      }
+      if (f.fontSize) el.style.fontSize = f.fontSize;
+      if (f.fontFamily) el.style.fontFamily = f.fontFamily;
+      if (f.color) el.style.color = f.color;
+      if (f.align) el.style.textAlign = f.align;
+    });
+  }
+
   /* ── View a single certificate (from admin table or member list) with QR ── */
   /* ── Apply a certificate_templates.config onto the print area, and render signature blocks ── */
   function applyCertificateTemplate(config, brand) {
@@ -11717,6 +11853,9 @@ select.form-input {
       if (config.text_color) area.style.color = config.text_color;
       if (config.accent_color) area.style.setProperty('--gold', config.accent_color);
     }
+    // Reset/apply per-field layout every time so switching between differently-templated
+    // certificates never leaves stale absolute positioning behind.
+    applyCertFieldLayout(config && config.fields);
 
     let sigHolder = document.getElementById('vcSignatures');
     if (!sigHolder) {
@@ -11749,20 +11888,14 @@ select.form-input {
     });
   }
 
-  async function viewCertificate(id) {
-    const { data: c, error } = await sb
-      .from('certificates')
-      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name')
-      .eq('id', id)
-      .single();
-
-    if (error || !c) { showToast('سرٹیفکیٹ لوڈ نہیں ہو سکا', 'error'); return; }
-
-    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
-
+  /* ── Shared renderer: populates the certificate view/print area for a given certificate row
+     and its member profile, applies its template + signatures, and opens the modal.
+     Used by both the admin "view certificate" action AND the public ?verify_cert= flow,
+     so a public visitor sees the same templated design an admin would. ── */
+  async function renderCertificateView(c, prof) {
     document.getElementById('vcTitle').textContent = c.certificate_title;
     document.getElementById('vcId').textContent = c.certificate_id;
-    document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + prof.member_id) : '—';
+    document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + (prof.member_id || '')) : '—';
     let metaText = 'Type: ' + c.certificate_type + ' · Issued: ' + c.issue_date + (c.expiry_date ? ' · Expires: ' + c.expiry_date : '');
     if (c.grade) metaText += ' · Grade: ' + c.grade;
     if (c.duration) metaText += ' · Duration: ' + c.duration;
@@ -11789,6 +11922,172 @@ select.form-input {
 
     openModal('viewCertificateModal');
   }
+
+  async function viewCertificate(id) {
+    const { data: c, error } = await sb
+      .from('certificates')
+      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name')
+      .eq('id', id)
+      .single();
+
+    if (error || !c) { showToast('سرٹیفکیٹ لوڈ نہیں ہو سکا', 'error'); return; }
+
+    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+    await renderCertificateView(c, prof);
+  }
+
+  /* ══════════ Certificate & Card Template Management (Admin) ══════════ */
+
+  async function loadCertTemplatesAdmin() {
+    const body = document.getElementById('certTemplatesBody');
+    if (!body) return;
+    const { data, error } = await sb.from('certificate_templates').select('*').order('name');
+    if (error || !data || !data.length) {
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">No certificate templates yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = data.map(t => `
+      <tr>
+        <td>${sanitize(t.name)}</td>
+        <td>${sanitize(t.description || '—')}</td>
+        <td>${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
+        <td>${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
+        <td>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCertTemplate(${JSON.stringify(t)})'>Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCertTemplate('${t.id}')">Delete</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  async function loadCardTemplatesAdmin() {
+    const body = document.getElementById('cardTemplatesBody');
+    if (!body) return;
+    const { data, error } = await sb.from('card_templates').select('*').order('name');
+    if (error || !data || !data.length) {
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">No card templates yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = data.map(t => `
+      <tr>
+        <td>${sanitize(t.name)}</td>
+        <td>${sanitize(t.description || '—')}</td>
+        <td>${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
+        <td>${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
+        <td>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCardTemplate(${JSON.stringify(t)})'>Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCardTemplate('${t.id}')">Delete</button>
+        </td>
+      </tr>`).join('');
+  }
+
+  function openCertTemplateModal() {
+    document.getElementById('certTemplateForm').reset();
+    document.getElementById('ctplId').value = '';
+    openModal('certTemplateModal');
+  }
+
+  function editCertTemplate(t) {
+    document.getElementById('ctplId').value = t.id;
+    document.getElementById('ctplName').value = t.name || '';
+    document.getElementById('ctplDescription').value = t.description || '';
+    document.getElementById('ctplBackgroundUrl').value = t.background_url || '';
+    const cfg = t.config || {};
+    document.getElementById('ctplBgColor').value = cfg.background_color || '';
+    document.getElementById('ctplTextColor').value = cfg.text_color || '';
+    document.getElementById('ctplAccentColor').value = cfg.accent_color || '';
+    document.getElementById('ctplFieldsJson').value = cfg.fields ? JSON.stringify(cfg.fields, null, 2) : '';
+    document.getElementById('ctplIsDefault').checked = !!t.is_default;
+    document.getElementById('ctplIsActive').checked = !!t.is_active;
+    openModal('certTemplateModal');
+  }
+
+  async function deleteCertTemplate(id) {
+    if (!confirm('Delete this certificate template?')) return;
+    const { error } = await sb.from('certificate_templates').delete().eq('id', id);
+    if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+    showToast('Template deleted');
+    loadCertTemplatesAdmin();
+  }
+
+  secureSubmit('certTemplateForm', async frm => {
+    const id = frm.querySelector('#ctplId').value || null;
+    const name = frm.querySelector('#ctplName').value.trim();
+    const description = frm.querySelector('#ctplDescription').value.trim() || null;
+    const background_url = frm.querySelector('#ctplBackgroundUrl').value.trim() || null;
+    const is_default = frm.querySelector('#ctplIsDefault').checked;
+    const is_active = frm.querySelector('#ctplIsActive').checked;
+    const fieldsRaw = frm.querySelector('#ctplFieldsJson').value.trim();
+    let fields = null;
+    if (fieldsRaw) {
+      try { fields = JSON.parse(fieldsRaw); }
+      catch (e) { showToast('Field Layout JSON is invalid: ' + e.message, 'error'); return; }
+    }
+    const config = {
+      background_color: frm.querySelector('#ctplBgColor').value.trim() || null,
+      text_color: frm.querySelector('#ctplTextColor').value.trim() || null,
+      accent_color: frm.querySelector('#ctplAccentColor').value.trim() || null,
+      fields: fields || undefined
+    };
+    const payload = { name, description, background_url, is_default, is_active, config };
+
+    let error;
+    if (id) {
+      ({ error } = await sb.from('certificate_templates').update(payload).eq('id', id));
+    } else {
+      ({ error } = await sb.from('certificate_templates').insert(payload));
+    }
+    if (error) { showToast('Save failed: ' + error.message, 'error'); return; }
+    showToast('Certificate template saved');
+    closeModal('certTemplateModal');
+    loadCertTemplatesAdmin();
+  });
+
+  function openCardTemplateModal() {
+    document.getElementById('cardTemplateForm').reset();
+    document.getElementById('crtplId').value = '';
+    openModal('cardTemplateModal');
+  }
+
+  function editCardTemplate(t) {
+    document.getElementById('crtplId').value = t.id;
+    document.getElementById('crtplName').value = t.name || '';
+    document.getElementById('crtplDescription').value = t.description || '';
+    document.getElementById('crtplFrontUrl').value = t.front_design_url || '';
+    document.getElementById('crtplBackUrl').value = t.back_design_url || '';
+    document.getElementById('crtplIsDefault').checked = !!t.is_default;
+    document.getElementById('crtplIsActive').checked = !!t.is_active;
+    openModal('cardTemplateModal');
+  }
+
+  async function deleteCardTemplate(id) {
+    if (!confirm('Delete this card template?')) return;
+    const { error } = await sb.from('card_templates').delete().eq('id', id);
+    if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+    showToast('Template deleted');
+    loadCardTemplatesAdmin();
+  }
+
+  secureSubmit('cardTemplateForm', async frm => {
+    const id = frm.querySelector('#crtplId').value || null;
+    const name = frm.querySelector('#crtplName').value.trim();
+    const description = frm.querySelector('#crtplDescription').value.trim() || null;
+    const front_design_url = frm.querySelector('#crtplFrontUrl').value.trim() || null;
+    const back_design_url = frm.querySelector('#crtplBackUrl').value.trim() || null;
+    const is_default = frm.querySelector('#crtplIsDefault').checked;
+    const is_active = frm.querySelector('#crtplIsActive').checked;
+    const payload = { name, description, front_design_url, back_design_url, is_default, is_active, config: {} };
+
+    let error;
+    if (id) {
+      ({ error } = await sb.from('card_templates').update(payload).eq('id', id));
+    } else {
+      ({ error } = await sb.from('card_templates').insert(payload));
+    }
+    if (error) { showToast('Save failed: ' + error.message, 'error'); return; }
+    showToast('Card template saved');
+    closeModal('cardTemplateModal');
+    loadCardTemplatesAdmin();
+  });
 
   /* ── Member: load "My Certificates" list in Member Dashboard ── */
   async function loadMyCertificates(userId) {
@@ -12008,7 +12307,7 @@ select.form-input {
 
     const { data: c, error } = await sb
       .from('certificates')
-      .select('certificate_id, certificate_title, certificate_type, issue_date, status, member_id')
+      .select('certificate_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name, member_id')
       .eq('certificate_id', certId)
       .single();
 
@@ -12017,16 +12316,19 @@ select.form-input {
       return;
     }
 
-    const { data: prof } = await sb.from('profiles').select('full_name').eq('id', c.member_id).single();
-    const memberName = prof ? prof.full_name : '';
+    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
 
     if (c.status === 'active') {
-      showToast('✓ سرٹیفکیٹ تصدیق شدہ: ' + c.certificate_title + (memberName ? ' — ' + memberName : ''));
+      showToast('✓ سرٹیفکیٹ تصدیق شدہ' + (prof ? ' — ' + prof.full_name : ''));
     } else if (c.status === 'revoked') {
       showToast('⚠ یہ سرٹیفکیٹ منسوخ کر دیا گیا ہے', 'error');
     } else {
       showToast('⚠ اس سرٹیفکیٹ کی میعاد ختم ہو چکی ہے', 'error');
     }
+
+    // Show the actual certificate (with its assigned template applied) to the public visitor,
+    // not just a status toast — reuses the same renderer the admin "view" action uses.
+    await renderCertificateView(c, prof);
   })();
 
   /* If a member's session is already active on page load, show their dashboard automatically */
