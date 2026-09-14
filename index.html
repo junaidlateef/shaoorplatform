@@ -2407,14 +2407,35 @@ body{background:var(--cream);color:var(--ink)}
 .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2))!important;color:#fff!important}.btn-navy{background:linear-gradient(135deg,var(--navy),var(--navy2))!important}
 :root:not([data-theme="dark"]) .sec-label{color:#567B79!important}:root:not([data-theme="dark"]) .nav-links a{color:#687284!important}:root:not([data-theme="dark"]) .nav-links a:hover{color:#567B79!important}:root:not([data-theme="dark"]) .feature-card strong,:root:not([data-theme="dark"]) .soc-card strong,:root:not([data-theme="dark"]) .blog-card strong,:root:not([data-theme="dark"]) .cab-name{color:#27344A!important}:root:not([data-theme="dark"]) .about-quote{background:rgba(255,255,255,.48)!important;border-left-color:#6E8E8A!important}:root:not([data-theme="dark"]) .val-icon{background:rgba(79,133,130,.065)!important}:root:not([data-theme="dark"]) .val-icon i{color:#5B8581!important}
 #viewCertificateModal .modal-head{background:var(--cream)!important}#viewCertificateModal .modal-body{padding:1.2rem!important;background:linear-gradient(135deg,var(--cream2),var(--cream))!important}#viewCertificateModal .certificate-paper{position:relative}#viewCertificateModal .cert-actions{display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}#viewCertificateModal .cert-actions .btn{min-height:42px}
-/* .modal-box max-width, #vcTitle/#vcMember/#vcQrCode typography, and .cert-seal-ring
-   position are now owned solely by #certificatePrintArea.cert-v2 below — removed here
-   to stop them fighting that block for the same properties. */
+/* .modal-box max-width and #vcTitle/#vcMember/#vcQrCode typography are now owned
+   solely by #certificatePrintArea.cert-v2 below — removed here to stop them fighting
+   that block for the same properties. (The old .cert-seal-ring decorative circle has
+   been removed entirely — see the cert-v2 block.) */
 #idCardModal .modal-box{background:var(--cream)!important;border:1px solid var(--border)!important}#idCardModal .modal-body{background:linear-gradient(135deg,var(--cream2),var(--cream))!important}
-@media print{body *{visibility:hidden!important}#certificatePrintArea,#certificatePrintArea *{visibility:visible!important}#certificatePrintArea{position:absolute!important;left:0;top:0;width:100%;padding:0!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}}
+/* Certificate print isolation: the @page size itself is injected dynamically into
+   #certPageSizeStyle (see applyCertificateTemplate) so it always matches the certificate's
+   actual selected paper size/orientation — without that, the browser falls back to its own
+   default page shape, which doesn't match landscape certificate content and is the reason
+   the QR/footer used to spill onto a second page. Every ancestor of #certificatePrintArea
+   (the fixed/overlay modal chain) is also flattened to normal static flow here, since a
+   position:fixed overlay still reserves layout space even while visibility:hidden. */
+@media print{
+  body *{visibility:hidden!important}
+  #certificatePrintArea,#certificatePrintArea *{visibility:visible!important}
+  #viewCertificateModal{position:static!important;inset:auto!important;background:none!important;padding:0!important;display:block!important;height:auto!important}
+  #viewCertificateModal .modal-box{position:static!important;max-width:none!important;width:auto!important;box-shadow:none!important;border:none!important;background:none!important;border-radius:0!important}
+  #viewCertificateModal .modal-head,#viewCertificateModal .cert-actions{display:none!important}
+  #viewCertificateModal .modal-body{position:static!important;padding:0!important;background:none!important;max-height:none!important;overflow:visible!important}
+  #certificatePrintAreaWrap,.cert-paper-wrap{position:static!important;padding:0!important;overflow:visible!important;display:block!important}
+  #certificatePrintArea{position:relative!important;left:auto!important;top:auto!important;margin:0!important;box-sizing:border-box!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
+}
 @media(max-width:700px){#viewCertificateModal .modal-body{padding:.7rem!important}#viewCertificateModal .cert-actions{justify-content:stretch}#viewCertificateModal .cert-actions .btn{flex:1 1 180px}}
 
 </style>
+<!-- Dynamic @page rule for the certificate, kept in sync with the certificate's own selected
+     paper size/orientation by applyCertificateTemplate() (see paperPageCss()). Only applies
+     during print — empty on normal page load/browse. -->
+<style id="certPageSizeStyle"></style>
 
 <!-- SHAOOR V6 INSTITUTIONAL REFINEMENT -->
 <style id="shaoor-v6-refinement">
@@ -3497,14 +3518,9 @@ html:not([data-theme="dark"]) .hero {
   border: 1.5px solid var(--gold) !important;
   pointer-events: none !important; z-index: 1 !important;
 }
-#certificatePrintArea.cert-v2 .cert-seal-ring {
-  position: absolute !important; top: 66% !important; left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  width: 15% !important; padding-bottom: 15% !important; height: 0 !important;
-  border-radius: 50% !important;
-  border: 2px double var(--gold) !important;
-  opacity: .55 !important; pointer-events: none !important; z-index: 1 !important;
-}
+/* .cert-seal-ring (a decorative absolutely-positioned double gold ring behind the
+   content) removed — it was rendering as an unwanted large circle in the certificate
+   center. The REAL seal is the brand.seal_url image in .cert-seal, unaffected by this. */
 #certificatePrintArea.cert-v2 .cert-inner {
   position: relative !important; z-index: 2 !important;
   height: 100% !important;
@@ -3531,13 +3547,14 @@ html:not([data-theme="dark"]) .hero {
 #certificatePrintArea.cert-v2 .cert-sig-block { text-align: center !important; min-width: 80px !important; }
 #certificatePrintArea.cert-v2 .cert-sig-block img { height: 2em !important; object-fit: contain !important; display: block !important; margin: 0 auto .2rem !important; }
 #certificatePrintArea.cert-v2 .cert-sig-block div { font-size: .62rem !important; color: var(--muted) !important; border-top: 1px solid var(--line, #ccc) !important; padding-top: .15rem !important; white-space: nowrap !important; }
-#certificatePrintArea.cert-v2 .cert-seal-col { display: flex !important; justify-content: center !important; }
+#certificatePrintArea.cert-v2 .cert-seal-col { display: flex !important; flex-direction: column !important; align-items: center !important; gap: .3rem !important; }
 #certificatePrintArea.cert-v2 .cert-seal { height: 4.6em !important; width: 4.6em !important; object-fit: contain !important; }
 #certificatePrintArea.cert-v2 .cert-verify-area { display: flex !important; flex-direction: column !important; align-items: flex-end !important; gap: .3rem !important; text-align: right !important; }
 #certificatePrintArea.cert-v2[dir="rtl"] .cert-verify-area { align-items: flex-start !important; text-align: left !important; }
 #certificatePrintArea.cert-v2 .cert-qr { background: #fff !important; padding: 6px !important; border-radius: 6px !important; border: 1px solid rgba(11,31,51,.12) !important; }
-#certificatePrintArea.cert-v2 .cert-verify-text { font-size: .66rem !important; color: var(--muted) !important; line-height: 1.5 !important; }
+#certificatePrintArea.cert-v2 .cert-verify-text { font-size: .66rem !important; color: var(--muted) !important; line-height: 1.5 !important; text-align: center !important; }
 #certificatePrintArea.cert-v2 .cert-verify-text b { color: var(--gold) !important; letter-spacing: .04em !important; }
+#certificatePrintArea.cert-v2 .cert-scan-label { font-size: .64rem !important; color: var(--muted) !important; }
 #certificatePrintArea.cert-v2 .cert-status-badge { position: absolute !important; top: 4.5% !important; right: 4.5% !important; z-index: 3 !important; padding: .25rem .8rem !important; border-radius: 999px !important; font-size: .68rem !important; font-weight: 700 !important; background: rgba(79,143,138,.10) !important; color: var(--teal) !important; border: 1px solid rgba(79,143,138,.25) !important; }
 #certificatePrintArea.cert-v2[dir="rtl"] .cert-status-badge { right: auto !important; left: 4.5% !important; }
 @media (max-width: 700px) {
@@ -7211,7 +7228,6 @@ select.form-input {
       <div id="certificatePrintAreaWrap" class="cert-paper-wrap">
       <div id="certificatePrintArea" class="certificate-paper cert-v2">
         <div class="cert-border-frame"></div>
-        <div class="cert-seal-ring"></div>
         <div class="cert-inner">
           <div class="cert-head">
             <img id="vcLogo" class="cert-logo" style="display:none;" alt="" />
@@ -7227,14 +7243,15 @@ select.form-input {
             <div id="vcSignatures" class="cert-sig-area"></div>
             <div class="cert-seal-col">
               <img id="vcSeal" class="cert-seal" style="display:none;" alt="Official Seal" />
-            </div>
-            <div class="cert-verify-area">
-              <div id="vcQrCode" class="cert-qr"></div>
               <div class="cert-verify-text">
-                <div>Verification Code: <b id="vcId">—</b></div>
+                <div>Certificate No: <b id="vcId">—</b></div>
                 <div id="vcIssueDate"></div>
                 <div id="vcExpiryDate"></div>
               </div>
+            </div>
+            <div class="cert-verify-area">
+              <div id="vcQrCode" class="cert-qr"></div>
+              <div class="cert-scan-label">Scan to verify</div>
             </div>
           </div>
           <div id="vcStatusBadge" class="cert-status-badge">—</div>
@@ -12304,9 +12321,11 @@ select.form-input {
     // certificate (see applyCertificateTemplate), defaulting to A4/landscape when unset —
     // never a hard-coded certificate size.
     const cfg = window._lastCertTemplateConfig || {};
-    const pageCss = paperPageCss(cfg.paper_size || 'a4', cfg.orientation || 'landscape');
+    // Margin comes from the @page rule itself — no extra body padding/wrapper on top of it,
+    // since that extra size was pushing the certificate past one physical page.
+    const pageCss = paperPageCss(cfg.paper_size || 'a4', cfg.orientation || 'landscape', 10);
     popup.document.open();
-    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+pageCss+'</style><style>'+styles+'</style></head><body style="background:#fff;padding:24px"><div style="max-width:1000px;margin:0 auto">'+area.outerHTML+'</div><script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<\/script></body></html>');
+    popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+safeTitle+'</title><style>'+pageCss+'</style><style>'+styles+'</style><style>html,body{margin:0!important;padding:0!important;background:#fff!important}#certificatePrintArea{position:relative!important;left:auto!important;top:auto!important;margin:0!important;box-sizing:border-box!important}</style></head><body>'+area.outerHTML+'<script>window.addEventListener("load",function(){setTimeout(function(){window.print()},400)});<\/script></body></html>');
     popup.document.close();
   }
 
@@ -12407,6 +12426,14 @@ select.form-input {
       if (areaId === 'certificatePrintArea') area.style.width = w + 'mm';
     }
     if (areaId === 'certificatePrintArea') { area.style.maxWidth = '100%'; area.style.height = 'auto'; }
+    // Keep the actual browser print page (@page) in sync with this certificate's own
+    // paper size/orientation — without this, a direct in-page print falls back to the
+    // browser's default page shape, which mismatches landscape content and is what was
+    // forcing the certificate onto a second printed page.
+    if (areaId === 'certificatePrintArea') {
+      const pageStyleEl = document.getElementById('certPageSizeStyle');
+      if (pageStyleEl) pageStyleEl.textContent = '@media print{' + paperPageCss(paperSize, orientation, 10) + '}';
+    }
     // Language — existing templates saved before this field existed have no config.language,
     // so they safely default to English/LTR (same fallback pattern as the Document system).
     const isUrCert = config && config.language === 'ur';
