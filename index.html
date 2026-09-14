@@ -7280,6 +7280,7 @@ select.form-input {
         <div style="color:var(--muted);font-size:.72rem;margin-bottom:.25rem;">Bio</div>
         <div id="vmBio" style="font-size:.85rem;line-height:1.5;">—</div>
       </div>
+      <button type="button" class="btn btn-gold" style="margin-top:1rem;width:100%;justify-content:center;" onclick="openMemberCardById(window._viewMemberModalId)"><i class="fas fa-id-badge"></i> View Membership Card</button>
     </div>
   </div>
 </div>
@@ -11968,12 +11969,46 @@ select.form-input {
     });
   }
 
+  /* ══════════════ CARD LIFECYCLE (Part 2/3/9) ══════════════
+     Cards are NOT a separate per-member database record — the profile itself plus the active
+     card_templates row (or the hardcoded gold default when none exists) ARE the card, resolved
+     fresh on every render. "Ensuring" a card therefore never inserts/duplicates a row; it just
+     validates the profile is card-ready and lets renderIdCard's existing template→default→legacy
+     fallback chain (see below) guarantee something always renders. Safe to call any number of
+     times, from any entry point (own profile, admin, public verify), with no duplicate side effects. */
+  function ensureMemberCard(profile) {
+    if (!profile || !profile.id) { console.error('[ensureMemberCard] called without a valid profile', profile); return null; }
+    if (!profile.member_id) {
+      // A profile predating member_id assignment (or a DB-side issue) — the card still renders
+      // (Member ID row is simply hidden by the empty-field suppression in applyCardConfig), but
+      // this is logged because verification/QR meaningfully depend on member_id existing.
+      console.error('[ensureMemberCard] profile has no member_id — QR/verification will be degraded', profile.id);
+    }
+    return profile;
+  }
+
+  /* Admin/profile entry point — resolves ANY member's card by their profiles.id (Part 6/7),
+     independent of who is logged in. Reuses the exact same renderIdCard() canonical renderer. */
+  async function openMemberCardById(id) {
+    if (!id) { console.error('[openMemberCardById] missing id'); return; }
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('id, full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .eq('id', id)
+      .single();
+    if (error || !profile) { console.error('[openMemberCardById] profile fetch failed for id', id, error); showToast('ممبر کارڈ لوڈ نہیں ہو سکا', 'error'); return; }
+    const ensured = ensureMemberCard(profile);
+    if (!ensured) return;
+    await renderIdCard(ensured);
+  }
+
   /* Shared renderer: populates the ID card modal for a given profile row, applies the
      active default card_templates design (front/back) and its config JSON, and opens the modal.
      Used by both the logged-in member's "My ID Card" action AND the public ?verify=MEMBER_ID
      flow, admin preview, print and PDF — this is the single canonical card renderer; do not
      duplicate this logic elsewhere. */
   async function renderIdCard(profile, templateOverride) {
+    if (!profile) { console.error('[renderIdCard] called without a profile'); showToast('کارڈ ڈیٹا دستیاب نہیں', 'error'); return; }
     document.getElementById('idName').textContent = profile.full_name || '—';
     document.getElementById('idEmail').textContent = profile.email || '';
     document.getElementById('idPhone').textContent = profile.phone || '';
@@ -12011,11 +12046,16 @@ select.form-input {
 
     // Load the template (either a specific one for admin preview, or the active default) + Branding
     const cardBox = document.getElementById('idCardFront');
-    const [{ data: cardTpl }, { data: brand }] = await Promise.all([
+    const [{ data: cardTpl, error: tplErr }, { data: brand, error: brandErr }] = await Promise.all([
       templateOverride ? Promise.resolve({ data: templateOverride }) :
         sb.from('card_templates').select('*').eq('is_default', true).eq('is_active', true).limit(1).maybeSingle(),
       sb.from('brand_settings').select('*').limit(1).maybeSingle()
     ]);
+    // Neither query errors when zero rows match (.maybeSingle()) — a null cardTpl here is the
+    // expected "no template configured yet" case and falls through to the hardcoded gold default
+    // in applyCardConfig(), NOT an error. An actual query error (RLS, network) IS logged (Part 15).
+    if (tplErr) console.error('[renderIdCard] card_templates query failed — falling back to default design', tplErr);
+    if (brandErr) console.error('[renderIdCard] brand_settings query failed — logo/seal/signature will be unavailable', brandErr);
     window._lastRenderedCardTpl = cardTpl || null;
     let flipBtn = document.getElementById('idCardFlipBtn');
     if (cardTpl && cardBox) {
@@ -12116,11 +12156,14 @@ select.form-input {
       .single();
 
     if (error || !profile) {
+      console.error('[openDigitalId] profile fetch failed for user', userId, error);
       showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
       return;
     }
 
-    await renderIdCard(profile);
+    const ensured = ensureMemberCard(profile);
+    if (!ensured) return;
+    await renderIdCard(ensured);
   }
 
   /* ══════════════ CERTIFICATES ══════════════ */
@@ -14296,12 +14339,16 @@ select.form-input {
     const verifyId = params.get('verify');
     if (!verifyId) return;
 
+    // Public flow intentionally does NOT select email/phone — those stay member/admin-only
+    // (Part 11). maybeSingle() because an invalid/mistyped Member ID is a legitimate zero-row
+    // case here, not a query error.
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('id, full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('member_id', verifyId)
-      .single();
+      .maybeSingle();
 
+    if (error) console.error('[public verify] profiles query failed for member_id', verifyId, error);
     if (error || !profile) {
       showToast('یہ Member ID موجود نہیں: ' + verifyId, 'error');
       return;
@@ -14315,7 +14362,9 @@ select.form-input {
 
     // Show the actual ID card (with its default template applied) to the public visitor,
     // not just a status toast — reuses the same renderer the member's own "My ID Card" uses.
-    await renderIdCard(profile);
+    const ensured = ensureMemberCard(profile);
+    if (!ensured) return;
+    await renderIdCard(ensured);
   })();
 
   /* ── Public verification: if URL has ?verify_cert=CERTIFICATE_ID, look it up and show result ── */
@@ -14895,6 +14944,7 @@ select.form-input {
     tbody.innerHTML = members.map(m => {
       const actions = [];
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
+      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold3);color:#241a06;" onclick="openMemberCardById('${m.id}')"><i class="fas fa-id-badge"></i> Card</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="openEditMember('${m.id}')">Edit</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForMember('${m.id}')"><i class="fas fa-file-signature"></i> Document</button>`);
       if (m.status !== 'active') {
@@ -15013,13 +15063,14 @@ select.form-input {
   }));
 
   async function viewMember(id) {
+    window._viewMemberModalId = id;
     const { data: m, error } = await sb
       .from('profiles')
       .select('member_id, full_name, phone, bio, role, status, province, avatar_url, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('id', id)
       .single();
 
-    if (error || !m) { showToast('ممبر کی تفصیل لوڈ نہیں ہو سکی', 'error'); return; }
+    if (error || !m) { console.error('[viewMember] profile fetch failed for id', id, error); showToast('ممبر کی تفصیل لوڈ نہیں ہو سکی', 'error'); return; }
 
     const societyName = m.societies ? m.societies.name : '—';
     const chapterName = m.chapters ? m.chapters.name : '—';
