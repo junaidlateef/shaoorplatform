@@ -1577,15 +1577,10 @@ footer{background:#0B1224!important}
 #idCardModal .modal-body [id="idName"]{font-size:1.15rem!important}
 #idCardModal .modal-body [id="idMemberId"]{color:var(--gold3)!important}
 
-/* Certificate viewer */
-#viewCertificateModal .modal-box{max-width:760px!important;border-radius:18px!important}
-#viewCertificateModal .modal-body > div{background:#fff!important;color:var(--ink)!important;border:8px solid var(--navy)!important;outline:2px solid var(--gold)!important;outline-offset:-15px!important;border-radius:4px!important;min-height:420px!important;padding:3rem 2.5rem!important;box-shadow:var(--shadow)!important}
-#viewCertificateModal #vcTitle{font-family:Georgia,serif!important;font-size:1.65rem!important;color:var(--navy)!important;margin-top:1.3rem!important}
-#viewCertificateModal #vcId{color:var(--gold)!important;font-weight:800!important;letter-spacing:1px!important}
-#viewCertificateModal #vcMember{font-family:Georgia,serif!important;font-size:1.25rem!important;color:var(--ink)!important}
-#viewCertificateModal #vcMeta{color:var(--muted)!important}
-#viewCertificateModal #vcStatusBadge{background:#E7F5F3!important;color:var(--teal)!important}
-#viewCertificateModal #vcQrCode{border:1px solid var(--line)!important}
+/* Certificate viewer — layout/typography now owned entirely by the Phase B
+   #certificatePrintArea.cert-v2 block below; legacy rules targeting the old
+   `.modal-body > div` markup (removed) and duplicate .modal-box max-widths
+   were removed from here to stop them fighting that block. */
 
 /* Modals, focus, motion */
 .modal-box{border-radius:16px!important}
@@ -1603,7 +1598,6 @@ footer{background:#0B1224!important}
  .nav-actions .admin-link,.nav-actions .theme-btn{display:none!important}
  .hero{min-height:auto!important}
  .admin-box{padding:1.7rem!important}
- #viewCertificateModal .modal-body > div{padding:2rem 1rem!important;border-width:5px!important}
 }
 
 
@@ -2093,41 +2087,8 @@ footer{background:#0B1224!important}
 #memberDash h3{color:var(--navy)!important}
 #memberDash .btn-gold{background:var(--gold)!important}
 
-/* ---------- CERTIFICATE VIEW ---------- */
-#viewCertificateModal .modal-box{
-  max-width:820px!important;border-radius:20px!important;
-}
-#viewCertificateModal .modal-body{
-  background:var(--sand)!important;
-}
-#viewCertificateModal .modal-body > div{
-  position:relative!important;
-  max-width:720px!important;
-  margin:auto!important;
-  min-height:540px!important;
-  padding:4.2rem 4rem 3.5rem!important;
-  background:#fff!important;
-  color:var(--ink)!important;
-  border:9px solid var(--navy)!important;
-  outline:2px solid var(--gold)!important;
-  outline-offset:-17px!important;
-  box-shadow:0 18px 52px rgba(11,31,51,.14)!important;
-}
-#viewCertificateModal #vcTitle{
-  font-family:Georgia,serif!important;
-  letter-spacing:.08em!important;
-  color:var(--navy)!important;
-  text-transform:uppercase!important;
-  font-size:1.55rem!important;
-}
-#viewCertificateModal #vcMember{
-  font-family:Georgia,serif!important;
-  font-size:1.35rem!important;
-}
-#viewCertificateModal #vcId{color:var(--gold)!important}
-#viewCertificateModal #vcStatusBadge{
-  background:#E7F5F3!important;color:var(--teal)!important;border-radius:999px!important;
-}
+/* Certificate viewer styling: see the single Phase B
+   #certificatePrintArea.cert-v2 block (legacy duplicates removed). */
 
 /* Any certificate cards/list */
 #myCertificatesList > div{
@@ -2170,11 +2131,6 @@ footer{background:#0B1224!important}
   .dash-body{padding:1.2rem!important}
   .contact-form{padding:1.1rem!important}
   .id-card{max-width:100%!important}
-  #viewCertificateModal .modal-body > div{
-    padding:3rem 1.25rem!important;
-    border-width:6px!important;
-    outline-offset:-12px!important;
-  }
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto!important}
@@ -2402,17 +2358,9 @@ body, button, input, textarea, select, .btn, .nav-links a, .mobile-nav a{font-fa
 [data-theme="dark"] .id-card{box-shadow:0 22px 60px rgba(0,0,0,.45)!important;}
 
 /* CERTIFICATE — formal institutional presentation */
-#viewCertificateModal .modal-content,
 .certificate,
 .cert-wrap{background:var(--card)!important;color:var(--ink)!important;}
-#viewCertificateModal .modal-body > div{
-  background:#fff!important;color:#20252B!important;border:10px solid var(--navy)!important;outline:2px solid var(--gold)!important;outline-offset:-20px!important;
-}
-[data-theme="dark"] #viewCertificateModal .modal-body > div{background:#F8F6F0!important;color:#20252B!important;}
-#viewCertificateModal #vcTitle{color:var(--navy)!important;}
-#viewCertificateModal #vcMember{color:#20252B!important;}
-#viewCertificateModal #vcMeta{color:#667085!important;}
-#viewCertificateModal #vcStatusBadge{background:#E7F5F3!important;color:var(--teal)!important;}
+/* #certificatePrintArea.cert-v2 (Phase B block) owns certificate paper/typography now. */
 
 /* FORM / TABLE READABILITY */
 input,textarea,select{background:var(--card)!important;color:var(--ink)!important;border-color:var(--border)!important;}
@@ -2458,7 +2406,10 @@ body{background:var(--cream);color:var(--ink)}
 .cab-card::after{content:"";position:absolute;inset:auto 18px 14px 18px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.28}
 .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2))!important;color:#fff!important}.btn-navy{background:linear-gradient(135deg,var(--navy),var(--navy2))!important}
 :root:not([data-theme="dark"]) .sec-label{color:#567B79!important}:root:not([data-theme="dark"]) .nav-links a{color:#687284!important}:root:not([data-theme="dark"]) .nav-links a:hover{color:#567B79!important}:root:not([data-theme="dark"]) .feature-card strong,:root:not([data-theme="dark"]) .soc-card strong,:root:not([data-theme="dark"]) .blog-card strong,:root:not([data-theme="dark"]) .cab-name{color:#27344A!important}:root:not([data-theme="dark"]) .about-quote{background:rgba(255,255,255,.48)!important;border-left-color:#6E8E8A!important}:root:not([data-theme="dark"]) .val-icon{background:rgba(79,133,130,.065)!important}:root:not([data-theme="dark"]) .val-icon i{color:#5B8581!important}
-#viewCertificateModal .modal-box{max-width:980px!important;background:var(--cream)!important;border:1px solid var(--border)!important}#viewCertificateModal .modal-head{background:var(--cream)!important}#viewCertificateModal .modal-body{padding:1.2rem!important;background:linear-gradient(135deg,var(--cream2),var(--cream))!important}#viewCertificateModal .certificate-paper{position:relative}#viewCertificateModal .cert-actions{display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}#viewCertificateModal .cert-actions .btn{min-height:42px}#viewCertificateModal .cert-seal-ring{position:absolute;inset:18px;border:1px solid rgba(185,142,57,.36);border-radius:12px;pointer-events:none}#viewCertificateModal #vcTitle{font-family:Georgia,serif!important;font-weight:700!important;letter-spacing:.08em!important}#viewCertificateModal #vcMember{font-family:Georgia,serif!important}#viewCertificateModal #vcQrCode{box-shadow:0 3px 14px rgba(0,0,0,.08)}
+#viewCertificateModal .modal-head{background:var(--cream)!important}#viewCertificateModal .modal-body{padding:1.2rem!important;background:linear-gradient(135deg,var(--cream2),var(--cream))!important}#viewCertificateModal .certificate-paper{position:relative}#viewCertificateModal .cert-actions{display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}#viewCertificateModal .cert-actions .btn{min-height:42px}
+/* .modal-box max-width, #vcTitle/#vcMember/#vcQrCode typography, and .cert-seal-ring
+   position are now owned solely by #certificatePrintArea.cert-v2 below — removed here
+   to stop them fighting that block for the same properties. */
 #idCardModal .modal-box{background:var(--cream)!important;border:1px solid var(--border)!important}#idCardModal .modal-body{background:linear-gradient(135deg,var(--cream2),var(--cream))!important}
 @media print{body *{visibility:hidden!important}#certificatePrintArea,#certificatePrintArea *{visibility:visible!important}#certificatePrintArea{position:absolute!important;left:0;top:0;width:100%;padding:0!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}}
 @media(max-width:700px){#viewCertificateModal .modal-body{padding:.7rem!important}#viewCertificateModal .cert-actions{justify-content:stretch}#viewCertificateModal .cert-actions .btn{flex:1 1 180px}}
@@ -2966,12 +2917,7 @@ body {
   outline: none !important;
 }
 
-/* ── 14. CERTIFICATE ── */
-#certificatePrintArea {
-  background: linear-gradient(148deg, var(--navy) 0%, #0E1B30 100%) !important;
-  border: 1px solid rgba(184,160,106,.25) !important;
-  border-radius: 12px !important;
-}
+/* ── 14. CERTIFICATE ── background/border now owned by #certificatePrintArea.cert-v2. */
 
 /* ── 15. GALLERY ── */
 .gallery-item {
@@ -3290,7 +3236,7 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus {
 @media print {
   .navbar, footer, .wa-btn, .toast, .modal, #adminSection, #memberDash { display: none !important; }
   body { background: #fff !important; color: #000 !important; }
-  #certificatePrintArea { box-shadow: none !important; border: 2px solid var(--navy) !important; }
+  /* #certificatePrintArea print styling: see the cert-v2 @media print block. */
 }
 
 /* ── 30. REDUCED MOTION ── */
@@ -3509,72 +3455,12 @@ html:not([data-theme="dark"]) .hero {
 }
 
 
-/* ── V6 CERTIFICATE — archival document style ── */
-#viewCertificateModal .modal-box { 
-  max-width: 840px !important; 
-  border-radius: 12px !important;
-}
-#certificatePrintArea {
-  background: #FDFBF7 !important;
-  color: var(--navy) !important;
-  border: 8px solid var(--navy) !important;
-  outline: 1.5px solid var(--gold) !important;
-  outline-offset: -16px !important;
-  border-radius: 4px !important;
-  padding: 3.5rem 3rem 3rem !important;
-  position: relative !important;
-  min-height: 480px !important;
-}
-#certificatePrintArea .cert-seal-ring {
-  position: absolute !important;
-  top: 50% !important; left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  width: 180px !important; height: 180px !important;
-  border-radius: 50% !important;
-  border: 1px solid rgba(184,160,106,.08) !important;
-  pointer-events: none !important;
-}
-/* Certificate typography on white */
-[data-theme="dark"] #certificatePrintArea {
-  background: #FDFBF7 !important;
-  color: var(--navy) !important;
-}
-
-/* Override: cert title on white background */
-#vcTitle { 
-  color: var(--navy) !important; 
-  font-family: Georgia, 'Times New Roman', serif !important;
-  font-size: 1.5rem !important;
-  letter-spacing: .06em !important;
-  text-transform: uppercase !important;
-}
-#vcMember { 
-  color: var(--navy) !important;
-  font-family: Georgia, serif !important;
-  font-size: 1.25rem !important;
-}
-#vcId { color: var(--gold) !important; font-weight: 700 !important; letter-spacing: .08em !important; }
-#vcMeta { color: var(--muted) !important; font-size: .82rem !important; }
-#vcStatusBadge { 
-  background: rgba(79,143,138,.10) !important; 
-  color: var(--teal) !important;
-  border: 1px solid rgba(79,143,138,.25) !important;
-  border-radius: 999px !important;
-  font-weight: 700 !important;
-}
-#vcQrCode { 
-  background: #fff !important; 
-  padding: 8px !important; 
-  border-radius: 6px !important;
-  border: 1px solid rgba(11,31,51,.12) !important;
-}
-
-/* Header text on certificate */
-#certificatePrintArea > div:first-child {
-  color: var(--navy) !important;
-  font-family: var(--ff-display) !important;
-  font-weight: 900 !important;
-}
+/* ── V6 CERTIFICATE — archival document style ──
+   All #certificatePrintArea / #vcTitle / #vcMember / #vcId / #vcMeta /
+   #vcStatusBadge / #vcQrCode presentation now lives solely in the Phase B
+   #certificatePrintArea.cert-v2 block (below), which is the only place that
+   still needs to know about paper size, seal position, and RTL/LTR typography.
+   Removed here to stop this earlier, unscoped generation from overriding it. */
 
 /* Download button */
 .cert-actions {
@@ -3583,6 +3469,86 @@ html:not([data-theme="dark"]) .hero {
   justify-content: flex-end !important;
 }
 .cert-actions .btn { font-size: .84rem !important; }
+
+/* ── Phase B: Official certificate renderer (A4/Legal/Letter, Portrait/Landscape) ──
+   Screen size is derived in JS (applyCertificateTemplate) from the SAME PAPER_SIZES/mm
+   math as paperPageCss(), via width:<W>mm + aspect-ratio:<W>/<H> + max-width:100% —
+   so the on-screen proportions and the printed @page are always the same shape. */
+#certificatePrintAreaWrap,
+.cert-paper-wrap {
+  display: flex !important;
+  justify-content: center !important;
+  overflow-x: auto !important;
+  padding: .25rem !important;
+}
+#certificatePrintArea.cert-v2 {
+  background: #FDFBF7 !important;
+  color: var(--navy) !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+  border: 2px solid var(--navy) !important;
+  border-radius: 4px !important;
+  box-shadow: var(--shadow) !important;
+  overflow: hidden !important;
+  padding: 4.2% 4.6% !important;
+}
+#certificatePrintArea.cert-v2 .cert-border-frame {
+  position: absolute !important; inset: 10px !important;
+  border: 1.5px solid var(--gold) !important;
+  pointer-events: none !important; z-index: 1 !important;
+}
+#certificatePrintArea.cert-v2 .cert-seal-ring {
+  position: absolute !important; top: 66% !important; left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 15% !important; padding-bottom: 15% !important; height: 0 !important;
+  border-radius: 50% !important;
+  border: 2px double var(--gold) !important;
+  opacity: .55 !important; pointer-events: none !important; z-index: 1 !important;
+}
+#certificatePrintArea.cert-v2 .cert-inner {
+  position: relative !important; z-index: 2 !important;
+  height: 100% !important;
+  display: flex !important; flex-direction: column !important;
+  justify-content: space-between !important;
+  text-align: center !important;
+}
+#certificatePrintArea.cert-v2 .cert-head { display: flex !important; align-items: center !important; justify-content: center !important; gap: .6rem !important; margin-bottom: .2rem !important; }
+#certificatePrintArea.cert-v2 .cert-logo { height: 3.2em !important; object-fit: contain !important; }
+#certificatePrintArea.cert-v2 .cert-kicker { font-size: .72rem !important; letter-spacing: .16em !important; text-transform: uppercase !important; color: var(--gold) !important; font-weight: 700 !important; }
+#certificatePrintArea.cert-v2 .cert-title { font-family: Georgia, 'Times New Roman', serif !important; font-weight: 800 !important; font-size: 2rem !important; letter-spacing: .07em !important; text-transform: uppercase !important; color: var(--navy) !important; margin: .3rem 0 !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-title { font-family: var(--ff-urdu) !important; text-transform: none !important; font-size: 2.1rem !important; }
+#certificatePrintArea.cert-v2 .cert-presented-label { font-size: .82rem !important; color: var(--muted) !important; margin-top: .3rem !important; }
+#certificatePrintArea.cert-v2 .cert-member { font-family: Georgia, serif !important; font-weight: 700 !important; font-size: 1.9rem !important; color: var(--navy) !important; display: inline-block !important; padding: 0 .4rem .3rem !important; border-bottom: 1.5px solid var(--gold) !important; margin: .3rem auto .6rem !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-member { font-family: var(--ff-urdu) !important; font-size: 2rem !important; }
+#certificatePrintArea.cert-v2 .cert-body { font-size: .92rem !important; line-height: 1.7 !important; max-width: 82%; margin: .2rem auto !important; color: #3a3a3a !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-body { font-family: var(--ff-urdu) !important; font-size: 1.05rem !important; line-height: 2 !important; }
+#certificatePrintArea.cert-v2 .cert-course-row { font-weight: 700 !important; font-size: .95rem !important; color: var(--navy) !important; margin-top: .3rem !important; }
+#certificatePrintArea.cert-v2 .cert-course-row:empty { display: none !important; }
+#certificatePrintArea.cert-v2 .cert-meta-row { font-size: .78rem !important; color: var(--muted) !important; margin-top: .15rem !important; }
+#certificatePrintArea.cert-v2 .cert-bottom-grid { display: grid !important; grid-template-columns: 1fr auto 1fr !important; align-items: end !important; gap: 1rem !important; margin-top: 1rem !important; }
+#certificatePrintArea.cert-v2 .cert-sig-area { display: flex !important; gap: 1.1rem !important; justify-content: flex-start !important; flex-wrap: wrap !important; align-items: flex-end !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-sig-area { justify-content: flex-end !important; }
+#certificatePrintArea.cert-v2 .cert-sig-block { text-align: center !important; min-width: 80px !important; }
+#certificatePrintArea.cert-v2 .cert-sig-block img { height: 2em !important; object-fit: contain !important; display: block !important; margin: 0 auto .2rem !important; }
+#certificatePrintArea.cert-v2 .cert-sig-block div { font-size: .62rem !important; color: var(--muted) !important; border-top: 1px solid var(--line, #ccc) !important; padding-top: .15rem !important; white-space: nowrap !important; }
+#certificatePrintArea.cert-v2 .cert-seal-col { display: flex !important; justify-content: center !important; }
+#certificatePrintArea.cert-v2 .cert-seal { height: 4.6em !important; width: 4.6em !important; object-fit: contain !important; }
+#certificatePrintArea.cert-v2 .cert-verify-area { display: flex !important; flex-direction: column !important; align-items: flex-end !important; gap: .3rem !important; text-align: right !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-verify-area { align-items: flex-start !important; text-align: left !important; }
+#certificatePrintArea.cert-v2 .cert-qr { background: #fff !important; padding: 6px !important; border-radius: 6px !important; border: 1px solid rgba(11,31,51,.12) !important; }
+#certificatePrintArea.cert-v2 .cert-verify-text { font-size: .66rem !important; color: var(--muted) !important; line-height: 1.5 !important; }
+#certificatePrintArea.cert-v2 .cert-verify-text b { color: var(--gold) !important; letter-spacing: .04em !important; }
+#certificatePrintArea.cert-v2 .cert-status-badge { position: absolute !important; top: 4.5% !important; right: 4.5% !important; z-index: 3 !important; padding: .25rem .8rem !important; border-radius: 999px !important; font-size: .68rem !important; font-weight: 700 !important; background: rgba(79,143,138,.10) !important; color: var(--teal) !important; border: 1px solid rgba(79,143,138,.25) !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-status-badge { right: auto !important; left: 4.5% !important; }
+@media (max-width: 700px) {
+  #certificatePrintArea.cert-v2 .cert-title { font-size: 1.3rem !important; }
+  #certificatePrintArea.cert-v2 .cert-member { font-size: 1.25rem !important; }
+  #certificatePrintArea.cert-v2 .cert-bottom-grid { grid-template-columns: 1fr !important; justify-items: center !important; text-align: center !important; }
+  #certificatePrintArea.cert-v2 .cert-verify-area { align-items: center !important; text-align: center !important; }
+}
+@media print {
+  #certificatePrintArea.cert-v2 { box-shadow: none !important; max-width: none !important; }
+}
 
 /* ── V6 MEMBER CERT LIST ── */
 #myCertificatesList > div {
@@ -5097,6 +5063,7 @@ select.form-input {
                 <img id="ctplPvLogo" style="display:none;height:40px;object-fit:contain;margin:0 auto .4rem;" />
                 <div id="ctplPvTitle" style="font-weight:700;font-size:1.1rem;margin-bottom:.25rem;">Certificate Title</div>
                 <div id="ctplPvMember" style="font-size:.85rem;color:rgba(255,255,255,.85);margin-bottom:.25rem;">Recipient Name · MEM-0001</div>
+                <div id="ctplPvBody" style="font-size:.7rem;color:rgba(255,255,255,.75);margin-bottom:.4rem;">has successfully completed the requirements of the program.</div>
                 <div id="ctplPvMeta" style="font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:1rem;">Type: Sample · Issued: 2026-01-01</div>
                 <div id="ctplPvQr" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;width:56px;height:56px;"></div>
                 <div id="ctplPvSig" style="display:flex;justify-content:center;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
@@ -7214,25 +7181,45 @@ select.form-input {
 
 <!-- View/Verify Certificate Modal -->
 <div class="modal" id="viewCertificateModal" role="dialog" aria-modal="true" aria-labelledby="viewCertTitle">
-  <div class="modal-box" style="max-width:380px;">
+  <div class="modal-box" style="max-width:1080px;">
     <div class="modal-head">
       <h3 id="viewCertTitle">Certificate</h3>
       <button class="modal-close" onclick="closeModal('viewCertificateModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
       <div class="cert-actions"><button class="btn btn-outline" type="button" onclick="downloadCertificateAsPDF()"><i class="fas fa-file-pdf"></i> Download / Save PDF</button></div>
-      <div id="certificatePrintArea" class="certificate-paper" style="background:linear-gradient(135deg,var(--navy),#0d1b3d);border-radius:16px;padding:1.5rem;color:#fff;text-align:center;position:relative;overflow:hidden;">
+      <div id="certificatePrintAreaWrap" class="cert-paper-wrap">
+      <div id="certificatePrintArea" class="certificate-paper cert-v2">
+        <div class="cert-border-frame"></div>
         <div class="cert-seal-ring"></div>
-        <img id="vcLogo" style="display:none;height:40px;object-fit:contain;margin:0 auto .4rem;" alt="" />
-        <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-bottom:1rem;">Certificate Verification</div>
-        <div id="vcTitle" style="font-weight:700;font-size:1.1rem;margin-bottom:.25rem;">—</div>
-        <div id="vcId" style="color:var(--gold);font-size:.85rem;letter-spacing:1px;margin-bottom:.5rem;">—</div>
-        <div id="vcMember" style="font-size:.85rem;color:rgba(255,255,255,.85);margin-bottom:.25rem;">—</div>
-        <div id="vcMeta" style="font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:1rem;">—</div>
-        <div id="vcStatusBadge" style="display:inline-block;padding:.3rem .9rem;border-radius:20px;font-size:.8rem;font-weight:700;margin-bottom:1rem;">—</div>
-        <div id="vcQrCode" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;"></div>
-        <img id="vcSeal" style="display:none;height:52px;width:52px;object-fit:contain;margin:.6rem auto 0;" alt="Official Seal" />
-        <div style="font-size:.65rem;color:var(--muted);margin-top:.75rem;">Official SHAOOR verification record · Scan QR to verify</div>
+        <div class="cert-inner">
+          <div class="cert-head">
+            <img id="vcLogo" class="cert-logo" style="display:none;" alt="" />
+            <div class="cert-kicker">Official Certificate · Certificate Verification</div>
+          </div>
+          <div id="vcTitle" class="cert-title">—</div>
+          <div class="cert-presented-label">This certificate is proudly presented to</div>
+          <div id="vcMember" class="cert-member">—</div>
+          <div id="vcBody" class="cert-body">—</div>
+          <div id="vcCourseRow" class="cert-course-row"></div>
+          <div id="vcMeta" class="cert-meta-row">—</div>
+          <div class="cert-bottom-grid">
+            <div id="vcSignatures" class="cert-sig-area"></div>
+            <div class="cert-seal-col">
+              <img id="vcSeal" class="cert-seal" style="display:none;" alt="Official Seal" />
+            </div>
+            <div class="cert-verify-area">
+              <div id="vcQrCode" class="cert-qr"></div>
+              <div class="cert-verify-text">
+                <div>Verification Code: <b id="vcId">—</b></div>
+                <div id="vcIssueDate"></div>
+                <div id="vcExpiryDate"></div>
+              </div>
+            </div>
+          </div>
+          <div id="vcStatusBadge" class="cert-status-badge">—</div>
+        </div>
+      </div>
       </div>
       </div>
     </div>
@@ -12275,8 +12262,8 @@ select.form-input {
     popup.document.close();
   }
 
-  const CERT_FIELD_IDS = { title: 'vcTitle', member: 'vcMember', meta: 'vcMeta', qr: 'vcQrCode', signatures: 'vcSignatures', logo: 'vcLogo', seal: 'vcSeal' };
-  const CERT_PREVIEW_FIELD_IDS = { title: 'ctplPvTitle', member: 'ctplPvMember', meta: 'ctplPvMeta', qr: 'ctplPvQr', signatures: 'ctplPvSig', logo: 'ctplPvLogo', seal: 'ctplPvSeal' };
+  const CERT_FIELD_IDS = { title: 'vcTitle', member: 'vcMember', body: 'vcBody', meta: 'vcMeta', qr: 'vcQrCode', signatures: 'vcSignatures', logo: 'vcLogo', seal: 'vcSeal' };
+  const CERT_PREVIEW_FIELD_IDS = { title: 'ctplPvTitle', member: 'ctplPvMember', body: 'ctplPvBody', meta: 'ctplPvMeta', qr: 'ctplPvQr', signatures: 'ctplPvSig', logo: 'ctplPvLogo', seal: 'ctplPvSeal' };
 
   // ── Shared paper-size architecture, used by BOTH document print/Word export and certificate
   // PDF export. Standard sizes are real mm dimensions, so @page renders true A4/Legal/Letter —
@@ -12291,8 +12278,8 @@ select.form-input {
   }
   // Config keys an admin can control from the Template Editor. Kept as the single list both the
   // structured editor controls and the JSON textarea serialize against.
-  const CERT_FIELD_KEYS = ['title', 'member', 'meta', 'qr', 'signatures', 'logo', 'seal'];
-  const CERT_FIELD_LABELS = { title: 'Title', member: 'Member / Recipient Name', meta: 'Metadata', qr: 'QR Code', signatures: 'Signature Area', logo: 'Logo', seal: 'Official Seal' };
+  const CERT_FIELD_KEYS = ['title', 'member', 'body', 'meta', 'qr', 'signatures', 'logo', 'seal'];
+  const CERT_FIELD_LABELS = { title: 'Title', member: 'Member / Recipient Name', body: 'Certificate Statement', meta: 'Metadata', qr: 'QR Code', signatures: 'Signature Area', logo: 'Logo', seal: 'Official Seal' };
 
   // Generalized so the same layout logic drives both the real certificate (idMap=CERT_FIELD_IDS)
   // and the Template Editor's live preview (idMap=CERT_PREVIEW_FIELD_IDS) — no duplicated logic.
@@ -12352,12 +12339,26 @@ select.form-input {
       }
       if (config.text_color) area.style.color = config.text_color;
       if (config.accent_color) area.style.setProperty('--gold', config.accent_color);
-      // Certificate size/orientation — only overridden where a value was actually saved,
-      // so templates with nothing set keep the existing default layout untouched.
-      if (config.width) area.style.width = /^\d+$/.test(String(config.width)) ? config.width + 'px' : config.width;
-      if (config.orientation === 'portrait') area.style.aspectRatio = '3/4';
-      else if (config.orientation === 'landscape') area.style.aspectRatio = '4/3';
     }
+    // Certificate size/orientation — driven by the SAME PAPER_SIZES mm table and swap logic
+    // as paperPageCss(), so the on-screen shape and the printed @page always agree exactly.
+    // 'custom' paper_size keeps the legacy pixel/CSS-length width field; anything else (or no
+    // config at all) defaults to real A4 landscape, matching the Template Editor's own default.
+    const paperSize = (config && config.paper_size) || 'a4';
+    const orientation = (config && config.orientation) || 'landscape';
+    if (paperSize === 'custom' && config && config.width) {
+      area.style.width = /^\d+$/.test(String(config.width)) ? config.width + 'px' : config.width;
+      area.style.aspectRatio = '';
+    } else {
+      const dims = PAPER_SIZES[paperSize] || PAPER_SIZES.a4;
+      let w = dims.w, h = dims.h;
+      if (orientation === 'landscape') { const t = w; w = h; h = t; }
+      area.style.aspectRatio = w + ' / ' + h;
+      // Only the real certificate is sized to true mm (the Template Editor's preview keeps its
+      // own small fixed CSS width and just adopts the matching aspect ratio).
+      if (areaId === 'certificatePrintArea') area.style.width = w + 'mm';
+    }
+    if (areaId === 'certificatePrintArea') { area.style.maxWidth = '100%'; area.style.height = 'auto'; }
     // Language — existing templates saved before this field existed have no config.language,
     // so they safely default to English/LTR (same fallback pattern as the Document system).
     const isUrCert = config && config.language === 'ur';
@@ -12378,12 +12379,12 @@ select.form-input {
 
     let sigHolder = document.getElementById(idMap.signatures);
     if (!sigHolder && areaId === 'certificatePrintArea') {
+      // Fallback only — the real certificate markup already defines #vcSignatures.
       sigHolder = document.createElement('div');
       sigHolder.id = idMap.signatures;
-      sigHolder.style.cssText = 'display:flex;justify-content:center;gap:1.2rem;margin-top:1rem;flex-wrap:wrap;';
       area.appendChild(sigHolder);
     }
-    if (sigHolder && areaId === 'certificatePrintArea') sigHolder.innerHTML = '';
+    if (sigHolder && areaId === 'certificatePrintArea') { sigHolder.innerHTML = ''; sigHolder.style.cssText = 'display:flex;justify-content:space-between;gap:1.1rem;flex-wrap:wrap;width:100%;'; }
 
     // Official seal — a distinct authentication mark, kept in its own field (never merged into
     // signatures, never substituting the logo). Sourced from brand.seal_url; the template only
@@ -12396,23 +12397,38 @@ select.form-input {
 
     if (!brand || !sigHolder || areaId !== 'certificatePrintArea') return;
     const labels = brand.signature_labels || {};
+    // Default left/right split: primary authority (founder/president) on the left,
+    // society/chapter/course administrator on the right — per the certificate spec.
+    // A custom brand.signature_order is still honored for ORDER; grouping (left vs right)
+    // is decided by LEFT_KEYS, so any admin-added key not in that list lands on the right.
     const order = (brand.signature_order && brand.signature_order.length) ? brand.signature_order
-      : ['founder', 'president', 'society', 'chapter'];
+      : ['founder', 'president', 'society', 'chapter', 'course_admin'];
     const urlMap = {
       founder: brand.founder_signature_url,
       president: brand.president_signature_url,
       society: brand.society_signature_url,
-      chapter: brand.chapter_signature_url
+      chapter: brand.chapter_signature_url,
+      course_admin: brand.course_admin_signature_url
     };
+    const defaultLabels = { founder: 'Founder', president: 'President', society: 'Society', chapter: 'Chapter', course_admin: 'Course Administrator' };
+    const LEFT_KEYS = ['founder', 'president'];
+    const leftWrap = document.createElement('div');
+    leftWrap.className = 'cert-sig-group cert-sig-left';
+    leftWrap.style.cssText = 'display:flex;gap:1.1rem;flex-wrap:wrap;';
+    const rightWrap = document.createElement('div');
+    rightWrap.className = 'cert-sig-group cert-sig-right';
+    rightWrap.style.cssText = 'display:flex;gap:1.1rem;flex-wrap:wrap;';
+    sigHolder.appendChild(leftWrap);
+    sigHolder.appendChild(rightWrap);
+    // Only signatures that actually have an uploaded URL are rendered.
     order.forEach(key => {
       const url = urlMap[key];
       if (!url) return;
-      const label = labels[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+      const label = labels[key] || defaultLabels[key] || (key.charAt(0).toUpperCase() + key.slice(1));
       const block = document.createElement('div');
-      block.style.cssText = 'text-align:center;';
-      block.innerHTML = '<img src="' + url + '" style="height:36px;object-fit:contain;display:block;margin:0 auto .2rem;filter:brightness(0) invert(1);" />' +
-        '<div style="font-size:.65rem;color:rgba(255,255,255,.7);border-top:1px solid rgba(255,255,255,.35);padding-top:.15rem;">' + sanitize(label) + '</div>';
-      sigHolder.appendChild(block);
+      block.className = 'cert-sig-block';
+      block.innerHTML = '<img src="' + url + '" alt="" /><div>' + sanitize(label) + '</div>';
+      (LEFT_KEYS.indexOf(key) !== -1 ? leftWrap : rightWrap).appendChild(block);
     });
   }
 
@@ -12423,16 +12439,55 @@ select.form-input {
      `token` is the caller's active-request token (see _certRenderToken below) — if a newer
      certificate view has started by the time our async work finishes, we discard our result
      instead of overwriting whatever the newer view already rendered. ── */
+  // Professional default certificate statement, used only when certificates.certificate_body
+  // is empty. Kept language-aware (English/Urdu) so it always matches the template's own
+  // language/direction rather than mixing scripts on one certificate.
+  function defaultCertificateBody(c, isUrCert) {
+    if (isUrCert) {
+      return 'مندرجہ بالا شخص نے ' + (c.program_name || c.certificate_type || 'اس پروگرام') +
+        ' کامیابی سے مکمل کیا اور مقررہ معیار پر پورا اترے، جس پر یہ سرٹیفکیٹ جاری کیا جاتا ہے۔';
+    }
+    return 'has successfully completed the requirements of ' + (c.program_name || c.certificate_type || 'this program') +
+      ' and is hereby awarded this certificate in recognition of that achievement.';
+  }
+
   async function renderCertificateView(c, prof, token) {
     if (token !== _certRenderToken) return; // a newer certificate view has already started
+
+    // Resolve template + brand + the actual Society/Chapter/Course names first, so every
+    // field (including the language-aware body statement) is populated in one consistent pass.
+    const [{ data: brand }, tmplRes, socRes, chapRes, courseRes] = await Promise.all([
+      sb.from('brand_settings').select('*').limit(1).maybeSingle(),
+      c.template_id ? sb.from('certificate_templates').select('config').eq('id', c.template_id).maybeSingle() : Promise.resolve({ data: null }),
+      c.society_id ? sb.from('societies').select('name').eq('id', c.society_id).maybeSingle() : Promise.resolve({ data: null }),
+      c.chapter_id ? sb.from('chapters').select('name').eq('id', c.chapter_id).maybeSingle() : Promise.resolve({ data: null }),
+      c.course_id ? sb.from('courses').select('title').eq('id', c.course_id).maybeSingle() : Promise.resolve({ data: null })
+    ]);
+    if (token !== _certRenderToken) return; // stale by the time everything resolved — discard
+    const templateConfig = tmplRes && tmplRes.data ? tmplRes.data.config : null;
+    const isUrCert = !!(templateConfig && templateConfig.language === 'ur');
+
     document.getElementById('vcTitle').textContent = c.certificate_title;
     document.getElementById('vcId').textContent = c.certificate_id;
     document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + (prof.member_id || '')) : '—';
-    let metaText = 'Type: ' + c.certificate_type + ' · Issued: ' + c.issue_date + (c.expiry_date ? ' · Expires: ' + c.expiry_date : '');
-    if (c.grade) metaText += ' · Grade: ' + c.grade;
-    if (c.duration) metaText += ' · Duration: ' + c.duration;
-    if (c.completion_date) metaText += ' · Completed: ' + c.completion_date;
+    document.getElementById('vcBody').textContent = (c.certificate_body && c.certificate_body.trim()) || defaultCertificateBody(c, isUrCert);
+
+    // Course / program + Society / Chapter, resolved from the actual existing data model
+    // (no invented relationships) — only shown when the certificate actually has them.
+    const courseTitle = (courseRes && courseRes.data && courseRes.data.title) || c.program_name || '';
+    const orgBits = [];
+    if (socRes && socRes.data && socRes.data.name) orgBits.push(socRes.data.name);
+    if (chapRes && chapRes.data && chapRes.data.name) orgBits.push(chapRes.data.name);
+    const courseRowEl = document.getElementById('vcCourseRow');
+    courseRowEl.textContent = [courseTitle, orgBits.join(isUrCert ? ' — ' : ' · ')].filter(Boolean).join(isUrCert ? ' · ' : ' · ');
+
+    let metaText = '';
+    if (c.grade) metaText += (isUrCert ? 'گریڈ: ' : 'Grade: ') + c.grade;
+    if (c.duration) metaText += (metaText ? ' · ' : '') + (isUrCert ? 'دورانیہ: ' : 'Duration: ') + c.duration;
+    if (c.completion_date) metaText += (metaText ? ' · ' : '') + (isUrCert ? 'تکمیل: ' : 'Completed: ') + c.completion_date;
     document.getElementById('vcMeta').textContent = metaText;
+    document.getElementById('vcIssueDate').textContent = (isUrCert ? 'اجراء: ' : 'Issued: ') + c.issue_date;
+    document.getElementById('vcExpiryDate').textContent = c.expiry_date ? ((isUrCert ? 'میعاد: ' : 'Expires: ') + c.expiry_date) : '';
 
     const sc = certStatusColor(c.status);
     const badge = document.getElementById('vcStatusBadge');
@@ -12443,15 +12498,6 @@ select.form-input {
     const verifyUrl = c.qr_code_data || (window.location.origin + window.location.pathname + '?verify_cert=' + encodeURIComponent(c.certificate_id));
     renderCertQR('vcQrCode', verifyUrl);
 
-    // Apply template design (if any) and signature blocks (from brand_settings)
-    const { data: brand } = await sb.from('brand_settings').select('*').limit(1).maybeSingle();
-    if (token !== _certRenderToken) return; // stale by the time brand_settings resolved — discard
-    let templateConfig = null;
-    if (c.template_id) {
-      const { data: tmpl } = await sb.from('certificate_templates').select('config').eq('id', c.template_id).maybeSingle();
-      templateConfig = tmpl ? tmpl.config : null;
-    }
-    if (token !== _certRenderToken) return; // stale by the time the template resolved — discard
     applyCertificateTemplate(templateConfig, brand);
 
     openModal('viewCertificateModal');
@@ -12462,7 +12508,7 @@ select.form-input {
     const myToken = ++_certRenderToken;
     const { data: c, error } = await sb
       .from('certificates')
-      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name')
+      .select('certificate_id, member_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name, society_id, chapter_id, certificate_body')
       .eq('id', id)
       .single();
 
