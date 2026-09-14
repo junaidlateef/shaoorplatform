@@ -1573,9 +1573,15 @@ footer{background:#0B1224!important}
 
 /* Digital ID */
 #idCardModal .modal-box{max-width:430px!important;border-radius:18px!important}
-#idCardModal .modal-body > div{background:linear-gradient(145deg,var(--navy),#1E385A)!important;border:1px solid rgba(200,169,107,.35)!important;box-shadow:0 18px 42px rgba(11,31,51,.26)!important}
+/* Card canvas keeps its own gold background (inline, or template-driven via applyCardConfig) —
+   theme CSS only adds the outer modal frame/shadow, never overrides the card's own bg (Part 9/11). */
+#idCardModal .modal-body > #idCardFront{border:1px solid rgba(36,26,6,.25)!important;box-shadow:0 18px 42px rgba(11,31,51,.26)!important}
 #idCardModal .modal-body [id="idName"]{font-size:1.15rem!important}
-#idCardModal .modal-body [id="idMemberId"]{color:var(--gold3)!important}
+.crtpl-section-h{margin:1rem 0 .4rem;padding-top:.6rem;border-top:1px dashed var(--border);font-size:.85rem;color:var(--gold3);}
+.crtpl-field-table{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.5rem;}
+.crtpl-field-row{display:grid;grid-template-columns:1.1fr .6fr .9fr 1fr .9fr;gap:.4rem;align-items:center;font-size:.72rem;}
+.crtpl-field-row label{font-size:.72rem;display:flex;align-items:center;gap:.2rem;white-space:nowrap;}
+.crtpl-field-row input,.crtpl-field-row select{font-size:.72rem;padding:.3rem;}
 
 /* Certificate viewer — layout/typography now owned entirely by the Phase B
    #certificatePrintArea.cert-v2 block below; legacy rules targeting the old
@@ -2411,7 +2417,7 @@ body{background:var(--cream);color:var(--ink)}
    solely by #certificatePrintArea.cert-v2 below — removed here to stop them fighting
    that block for the same properties. (The old .cert-seal-ring decorative circle has
    been removed entirely — see the cert-v2 block.) */
-#idCardModal .modal-box{background:var(--cream)!important;border:1px solid var(--border)!important}#idCardModal .modal-body{background:linear-gradient(135deg,var(--cream2),var(--cream))!important}
+#idCardModal .modal-box{background:var(--cream)!important;border:1px solid var(--border)!important}
 /* Certificate print isolation: the @page size itself is injected dynamically into
    #certPageSizeStyle (see applyCertificateTemplate) so it always matches the certificate's
    actual selected paper size/orientation — without that, the browser falls back to its own
@@ -5096,46 +5102,132 @@ select.form-input {
 
       <!-- Card Template Modal -->
       <div class="modal" id="cardTemplateModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width:760px;">
           <button class="modal-close" onclick="closeModal('cardTemplateModal')">&times;</button>
           <h3 style="margin-bottom:1rem;">Membership Card Template</h3>
           <form class="modal-form" id="cardTemplateForm">
             <input type="hidden" id="crtplId" />
-            <div class="form-group"><label for="crtplName">Name</label><input type="text" id="crtplName" class="form-input" required /></div>
+
+            <!-- SECTION 1 — GENERAL -->
+            <h4 class="crtpl-section-h">1 · General</h4>
+            <div class="form-group"><label for="crtplName">Template Name</label><input type="text" id="crtplName" class="form-input" required /></div>
             <div class="form-group"><label for="crtplDescription">Description</label><textarea id="crtplDescription" class="form-input" rows="2"></textarea></div>
-            <div class="form-group"><label for="crtplFrontUrl">Front Design Image URL</label><input type="url" id="crtplFrontUrl" class="form-input" placeholder="https://…" /></div>
-            <div class="form-group"><label for="crtplFrontFile">…or Upload Front Image</label><input type="file" id="crtplFrontFile" class="form-input" accept="image/*" /></div>
-            <div class="form-group"><label for="crtplBackUrl">Back Design Image URL</label><input type="url" id="crtplBackUrl" class="form-input" placeholder="https://…" /></div>
-            <div class="form-group"><label for="crtplBackFile">…or Upload Back Image</label><input type="file" id="crtplBackFile" class="form-input" accept="image/*" /><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">If you pick a file, it's uploaded and replaces the URL above on save.</div></div>
-            <div class="form-group"><label><input type="checkbox" id="crtplIsDefault" /> Set as Default</label></div>
-            <div class="form-group"><label><input type="checkbox" id="crtplIsActive" checked /> Active</label></div>
-            <h4 style="margin:.75rem 0 .5rem;">Design Controls (optional)</h4>
             <div class="form-group" style="display:flex;gap:.6rem;">
-              <div style="flex:1;"><label for="crtplOrientation">Orientation</label>
-                <select id="crtplOrientation" class="form-input">
-                  <option value="">Default</option>
-                  <option value="landscape">Landscape</option>
-                  <option value="portrait">Portrait</option>
-                </select>
-              </div>
+              <div style="flex:1;"><label><input type="checkbox" id="crtplIsDefault" /> Set as Default</label></div>
+              <div style="flex:1;"><label><input type="checkbox" id="crtplIsActive" checked /> Active</label></div>
+            </div>
+            <div class="form-group" style="display:flex;gap:.6rem;">
               <div style="flex:1;"><label for="crtplLanguage">Language</label>
                 <select id="crtplLanguage" class="form-input">
                   <option value="en">English</option>
                   <option value="ur">اردو (Urdu)</option>
                 </select>
               </div>
+              <div style="flex:1;"><label for="crtplOrientation">Card Orientation</label>
+                <select id="crtplOrientation" class="form-input">
+                  <option value="">Default (Landscape)</option>
+                  <option value="landscape">Landscape</option>
+                  <option value="portrait">Portrait</option>
+                </select>
+              </div>
             </div>
+            <div class="form-group" style="font-size:.72rem;color:var(--muted);">Card Format: standard CR80 (85.6mm × 54mm) — used by print/PDF regardless of screen preview size.</div>
+
+            <!-- SECTION 2 — FRONT DESIGN -->
+            <h4 class="crtpl-section-h">2 · Front Design</h4>
+            <div class="form-group"><label for="crtplFrontUrl">Front Background Image URL</label><input type="url" id="crtplFrontUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label for="crtplFrontFile">…or Upload Front Background Image</label><input type="file" id="crtplFrontFile" class="form-input" accept="image/*" /></div>
             <div class="form-group" style="display:flex;gap:.6rem;">
-              <div style="flex:1;"><label for="crtplBgColor">Background Color</label><input type="text" id="crtplBgColor" class="form-input" placeholder="#0d1b3d" /></div>
-              <div style="flex:1;"><label for="crtplBorderColor">Border/Accent Color</label><input type="text" id="crtplBorderColor" class="form-input" placeholder="#c9973b" /></div>
-              <div style="flex:1;"><label for="crtplTextColor">Text Color</label><input type="text" id="crtplTextColor" class="form-input" placeholder="#ffffff" /></div>
+              <div style="flex:1;"><label for="crtplBgColor">Front Background Color</label><input type="text" id="crtplBgColor" class="form-input" placeholder="gold gradient (default)" /></div>
+              <div style="flex:1;"><label for="crtplBorderColor">Front Accent / Border Color</label><input type="text" id="crtplBorderColor" class="form-input" placeholder="#a9761f" /></div>
+              <div style="flex:1;"><label for="crtplTextColor">Front Text Color</label><input type="text" id="crtplTextColor" class="form-input" placeholder="#241a06" /></div>
             </div>
+
+            <!-- SECTION 3 — BACK DESIGN -->
+            <h4 class="crtpl-section-h">3 · Back Design</h4>
+            <div class="form-group"><label for="crtplBackUrl">Back Design Image URL</label><input type="url" id="crtplBackUrl" class="form-input" placeholder="https://…" /></div>
+            <div class="form-group"><label for="crtplBackFile">…or Upload Back Image</label><input type="file" id="crtplBackFile" class="form-input" accept="image/*" /><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">If you pick a file, it's uploaded and replaces the URL above on save.</div></div>
+            <div class="form-group" style="display:flex;gap:.6rem;">
+              <div style="flex:1;"><label for="crtplBackBgColor">Back Background Color</label><input type="text" id="crtplBackBgColor" class="form-input" placeholder="optional" /></div>
+              <div style="flex:1;"><label for="crtplBackTextColor">Back Text Color</label><input type="text" id="crtplBackTextColor" class="form-input" placeholder="optional" /></div>
+            </div>
+
+            <!-- SECTION 4 — BRANDING -->
+            <h4 class="crtpl-section-h">4 · Branding</h4>
+            <div class="form-group" style="font-size:.72rem;color:var(--muted);">Logo, seal and founder signature always come from Branding settings — not uploaded here.</div>
             <div class="form-group" style="display:flex;gap:.6rem;">
               <div style="flex:1;"><label for="crtplLogoSize">Logo Size (px)</label><input type="number" id="crtplLogoSize" class="form-input" min="24" max="120" /></div>
-              <div style="flex:1;"><label for="crtplPhotoSize">Member Photo Size (px)</label><input type="number" id="crtplPhotoSize" class="form-input" min="40" max="160" /></div>
-              <div style="flex:1;"><label for="crtplQrSize">QR Size (px)</label><input type="number" id="crtplQrSize" class="form-input" min="60" max="220" /></div>
+              <div style="flex:1;"><label for="crtplBrandAlign">Header Alignment</label>
+                <select id="crtplBrandAlign" class="form-input">
+                  <option value="start">Left</option>
+                  <option value="center">Center</option>
+                  <option value="end">Right</option>
+                </select>
+              </div>
             </div>
-            <div class="form-group"><label><input type="checkbox" id="crtplSealEnabled" /> Show Official Seal (from Branding)</label></div>
+
+            <!-- SECTION 5 — MEMBER PHOTO -->
+            <h4 class="crtpl-section-h">5 · Member Photo</h4>
+            <div class="form-group" style="display:flex;gap:.6rem;align-items:center;">
+              <label style="flex:0 0 auto;"><input type="checkbox" id="crtplPhotoHidden" /> Hide Photo</label>
+              <div style="flex:1;"><label for="crtplPhotoSize">Size (px)</label><input type="number" id="crtplPhotoSize" class="form-input" min="40" max="160" /></div>
+              <div style="flex:1;"><label for="crtplPhotoFit">Object Fit</label>
+                <select id="crtplPhotoFit" class="form-input"><option value="cover">Cover</option><option value="contain">Contain</option></select>
+              </div>
+            </div>
+
+            <!-- SECTION 6 — MEMBER IDENTITY -->
+            <h4 class="crtpl-section-h">6 · Member Identity</h4>
+            <div id="crtplIdentityFields" class="crtpl-field-table"></div>
+
+            <!-- SECTION 7 — ORGANIZATION -->
+            <h4 class="crtpl-section-h">7 · Organization</h4>
+            <div id="crtplOrgFields" class="crtpl-field-table"></div>
+
+            <!-- SECTION 8 — QR VERIFICATION -->
+            <h4 class="crtpl-section-h">8 · QR Verification</h4>
+            <div class="form-group" style="display:flex;gap:.6rem;align-items:center;">
+              <label style="flex:0 0 auto;"><input type="checkbox" id="crtplQrHidden" /> Hide QR</label>
+              <div style="flex:1;"><label for="crtplQrSize">QR Size (px)</label><input type="number" id="crtplQrSize" class="form-input" min="30" max="120" /></div>
+            </div>
+            <div class="form-group" style="font-size:.72rem;color:var(--muted);">QR always encodes the existing verification link (?verify=MEMBER_ID) — position is fixed bottom-right next to the seal.</div>
+
+            <!-- SECTION 9 — OFFICIAL SEAL -->
+            <h4 class="crtpl-section-h">9 · Official Seal</h4>
+            <div class="form-group" style="display:flex;gap:.6rem;align-items:center;">
+              <label style="flex:0 0 auto;"><input type="checkbox" id="crtplSealEnabled" /> Show Official Seal (from Branding)</label>
+              <div style="flex:1;"><label for="crtplSealSize">Seal Size (px)</label><input type="number" id="crtplSealSize" class="form-input" min="24" max="100" /></div>
+            </div>
+            <div class="form-group" style="font-size:.72rem;color:var(--muted);">Seal is centered in the footer, above the Verification Code — sourced from brand.seal_url only.</div>
+
+            <!-- SECTION 10 — FOUNDER SIGNATURE -->
+            <h4 class="crtpl-section-h">10 · Founder Signature</h4>
+            <div class="form-group" style="display:flex;gap:.6rem;align-items:center;">
+              <label style="flex:0 0 auto;"><input type="checkbox" id="crtplSigHidden" /> Hide Signature</label>
+              <div style="flex:1;"><label for="crtplSigSize">Signature Width (px)</label><input type="number" id="crtplSigSize" class="form-input" min="24" max="100" /></div>
+            </div>
+            <div class="form-group" style="font-size:.72rem;color:var(--muted);">Small, fixed bottom-left — sourced from the existing Branding Founder Signature only.</div>
+
+            <!-- SECTION 11 — TYPOGRAPHY -->
+            <h4 class="crtpl-section-h">11 · Typography</h4>
+            <div class="form-group" style="display:flex;gap:.6rem;">
+              <div style="flex:1;"><label for="crtplFontFamily">English Font (CSS family)</label><input type="text" id="crtplFontFamily" class="form-input" placeholder="var(--ff-body)" /></div>
+              <div style="flex:1;"><label for="crtplUrduFontFamily">Urdu Font (CSS family)</label><input type="text" id="crtplUrduFontFamily" class="form-input" placeholder="var(--ff-urdu) — Noto Nastaliq Urdu" /></div>
+            </div>
+
+            <!-- SECTION 12 — DIVIDERS -->
+            <h4 class="crtpl-section-h">12 · Dividers</h4>
+            <div class="form-group" style="display:flex;gap:.6rem;align-items:center;">
+              <label style="flex:0 0 auto;"><input type="checkbox" id="crtplDividersHidden" /> Hide Dividers</label>
+              <div style="flex:1;"><label for="crtplDividerColor">Line Color</label><input type="text" id="crtplDividerColor" class="form-input" placeholder="rgba(36,26,6,.35)" /></div>
+              <div style="flex:1;"><label for="crtplDividerThickness">Thickness (px)</label><input type="number" id="crtplDividerThickness" class="form-input" min="1" max="4" /></div>
+            </div>
+
+            <!-- SECTION 13 — PREVIEW -->
+            <h4 class="crtpl-section-h">13 · Preview</h4>
+            <div class="form-group" style="font-size:.78rem;color:var(--muted);">Preview uses the exact same canonical renderer (renderIdCard) as the member view, public verification, print and PDF — what you see here is what everyone else sees.</div>
+            <div class="form-group"><button type="button" class="btn btn-outline" style="justify-content:center;width:100%;" onclick="previewCardTemplateFromForm()"><i class="fas fa-eye"></i> Live Preview (Front / Back)</button></div>
+
             <button type="submit" class="btn btn-gold" style="justify-content:center;">Save Template</button>
           </form>
         </div>
@@ -7054,21 +7146,58 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('idCardModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <div id="idCardFront" class="id-card-face" style="background:linear-gradient(135deg,var(--navy),#0d1b3d);border-radius:16px;padding:1.5rem;color:#fff;text-align:center;position:relative;overflow:hidden;">
-        <img id="idLogoImg" src="" alt="" style="display:none;width:48px;height:48px;object-fit:contain;margin:0 auto .4rem;" />
-        <div id="idOrgName" style="font-family:var(--ff-display);font-weight:900;letter-spacing:1px;color:var(--gold);font-size:1rem;margin-bottom:.25rem;">SHAOOR</div>
-        <div style="font-size:.7rem;color:rgba(255,255,255,.6);margin-bottom:.75rem;">Arts &amp; Culture Organization</div>
-        <img id="idAvatarImg" src="" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:none;margin:0 auto .75rem;" />
-        <div id="idAvatarPlaceholder" style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto .75rem;"><i class="fas fa-user"></i></div>
-        <div id="idName" style="font-weight:700;font-size:1.05rem;">—</div>
-        <div id="idMemberId" style="color:var(--gold);font-size:.85rem;letter-spacing:1px;margin-bottom:.25rem;direction:ltr;unicode-bidi:embed;">—</div>
-        <div id="idRole" style="font-size:.75rem;color:rgba(255,255,255,.7);text-transform:capitalize;margin-bottom:.5rem;">—</div>
-        <div id="idSociety" style="font-size:.72rem;color:rgba(255,255,255,.65);margin-bottom:.15rem;"></div>
-        <div id="idChapter" style="font-size:.72rem;color:rgba(255,255,255,.65);margin-bottom:.15rem;"></div>
-        <div id="idProvince" style="font-size:.72rem;color:rgba(255,255,255,.65);margin-bottom:.5rem;"></div>
-        <img id="idSealImg" src="" alt="" style="display:none;width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid rgba(200,169,107,.55);margin:0 auto .5rem;" />
-        <div id="idQrCode" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;"></div>
-        <div style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:.75rem;">Scan to verify membership</div>
+      <!-- id-card-face: default GOLD canvas covers the entire card, no white surround in print/PDF (Part 9/11) -->
+      <div id="idCardFront" class="id-card-face" style="background:linear-gradient(150deg,#cfa74a,#b9862a 55%,#a9761f);border-radius:16px;padding:1.1rem 1.2rem 1rem;color:#241a06;text-align:center;position:relative;overflow:hidden;box-sizing:border-box;">
+        <!-- HEADER: logo left + bilingual SHAOOR/شعور + MEMBERSHIP CARD/ممبرشپ کارڈ -->
+        <div id="idHeaderRow" style="display:flex;align-items:center;gap:.5rem;text-align:start;margin-bottom:.5rem;">
+          <img id="idLogoImg" src="" alt="" style="display:none;flex:0 0 auto;width:40px;height:40px;object-fit:contain;" />
+          <div id="idOrgName" style="flex:1;line-height:1.15;">
+            <div id="idOrgNameEn" style="font-family:var(--ff-display);font-weight:900;letter-spacing:1px;color:#241a06;font-size:1.05rem;">SHAOOR</div>
+            <div id="idOrgNameUr" class="lang-ur" style="font-weight:700;font-size:.85rem;color:#241a06;">شعور</div>
+          </div>
+        </div>
+        <div id="idCardSubtitleRow" style="margin-bottom:.6rem;">
+          <div id="idCardSubtitleEn" style="font-size:.62rem;letter-spacing:2px;font-weight:700;color:#241a06;text-transform:uppercase;">Membership Card</div>
+          <div id="idCardSubtitleUr" class="lang-ur" style="font-size:.68rem;color:#241a06;">ممبرشپ کارڈ</div>
+        </div>
+        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.4rem 0;"></div>
+
+        <!-- MEMBER PHOTO -->
+        <img id="idAvatarImg" src="" alt="" style="width:74px;height:74px;border-radius:50%;object-fit:cover;border:3px solid rgba(36,26,6,.4);display:none;margin:.5rem auto .5rem;background:#fff;" />
+        <div id="idAvatarPlaceholder" style="width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:.5rem auto .5rem;color:#241a06;"><i class="fas fa-user"></i></div>
+
+        <div id="idName" style="font-weight:800;font-size:1.02rem;margin-bottom:.35rem;color:#241a06;">—</div>
+        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.35rem 0;"></div>
+
+        <!-- MEMBER INFORMATION — two-column, empty fields suppressed by JS (Part 7 / Part 2) -->
+        <div id="idInfoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.15rem .6rem;text-align:start;font-size:.68rem;color:#241a06;margin-bottom:.4rem;">
+          <div id="idEmailRow" style="overflow-wrap:anywhere;"><i class="fas fa-envelope" style="opacity:.6;"></i> <span id="idEmail"></span></div>
+          <div id="idPhoneRow" style="overflow-wrap:anywhere;direction:ltr;unicode-bidi:embed;"><i class="fas fa-phone" style="opacity:.6;"></i> <span id="idPhone"></span></div>
+          <div id="idMemberIdRow" style="direction:ltr;unicode-bidi:embed;"><b>ID:</b> <span id="idMemberId">—</span></div>
+          <div id="idRoleRow"><b>Role:</b> <span id="idRole" style="text-transform:capitalize;">—</span></div>
+          <div id="idSocietyRow"><b>Society:</b> <span id="idSociety"></span></div>
+          <div id="idChapterRow"><b>Chapter:</b> <span id="idChapter"></span></div>
+          <div id="idProvinceRow"><b>Province:</b> <span id="idProvince"></span></div>
+          <div id="idStatusRow"><b>Status:</b> <span id="idStatus" style="text-transform:capitalize;"></span></div>
+        </div>
+        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.4rem 0 .55rem;"></div>
+
+        <!-- FOOTER: founder signature (left) · original seal + verification code (center) · QR (right) — Part 3 -->
+        <div id="idFooterRow" style="display:grid;grid-template-columns:1fr 1.4fr 1fr;align-items:end;gap:.3rem;">
+          <div id="idSigCol" style="text-align:start;">
+            <img id="idFounderSigImg" src="" alt="" style="display:none;max-width:52px;max-height:26px;object-fit:contain;" />
+          </div>
+          <div id="idSealCol" style="text-align:center;">
+            <img id="idSealImg" src="" alt="Official Seal" style="display:none;width:40px;height:40px;object-fit:contain;margin:0 auto .15rem;" />
+            <div id="idVerificationBlock" style="display:none;">
+              <div style="font-size:.5rem;letter-spacing:.5px;color:#241a06;opacity:.75;">VERIFICATION ID</div>
+              <div id="idVerificationCode" style="font-size:.6rem;font-weight:700;color:#241a06;direction:ltr;unicode-bidi:embed;">—</div>
+            </div>
+          </div>
+          <div id="idQrCol" style="text-align:end;">
+            <div id="idQrCode" style="background:#fff;display:inline-block;padding:4px;border-radius:6px;line-height:0;"></div>
+          </div>
+        </div>
       </div>
       <div style="display:flex;gap:.6rem;margin-top:.75rem;">
         <button class="btn btn-outline" type="button" style="flex:1;justify-content:center;" onclick="printIdCard()"><i class="fas fa-print"></i> Print</button>
@@ -11684,85 +11813,159 @@ select.form-input {
      flow, so a public visitor sees the same card design a member would. ── */
   /* Applies a card_templates.config JSON block to the rendered card. Every key is optional and
      falls back to the existing hardcoded look, so old templates (config = null) keep working. */
+  /* config schema (Part 5) — v1 keys (front.*, fields.*) are still read for backward compatibility;
+     v2 adds general/back/branding/photo/identity/organization/qr/seal/founderSignature/typography/dividers.
+     Every key stays optional — a template saved before this update (config=null or v1-shaped) renders
+     with the same hardcoded gold defaults as a brand-new empty template. */
   function applyCardConfig(cardBox, cfg, brand) {
     cfg = cfg || {};
     const front = cfg.front || {};
-    const fields = cfg.fields || {};
+    const back = cfg.back || {};
+    const branding = cfg.branding || {};
+    const photo = Object.assign({}, front, cfg.photo || {}); // v2 photo{} overrides v1 front.photo*
+    const qr = Object.assign({}, (cfg.fields && cfg.fields.qr) || {}, cfg.qr || {});
+    const seal = Object.assign({ hidden: !front.sealEnabled, size: front.sealSize }, cfg.seal || {});
+    const founderSig = cfg.founderSignature || {};
+    const typography = cfg.typography || {};
+    const dividers = cfg.dividers || {};
+    // identity/organization field configs — v2 namespaces, falling back to v1 cfg.fields.<key>
+    const legacyFields = cfg.fields || {};
+    const fieldConf = key => Object.assign({}, legacyFields[key] || {}, (cfg.identity && cfg.identity[key]) || (cfg.organization && cfg.organization[key]) || {});
 
     // Size / orientation (screen preview only — see paperPageCss-based print/PDF for physical size)
     if (cfg.width) cardBox.style.maxWidth = cfg.width + 'px';
     if (cfg.orientation === 'landscape') cardBox.style.aspectRatio = '1.586/1';
     if (cfg.orientation === 'portrait') cardBox.style.aspectRatio = '1/1.586';
 
-    if (front.bgColor) cardBox.style.background = front.bgColor;
+    // Front background/colors — falls back to the default gold canvas (Part 11) when unset
+    cardBox.style.background = front.bgColor || 'linear-gradient(150deg,#cfa74a,#b9862a 55%,#a9761f)';
     if (front.borderColor) cardBox.style.border = '2px solid ' + front.borderColor;
     if (front.textColor) cardBox.style.color = front.textColor;
-    if (front.fontFamily) cardBox.style.fontFamily = front.fontFamily;
+    const bodyFont = typography.fontFamily || front.fontFamily;
+    if (bodyFont) cardBox.style.fontFamily = bodyFont;
 
-    // Logo — sourced from brand.logo_url, never a template-uploaded/hardcoded image
+    // BACK design (used by the flip button / PDF back face — see buildCardPrintHtml)
+    cardBox.dataset.backBg = back.bgColor || '';
+    cardBox.dataset.backText = back.textColor || '';
+
+    // Logo — sourced from brand.logo_url, never a template-uploaded/hardcoded image (Part 6)
     const logoEl = document.getElementById('idLogoImg');
-    const orgNameEl = document.getElementById('idOrgName');
+    const orgNameBlock = document.getElementById('idOrgName');
     if (brand && brand.logo_url) {
       logoEl.src = brand.logo_url;
       logoEl.style.display = '';
-      if (front.logoSize) { logoEl.style.width = front.logoSize + 'px'; logoEl.style.height = front.logoSize + 'px'; }
-      orgNameEl.style.display = 'none';
+      const logoSize = branding.logoSize || front.logoSize;
+      if (logoSize) { logoEl.style.width = logoSize + 'px'; logoEl.style.height = logoSize + 'px'; }
     } else {
       logoEl.style.display = 'none';
-      orgNameEl.style.display = '';
-      orgNameEl.textContent = (brand && brand.organization_name) || 'SHAOOR';
+    }
+    // Bilingual brand text (Part 2 header) — always shown, logo sits beside it, not in place of it
+    const headerRow = document.getElementById('idHeaderRow');
+    if (branding.alignment) headerRow.style.justifyContent = branding.alignment === 'center' ? 'center' : (branding.alignment === 'end' ? 'flex-end' : 'flex-start');
+    document.getElementById('idOrgNameEn').textContent = (brand && brand.organization_name) || 'SHAOOR';
+
+    // Founder signature — sourced from existing Branding field only (Part 10), small, left-aligned
+    const sigEl = document.getElementById('idFounderSigImg');
+    if (!founderSig.hidden && brand && brand.founder_signature_url) {
+      sigEl.src = brand.founder_signature_url;
+      sigEl.style.display = '';
+      const sigSize = founderSig.size || 52;
+      sigEl.style.maxWidth = sigSize + 'px';
+      sigEl.style.maxHeight = Math.round(sigSize * 0.5) + 'px';
+    } else {
+      sigEl.style.display = 'none';
     }
 
-    // Seal — only rendered if the template explicitly enables it, sourced from brand.seal_url
+    // Seal — centered, only rendered if enabled AND brand.seal_url exists (Part 3/9)
     const sealEl = document.getElementById('idSealImg');
-    if (front.sealEnabled && brand && brand.seal_url) {
+    const sealOn = !seal.hidden && brand && brand.seal_url;
+    if (sealOn) {
       sealEl.src = brand.seal_url;
       sealEl.style.display = '';
-      if (front.sealSize) { sealEl.style.width = front.sealSize + 'px'; sealEl.style.height = front.sealSize + 'px'; }
+      const sealSize = seal.size || 40;
+      sealEl.style.width = sealSize + 'px'; sealEl.style.height = sealSize + 'px';
     } else {
       sealEl.style.display = 'none';
+    }
+    // Verification code sits directly below the seal — only shown together with the seal
+    const verifBlock = document.getElementById('idVerificationBlock');
+    verifBlock.style.display = sealOn ? '' : 'none';
+
+    // QR — small, right-aligned, unchanged ?verify=MEMBER_ID system
+    const qrContainer = document.getElementById('idQrCode');
+    if (qr.hidden) {
+      qrContainer.style.display = 'none';
+    } else {
+      qrContainer.style.display = '';
+      const qrSize = qr.size || 60;
+      qrContainer.style.width = qrContainer.style.height = qrSize + 'px';
     }
 
     // Member photo controls
     const avatarImg = document.getElementById('idAvatarImg');
     const avatarPh = document.getElementById('idAvatarPlaceholder');
-    const photoSize = front.photoSize || 80;
-    [avatarImg, avatarPh].forEach(el => { el.style.width = photoSize + 'px'; el.style.height = photoSize + 'px'; });
-    if (front.photoRadius != null) { avatarImg.style.borderRadius = front.photoRadius; avatarPh.style.borderRadius = front.photoRadius; }
-    if (front.photoFit) avatarImg.style.objectFit = front.photoFit;
-
-    // Per-field visibility + font size (name, memberId, role, society, chapter, province)
-    ['idName', 'idMemberId', 'idRole', 'idSociety', 'idChapter', 'idProvince'].forEach(id => {
-      const key = id.replace('id', '');
-      const fkey = key.charAt(0).toLowerCase() + key.slice(1);
-      const el = document.getElementById(id);
-      const conf = fields[fkey];
-      if (!conf) return;
-      if (conf.hidden) { el.style.display = 'none'; return; }
-      el.style.display = '';
-      if (conf.fontSize) el.style.fontSize = conf.fontSize + 'px';
-      if (conf.align) el.style.textAlign = conf.align;
-    });
-
-    // QR size (position is handled by DOM order for now — a template with qr.hidden simply omits it)
-    const qrContainer = document.getElementById('idQrCode');
-    if (fields.qr && fields.qr.hidden) {
-      qrContainer.style.display = 'none';
+    if (photo.hidden) {
+      avatarImg.style.display = 'none'; avatarPh.style.display = 'none';
     } else {
-      qrContainer.style.display = '';
-      if (fields.qr && fields.qr.size) qrContainer.style.width = qrContainer.style.height = fields.qr.size + 'px';
+      const photoSize = photo.photoSize || photo.size || 74;
+      [avatarImg, avatarPh].forEach(el => { el.style.width = photoSize + 'px'; el.style.height = photoSize + 'px'; });
+      if (photo.photoRadius != null || photo.radius != null) {
+        const r = photo.photoRadius != null ? photo.photoRadius : photo.radius;
+        avatarImg.style.borderRadius = r; avatarPh.style.borderRadius = r;
+      }
+      if (photo.photoFit || photo.objectFit) avatarImg.style.objectFit = photo.photoFit || photo.objectFit;
     }
 
+    // Per-field visibility + font size/family/weight/color/alignment (identity + organization fields)
+    // Row wrapper (…Row) is hidden/shown so an empty OR hidden field never leaves a blank line (Part 7).
+    [
+      ['idName', 'name', null],
+      ['idEmail', 'email', 'idEmailRow'],
+      ['idPhone', 'phone', 'idPhoneRow'],
+      ['idMemberId', 'memberId', 'idMemberIdRow'],
+      ['idRole', 'role', 'idRoleRow'],
+      ['idStatus', 'status', 'idStatusRow'],
+      ['idSociety', 'society', 'idSocietyRow'],
+      ['idChapter', 'chapter', 'idChapterRow'],
+      ['idProvince', 'province', 'idProvinceRow']
+    ].forEach(([id, key, rowId]) => {
+      const el = document.getElementById(id);
+      const row = rowId ? document.getElementById(rowId) : el;
+      const conf = fieldConf(key);
+      const hasValue = !!(el.textContent && el.textContent.trim() && el.textContent.trim() !== '—');
+      if (conf.hidden || !hasValue) { row.style.display = 'none'; return; }
+      row.style.display = '';
+      if (conf.fontSize) el.style.fontSize = conf.fontSize + 'px';
+      if (conf.fontFamily) el.style.fontFamily = conf.fontFamily;
+      if (conf.fontWeight) el.style.fontWeight = conf.fontWeight;
+      if (conf.color) el.style.color = conf.color;
+      if (conf.align) row.style.textAlign = conf.align;
+    });
+    // idName always shows (has a '—' fallback rather than being blank), so re-evaluate on hasValue only
+    document.getElementById('idName').parentElement && (document.getElementById('idName').style.display = fieldConf('name').hidden ? 'none' : '');
+
+    // Divider lines — thin gold by default, per Part 12 no giant decorative elements
+    document.querySelectorAll('#idCardFront .id-divider').forEach(d => {
+      if (dividers.hidden) { d.style.display = 'none'; return; }
+      d.style.display = '';
+      d.style.background = dividers.color || 'rgba(36,26,6,.35)';
+      d.style.height = (dividers.thickness || 1) + 'px';
+    });
+
     // Language / RTL — reuses the app-wide .lang-ur class + Noto Nastaliq Urdu font, same as certificates
+    const urduFont = typography.urduFontFamily || 'var(--ff-urdu)';
+    document.getElementById('idOrgNameUr').style.fontFamily = urduFont;
+    document.getElementById('idCardSubtitleUr').style.fontFamily = urduFont;
     if (cfg.language === 'ur') {
       cardBox.classList.add('lang-ur');
-      cardBox.style.fontFamily = 'var(--ff-urdu)';
     } else {
       cardBox.classList.remove('lang-ur');
     }
-    // Member ID / QR verification URL must stay LTR-safe even inside an RTL card
-    document.getElementById('idMemberId').style.direction = 'ltr';
-    document.getElementById('idMemberId').style.unicodeBidi = 'embed';
+    // Member ID / email / phone / QR verification code must stay LTR-safe even inside an RTL card
+    ['idMemberId', 'idEmail', 'idPhone', 'idVerificationCode'].forEach(id => {
+      const el = document.getElementById(id);
+      el.style.direction = 'ltr'; el.style.unicodeBidi = 'embed';
+    });
   }
 
   /* Shared renderer: populates the ID card modal for a given profile row, applies the
@@ -11772,11 +11975,16 @@ select.form-input {
      duplicate this logic elsewhere. */
   async function renderIdCard(profile, templateOverride) {
     document.getElementById('idName').textContent = profile.full_name || '—';
+    document.getElementById('idEmail').textContent = profile.email || '';
+    document.getElementById('idPhone').textContent = profile.phone || '';
     document.getElementById('idMemberId').textContent = profile.member_id || '—';
-    document.getElementById('idRole').textContent = (profile.role || '—') + ' · ' + (profile.status || '');
-    document.getElementById('idSociety').textContent = profile.societies ? ('Society: ' + profile.societies.name) : '';
-    document.getElementById('idChapter').textContent = profile.chapters ? ('Chapter: ' + profile.chapters.name) : '';
-    document.getElementById('idProvince').textContent = profile.province ? ('Province: ' + profile.province) : '';
+    document.getElementById('idRole').textContent = profile.role || '';
+    document.getElementById('idStatus').textContent = profile.status || '';
+    document.getElementById('idSociety').textContent = profile.societies ? profile.societies.name : '';
+    document.getElementById('idChapter').textContent = profile.chapters ? profile.chapters.name : '';
+    document.getElementById('idProvince').textContent = profile.province || '';
+    // Verification code = the same member_id used by the QR's ?verify= link — one canonical ID, Part 3
+    document.getElementById('idVerificationCode').textContent = profile.member_id || '—';
 
     const idAvatarImg = document.getElementById('idAvatarImg');
     const idAvatarPlaceholder = document.getElementById('idAvatarPlaceholder');
@@ -11856,17 +12064,27 @@ select.form-input {
     const front = document.getElementById('idCardFront');
     if (!front) return null;
     const tpl = window._lastRenderedCardTpl;
-    const landscape = !(tpl && tpl.config && tpl.config.orientation === 'portrait');
+    const cfg = (tpl && tpl.config) || {};
+    const landscape = !(cfg.orientation === 'portrait');
     const w = landscape ? '85.6mm' : '54mm';
     const h = landscape ? '54mm' : '85.6mm';
+    // Match the body background to the card's own background so no white shows at the rounded
+    // corners, and strip the on-screen radius/shadow for the physical card face (Part 9/11).
+    const cardBg = front.style.background || 'linear-gradient(150deg,#cfa74a,#b9862a 55%,#a9761f)';
     const pageCss = '@page{size:' + w + ' ' + h + ';margin:0;}' +
-      'html,body{margin:0;padding:0;}' +
+      'html,body{margin:0;padding:0;background:' + cardBg + ';}' +
       '.card-print-face{width:' + w + ';height:' + h + ';page-break-after:always;overflow:hidden;box-sizing:border-box;}' +
       '.card-print-face:last-child{page-break-after:auto;}' +
-      '.card-print-face > div{width:100%;height:100%;box-sizing:border-box;}';
+      '.card-print-face > div{width:100%;height:100%;box-sizing:border-box;border-radius:0!important;box-shadow:none!important;}';
     let html = '<div class="card-print-face">' + front.outerHTML + '</div>';
+    const back = cfg.back || {};
     if (tpl && tpl.back_design_url) {
       const backHtml = '<div style="width:100%;height:100%;background-image:url(' + JSON.stringify(tpl.back_design_url) + ');background-size:cover;background-position:center;"></div>';
+      html += '<div class="card-print-face">' + backHtml + '</div>';
+    } else if (back.bgColor || back.textColor) {
+      // No back image, but the template explicitly sets back colors (Section 3) — render a plain
+      // back face rather than silently dropping the setting.
+      const backHtml = '<div style="width:100%;height:100%;background:' + (back.bgColor || cardBg) + ';color:' + (back.textColor || '#241a06') + ';"></div>';
       html += '<div class="card-print-face">' + backHtml + '</div>';
     }
     return { html, pageCss };
@@ -11893,7 +12111,7 @@ select.form-input {
 
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('id', userId)
       .single();
 
@@ -13610,20 +13828,80 @@ select.form-input {
     if (!userId) { showToast('پہلے لاگ ان کریں', 'error'); return; }
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('id', userId)
       .single();
     if (error || !profile) { showToast('پروفائل لوڈ نہیں ہو سکی', 'error'); return; }
     await renderIdCard(profile, t);
   }
 
+  /* Section 6/7 — Member Identity + Organization field rows. One generic row per field, built
+     dynamically rather than as ~50 near-duplicate static inputs. "Position" is the field's text
+     alignment within the card's fixed flow layout (the card is not free-form/absolute positioned),
+     consistent with how QR "position" already works via DOM order elsewhere in this file. */
+  const CRTPL_IDENTITY_DEFS = [
+    ['name', 'Name'], ['email', 'Email'], ['phone', 'Phone'],
+    ['memberId', 'Member ID'], ['role', 'Role'], ['status', 'Status']
+  ];
+  const CRTPL_ORG_DEFS = [
+    ['society', 'Society'], ['chapter', 'Chapter'], ['province', 'Province']
+  ];
+  function crtplFieldRowHtml(key) {
+    return '<div class="crtpl-field-row" data-field="' + key + '">' +
+      '<label><input type="checkbox" data-f="hidden" /> Hide</label>' +
+      '<input type="number" data-f="fontSize" placeholder="Size px" min="8" max="24" />' +
+      '<input type="text" data-f="color" placeholder="Color (e.g. #241a06)" />' +
+      '<select data-f="align"><option value="">Align</option><option value="start">Left</option><option value="center">Center</option><option value="end">Right</option></select>' +
+      '<select data-f="fontWeight"><option value="">Weight</option><option value="400">Normal</option><option value="600">Semibold</option><option value="700">Bold</option><option value="900">Black</option></select>' +
+      '</div>';
+  }
+  function buildCrtplFieldTables() {
+    document.getElementById('crtplIdentityFields').innerHTML =
+      '<div class="crtpl-field-row" style="font-weight:700;color:var(--muted);"><div>Field</div><div>Show/Hide</div><div>Size/Color</div><div>Align</div><div>Weight</div></div>' +
+      CRTPL_IDENTITY_DEFS.map(([k, label]) => '<div style="display:grid;grid-template-columns:90px 1fr;gap:.4rem;align-items:center;"><b style="font-size:.72rem;">' + label + '</b>' + crtplFieldRowHtml(k) + '</div>').join('');
+    document.getElementById('crtplOrgFields').innerHTML =
+      CRTPL_ORG_DEFS.map(([k, label]) => '<div style="display:grid;grid-template-columns:90px 1fr;gap:.4rem;align-items:center;"><b style="font-size:.72rem;">' + label + '</b>' + crtplFieldRowHtml(k) + '</div>').join('');
+  }
+  function readCrtplFieldConfigs() {
+    const out = {};
+    document.querySelectorAll('#cardTemplateForm .crtpl-field-row[data-field]').forEach(row => {
+      const key = row.dataset.field;
+      const hidden = row.querySelector('[data-f="hidden"]').checked;
+      const fontSize = row.querySelector('[data-f="fontSize"]').value;
+      const color = row.querySelector('[data-f="color"]').value.trim();
+      const align = row.querySelector('[data-f="align"]').value;
+      const fontWeight = row.querySelector('[data-f="fontWeight"]').value;
+      const conf = {};
+      if (hidden) conf.hidden = true;
+      if (fontSize) conf.fontSize = Number(fontSize);
+      if (color) conf.color = color;
+      if (align) conf.align = align;
+      if (fontWeight) conf.fontWeight = fontWeight;
+      if (Object.keys(conf).length) out[key] = conf;
+    });
+    return out;
+  }
+  function writeCrtplFieldConfigs(identity, organization) {
+    const all = Object.assign({}, identity || {}, organization || {});
+    document.querySelectorAll('#cardTemplateForm .crtpl-field-row[data-field]').forEach(row => {
+      const conf = all[row.dataset.field] || {};
+      row.querySelector('[data-f="hidden"]').checked = !!conf.hidden;
+      row.querySelector('[data-f="fontSize"]').value = conf.fontSize || '';
+      row.querySelector('[data-f="color"]').value = conf.color || '';
+      row.querySelector('[data-f="align"]').value = conf.align || '';
+      row.querySelector('[data-f="fontWeight"]').value = conf.fontWeight || '';
+    });
+  }
+
   function openCardTemplateModal() {
     document.getElementById('cardTemplateForm').reset();
     document.getElementById('crtplId').value = '';
+    buildCrtplFieldTables();
     openModal('cardTemplateModal');
   }
 
   function editCardTemplate(t) {
+    buildCrtplFieldTables();
     document.getElementById('crtplId').value = t.id;
     document.getElementById('crtplName').value = t.name || '';
     document.getElementById('crtplDescription').value = t.description || '';
@@ -13631,19 +13909,107 @@ select.form-input {
     document.getElementById('crtplBackUrl').value = t.back_design_url || '';
     document.getElementById('crtplIsDefault').checked = !!t.is_default;
     document.getElementById('crtplIsActive').checked = !!t.is_active;
-    // config is a new nullable JSONB column — safe to read with defaults for pre-existing rows
+    // config is a nullable JSONB column — safe to read with defaults for pre-existing (v1 or null) rows
     const cfg = t.config || {};
     const front = cfg.front || {};
+    const back = cfg.back || {};
+    const branding = cfg.branding || {};
+    const photo = cfg.photo || {};
+    const qr = Object.assign({}, (cfg.fields && cfg.fields.qr) || {}, cfg.qr || {});
+    const seal = cfg.seal || {};
+    const sig = cfg.founderSignature || {};
+    const typo = cfg.typography || {};
+    const div = cfg.dividers || {};
     document.getElementById('crtplOrientation').value = cfg.orientation || '';
     document.getElementById('crtplLanguage').value = cfg.language || 'en';
     document.getElementById('crtplBgColor').value = front.bgColor || '';
     document.getElementById('crtplBorderColor').value = front.borderColor || '';
     document.getElementById('crtplTextColor').value = front.textColor || '';
-    document.getElementById('crtplLogoSize').value = front.logoSize || '';
-    document.getElementById('crtplPhotoSize').value = front.photoSize || '';
-    document.getElementById('crtplQrSize').value = (cfg.fields && cfg.fields.qr && cfg.fields.qr.size) || '';
-    document.getElementById('crtplSealEnabled').checked = !!front.sealEnabled;
+    document.getElementById('crtplBackBgColor').value = back.bgColor || '';
+    document.getElementById('crtplBackTextColor').value = back.textColor || '';
+    document.getElementById('crtplLogoSize').value = branding.logoSize || front.logoSize || '';
+    document.getElementById('crtplBrandAlign').value = branding.alignment || 'start';
+    document.getElementById('crtplPhotoHidden').checked = !!photo.hidden;
+    document.getElementById('crtplPhotoSize').value = photo.photoSize || front.photoSize || '';
+    document.getElementById('crtplPhotoFit').value = photo.photoFit || front.photoFit || 'cover';
+    document.getElementById('crtplQrHidden').checked = !!qr.hidden;
+    document.getElementById('crtplQrSize').value = qr.size || '';
+    document.getElementById('crtplSealEnabled').checked = seal.hidden != null ? !seal.hidden : !!front.sealEnabled;
+    document.getElementById('crtplSealSize').value = seal.size || front.sealSize || '';
+    document.getElementById('crtplSigHidden').checked = !!sig.hidden;
+    document.getElementById('crtplSigSize').value = sig.size || '';
+    document.getElementById('crtplFontFamily').value = typo.fontFamily || front.fontFamily || '';
+    document.getElementById('crtplUrduFontFamily').value = typo.urduFontFamily || '';
+    document.getElementById('crtplDividersHidden').checked = !!div.hidden;
+    document.getElementById('crtplDividerColor').value = div.color || '';
+    document.getElementById('crtplDividerThickness').value = div.thickness || '';
+    writeCrtplFieldConfigs(cfg.identity, cfg.organization || (cfg.fields || {}));
     openModal('cardTemplateModal');
+  }
+
+  /* Section 13 — Live Preview: builds a template object straight from the current unsaved form
+     state and runs it through the SAME renderIdCard()/applyCardConfig() canonical renderer used
+     everywhere else, so the preview can never drift from the real card (Part 4 / Part 19). */
+  async function previewCardTemplateFromForm() {
+    const t = { id: document.getElementById('crtplId').value || null, config: buildCrtplConfigFromForm() };
+    t.front_design_url = document.getElementById('crtplFrontUrl').value.trim() || null;
+    t.back_design_url = document.getElementById('crtplBackUrl').value.trim() || null;
+    await previewCardTemplate(t);
+  }
+
+  function buildCrtplConfigFromForm() {
+    const num = v => (v === '' || v == null) ? undefined : Number(v);
+    const str = v => (v === '' || v == null) ? undefined : v;
+    const allFieldConf = readCrtplFieldConfigs();
+    const identity = {}, organization = {};
+    CRTPL_IDENTITY_DEFS.forEach(([k]) => { if (allFieldConf[k]) identity[k] = allFieldConf[k]; });
+    CRTPL_ORG_DEFS.forEach(([k]) => { if (allFieldConf[k]) organization[k] = allFieldConf[k]; });
+    return {
+      version: 2,
+      language: document.getElementById('crtplLanguage').value || 'en',
+      orientation: str(document.getElementById('crtplOrientation').value),
+      front: {
+        bgColor: str(document.getElementById('crtplBgColor').value.trim()),
+        borderColor: str(document.getElementById('crtplBorderColor').value.trim()),
+        textColor: str(document.getElementById('crtplTextColor').value.trim())
+      },
+      back: {
+        bgColor: str(document.getElementById('crtplBackBgColor').value.trim()),
+        textColor: str(document.getElementById('crtplBackTextColor').value.trim())
+      },
+      branding: {
+        logoSize: num(document.getElementById('crtplLogoSize').value),
+        alignment: str(document.getElementById('crtplBrandAlign').value)
+      },
+      photo: {
+        hidden: document.getElementById('crtplPhotoHidden').checked,
+        photoSize: num(document.getElementById('crtplPhotoSize').value),
+        photoFit: str(document.getElementById('crtplPhotoFit').value)
+      },
+      identity,
+      organization,
+      qr: {
+        hidden: document.getElementById('crtplQrHidden').checked,
+        size: num(document.getElementById('crtplQrSize').value)
+      },
+      seal: {
+        hidden: !document.getElementById('crtplSealEnabled').checked,
+        size: num(document.getElementById('crtplSealSize').value)
+      },
+      founderSignature: {
+        hidden: document.getElementById('crtplSigHidden').checked,
+        size: num(document.getElementById('crtplSigSize').value)
+      },
+      typography: {
+        fontFamily: str(document.getElementById('crtplFontFamily').value.trim()),
+        urduFontFamily: str(document.getElementById('crtplUrduFontFamily').value.trim())
+      },
+      dividers: {
+        hidden: document.getElementById('crtplDividersHidden').checked,
+        color: str(document.getElementById('crtplDividerColor').value.trim()),
+        thickness: num(document.getElementById('crtplDividerThickness').value)
+      }
+    };
   }
 
   async function deleteCardTemplate(id) {
@@ -13673,26 +14039,10 @@ select.form-input {
     const is_default = frm.querySelector('#crtplIsDefault').checked;
     const is_active = frm.querySelector('#crtplIsActive').checked;
 
-    // Build the structured config JSON. Empty/blank inputs are omitted so unset values fall
-    // back to the existing hardcoded look in applyCardConfig() rather than overwriting it.
-    const num = v => (v === '' || v == null) ? undefined : Number(v);
-    const str = v => (v === '' || v == null) ? undefined : v;
-    const config = {
-      version: 1,
-      language: frm.querySelector('#crtplLanguage').value || 'en',
-      orientation: str(frm.querySelector('#crtplOrientation').value),
-      front: {
-        bgColor: str(frm.querySelector('#crtplBgColor').value.trim()),
-        borderColor: str(frm.querySelector('#crtplBorderColor').value.trim()),
-        textColor: str(frm.querySelector('#crtplTextColor').value.trim()),
-        logoSize: num(frm.querySelector('#crtplLogoSize').value),
-        photoSize: num(frm.querySelector('#crtplPhotoSize').value),
-        sealEnabled: frm.querySelector('#crtplSealEnabled').checked
-      },
-      fields: {
-        qr: { size: num(frm.querySelector('#crtplQrSize').value) }
-      }
-    };
+    // Build the structured config JSON (Part 5 — extends v1 rather than replacing it).
+    // Empty/blank inputs are omitted so unset values fall back to the existing look in
+    // applyCardConfig() rather than overwriting it — old templates keep working unchanged.
+    const config = buildCrtplConfigFromForm();
     const payload = { name, description, front_design_url, back_design_url, is_default, is_active, config };
 
     let error;
@@ -13948,7 +14298,7 @@ select.form-input {
 
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('member_id', verifyId)
       .single();
 
