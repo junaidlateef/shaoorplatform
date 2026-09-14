@@ -12151,7 +12151,7 @@ select.form-input {
     // lookups by id, same proven pattern.
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url, province, society_id, chapter_id')
+      .select('id, full_name, member_id, role, status, avatar_url, province, society_id, chapter_id')
       .eq('id', userId)
       .single();
 
@@ -12160,6 +12160,7 @@ select.form-input {
       showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
       return;
     }
+    console.log('[openDigitalId] profile fetched — avatar_url value:', profile.avatar_url);
 
     if (profile.society_id) {
       const { data: society, error: societyErr } = await sb.from('societies').select('name').eq('id', profile.society_id).maybeSingle();
