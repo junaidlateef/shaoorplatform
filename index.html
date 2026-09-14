@@ -11853,7 +11853,6 @@ select.form-input {
     // Row wrapper (…Row) is hidden/shown so an empty OR hidden field never leaves a blank line (Part 7).
     [
       ['idName', 'name', null],
-      ['idEmail', 'email', 'idEmailRow'],
       ['idPhone', 'phone', 'idPhoneRow'],
       ['idMemberId', 'memberId', 'idMemberIdRow'],
       ['idRole', 'role', 'idRoleRow'],
@@ -11895,7 +11894,7 @@ select.form-input {
       cardBox.classList.remove('lang-ur');
     }
     // Member ID / email / phone / QR verification code must stay LTR-safe even inside an RTL card
-    ['idMemberId', 'idEmail', 'idPhone', 'idVerificationCode'].forEach(id => {
+    ['idMemberId', 'idPhone', 'idVerificationCode'].forEach(id => {
       const el = document.getElementById(id);
       el.style.direction = 'ltr'; el.style.unicodeBidi = 'embed';
     });
@@ -12005,7 +12004,6 @@ select.form-input {
   async function renderIdCard(profile, templateOverride) {
     if (!profile) { console.error('[renderIdCard] called without a profile'); showToast('کارڈ ڈیٹا دستیاب نہیں', 'error'); return; }
     document.getElementById('idName').textContent = profile.full_name || '—';
-    document.getElementById('idEmail').textContent = profile.email || '';
     document.getElementById('idPhone').textContent = profile.phone || '';
     document.getElementById('idMemberId').textContent = profile.member_id || '—';
     document.getElementById('idRole').textContent = profile.role || '';
@@ -16494,7 +16492,6 @@ select.form-input {
 
         <!-- MEMBER INFORMATION — two-column, empty fields suppressed by JS (Part 7 / Part 2) -->
         <div id="idInfoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.15rem .6rem;text-align:start;font-size:.68rem;color:#241a06;margin-bottom:.4rem;">
-          <div id="idEmailRow" style="overflow-wrap:anywhere;"><i class="fas fa-envelope" style="opacity:.6;"></i> <span id="idEmail"></span></div>
           <div id="idPhoneRow" style="overflow-wrap:anywhere;direction:ltr;unicode-bidi:embed;"><i class="fas fa-phone" style="opacity:.6;"></i> <span id="idPhone"></span></div>
           <div id="idMemberIdRow" style="direction:ltr;unicode-bidi:embed;"><b>ID:</b> <span id="idMemberId">—</span></div>
           <div id="idRoleRow"><b>Role:</b> <span id="idRole" style="text-transform:capitalize;">—</span></div>
