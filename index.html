@@ -11925,9 +11925,14 @@ select.form-input {
     console.log('[CARD 1] target id', id);
     if (!id) { console.error('[openMemberCardById] missing id'); showToast('ممبر کارڈ لوڈ نہیں ہو سکا', 'error'); return; }
 
+    // NOTE: embedded relationship syntax (societies!profiles_society_id_fkey(name)) caused a
+    // confirmed HTTP 400 from PostgREST on this query. Rather than guess at the correct
+    // constraint name (not verifiable from here — no schema access), we fetch only direct
+    // columns and resolve society_id/chapter_id to display names with separate, simple
+    // queries. This sidesteps the relationship-name question entirely.
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('id, full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('id, full_name, email, phone, member_id, role, status, avatar_url, province, society_id, chapter_id')
       .eq('id', id)
       .maybeSingle();
 
@@ -11952,6 +11957,26 @@ select.form-input {
       console.error('[CARD LOAD FAILURE — NO ROW]', { stage: 'profiles fetch', memberId: id });
       showToast('ممبر کارڈ لوڈ نہیں ہو سکا (پروفائل نہیں ملی)', 'error');
       return;
+    }
+
+    // Resolve society/chapter names separately (direct-id lookups, no embedded relationship
+    // syntax). Each is independent and non-fatal: if one errors or is absent, the card still
+    // renders — only that row is blank, matching the existing empty-field suppression.
+    if (profile.society_id) {
+      const { data: society, error: societyErr } = await sb.from('societies').select('name').eq('id', profile.society_id).maybeSingle();
+      console.log('[CARD 2a] society lookup', { society, error: societyErr });
+      if (societyErr) console.error('[CARD LOAD — society lookup failed, non-fatal]', { memberId: id, code: societyErr.code, message: societyErr.message });
+      profile.societies = society || null;
+    } else {
+      profile.societies = null;
+    }
+    if (profile.chapter_id) {
+      const { data: chapter, error: chapterErr } = await sb.from('chapters').select('name').eq('id', profile.chapter_id).maybeSingle();
+      console.log('[CARD 2b] chapter lookup', { chapter, error: chapterErr });
+      if (chapterErr) console.error('[CARD LOAD — chapter lookup failed, non-fatal]', { memberId: id, code: chapterErr.code, message: chapterErr.message });
+      profile.chapters = chapter || null;
+    } else {
+      profile.chapters = null;
     }
 
     const ensured = ensureMemberCard(profile);
@@ -14311,9 +14336,11 @@ select.form-input {
     // Public flow intentionally does NOT select email/phone — those stay member/admin-only
     // (Part 11). maybeSingle() because an invalid/mistyped Member ID is a legitimate zero-row
     // case here, not a query error.
+    // Same fix as openMemberCardById: no embedded relationship syntax (confirmed HTTP 400
+    // there). Direct columns + separate, non-fatal society/chapter lookups by id.
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('id, full_name, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('id, full_name, member_id, role, status, avatar_url, province, society_id, chapter_id')
       .eq('member_id', verifyId)
       .maybeSingle();
 
@@ -14321,6 +14348,21 @@ select.form-input {
     if (error || !profile) {
       showToast('یہ Member ID موجود نہیں: ' + verifyId, 'error');
       return;
+    }
+
+    if (profile.society_id) {
+      const { data: society, error: societyErr } = await sb.from('societies').select('name').eq('id', profile.society_id).maybeSingle();
+      if (societyErr) console.error('[public verify] society lookup failed, non-fatal', { society_id: profile.society_id, error: societyErr });
+      profile.societies = society || null;
+    } else {
+      profile.societies = null;
+    }
+    if (profile.chapter_id) {
+      const { data: chapter, error: chapterErr } = await sb.from('chapters').select('name').eq('id', profile.chapter_id).maybeSingle();
+      if (chapterErr) console.error('[public verify] chapter lookup failed, non-fatal', { chapter_id: profile.chapter_id, error: chapterErr });
+      profile.chapters = chapter || null;
+    } else {
+      profile.chapters = null;
     }
 
     if (profile.status === 'active') {
@@ -14691,9 +14733,12 @@ select.form-input {
       return;
     }
 
+    // Same fix as openMemberCardById: no embedded relationship syntax (caused a confirmed
+    // HTTP 400 there). Direct columns + a separate, non-fatal society lookup by society_id.
+    // .single() kept as-is — unchanged semantics from before this fix.
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, status, societies!profiles_society_id_fkey(name)')
+      .select('full_name, member_id, status, society_id')
       .eq('member_id', v)
       .single();
 
@@ -14704,7 +14749,12 @@ select.form-input {
       return;
     }
 
-    const societyName = profile.societies ? profile.societies.name : '—';
+    let societyName = '—';
+    if (profile.society_id) {
+      const { data: society, error: societyErr } = await sb.from('societies').select('name').eq('id', profile.society_id).maybeSingle();
+      if (societyErr) console.error('[verifyId] society lookup failed, non-fatal', { society_id: profile.society_id, error: societyErr });
+      societyName = society ? society.name : '—';
+    }
     const isActive = profile.status === 'active';
 
     r.className = 'ver-result ver-valid';
@@ -15048,16 +15098,28 @@ select.form-input {
 
   async function viewMember(id) {
     window._viewMemberModalId = id;
+    // Same fix as openMemberCardById: no embedded relationship syntax (confirmed HTTP 400
+    // there). Direct columns + separate, non-fatal society/chapter lookups by id.
     const { data: m, error } = await sb
       .from('profiles')
-      .select('member_id, full_name, phone, bio, role, status, province, avatar_url, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('member_id, full_name, phone, bio, role, status, province, avatar_url, society_id, chapter_id')
       .eq('id', id)
       .single();
 
     if (error || !m) { console.error('[viewMember] profile fetch failed for id', id, error); showToast('ممبر کی تفصیل لوڈ نہیں ہو سکی', 'error'); return; }
 
-    const societyName = m.societies ? m.societies.name : '—';
-    const chapterName = m.chapters ? m.chapters.name : '—';
+    let societyName = '—';
+    if (m.society_id) {
+      const { data: society, error: societyErr } = await sb.from('societies').select('name').eq('id', m.society_id).maybeSingle();
+      if (societyErr) console.error('[viewMember] society lookup failed, non-fatal', { society_id: m.society_id, error: societyErr });
+      societyName = society ? society.name : '—';
+    }
+    let chapterName = '—';
+    if (m.chapter_id) {
+      const { data: chapter, error: chapterErr } = await sb.from('chapters').select('name').eq('id', m.chapter_id).maybeSingle();
+      if (chapterErr) console.error('[viewMember] chapter lookup failed, non-fatal', { chapter_id: m.chapter_id, error: chapterErr });
+      chapterName = chapter ? chapter.name : '—';
+    }
 
     document.getElementById('vmName').textContent = m.full_name || '—';
     document.getElementById('vmMemberId').textContent = m.member_id || '—';
