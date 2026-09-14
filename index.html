@@ -7158,6 +7158,22 @@ select.form-input {
           </select>
         </div>
         <div class="form-group">
+          <label for="certProgramName">Program / Course Name (Optional)</label>
+          <input type="text" id="certProgramName" class="form-input" placeholder="e.g., Advanced Moot Court Training" />
+        </div>
+        <div class="form-group">
+          <label for="certSocietySelect">Society (Optional)</label>
+          <select id="certSocietySelect" class="form-input">
+            <option value="">-- None --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="certChapterSelect">Chapter (Optional)</label>
+          <select id="certChapterSelect" class="form-input">
+            <option value="">-- None --</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="certCompletionDate">Completion Date (Optional)</label>
           <input type="date" id="certCompletionDate" class="form-input" />
         </div>
@@ -7168,6 +7184,10 @@ select.form-input {
         <div class="form-group">
           <label for="certDuration">Duration (Optional)</label>
           <input type="text" id="certDuration" class="form-input" placeholder="e.g., 6 weeks" />
+        </div>
+        <div class="form-group">
+          <label for="certBody">Certificate Body (Optional — leave blank to use the default professional statement)</label>
+          <textarea id="certBody" class="form-input" rows="3" placeholder="Custom certificate wording…"></textarea>
         </div>
         <div class="form-group">
           <label for="certNotes">Notes (Optional)</label>
@@ -12089,12 +12109,35 @@ select.form-input {
     });
   }
 
+  /* ── Admin: populate Society/Chapter dropdowns in the Issue Certificate modal
+     (same existing societies/chapters tables already used by the document-generation
+     dropdowns — no new relationship, just reused here). ── */
+  async function populateCertSocietySelect() {
+    const sel = document.getElementById('certSocietySelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- None --</option>';
+    const { data: socs, error } = await sb.from('societies').select('id, name').order('name');
+    if (error || !socs) return;
+    socs.forEach(s => { const o = document.createElement('option'); o.value = s.id; o.textContent = s.name; sel.appendChild(o); });
+  }
+
+  async function populateCertChapterSelect() {
+    const sel = document.getElementById('certChapterSelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- None --</option>';
+    const { data: chaps, error } = await sb.from('chapters').select('id, name').order('name');
+    if (error || !chaps) return;
+    chaps.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
+  }
+
   function openIssueCertificateModal() {
     document.getElementById('issueCertificateForm').reset();
     document.getElementById('certIssueDate').value = new Date().toISOString().split('T')[0];
     populateCertMemberSelect();
     populateCertTemplateSelect();
     populateCertCourseSelect();
+    populateCertSocietySelect();
+    populateCertChapterSelect();
     openModal('issueCertificateModal');
   }
 
@@ -12110,12 +12153,17 @@ select.form-input {
     const grade = frm.querySelector('#certGrade').value.trim() || null;
     const duration = frm.querySelector('#certDuration').value.trim() || null;
     const notes = frm.querySelector('#certNotes').value.trim() || null;
+    const program_name = frm.querySelector('#certProgramName').value.trim() || null;
+    const society_id = frm.querySelector('#certSocietySelect').value || null;
+    const chapter_id = frm.querySelector('#certChapterSelect').value || null;
+    const certificate_body = frm.querySelector('#certBody').value.trim() || null;
 
     if (!member_id) { showToast('براہ کرم ایک ممبر منتخب کریں', 'error'); return; }
 
     const { error } = await sb.from('certificates').insert({
       member_id, certificate_title, certificate_type, issue_date, expiry_date, notes, status: 'active',
-      template_id, course_id, completion_date, grade, duration
+      template_id, course_id, completion_date, grade, duration,
+      program_name, society_id, chapter_id, certificate_body
     });
 
     if (error) {
@@ -12515,7 +12563,8 @@ select.form-input {
     if (myToken !== _certRenderToken) return; // a newer certificate view started while this was loading
     if (error || !c) { showToast('سرٹیفکیٹ لوڈ نہیں ہو سکا', 'error'); return; }
 
-    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+    const { data: prof, error: profError } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+    if (profError) console.error('[Certificate] profile fetch failed for member_id', c.member_id, profError);
     if (myToken !== _certRenderToken) return; // stale — a newer view has since started
     await renderCertificateView(c, prof, myToken);
   }
@@ -13682,7 +13731,7 @@ select.form-input {
 
     const { data: c, error } = await sb
       .from('certificates')
-      .select('certificate_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name, member_id')
+      .select('certificate_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name, society_id, chapter_id, certificate_body, member_id')
       .eq('certificate_id', certId)
       .single();
 
@@ -13691,7 +13740,8 @@ select.form-input {
       return;
     }
 
-    const { data: prof } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+    const { data: prof, error: profError } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
+    if (profError) console.error('[Certificate verify] profile fetch failed for member_id', c.member_id, profError);
 
     if (c.status === 'active') {
       showToast('✓ سرٹیفکیٹ تصدیق شدہ' + (prof ? ' — ' + prof.full_name : ''));
