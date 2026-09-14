@@ -7138,74 +7138,6 @@ select.form-input {
   </div>
 </div>
 
-<!-- Digital ID Card Modal -->
-<div class="modal" id="idCardModal" role="dialog" aria-modal="true" aria-labelledby="idCardTitle">
-  <div class="modal-box" style="max-width:380px;">
-    <div class="modal-head">
-      <h3 id="idCardTitle">Digital Member ID</h3>
-      <button class="modal-close" onclick="closeModal('idCardModal')" aria-label="Close"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="modal-body">
-      <!-- id-card-face: default GOLD canvas covers the entire card, no white surround in print/PDF (Part 9/11) -->
-      <div id="idCardFront" class="id-card-face" style="background:linear-gradient(150deg,#cfa74a,#b9862a 55%,#a9761f);border-radius:16px;padding:1.1rem 1.2rem 1rem;color:#241a06;text-align:center;position:relative;overflow:hidden;box-sizing:border-box;">
-        <!-- HEADER: logo left + bilingual SHAOOR/شعور + MEMBERSHIP CARD/ممبرشپ کارڈ -->
-        <div id="idHeaderRow" style="display:flex;align-items:center;gap:.5rem;text-align:start;margin-bottom:.5rem;">
-          <img id="idLogoImg" src="" alt="" style="display:none;flex:0 0 auto;width:40px;height:40px;object-fit:contain;" />
-          <div id="idOrgName" style="flex:1;line-height:1.15;">
-            <div id="idOrgNameEn" style="font-family:var(--ff-display);font-weight:900;letter-spacing:1px;color:#241a06;font-size:1.05rem;">SHAOOR</div>
-            <div id="idOrgNameUr" class="lang-ur" style="font-weight:700;font-size:.85rem;color:#241a06;">شعور</div>
-          </div>
-        </div>
-        <div id="idCardSubtitleRow" style="margin-bottom:.6rem;">
-          <div id="idCardSubtitleEn" style="font-size:.62rem;letter-spacing:2px;font-weight:700;color:#241a06;text-transform:uppercase;">Membership Card</div>
-          <div id="idCardSubtitleUr" class="lang-ur" style="font-size:.68rem;color:#241a06;">ممبرشپ کارڈ</div>
-        </div>
-        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.4rem 0;"></div>
-
-        <!-- MEMBER PHOTO -->
-        <img id="idAvatarImg" src="" alt="" style="width:74px;height:74px;border-radius:50%;object-fit:cover;border:3px solid rgba(36,26,6,.4);display:none;margin:.5rem auto .5rem;background:#fff;" />
-        <div id="idAvatarPlaceholder" style="width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:.5rem auto .5rem;color:#241a06;"><i class="fas fa-user"></i></div>
-
-        <div id="idName" style="font-weight:800;font-size:1.02rem;margin-bottom:.35rem;color:#241a06;">—</div>
-        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.35rem 0;"></div>
-
-        <!-- MEMBER INFORMATION — two-column, empty fields suppressed by JS (Part 7 / Part 2) -->
-        <div id="idInfoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.15rem .6rem;text-align:start;font-size:.68rem;color:#241a06;margin-bottom:.4rem;">
-          <div id="idEmailRow" style="overflow-wrap:anywhere;"><i class="fas fa-envelope" style="opacity:.6;"></i> <span id="idEmail"></span></div>
-          <div id="idPhoneRow" style="overflow-wrap:anywhere;direction:ltr;unicode-bidi:embed;"><i class="fas fa-phone" style="opacity:.6;"></i> <span id="idPhone"></span></div>
-          <div id="idMemberIdRow" style="direction:ltr;unicode-bidi:embed;"><b>ID:</b> <span id="idMemberId">—</span></div>
-          <div id="idRoleRow"><b>Role:</b> <span id="idRole" style="text-transform:capitalize;">—</span></div>
-          <div id="idSocietyRow"><b>Society:</b> <span id="idSociety"></span></div>
-          <div id="idChapterRow"><b>Chapter:</b> <span id="idChapter"></span></div>
-          <div id="idProvinceRow"><b>Province:</b> <span id="idProvince"></span></div>
-          <div id="idStatusRow"><b>Status:</b> <span id="idStatus" style="text-transform:capitalize;"></span></div>
-        </div>
-        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.4rem 0 .55rem;"></div>
-
-        <!-- FOOTER: founder signature (left) · original seal + verification code (center) · QR (right) — Part 3 -->
-        <div id="idFooterRow" style="display:grid;grid-template-columns:1fr 1.4fr 1fr;align-items:end;gap:.3rem;">
-          <div id="idSigCol" style="text-align:start;">
-            <img id="idFounderSigImg" src="" alt="" style="display:none;max-width:52px;max-height:26px;object-fit:contain;" />
-          </div>
-          <div id="idSealCol" style="text-align:center;">
-            <img id="idSealImg" src="" alt="Official Seal" style="display:none;width:40px;height:40px;object-fit:contain;margin:0 auto .15rem;" />
-            <div id="idVerificationBlock" style="display:none;">
-              <div style="font-size:.5rem;letter-spacing:.5px;color:#241a06;opacity:.75;">VERIFICATION ID</div>
-              <div id="idVerificationCode" style="font-size:.6rem;font-weight:700;color:#241a06;direction:ltr;unicode-bidi:embed;">—</div>
-            </div>
-          </div>
-          <div id="idQrCol" style="text-align:end;">
-            <div id="idQrCode" style="background:#fff;display:inline-block;padding:4px;border-radius:6px;line-height:0;"></div>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;gap:.6rem;margin-top:.75rem;">
-        <button class="btn btn-outline" type="button" style="flex:1;justify-content:center;" onclick="printIdCard()"><i class="fas fa-print"></i> Print</button>
-        <button class="btn btn-outline" type="button" style="flex:1;justify-content:center;" onclick="downloadCardAsPDF()"><i class="fas fa-file-pdf"></i> Save PDF</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Edit Member Modal (Admin) -->
 <div class="modal" id="editMemberModal" role="dialog" aria-modal="true" aria-labelledby="editMemberTitle">
@@ -12093,6 +12025,9 @@ select.form-input {
       applyCardConfig(cardBox, null, brand);
     }
 
+    // The card modal itself is the very last modal in the DOM (moved there — see end of <body>),
+    // so it always paints on top of whichever modal it was triggered from (member profile, admin
+    // template designer preview, etc.) without needing to force-close anything else.
     openModal('idCardModal');
   }
 
@@ -14975,11 +14910,26 @@ select.form-input {
 
     const { error } = await sb.from('profiles').update({ status: newStatus }).eq('id', id);
     if (error) {
+      console.error('[setMemberStatus] status update failed for', id, newStatus, error);
       showToast('اپڈیٹ ناکام: ' + error.message, 'error');
       return;
     }
+
+    // Founder approval → member card must become available immediately (no per-member card
+    // record to create — see ensureMemberCard's own comment for why — this just confirms the
+    // now-active profile is card-ready and logs it, matching the required approval→card chain).
+    if (newStatus === 'active') {
+      const { data: approvedProfile, error: fetchErr } = await sb
+        .from('profiles')
+        .select('id, member_id, full_name, status')
+        .eq('id', id)
+        .maybeSingle();
+      if (fetchErr) console.error('[setMemberStatus] could not re-fetch approved profile for card readiness check', id, fetchErr);
+      else ensureMemberCard(approvedProfile);
+    }
+
     showToast('ممبر کا status اپڈیٹ ہو گیا۔');
-    loadMembersAdmin();
+    loadMembersAdmin(); // rebuilds the table — the Card button is unconditional per row, so it's included immediately, no reload needed
   }
 
   /* ── Permanently Delete a Suspended Member (profile + matching application) ── */
@@ -16391,5 +16341,75 @@ select.form-input {
        This trailing "appended last so it wins the cascade" patch, and the 8 other
        conflicting copies it was fighting, have all been removed. */
   </style>
+
+<!-- Digital ID Card Modal -->
+<div class="modal" id="idCardModal" role="dialog" aria-modal="true" aria-labelledby="idCardTitle">
+  <div class="modal-box" style="max-width:380px;">
+    <div class="modal-head">
+      <h3 id="idCardTitle">Digital Member ID</h3>
+      <button class="modal-close" onclick="closeModal('idCardModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <!-- id-card-face: default GOLD canvas covers the entire card, no white surround in print/PDF (Part 9/11) -->
+      <div id="idCardFront" class="id-card-face" style="background:linear-gradient(150deg,#cfa74a,#b9862a 55%,#a9761f);border-radius:16px;padding:1.1rem 1.2rem 1rem;color:#241a06;text-align:center;position:relative;overflow:hidden;box-sizing:border-box;">
+        <!-- HEADER: logo left + bilingual SHAOOR/شعور + MEMBERSHIP CARD/ممبرشپ کارڈ -->
+        <div id="idHeaderRow" style="display:flex;align-items:center;gap:.5rem;text-align:start;margin-bottom:.5rem;">
+          <img id="idLogoImg" src="" alt="" style="display:none;flex:0 0 auto;width:40px;height:40px;object-fit:contain;" />
+          <div id="idOrgName" style="flex:1;line-height:1.15;">
+            <div id="idOrgNameEn" style="font-family:var(--ff-display);font-weight:900;letter-spacing:1px;color:#241a06;font-size:1.05rem;">SHAOOR</div>
+            <div id="idOrgNameUr" class="lang-ur" style="font-weight:700;font-size:.85rem;color:#241a06;">شعور</div>
+          </div>
+        </div>
+        <div id="idCardSubtitleRow" style="margin-bottom:.6rem;">
+          <div id="idCardSubtitleEn" style="font-size:.62rem;letter-spacing:2px;font-weight:700;color:#241a06;text-transform:uppercase;">Membership Card</div>
+          <div id="idCardSubtitleUr" class="lang-ur" style="font-size:.68rem;color:#241a06;">ممبرشپ کارڈ</div>
+        </div>
+        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.4rem 0;"></div>
+
+        <!-- MEMBER PHOTO -->
+        <img id="idAvatarImg" src="" alt="" style="width:74px;height:74px;border-radius:50%;object-fit:cover;border:3px solid rgba(36,26,6,.4);display:none;margin:.5rem auto .5rem;background:#fff;" />
+        <div id="idAvatarPlaceholder" style="width:74px;height:74px;border-radius:50%;background:rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:.5rem auto .5rem;color:#241a06;"><i class="fas fa-user"></i></div>
+
+        <div id="idName" style="font-weight:800;font-size:1.02rem;margin-bottom:.35rem;color:#241a06;">—</div>
+        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.35rem 0;"></div>
+
+        <!-- MEMBER INFORMATION — two-column, empty fields suppressed by JS (Part 7 / Part 2) -->
+        <div id="idInfoGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.15rem .6rem;text-align:start;font-size:.68rem;color:#241a06;margin-bottom:.4rem;">
+          <div id="idEmailRow" style="overflow-wrap:anywhere;"><i class="fas fa-envelope" style="opacity:.6;"></i> <span id="idEmail"></span></div>
+          <div id="idPhoneRow" style="overflow-wrap:anywhere;direction:ltr;unicode-bidi:embed;"><i class="fas fa-phone" style="opacity:.6;"></i> <span id="idPhone"></span></div>
+          <div id="idMemberIdRow" style="direction:ltr;unicode-bidi:embed;"><b>ID:</b> <span id="idMemberId">—</span></div>
+          <div id="idRoleRow"><b>Role:</b> <span id="idRole" style="text-transform:capitalize;">—</span></div>
+          <div id="idSocietyRow"><b>Society:</b> <span id="idSociety"></span></div>
+          <div id="idChapterRow"><b>Chapter:</b> <span id="idChapter"></span></div>
+          <div id="idProvinceRow"><b>Province:</b> <span id="idProvince"></span></div>
+          <div id="idStatusRow"><b>Status:</b> <span id="idStatus" style="text-transform:capitalize;"></span></div>
+        </div>
+        <div class="id-divider" style="height:1px;background:rgba(36,26,6,.35);margin:.4rem 0 .55rem;"></div>
+
+        <!-- FOOTER: founder signature (left) · original seal + verification code (center) · QR (right) — Part 3 -->
+        <div id="idFooterRow" style="display:grid;grid-template-columns:1fr 1.4fr 1fr;align-items:end;gap:.3rem;">
+          <div id="idSigCol" style="text-align:start;">
+            <img id="idFounderSigImg" src="" alt="" style="display:none;max-width:52px;max-height:26px;object-fit:contain;" />
+          </div>
+          <div id="idSealCol" style="text-align:center;">
+            <img id="idSealImg" src="" alt="Official Seal" style="display:none;width:40px;height:40px;object-fit:contain;margin:0 auto .15rem;" />
+            <div id="idVerificationBlock" style="display:none;">
+              <div style="font-size:.5rem;letter-spacing:.5px;color:#241a06;opacity:.75;">VERIFICATION ID</div>
+              <div id="idVerificationCode" style="font-size:.6rem;font-weight:700;color:#241a06;direction:ltr;unicode-bidi:embed;">—</div>
+            </div>
+          </div>
+          <div id="idQrCol" style="text-align:end;">
+            <div id="idQrCode" style="background:#fff;display:inline-block;padding:4px;border-radius:6px;line-height:0;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.6rem;margin-top:.75rem;">
+        <button class="btn btn-outline" type="button" style="flex:1;justify-content:center;" onclick="printIdCard()"><i class="fas fa-print"></i> Print</button>
+        <button class="btn btn-outline" type="button" style="flex:1;justify-content:center;" onclick="downloadCardAsPDF()"><i class="fas fa-file-pdf"></i> Save PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
