@@ -11922,16 +11922,50 @@ select.form-input {
   /* Admin/profile entry point — resolves ANY member's card by their profiles.id (Part 6/7),
      independent of who is logged in. Reuses the exact same renderIdCard() canonical renderer. */
   async function openMemberCardById(id) {
-    if (!id) { console.error('[openMemberCardById] missing id'); return; }
+    console.log('[CARD 1] target id', id);
+    if (!id) { console.error('[openMemberCardById] missing id'); showToast('ممبر کارڈ لوڈ نہیں ہو سکا', 'error'); return; }
+
     const { data: profile, error } = await sb
       .from('profiles')
       .select('id, full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
       .eq('id', id)
-      .single();
-    if (error || !profile) { console.error('[openMemberCardById] profile fetch failed for id', id, error); showToast('ممبر کارڈ لوڈ نہیں ہو سکا', 'error'); return; }
+      .maybeSingle();
+
+    console.log('[CARD 2] profile query result', { profile, error });
+
+    // Distinguish an actual Supabase/PostgREST error from a legitimate "row not found" —
+    // maybeSingle() returns { data: null, error: null } for zero rows instead of throwing,
+    // so these are two different failure modes and must not be collapsed into one message.
+    if (error) {
+      console.error('[CARD LOAD FAILURE — QUERY ERROR]', {
+        stage: 'profiles fetch',
+        memberId: id,
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
+      showToast('ممبر کارڈ لوڈ نہیں ہو سکا (ڈیٹا بیس خرابی)', 'error');
+      return;
+    }
+    if (!profile) {
+      console.error('[CARD LOAD FAILURE — NO ROW]', { stage: 'profiles fetch', memberId: id });
+      showToast('ممبر کارڈ لوڈ نہیں ہو سکا (پروفائل نہیں ملی)', 'error');
+      return;
+    }
+
     const ensured = ensureMemberCard(profile);
-    if (!ensured) return;
-    await renderIdCard(ensured);
+    console.log('[CARD 3] ensureMemberCard result', ensured);
+    if (!ensured) { console.error('[CARD LOAD FAILURE — ensureMemberCard returned null]', { memberId: id }); showToast('ممبر کارڈ لوڈ نہیں ہو سکا', 'error'); return; }
+
+    try {
+      console.log('[CARD 4] renderIdCard input', ensured);
+      await renderIdCard(ensured);
+      console.log('[CARD 5] renderIdCard completed');
+    } catch (renderErr) {
+      console.error('[CARD LOAD FAILURE — renderIdCard threw]', { memberId: id, error: renderErr, stack: renderErr && renderErr.stack });
+      showToast('ممبر کارڈ لوڈ نہیں ہو سکا (کارڈ رینڈر خرابی)', 'error');
+    }
   }
 
   /* Shared renderer: populates the ID card modal for a given profile row, applies the
