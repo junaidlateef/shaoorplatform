@@ -11930,9 +11930,13 @@ select.form-input {
     // constraint name (not verifiable from here — no schema access), we fetch only direct
     // columns and resolve society_id/chapter_id to display names with separate, simple
     // queries. This sidesteps the relationship-name question entirely.
+    // SECOND confirmed HTTP 400 (this time on the plain-column query, no embeds at all) shows
+    // 'email' is not a real column on profiles — no other profiles query in this file
+    // successfully selects it. Dropped here; renderIdCard already does `profile.email || ''`
+    // so the email row on the card just renders blank instead of erroring.
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('id, full_name, email, phone, member_id, role, status, avatar_url, province, society_id, chapter_id')
+      .select('id, full_name, phone, member_id, role, status, avatar_url, province, society_id, chapter_id')
       .eq('id', id)
       .maybeSingle();
 
@@ -12143,9 +12147,13 @@ select.form-input {
     const userId = userData?.user?.id;
     if (!userId) return;
 
+    // Same fix as openMemberCardById: 'email' is not a real profiles column (confirmed by
+    // the earlier HTTP 400 on a plain-column query), and the embedded relationship syntax
+    // also caused a confirmed 400. Direct columns + separate, non-fatal society/chapter
+    // lookups by id, same proven pattern.
     const { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, email, phone, member_id, role, status, avatar_url, province, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .select('full_name, member_id, role, status, avatar_url, province, society_id, chapter_id')
       .eq('id', userId)
       .single();
 
@@ -12153,6 +12161,21 @@ select.form-input {
       console.error('[openDigitalId] profile fetch failed for user', userId, error);
       showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
       return;
+    }
+
+    if (profile.society_id) {
+      const { data: society, error: societyErr } = await sb.from('societies').select('name').eq('id', profile.society_id).maybeSingle();
+      if (societyErr) console.error('[openDigitalId] society lookup failed, non-fatal', { society_id: profile.society_id, error: societyErr });
+      profile.societies = society || null;
+    } else {
+      profile.societies = null;
+    }
+    if (profile.chapter_id) {
+      const { data: chapter, error: chapterErr } = await sb.from('chapters').select('name').eq('id', profile.chapter_id).maybeSingle();
+      if (chapterErr) console.error('[openDigitalId] chapter lookup failed, non-fatal', { chapter_id: profile.chapter_id, error: chapterErr });
+      profile.chapters = chapter || null;
+    } else {
+      profile.chapters = null;
     }
 
     const ensured = ensureMemberCard(profile);
