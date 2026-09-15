@@ -7056,52 +7056,109 @@ select.form-input {
            so the exact same markup can be cloned into the print/PDF popup (see
            buildCardPrintHtml) without needing the app's external stylesheet. -->
       <div id="idCardFront" class="id-card-face" style="aspect-ratio:1.586/1;width:100%;max-width:428px;margin:0 auto;background:var(--cream);border-radius:14px;border:1px solid var(--gold);color:var(--ink);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 42px rgba(11,31,51,.28);font-family:var(--ff-body,inherit);">
-        <!-- Header: logo | شعور / SHAOOR | MEMBERSHIP CARD -->
-        <div style="display:flex;align-items:center;gap:.4rem;padding:.38rem .6rem;background:linear-gradient(90deg,var(--navy),#142F4A);border-bottom:2px solid var(--gold);flex:none;">
-          <img id="idLogoImg" src="" alt="" style="display:none;width:22px;height:22px;object-fit:contain;border-radius:4px;flex:none;" />
-          <div id="idOrgName" style="font-weight:900;letter-spacing:.5px;color:var(--gold);font-size:.66rem;white-space:nowrap;flex:none;">SHAOOR</div>
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.05;">
-            <div style="font-family:'Noto Nastaliq Urdu',serif;color:var(--gold3);font-size:.85rem;font-weight:700;">شعور</div>
-            <div style="color:#fff;font-size:.46rem;font-weight:800;letter-spacing:1.1px;">SHAOOR</div>
+        <!-- Header: logo+tagline | شعور / SHAOOR + Urdu tagline | slanted MEMBERSHIP CARD ribbon -->
+        <div style="display:flex;align-items:center;gap:.4rem;padding:.4rem .55rem .4rem .6rem;background:var(--cream);border-bottom:1px solid var(--border);flex:none;position:relative;">
+          <img id="idLogoImg" src="" alt="" style="display:none;width:28px;height:28px;object-fit:contain;flex:none;" />
+          <div style="flex:none;line-height:1.05;">
+            <div id="idOrgName" style="font-family:var(--ff-display);font-weight:800;letter-spacing:.3px;color:var(--navy);font-size:.72rem;white-space:nowrap;">SHAOOR</div>
+            <div style="font-size:.28rem;letter-spacing:.9px;color:var(--gold);text-transform:uppercase;font-weight:700;white-space:nowrap;">Learn &nbsp;|&nbsp; Grow &nbsp;|&nbsp; Serve</div>
           </div>
-          <div style="flex:none;text-align:right;line-height:1.2;">
-            <div style="color:var(--gold);font-size:.44rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;">Membership Card</div>
-            <div style="color:rgba(255,255,255,.68);font-size:.38rem;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;">Digital Member ID</div>
+          <div style="width:1px;align-self:stretch;background:var(--border);flex:none;"></div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.05;">
+            <div style="font-family:'Noto Nastaliq Urdu',serif;color:var(--gold);font-size:.95rem;font-weight:700;">شعور</div>
+            <div style="color:var(--navy);font-size:.5rem;font-weight:800;letter-spacing:1.2px;">SHAOOR</div>
+            <div style="font-family:'Noto Nastaliq Urdu',serif;color:var(--muted);font-size:.36rem;margin-top:.05rem;">علم • عمل • بہتر معاشرہ</div>
+          </div>
+          <div style="width:1px;align-self:stretch;background:var(--border);flex:none;"></div>
+          <div style="flex:none;background:linear-gradient(90deg,var(--gold),var(--navy) 22%);clip-path:polygon(14% 0,100% 0,100% 100%,0 100%);padding:.3rem .5rem .3rem .65rem;text-align:right;line-height:1.2;margin:-.4rem -.55rem -.4rem 0;">
+            <div style="color:#fff;font-size:.42rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;">Membership Card</div>
+            <div style="color:var(--gold3);font-size:.34rem;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;">Digital Member ID</div>
           </div>
         </div>
 
-        <!-- Body: photo+QR | member details | Member ID panel + signature -->
-        <div style="display:flex;gap:.45rem;padding:.45rem .55rem;flex:1;min-height:0;">
+        <!-- Body: photo+QR | member details (icon rows) | Member ID panel + watermark + signature -->
+        <div style="display:flex;gap:.45rem;padding:.4rem .55rem;flex:1;min-height:0;">
           <!-- Left: photo + QR -->
-          <div style="flex:none;width:56px;display:flex;flex-direction:column;align-items:center;gap:.22rem;">
-            <img id="idAvatarImg" src="" alt="" style="width:54px;height:54px;border-radius:8px;object-fit:cover;border:2px solid var(--gold);display:none;" />
-            <div id="idAvatarPlaceholder" style="width:54px;height:54px;border-radius:8px;background:var(--gold-soft);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:var(--navy);"><i class="fas fa-user"></i></div>
+          <div style="flex:none;width:58px;display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+            <img id="idAvatarImg" src="" alt="" style="width:56px;height:56px;border-radius:8px;object-fit:cover;border:2px solid var(--gold);display:none;" />
+            <div id="idAvatarPlaceholder" style="width:56px;height:56px;border-radius:8px;background:var(--gold-soft);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--navy);"><i class="fas fa-user"></i></div>
             <div id="idQrCode" style="background:#fff;display:inline-block;padding:2px;border-radius:5px;line-height:0;border:1px solid var(--border);"></div>
-            <div style="font-size:.34rem;color:var(--muted);text-align:center;letter-spacing:.2px;">Scan to Verify</div>
+            <div style="font-size:.32rem;color:var(--navy);text-align:center;letter-spacing:.2px;font-weight:600;"><i class="fas fa-shield-alt" style="color:var(--gold);margin-right:.15rem;"></i>Scan to Verify</div>
           </div>
 
-          <!-- Center: member information column (high-contrast dark text on cream) -->
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.06rem;text-align:left;">
-            <div id="idName" style="font-weight:800;font-size:.78rem;line-height:1.15;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
-            <div style="font-size:.44rem;color:var(--muted);margin-top:.08rem;font-weight:600;">Member ID</div>
-            <div id="idMemberId" style="color:var(--navy);font-weight:700;font-size:.56rem;letter-spacing:.3px;direction:ltr;unicode-bidi:embed;">—</div>
-            <div id="idRole" style="font-size:.48rem;color:var(--ink);text-transform:capitalize;margin-top:.1rem;font-weight:600;"></div>
-            <div id="idSociety" style="font-size:.46rem;color:var(--ink);"></div>
-            <div id="idChapter" style="font-size:.46rem;color:var(--ink);"></div>
-            <div id="idProvince" style="font-size:.46rem;color:var(--ink);"></div>
-            <div id="idMembershipType" style="font-size:.46rem;color:var(--ink);"></div>
-            <div id="idStatus" style="margin-top:.14rem;display:inline-flex;align-items:center;font-size:.42rem;font-weight:700;padding:.05rem .32rem;border-radius:20px;width:fit-content;text-transform:capitalize;"></div>
-          </div>
+          <!-- Center: member information — icon + label/value rows, divided, high-contrast navy text -->
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:0;text-align:left;">
+            <div id="idName" style="font-weight:800;font-size:.76rem;line-height:1.15;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:.18rem;">—</div>
 
-          <!-- Right: dedicated Member ID panel + Founder signature -->
-          <div style="flex:none;width:76px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;gap:.25rem;">
-            <div style="background:var(--navy);border:1px solid var(--gold);border-radius:6px;padding:.28rem .18rem;width:100%;text-align:center;">
-              <div style="color:var(--gold);font-size:.32rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;">Member ID</div>
-              <div id="idMemberIdPanel" style="color:#fff;font-weight:800;font-size:.46rem;letter-spacing:.2px;direction:ltr;unicode-bidi:embed;margin-top:.1rem;word-break:break-all;">—</div>
+            <div style="display:flex;align-items:flex-start;gap:.22rem;padding:.08rem 0;border-bottom:1px solid var(--border);">
+              <i class="fas fa-id-badge" style="color:var(--navy);font-size:.4rem;margin-top:.08rem;flex:none;width:.5rem;"></i>
+              <div style="min-width:0;">
+                <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Member ID</div>
+                <div id="idMemberId" style="color:var(--navy);font-weight:700;font-size:.46rem;letter-spacing:.2px;direction:ltr;unicode-bidi:embed;">—</div>
+              </div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:.08rem;">
-              <img id="idFounderSigImg" src="" alt="" style="display:none;max-width:58px;max-height:20px;object-fit:contain;" />
-              <div id="idFounderName" style="font-size:.38rem;font-weight:700;color:var(--navy);white-space:nowrap;"></div>
+            <div style="display:flex;align-items:flex-start;gap:.22rem;padding:.08rem 0;border-bottom:1px solid var(--border);">
+              <i class="fas fa-briefcase" style="color:var(--navy);font-size:.4rem;margin-top:.08rem;flex:none;width:.5rem;"></i>
+              <div style="min-width:0;">
+                <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Designation / Role</div>
+                <div id="idRole" style="font-size:.44rem;color:var(--navy);font-weight:700;text-transform:capitalize;"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:.22rem;padding:.08rem 0;border-bottom:1px solid var(--border);">
+              <i class="fas fa-users" style="color:var(--navy);font-size:.4rem;margin-top:.08rem;flex:none;width:.5rem;"></i>
+              <div style="min-width:0;">
+                <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Society</div>
+                <div id="idSociety" style="font-size:.44rem;color:var(--navy);font-weight:700;"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:.22rem;padding:.08rem 0;border-bottom:1px solid var(--border);">
+              <i class="fas fa-landmark" style="color:var(--navy);font-size:.4rem;margin-top:.08rem;flex:none;width:.5rem;"></i>
+              <div style="min-width:0;">
+                <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Chapter</div>
+                <div id="idChapter" style="font-size:.44rem;color:var(--navy);font-weight:700;"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:.22rem;padding:.08rem 0;border-bottom:1px solid var(--border);">
+              <i class="fas fa-map-marker-alt" style="color:var(--navy);font-size:.4rem;margin-top:.08rem;flex:none;width:.5rem;"></i>
+              <div style="min-width:0;">
+                <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Province</div>
+                <div id="idProvince" style="font-size:.44rem;color:var(--navy);font-weight:700;"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:.22rem;padding:.08rem 0;border-bottom:1px solid var(--border);">
+              <i class="fas fa-address-card" style="color:var(--navy);font-size:.4rem;margin-top:.08rem;flex:none;width:.5rem;"></i>
+              <div style="min-width:0;">
+                <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Membership Type</div>
+                <div id="idMembershipType" style="font-size:.44rem;color:var(--navy);font-weight:700;"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:.22rem;padding:.1rem 0 0;">
+              <i class="fas fa-check-circle" style="color:var(--navy);font-size:.4rem;margin-top:.1rem;flex:none;width:.5rem;"></i>
+              <div style="min-width:0;">
+                <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Status</div>
+                <div id="idStatus" style="margin-top:.06rem;display:inline-flex;align-items:center;font-size:.4rem;font-weight:700;padding:.05rem .32rem;border-radius:20px;width:fit-content;text-transform:capitalize;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="width:1px;align-self:stretch;background:var(--border);flex:none;"></div>
+
+          <!-- Right: dedicated Member ID + faded SHAOOR watermark + Founder signature -->
+          <div style="flex:none;width:88px;display:flex;flex-direction:column;align-items:center;position:relative;">
+            <div style="text-align:center;flex:none;">
+              <div style="color:var(--muted);font-size:.32rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;">Member ID</div>
+              <div id="idMemberIdPanel" style="color:var(--navy);font-weight:800;font-size:.52rem;letter-spacing:.2px;direction:ltr;unicode-bidi:embed;margin-top:.06rem;word-break:break-all;">—</div>
+            </div>
+            <!-- Faded decorative watermark — purely ornamental, mirrors the header logo/mark -->
+            <div style="flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:.16;gap:.05rem;">
+              <img id="idWatermarkLogo" src="" alt="" style="display:none;width:48px;height:48px;object-fit:contain;" />
+              <i id="idWatermarkIcon" class="fas fa-book-open" style="font-size:1.6rem;color:var(--navy);"></i>
+              <div style="font-family:'Noto Nastaliq Urdu',serif;color:var(--navy);font-size:.5rem;font-weight:700;">شعور</div>
+              <div style="color:var(--navy);font-size:.26rem;letter-spacing:.6px;font-weight:700;">SHAOOR</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:.04rem;flex:none;">
+              <img id="idFounderSigImg" src="" alt="" style="display:none;max-width:64px;max-height:20px;object-fit:contain;" />
+              <div id="idFounderName" style="font-size:.4rem;font-weight:700;color:var(--navy);white-space:nowrap;border-top:1px solid var(--border);padding-top:.06rem;margin-top:.04rem;"></div>
               <div style="font-size:.32rem;color:var(--muted);letter-spacing:.2px;">Founder &amp; Admin</div>
             </div>
           </div>
@@ -7110,6 +7167,7 @@ select.form-input {
         <!-- Footer -->
         <div style="display:flex;align-items:center;gap:.32rem;padding:.2rem .6rem;background:linear-gradient(90deg,var(--navy),#142F4A);border-top:2px solid var(--gold);flex:none;">
           <img id="idSealImg" src="" alt="" style="display:none;width:16px;height:16px;border-radius:50%;object-fit:cover;border:1px solid var(--gold);flex:none;" />
+          <div style="font-size:.34rem;color:var(--gold3);letter-spacing:.3px;">Together for a Better Society</div>
           <div style="font-size:.34rem;color:rgba(255,255,255,.6);margin-left:auto;letter-spacing:.3px;">Official SHAOOR Membership</div>
         </div>
       </div>
@@ -11745,15 +11803,23 @@ select.form-input {
     // Logo — sourced from brand.logo_url, never a template-uploaded/hardcoded image
     const logoEl = document.getElementById('idLogoImg');
     const orgNameEl = document.getElementById('idOrgName');
+    const watermarkLogoEl = document.getElementById('idWatermarkLogo');
+    const watermarkIconEl = document.getElementById('idWatermarkIcon');
     if (brand && brand.logo_url) {
       logoEl.src = brand.logo_url;
       logoEl.style.display = '';
       if (front.logoSize) { logoEl.style.width = front.logoSize + 'px'; logoEl.style.height = front.logoSize + 'px'; }
       orgNameEl.style.display = 'none';
+      // Decorative right-side watermark mirrors the same real logo asset — no new image is added.
+      if (watermarkLogoEl) { watermarkLogoEl.src = brand.logo_url; watermarkLogoEl.style.display = ''; }
+      if (watermarkIconEl) watermarkIconEl.style.display = 'none';
     } else {
       logoEl.style.display = 'none';
       orgNameEl.style.display = '';
       orgNameEl.textContent = (brand && brand.organization_name) || 'SHAOOR';
+      // No logo asset configured yet — fall back to the generic book icon already in the markup.
+      if (watermarkLogoEl) watermarkLogoEl.style.display = 'none';
+      if (watermarkIconEl) watermarkIconEl.style.display = '';
     }
 
     // Seal — only rendered if the template explicitly enables it, sourced from brand.seal_url
