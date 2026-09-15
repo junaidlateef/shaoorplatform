@@ -4044,8 +4044,8 @@ select.form-input {
       <div class="hero-inner">
         <div class="institutional-hero-copy" id="heroCopy" dir="ltr" lang="en">
 <div class="hero-lang-toggle" role="group" aria-label="Language / زبان">
-  <button type="button" class="hero-lang-btn active" id="heroLangEnBtn" onclick="shaoorSetHeroLang('en')">EN</button>
-  <button type="button" class="hero-lang-btn" id="heroLangUrBtn" onclick="shaoorSetHeroLang('ur')">اردو</button>
+  <button type="button" class="hero-lang-btn active" id="heroLangEnBtn" aria-pressed="true" onclick="shaoorSetHeroLang('en')">EN</button>
+  <button type="button" class="hero-lang-btn" id="heroLangUrBtn" aria-pressed="false" onclick="shaoorSetHeroLang('ur')">اردو</button>
 </div>
 <div class="hero-badge"><i class="fas fa-palette"></i> <span id="heroBadgeText">Pakistan's Creative Arts Platform</span></div>
         <h1 class="hero-title" id="heroTitle">WHERE ARTS<br><span class="gold-shimmer">TRANSFORM SOCIETY</span></h1>
@@ -4058,7 +4058,6 @@ select.form-input {
       </div>
         </div>
       </div>
-    </div>
   </section>
 
   <script>
@@ -4124,8 +4123,8 @@ select.form-input {
       el.classList.toggle('lang-ur', lang === 'ur');
     });
 
-    if (enBtn) enBtn.classList.toggle('active', lang === 'en');
-    if (urBtn) urBtn.classList.toggle('active', lang === 'ur');
+    if (enBtn) { enBtn.classList.toggle('active', lang === 'en'); enBtn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
+    if (urBtn) { urBtn.classList.toggle('active', lang === 'ur'); urBtn.setAttribute('aria-pressed', lang === 'ur' ? 'true' : 'false'); }
 
     try { localStorage.setItem('shaoor_hero_lang', lang); } catch (e) {}
   }
@@ -7140,8 +7139,8 @@ select.form-input {
            bar), EN/UR only, scoped to #memberDash. Does not touch admin UI, database
            values, or any other part of the site. -->
       <div class="member-lang-switch" role="group" aria-label="Language / زبان">
-        <button type="button" class="lang-btn" id="langBtnEn" onclick="setMemberLang('en')">EN</button>
-        <button type="button" class="lang-btn" id="langBtnUr" onclick="setMemberLang('ur')">اردو</button>
+        <button type="button" class="lang-btn" id="langBtnEn" aria-pressed="true" onclick="setMemberLang('en')">EN</button>
+        <button type="button" class="lang-btn" id="langBtnUr" aria-pressed="false" onclick="setMemberLang('ur')">اردو</button>
       </div>
       <span data-i18n="welcome">Welcome, <strong style="color:#fff;" id="dashMemberName">Member</strong></span>
       <button class="dash-logout" onclick="memberLogout()"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Logout</span></button>
@@ -7195,28 +7194,28 @@ select.form-input {
       <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
         <h3 class="dash-card-title"><i class="fas fa-certificate"></i> <span data-i18n="my_certificates">My Certificates</span></h3>
         <div id="myCertificatesList" style="display:grid;gap:.75rem;">
-          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;" data-i18n="loading">Loading…</div>
         </div>
       </div>
 
       <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
         <h3 class="dash-card-title"><i class="fas fa-file-signature"></i> <span data-i18n="my_documents">My Documents</span></h3>
         <div id="myDocumentsList" style="display:grid;gap:.75rem;">
-          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;" data-i18n="loading">Loading…</div>
         </div>
       </div>
 
       <div style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
         <h3 class="dash-card-title"><i class="fas fa-graduation-cap"></i> <span data-i18n="my_learning">My Learning</span></h3>
         <div id="myLearningList" style="display:grid;gap:.75rem;">
-          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;" data-i18n="loading">Loading…</div>
         </div>
       </div>
 
       <div class="dash-span-2" style="background:#fff;border-radius:16px;padding:2rem;box-shadow:0 4px 24px rgba(0,0,0,.06);">
         <h3 class="dash-card-title"><i class="fas fa-calendar-check"></i> <span data-i18n="events_attendance">Events — Attendance</span></h3>
         <div id="myEventsAttendanceList" style="display:grid;gap:.75rem;">
-          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+          <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;" data-i18n="loading">Loading…</div>
         </div>
       </div>
     </div>
@@ -12080,7 +12079,7 @@ select.form-input {
       view_id_card: 'View Digital ID Card',
       my_certificates: 'My Certificates', my_documents: 'My Documents',
       my_learning: 'My Learning', events_attendance: 'Events — Attendance',
-      view: 'View', download: 'Download',
+      view: 'View', download: 'Download', loading: 'Loading…',
       no_docs: 'No documents available yet.', no_certs: 'No certificates issued yet.'
     },
     ur: {
@@ -12094,7 +12093,7 @@ select.form-input {
       view_id_card: 'ڈیجیٹل آئی ڈی کارڈ دیکھیں',
       my_certificates: 'میرے سرٹیفکیٹس', my_documents: 'میری دستاویزات',
       my_learning: 'میری تعلیم', events_attendance: 'پروگرام — حاضری',
-      view: 'دیکھیں', download: 'ڈاؤن لوڈ',
+      view: 'دیکھیں', download: 'ڈاؤن لوڈ', loading: 'لوڈ ہو رہا ہے…',
       no_docs: 'ابھی کوئی دستاویز جاری نہیں ہوئی۔', no_certs: 'ابھی کوئی سرٹیفکیٹ جاری نہیں ہوا۔'
     }
   };
@@ -12132,8 +12131,8 @@ select.form-input {
     });
     var btnEn = document.getElementById('langBtnEn');
     var btnUr = document.getElementById('langBtnUr');
-    if (btnEn) btnEn.classList.toggle('active', lang === 'en');
-    if (btnUr) btnUr.classList.toggle('active', lang === 'ur');
+    if (btnEn) { btnEn.classList.toggle('active', lang === 'en'); btnEn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
+    if (btnUr) { btnUr.classList.toggle('active', lang === 'ur'); btnUr.setAttribute('aria-pressed', lang === 'ur' ? 'true' : 'false'); }
     // Re-render the dynamic lists so their in-language strings (View/Download/empty
     // states) refresh immediately, without re-fetching from Supabase.
     if (window._lastMyDocsUserId) loadMyDocuments(window._lastMyDocsUserId);
