@@ -5004,6 +5004,22 @@ select.form-input {
         </div>
       </div>
 
+      <!-- Admin: a single member's ISSUED documents (list, not the creation form) -->
+      <div class="modal" id="memberDocsModal">
+        <div class="modal-box" style="max-width:780px;">
+          <div class="modal-head">
+            <h3 id="memberDocsTitle">Member Documents</h3>
+            <button class="modal-close" onclick="closeModal('memberDocsModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+          </div>
+          <div style="padding:1.2rem 1.4rem;">
+            <div id="memberDocsList" style="display:grid;gap:.75rem;">
+              <div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>
+            </div>
+            <button class="btn btn-outline" id="memberDocsNewBtn" style="margin-top:1.2rem;width:100%;justify-content:center;"><i class="fas fa-plus"></i> New Document for this member</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Official Document View/Print Modal -->
       <div class="modal" id="viewDocumentModal">
         <div class="modal-box" style="max-width:900px;">
@@ -11574,6 +11590,11 @@ select.form-input {
   // and the Supabase callback URL registered on Facebook/Google's side. Until then it will
   // return an error like "Unsupported provider" — that is expected, not a bug in this code.
   window.socialAuth = async function (provider) {
+    // Remember that WE started this redirect, so that when the browser comes
+    // back we know to open the member portal. Without this the user returned
+    // silently signed-in but with nothing on screen — which is what made
+    // Google login look broken.
+    try { sessionStorage.setItem('shaoor_oauth_pending', provider); } catch (e) {}
     const { error } = await sb.auth.signInWithOAuth({
       provider: provider,
       options: { redirectTo: window.location.origin + window.location.pathname }
@@ -11582,10 +11603,31 @@ select.form-input {
       alert('Could not start ' + provider + ' sign-in: ' + error.message +
         (error.message && error.message.toLowerCase().includes('provider') ? '\n\n(This provider may not be enabled yet in the Supabase dashboard.)' : ''));
     }
+    if (error) { try { sessionStorage.removeItem('shaoor_oauth_pending'); } catch (e) {} }
     // On success the browser is redirected to the provider, then back here — no further
-    // code runs in this call. Profile completion (phone, society, etc.) after a social
-    // sign-in should be handled the next time the member opens their dashboard.
+    // code runs in this call. The listener below picks the session back up.
   };
+
+  /* ── Resume after a social sign-in redirect ──
+     Supabase has already stored the session by the time this runs; we only
+     act when the flag above says this page load is the return leg of an
+     OAuth round-trip, so ordinary page loads (and admin sessions) are
+     untouched. ── */
+  window.addEventListener('DOMContentLoaded', async function () {
+    let pending = null;
+    try { pending = sessionStorage.getItem('shaoor_oauth_pending'); } catch (e) {}
+    if (!pending) return;
+    try { sessionStorage.removeItem('shaoor_oauth_pending'); } catch (e) {}
+    try {
+      const { data } = await sb.auth.getSession();
+      const user = data && data.session ? data.session.user : null;
+      if (!user) return;
+      closeAllModals();
+      await openMemberDashboard(user.id);
+    } catch (e) {
+      console.error('SHAOOR: could not resume session after social sign-in', e);
+    }
+  });
 
   secureSubmit('loginForm', async frm => {
     const email = frm.querySelector('#lEmail').value.trim();
@@ -11605,19 +11647,60 @@ select.form-input {
   });
 
   async function openMemberDashboard(userId) {
-    const { data: profile, error } = await sb
+    const PROFILE_COLS = 'full_name, member_id, role, status, avatar_url, membership_type, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)';
+
+    let { data: profile, error } = await sb
       .from('profiles')
-      .select('full_name, member_id, role, status, avatar_url')
+      .select(PROFILE_COLS)
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     const { data: userData } = await sb.auth.getUser();
-    const email = userData?.user?.email || '';
+    const authUser = userData?.user || null;
+    const email = authUser?.email || '';
+
+    /* Social sign-in (Google/Facebook) creates the auth user, but the profile
+       row is written by the handle_new_user() DB trigger. If that trigger did
+       not fire for this account, the old code simply gave up here and the
+       member's Profile never opened. Instead, create the missing row ONCE from
+       the data the provider already gave us — this uses the existing profiles
+       table and existing columns only; no new schema, no duplicate system.
+       If an INSERT policy blocks it, we report the real reason instead of a
+       silent failure. */
+    if (!profile && authUser) {
+      const meta = authUser.user_metadata || {};
+      const { error: insErr } = await sb.from('profiles').insert({
+        id: userId,
+        full_name: meta.full_name || meta.name || (email ? email.split('@')[0] : 'Member'),
+        avatar_url: meta.avatar_url || meta.picture || null
+      });
+      if (insErr) {
+        console.error('SHAOOR: could not create profile for social sign-in user', insErr);
+      } else {
+        const retry = await sb.from('profiles').select(PROFILE_COLS).eq('id', userId).maybeSingle();
+        profile = retry.data;
+        error = retry.error;
+      }
+    }
 
     if (error || !profile) {
       console.error('Profile load failed:', error);
       showToast('پروفائل لوڈ نہیں ہو سکی: ' + (error ? error.message : 'no profile row found'), 'error');
       return;
+    }
+
+    /* These three fields existed in the markup but were never filled, so the
+       Profile card always showed "—". They read from columns that already
+       exist on profiles. */
+    const msEl = document.getElementById('mdMembershipStatus');
+    if (msEl) msEl.textContent = profile.status || '—';
+    const mtEl = document.getElementById('mdMembershipTier');
+    if (mtEl) mtEl.textContent = profile.membership_type || '—';
+    const socEl = document.getElementById('mdMemberSociety');
+    if (socEl) {
+      const parts = [profile.societies ? profile.societies.name : null,
+                     profile.chapters ? profile.chapters.name : null].filter(Boolean);
+      socEl.textContent = parts.length ? parts.join(' · ') : '—';
     }
 
     document.getElementById('dashMemberName').textContent = profile.full_name || 'Member';
@@ -13066,6 +13149,65 @@ select.form-input {
   // Society row (Organization panel) — prefills society, defaults to Note.
   function openDocumentForSociety(societyId) {
     openGeneratedDocumentModal({ societyId, docType: 'note' });
+  }
+
+  /* ── Admin: list ONE member's actual issued documents.
+     This is what the "Documents" button on the All Members table now opens.
+     Previously that button called openDocumentForMember() directly, which
+     opened the blank document CREATION form — that was the reported bug
+     ("a form appears instead of the actual document"). The creation form is
+     still reachable, but now as an explicit "New Document" button inside
+     this list, not as the default action.
+     View/Download reuse the exact same viewGeneratedDocument() /
+     downloadRowDocument() the admin Official Documents screen uses, so the
+     rendered document and the downloaded PDF are the same artifact. ── */
+  async function openMemberDocumentsAdmin(memberId) {
+    const m = (_membersCache || []).find(x => x.id === memberId);
+    const name = m ? (m.full_name || 'Member') : 'Member';
+    const titleEl = document.getElementById('memberDocsTitle');
+    if (titleEl) titleEl.textContent = 'Documents — ' + name;
+
+    const newBtn = document.getElementById('memberDocsNewBtn');
+    if (newBtn) newBtn.onclick = function () {
+      closeModal('memberDocsModal');
+      openDocumentForMember(memberId);
+    };
+
+    const container = document.getElementById('memberDocsList');
+    if (container) container.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">لوڈ ہو رہا ہے…</div>';
+    openModal('memberDocsModal');
+
+    const { data: docs, error } = await sb
+      .from('generated_documents')
+      .select('id, document_number, document_type, title, status, created_at')
+      .eq('member_id', memberId)
+      .order('created_at', { ascending: false });
+
+    if (!container) return;
+    if (error) {
+      container.innerHTML = '<div style="color:var(--ruby);font-size:.9rem;text-align:center;padding:1rem;">لوڈ نہیں ہو سکا: ' + sanitize(error.message) + '</div>';
+      console.error('SHAOOR: could not load member documents (admin)', error);
+      return;
+    }
+    if (!docs || docs.length === 0) {
+      container.innerHTML = '<div style="color:var(--muted);font-size:.9rem;text-align:center;padding:1rem;">اس رکن کے لیے ابھی کوئی دستاویز جاری نہیں ہوئی۔</div>';
+      return;
+    }
+
+    container.innerHTML = docs.map(d => {
+      const sc = documentStatusColor(d.status);
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.9rem 1rem;border:1px solid var(--border);border-radius:10px;flex-wrap:wrap;gap:.5rem;">
+        <div>
+          <div style="font-weight:600;">${sanitize(d.title || '—')}</div>
+          <div style="font-size:.78rem;color:var(--muted);">${sanitize(d.document_type || '—')} · ${sanitize(d.document_number || '—')} · ${sanitize((d.created_at || '').slice(0, 10))}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+          <span class="status-pill" style="background:${sc.bg};color:#fff;font-size:.72rem;">${sc.label}</span>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewGeneratedDocument('${d.id}')">View</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="downloadRowDocument('${d.id}')"><i class="fas fa-download"></i> Download</button>
+        </div>
+      </div>`;
+    }).join('');
   }
 
   // Society Member row (All Members panel) — uses the same _membersCache the
@@ -14717,7 +14859,7 @@ select.form-input {
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="openMemberCardAdmin('${m.id}')"><i class="fas fa-id-badge"></i> Card</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="openEditMember('${m.id}')">Edit</button>`);
-      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForMember('${m.id}')"><i class="fas fa-file-signature"></i> Document</button>`);
+      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openMemberDocumentsAdmin('${m.id}')"><i class="fas fa-file-signature"></i> Documents</button>`);
       if (m.status !== 'active') {
         actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="setMemberStatus('${m.id}','active')">Approve</button>`);
       }
