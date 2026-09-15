@@ -1573,7 +1573,7 @@ footer{background:#0B1224!important}
 
 /* Digital ID */
 #idCardModal .modal-box{max-width:460px!important;border-radius:18px!important}
-#idCardModal .modal-body [id="idMemberId"]{color:var(--navy)!important}
+#idCardModal .modal-body [id="idMemberIdPanel"]{color:var(--navy)!important}
 
 /* Certificate viewer — layout/typography now owned entirely by the Phase B
    #certificatePrintArea.cert-v2 block below; legacy rules targeting the old
@@ -7079,14 +7079,12 @@ select.form-input {
             <div style="font-size:.32rem;color:var(--navy);text-align:center;letter-spacing:.2px;font-weight:600;">Scan to Verify</div>
           </div>
 
-          <!-- Center: member information — clean text hierarchy, no icons, no row separators -->
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.14rem;text-align:left;">
-            <div id="idName" style="font-weight:800;font-size:.78rem;line-height:1.15;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:.06rem;">—</div>
+          <!-- Center: member information — clean text hierarchy, no icons, no row separators.
+               Member ID intentionally omitted here — the right-side panel is the single
+               visible Member ID on the card. -->
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.16rem;text-align:left;">
+            <div id="idName" style="font-weight:800;font-size:.78rem;line-height:1.15;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:.08rem;">—</div>
 
-            <div>
-              <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Member ID</div>
-              <div id="idMemberId" style="color:var(--navy);font-weight:700;font-size:.46rem;letter-spacing:.2px;direction:ltr;unicode-bidi:embed;">—</div>
-            </div>
             <div>
               <div style="font-size:.34rem;color:var(--muted);font-weight:600;">Designation / Role</div>
               <div id="idRole" style="font-size:.44rem;color:var(--navy);font-weight:700;text-transform:capitalize;"></div>
@@ -7113,25 +7111,29 @@ select.form-input {
             </div>
           </div>
 
-          <!-- Right: dedicated Member ID + subtle seal/watermark, coordinated with Founder signature -->
-          <div style="flex:none;width:88px;display:flex;flex-direction:column;align-items:center;position:relative;">
+          <!-- Right: the ONE visible Member ID panel + Founder signature (unchanged data contract) -->
+          <div style="flex:none;width:88px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">
             <div style="text-align:center;flex:none;">
               <div style="color:var(--muted);font-size:.32rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;">Member ID</div>
               <div id="idMemberIdPanel" style="color:var(--navy);font-weight:800;font-size:.52rem;letter-spacing:.2px;direction:ltr;unicode-bidi:embed;margin-top:.06rem;word-break:break-all;">—</div>
             </div>
-            <!-- Subtle seal/watermark — sits above the signature, purely ornamental -->
-            <div style="flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:.14;gap:.04rem;">
-              <img id="idWatermarkLogo" src="" alt="" style="display:none;width:40px;height:40px;object-fit:contain;" />
-              <i id="idWatermarkIcon" class="fas fa-book-open" style="font-size:1.3rem;color:var(--navy);"></i>
-              <div style="font-family:'Noto Nastaliq Urdu',serif;color:var(--navy);font-size:.42rem;font-weight:700;">شعور</div>
-            </div>
-            <!-- Founder signature — clearly readable name, coordinated directly under the seal -->
+            <!-- Founder signature — clearly readable name -->
             <div style="display:flex;flex-direction:column;align-items:center;gap:.05rem;flex:none;">
               <img id="idFounderSigImg" src="" alt="" style="display:none;max-width:64px;max-height:20px;object-fit:contain;" />
               <div id="idFounderName" style="font-size:.44rem;font-weight:800;color:var(--navy);white-space:nowrap;border-top:1px solid var(--gold);padding-top:.07rem;margin-top:.05rem;width:100%;text-align:center;"></div>
               <div style="font-size:.34rem;color:var(--muted);letter-spacing:.2px;font-weight:600;">Founder &amp; Admin</div>
             </div>
           </div>
+        </div>
+
+        <!-- Central watermark: subtle bilingual SHAOOR mark in the open area between the
+             member information and the footer — English left, Urdu right, no divider, never
+             overlapping the name or the right-side Member ID panel. -->
+        <div style="position:absolute;left:0;right:0;bottom:24px;display:flex;align-items:baseline;justify-content:center;gap:.35rem;opacity:.13;pointer-events:none;">
+          <img id="idWatermarkLogo" src="" alt="" style="display:none;width:20px;height:20px;object-fit:contain;" />
+          <i id="idWatermarkIcon" class="fas fa-book-open" style="display:none;font-size:.7rem;color:var(--navy);"></i>
+          <span style="color:var(--navy);font-size:.62rem;font-weight:800;letter-spacing:1px;">SHAOOR</span>
+          <span style="font-family:'Noto Nastaliq Urdu',serif;color:var(--gold);font-size:.9rem;font-weight:700;">شعور</span>
         </div>
 
         <!-- Footer -->
@@ -11809,12 +11811,15 @@ select.form-input {
     if (front.photoRadius != null) { avatarImg.style.borderRadius = front.photoRadius; avatarPh.style.borderRadius = front.photoRadius; }
     if (front.photoFit) avatarImg.style.objectFit = front.photoFit;
 
-    // Per-field visibility + font size (name, memberId, role, society, chapter, province,
-    // membershipType, status)
+    // Per-field visibility + font size (name, role, society, chapter, province,
+    // membershipType, status). 'idMemberId' is intentionally no longer in the DOM — the
+    // right-side idMemberIdPanel is the single visible Member ID — so getElementById can
+    // legitimately return null here; guard against that.
     ['idName', 'idMemberId', 'idRole', 'idSociety', 'idChapter', 'idProvince', 'idMembershipType', 'idStatus'].forEach(id => {
       const key = id.replace('id', '');
       const fkey = key.charAt(0).toLowerCase() + key.slice(1);
       const el = document.getElementById(id);
+      if (!el) return;
       const conf = fields[fkey];
       if (!conf) return;
       if (conf.hidden) { el.style.display = 'none'; return; }
@@ -11839,9 +11844,13 @@ select.form-input {
     } else {
       cardBox.classList.remove('lang-ur');
     }
-    // Member ID / QR verification URL must stay LTR-safe even inside an RTL card
-    document.getElementById('idMemberId').style.direction = 'ltr';
-    document.getElementById('idMemberId').style.unicodeBidi = 'embed';
+    // Member ID / QR verification URL must stay LTR-safe even inside an RTL card — applies to
+    // the single visible right-side Member ID panel.
+    const idMemberIdPanelDirEl = document.getElementById('idMemberIdPanel');
+    if (idMemberIdPanelDirEl) {
+      idMemberIdPanelDirEl.style.direction = 'ltr';
+      idMemberIdPanelDirEl.style.unicodeBidi = 'embed';
+    }
 
     // Founder signature — sourced from the EXISTING brand_settings.founder_signature_url /
     // founder_name (same fields used by certificates). Never invented; hidden gracefully if unset.
@@ -11863,9 +11872,8 @@ select.form-input {
      duplicate this logic elsewhere. */
   async function renderIdCard(profile, templateOverride) {
     document.getElementById('idName').textContent = profile.full_name || '—';
-    document.getElementById('idMemberId').textContent = profile.member_id || '—';
-    // Same existing profiles.member_id value, mirrored into the dedicated right-side panel —
-    // never a second/regenerated ID.
+    // profiles.member_id is shown in exactly one place now — the dedicated right-side panel.
+    // (The center-column Member ID row was removed per the latest visual correction.)
     const idMemberIdPanelEl = document.getElementById('idMemberIdPanel');
     if (idMemberIdPanelEl) idMemberIdPanelEl.textContent = profile.member_id || '—';
     document.getElementById('idRole').textContent = profile.role || '';
