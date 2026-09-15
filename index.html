@@ -989,6 +989,30 @@
     .admin-table td { padding:.85rem 1rem; border-bottom:1px solid var(--border); font-size:.88rem; }
     .admin-table tr:last-child td { border-bottom:none; }
     .admin-table tr:hover td { background:rgba(200,146,42,.04); }
+    /* ── Template Management (Certificate / Membership Card Templates) — scoped to
+       #dp-cert-templates only. Adds a preview-swatch column + spacing/alignment polish
+       to the existing .admin-table rows without touching the table structure, ids, or
+       the row-render JS (editCertTemplate/deleteCertTemplate/editCardTemplate/etc). ── */
+    #dp-cert-templates .tpl-section-head { margin: 0 0 1rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+    #dp-cert-templates .tpl-section-head:not(:first-child) { margin-top: 2rem; }
+    #dp-cert-templates .admin-table { table-layout: fixed; }
+    #dp-cert-templates .admin-table td, #dp-cert-templates .admin-table th { vertical-align: middle; word-break: break-word; }
+    #dp-cert-templates .tpl-swatch {
+      width:44px; height:44px; border-radius:8px; flex:none; object-fit:cover;
+      border:1px solid var(--border); background:var(--cream2);
+      display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:1rem;
+    }
+    #dp-cert-templates .tpl-name-cell { display:flex; align-items:center; gap:.7rem; }
+    #dp-cert-templates .tpl-actions-cell { display:flex; gap:.4rem; flex-wrap:wrap; }
+    @media (max-width: 720px) {
+      #dp-cert-templates .admin-table, #dp-cert-templates .admin-table tbody, #dp-cert-templates .admin-table tr, #dp-cert-templates .admin-table td {
+        display:block; width:100%;
+      }
+      #dp-cert-templates .admin-table thead { display:none; }
+      #dp-cert-templates .admin-table tr { border:1px solid var(--border); border-radius:10px; margin-bottom:.75rem; padding:.6rem .8rem; box-shadow:var(--shadow); }
+      #dp-cert-templates .admin-table td { border-bottom:none; padding:.35rem 0; }
+      #dp-cert-templates .admin-table td[data-label]::before { content: attr(data-label); display:block; font-size:.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:.1rem; }
+    }
     .status-pill { display:inline-block; padding:.2rem .65rem; border-radius:999px; font-size:.72rem; font-weight:700; }
     .sp-active   { background:#dcfce7; color:#166534; }
     .sp-pending  { background:#fef3c7; color:#92400e; }
@@ -4849,28 +4873,28 @@ select.form-input {
 
       <!-- Cert/Card Templates Panel -->
       <div class="dash-panel" id="dp-cert-templates">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
+        <div class="tpl-section-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;">
           <h3 style="font-weight:700;">Certificate Templates</h3>
           <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCertTemplateModal()"><i class="fas fa-plus"></i> New Certificate Template</button>
         </div>
         <div style="overflow-x:auto;">
           <table class="admin-table" id="certTemplatesTable">
-            <thead><tr><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
+            <thead><tr><th style="width:56px;"></th><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
             <tbody id="certTemplatesBody">
-              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
             </tbody>
           </table>
         </div>
 
-        <div style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0 1rem;flex-wrap:wrap;gap:.75rem;">
+        <div class="tpl-section-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;">
           <h3 style="font-weight:700;">Membership Card Templates</h3>
           <button class="btn btn-gold" style="font-size:.85rem;" onclick="openCardTemplateModal()"><i class="fas fa-plus"></i> New Card Template</button>
         </div>
         <div style="overflow-x:auto;">
           <table class="admin-table" id="cardTemplatesTable">
-            <thead><tr><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
+            <thead><tr><th style="width:56px;"></th><th>Name</th><th>Description</th><th>Default</th><th>Active</th><th>Actions</th></tr></thead>
             <tbody id="cardTemplatesBody">
-              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading templates…</td></tr>
             </tbody>
           </table>
         </div>
@@ -8504,8 +8528,8 @@ select.form-input {
         <div style="flex:1;height:1px;background:var(--border);"></div>OR<div style="flex:1;height:1px;background:var(--border);"></div>
       </div>
       <div style="display:grid;gap:.6rem;">
-        <button type="button" onclick="socialAuth('facebook')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-facebook" style="color:#1877F2;"></i> Continue with Facebook</button>
         <button type="button" onclick="socialAuth('google')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-google" style="color:#EA4335;"></i> Continue with Google</button>
+        <button type="button" onclick="socialAuth('facebook')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-facebook" style="color:#1877F2;"></i> Continue with Facebook</button>
       </div>
       <p class="modal-hint">New to SHAOOR? <a href="#" onclick="closeModal('loginModal');openModal('signupModal');return false;">Register as a member →</a></p>
     </div>
@@ -8561,8 +8585,8 @@ select.form-input {
         <div style="flex:1;height:1px;background:var(--border);"></div>OR<div style="flex:1;height:1px;background:var(--border);"></div>
       </div>
       <div style="display:grid;gap:.6rem;">
-        <button type="button" onclick="socialAuth('facebook')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-facebook" style="color:#1877F2;"></i> Sign up with Facebook</button>
         <button type="button" onclick="socialAuth('google')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-google" style="color:#EA4335;"></i> Sign up with Google</button>
+        <button type="button" onclick="socialAuth('facebook')" class="btn btn-outline" style="justify-content:center;gap:.5rem;"><i class="fab fa-facebook" style="color:#1877F2;"></i> Sign up with Facebook</button>
       </div>
       <p class="modal-hint">Already a member? <a href="#" onclick="closeModal('signupModal');openModal('loginModal');return false;">Sign in →</a></p>
     </div>
@@ -12028,6 +12052,27 @@ select.form-input {
     await renderIdCard(profile);
   }
 
+  // Admin → Members → "Card" action. Reuses the exact same canonical renderIdCard()
+  // that openDigitalId() (member's own view) and the public verification flow use —
+  // no second card renderer, no duplicate markup/logic. Only the lookup differs: by
+  // member id (admin browsing the table) instead of the logged-in user's own id.
+  async function openMemberCardAdmin(memberId) {
+    if (!memberId) return;
+
+    const { data: profile, error } = await sb
+      .from('profiles')
+      .select('full_name, member_id, role, status, avatar_url, province, membership_type, societies!profiles_society_id_fkey(name), chapters!profiles_chapter_id_fkey(name)')
+      .eq('id', memberId)
+      .single();
+
+    if (error || !profile) {
+      showToast('ID کارڈ لوڈ نہیں ہو سکا', 'error');
+      return;
+    }
+
+    await renderIdCard(profile);
+  }
+
   /* ══════════════ CERTIFICATES ══════════════ */
 
   /* Renders a QR code into a container for any verification URL */
@@ -13459,16 +13504,17 @@ select.form-input {
     if (!body) return;
     const { data, error } = await sb.from('certificate_templates').select('*').order('name');
     if (error || !data || !data.length) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">No certificate templates yet.</td></tr>';
+      body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">No certificate templates yet.</td></tr>';
       return;
     }
     body.innerHTML = data.map(t => `
       <tr>
-        <td>${sanitize(t.name)}</td>
-        <td>${sanitize(t.description || '—')}</td>
-        <td>${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
-        <td>${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
-        <td>
+        <td data-label="Preview">${t.background_url ? `<img class="tpl-swatch" src="${sanitize(t.background_url)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'tpl-swatch',innerHTML:'<i class=\\'fas fa-certificate\\'></i>'}))" />` : `<div class="tpl-swatch"><i class="fas fa-certificate"></i></div>`}</td>
+        <td data-label="Name">${sanitize(t.name)}</td>
+        <td data-label="Description">${sanitize(t.description || '—')}</td>
+        <td data-label="Default">${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
+        <td data-label="Active">${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
+        <td data-label="Actions" class="tpl-actions-cell">
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCertTemplate(${JSON.stringify(t)})'>Edit</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCertTemplate('${t.id}')">Delete</button>
         </td>
@@ -13480,16 +13526,17 @@ select.form-input {
     if (!body) return;
     const { data, error } = await sb.from('card_templates').select('*').order('name');
     if (error || !data || !data.length) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">No card templates yet.</td></tr>';
+      body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">No card templates yet.</td></tr>';
       return;
     }
     body.innerHTML = data.map(t => `
       <tr>
-        <td>${sanitize(t.name)}</td>
-        <td>${sanitize(t.description || '—')}</td>
-        <td>${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
-        <td>${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
-        <td>
+        <td data-label="Preview">${t.front_design_url ? `<img class="tpl-swatch" src="${sanitize(t.front_design_url)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'tpl-swatch',innerHTML:'<i class=\\'fas fa-id-card\\'></i>'}))" />` : `<div class="tpl-swatch"><i class="fas fa-id-card"></i></div>`}</td>
+        <td data-label="Name">${sanitize(t.name)}</td>
+        <td data-label="Description">${sanitize(t.description || '—')}</td>
+        <td data-label="Default">${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
+        <td data-label="Active">${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
+        <td data-label="Actions" class="tpl-actions-cell">
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCardTemplate(${JSON.stringify(t)})'>Edit</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick='previewCardTemplate(${JSON.stringify(t)})'>Preview</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCardTemplate('${t.id}')">Delete</button>
@@ -14668,6 +14715,7 @@ select.form-input {
     tbody.innerHTML = members.map(m => {
       const actions = [];
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="viewMember('${m.id}')">View</button>`);
+      actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="openMemberCardAdmin('${m.id}')"><i class="fas fa-id-badge"></i> Card</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--navy);" onclick="openEditMember('${m.id}')">Edit</button>`);
       actions.push(`<button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--gold);color:var(--navy);" onclick="openDocumentForMember('${m.id}')"><i class="fas fa-file-signature"></i> Document</button>`);
       if (m.status !== 'active') {
