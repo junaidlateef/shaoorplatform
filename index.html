@@ -1573,7 +1573,7 @@ footer{background:#0B1224!important}
 
 /* Digital ID */
 #idCardModal .modal-box{max-width:460px!important;border-radius:18px!important}
-#idCardModal .modal-body [id="idMemberId"]{color:var(--gold3)!important}
+#idCardModal .modal-body [id="idMemberId"]{color:var(--navy)!important}
 
 /* Certificate viewer — layout/typography now owned entirely by the Phase B
    #certificatePrintArea.cert-v2 block below; legacy rules targeting the old
@@ -7055,35 +7055,62 @@ select.form-input {
       <!-- Standard CR80 card: 85.60mm x 53.98mm (≈1.586:1) landscape. All styling is inline
            so the exact same markup can be cloned into the print/PDF popup (see
            buildCardPrintHtml) without needing the app's external stylesheet. -->
-      <div id="idCardFront" class="id-card-face" style="aspect-ratio:1.586/1;width:100%;max-width:428px;margin:0 auto;background:linear-gradient(135deg,var(--navy) 0%,#0d1b3d 100%);border-radius:14px;border:1px solid rgba(200,169,107,.4);color:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 42px rgba(11,31,51,.35);font-family:var(--ff-body,inherit);">
-        <!-- Branding -->
-        <div style="display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.16);flex:none;">
-          <img id="idLogoImg" src="" alt="" style="display:none;width:24px;height:24px;object-fit:contain;flex:none;" />
-          <div id="idOrgName" style="font-weight:900;letter-spacing:.6px;color:var(--gold);font-size:.82rem;white-space:nowrap;">SHAOOR</div>
-          <div style="margin-left:auto;font-size:.52rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;">Membership Card</div>
-        </div>
-        <!-- Photo + member details -->
-        <div style="display:flex;gap:.6rem;padding:.55rem .75rem;flex:1;min-height:0;">
-          <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:.3rem;">
-            <img id="idAvatarImg" src="" alt="" style="width:62px;height:62px;border-radius:8px;object-fit:cover;border:2px solid var(--gold);display:none;" />
-            <div id="idAvatarPlaceholder" style="width:62px;height:62px;border-radius:8px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.3rem;"><i class="fas fa-user"></i></div>
-            <div id="idQrCode" style="background:#fff;display:inline-block;padding:3px;border-radius:6px;line-height:0;"></div>
+      <div id="idCardFront" class="id-card-face" style="aspect-ratio:1.586/1;width:100%;max-width:428px;margin:0 auto;background:var(--cream);border-radius:14px;border:1px solid var(--gold);color:var(--ink);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 42px rgba(11,31,51,.28);font-family:var(--ff-body,inherit);">
+        <!-- Header: logo | شعور / SHAOOR | MEMBERSHIP CARD -->
+        <div style="display:flex;align-items:center;gap:.4rem;padding:.38rem .6rem;background:linear-gradient(90deg,var(--navy),#142F4A);border-bottom:2px solid var(--gold);flex:none;">
+          <img id="idLogoImg" src="" alt="" style="display:none;width:22px;height:22px;object-fit:contain;border-radius:4px;flex:none;" />
+          <div id="idOrgName" style="font-weight:900;letter-spacing:.5px;color:var(--gold);font-size:.66rem;white-space:nowrap;flex:none;">SHAOOR</div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;line-height:1.05;">
+            <div style="font-family:'Noto Nastaliq Urdu',serif;color:var(--gold3);font-size:.85rem;font-weight:700;">شعور</div>
+            <div style="color:#fff;font-size:.46rem;font-weight:800;letter-spacing:1.1px;">SHAOOR</div>
           </div>
-          <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.1rem;text-align:left;">
-            <div id="idName" style="font-weight:700;font-size:.9rem;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
-            <div id="idMemberId" style="color:var(--gold);font-size:.66rem;letter-spacing:.6px;direction:ltr;unicode-bidi:embed;">—</div>
-            <div id="idRole" style="font-size:.6rem;color:rgba(255,255,255,.75);text-transform:capitalize;margin-top:.15rem;"></div>
-            <div id="idSociety" style="font-size:.58rem;color:rgba(255,255,255,.65);"></div>
-            <div id="idChapter" style="font-size:.58rem;color:rgba(255,255,255,.65);"></div>
-            <div id="idProvince" style="font-size:.58rem;color:rgba(255,255,255,.65);"></div>
-            <div id="idMembershipType" style="font-size:.58rem;color:rgba(255,255,255,.65);"></div>
-            <div id="idStatus" style="margin-top:.2rem;display:inline-flex;align-items:center;font-size:.54rem;padding:.08rem .4rem;border-radius:20px;background:rgba(255,255,255,.14);width:fit-content;text-transform:capitalize;"></div>
+          <div style="flex:none;text-align:right;line-height:1.2;">
+            <div style="color:var(--gold);font-size:.44rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;">Membership Card</div>
+            <div style="color:rgba(255,255,255,.68);font-size:.38rem;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;">Digital Member ID</div>
           </div>
         </div>
-        <!-- Footer: seal + verification note -->
-        <div style="display:flex;align-items:center;gap:.4rem;padding:.3rem .75rem;border-top:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.14);flex:none;">
-          <img id="idSealImg" src="" alt="" style="display:none;width:20px;height:20px;border-radius:50%;object-fit:cover;border:1px solid rgba(200,169,107,.55);flex:none;" />
-          <div style="font-size:.48rem;color:rgba(255,255,255,.5);margin-left:auto;">Scan to verify membership</div>
+
+        <!-- Body: photo+QR | member details | Member ID panel + signature -->
+        <div style="display:flex;gap:.45rem;padding:.45rem .55rem;flex:1;min-height:0;">
+          <!-- Left: photo + QR -->
+          <div style="flex:none;width:56px;display:flex;flex-direction:column;align-items:center;gap:.22rem;">
+            <img id="idAvatarImg" src="" alt="" style="width:54px;height:54px;border-radius:8px;object-fit:cover;border:2px solid var(--gold);display:none;" />
+            <div id="idAvatarPlaceholder" style="width:54px;height:54px;border-radius:8px;background:var(--gold-soft);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:var(--navy);"><i class="fas fa-user"></i></div>
+            <div id="idQrCode" style="background:#fff;display:inline-block;padding:2px;border-radius:5px;line-height:0;border:1px solid var(--border);"></div>
+            <div style="font-size:.34rem;color:var(--muted);text-align:center;letter-spacing:.2px;">Scan to Verify</div>
+          </div>
+
+          <!-- Center: member information column (high-contrast dark text on cream) -->
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:.06rem;text-align:left;">
+            <div id="idName" style="font-weight:800;font-size:.78rem;line-height:1.15;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+            <div style="font-size:.44rem;color:var(--muted);margin-top:.08rem;font-weight:600;">Member ID</div>
+            <div id="idMemberId" style="color:var(--navy);font-weight:700;font-size:.56rem;letter-spacing:.3px;direction:ltr;unicode-bidi:embed;">—</div>
+            <div id="idRole" style="font-size:.48rem;color:var(--ink);text-transform:capitalize;margin-top:.1rem;font-weight:600;"></div>
+            <div id="idSociety" style="font-size:.46rem;color:var(--ink);"></div>
+            <div id="idChapter" style="font-size:.46rem;color:var(--ink);"></div>
+            <div id="idProvince" style="font-size:.46rem;color:var(--ink);"></div>
+            <div id="idMembershipType" style="font-size:.46rem;color:var(--ink);"></div>
+            <div id="idStatus" style="margin-top:.14rem;display:inline-flex;align-items:center;font-size:.42rem;font-weight:700;padding:.05rem .32rem;border-radius:20px;width:fit-content;text-transform:capitalize;"></div>
+          </div>
+
+          <!-- Right: dedicated Member ID panel + Founder signature -->
+          <div style="flex:none;width:76px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;gap:.25rem;">
+            <div style="background:var(--navy);border:1px solid var(--gold);border-radius:6px;padding:.28rem .18rem;width:100%;text-align:center;">
+              <div style="color:var(--gold);font-size:.32rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;">Member ID</div>
+              <div id="idMemberIdPanel" style="color:#fff;font-weight:800;font-size:.46rem;letter-spacing:.2px;direction:ltr;unicode-bidi:embed;margin-top:.1rem;word-break:break-all;">—</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:.08rem;">
+              <img id="idFounderSigImg" src="" alt="" style="display:none;max-width:58px;max-height:20px;object-fit:contain;" />
+              <div id="idFounderName" style="font-size:.38rem;font-weight:700;color:var(--navy);white-space:nowrap;"></div>
+              <div style="font-size:.32rem;color:var(--muted);letter-spacing:.2px;">Founder &amp; Admin</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="display:flex;align-items:center;gap:.32rem;padding:.2rem .6rem;background:linear-gradient(90deg,var(--navy),#142F4A);border-top:2px solid var(--gold);flex:none;">
+          <img id="idSealImg" src="" alt="" style="display:none;width:16px;height:16px;border-radius:50%;object-fit:cover;border:1px solid var(--gold);flex:none;" />
+          <div style="font-size:.34rem;color:rgba(255,255,255,.6);margin-left:auto;letter-spacing:.3px;">Official SHAOOR Membership</div>
         </div>
       </div>
       <div style="display:flex;gap:.6rem;margin-top:.75rem;">
@@ -11780,6 +11807,18 @@ select.form-input {
     // Member ID / QR verification URL must stay LTR-safe even inside an RTL card
     document.getElementById('idMemberId').style.direction = 'ltr';
     document.getElementById('idMemberId').style.unicodeBidi = 'embed';
+
+    // Founder signature — sourced from the EXISTING brand_settings.founder_signature_url /
+    // founder_name (same fields used by certificates). Never invented; hidden gracefully if unset.
+    const founderSigEl = document.getElementById('idFounderSigImg');
+    const founderNameEl = document.getElementById('idFounderName');
+    if (brand && brand.founder_signature_url) {
+      founderSigEl.src = brand.founder_signature_url;
+      founderSigEl.style.display = '';
+    } else if (founderSigEl) {
+      founderSigEl.style.display = 'none';
+    }
+    if (founderNameEl) founderNameEl.textContent = (brand && brand.founder_name) || '';
   }
 
   /* Shared renderer: populates the ID card modal for a given profile row, applies the
@@ -11790,6 +11829,10 @@ select.form-input {
   async function renderIdCard(profile, templateOverride) {
     document.getElementById('idName').textContent = profile.full_name || '—';
     document.getElementById('idMemberId').textContent = profile.member_id || '—';
+    // Same existing profiles.member_id value, mirrored into the dedicated right-side panel —
+    // never a second/regenerated ID.
+    const idMemberIdPanelEl = document.getElementById('idMemberIdPanel');
+    if (idMemberIdPanelEl) idMemberIdPanelEl.textContent = profile.member_id || '—';
     document.getElementById('idRole').textContent = profile.role || '';
     document.getElementById('idSociety').textContent = profile.societies ? ('Society: ' + profile.societies.name) : '';
     document.getElementById('idChapter').textContent = profile.chapters ? ('Chapter: ' + profile.chapters.name) : '';
@@ -11800,7 +11843,15 @@ select.form-input {
     const idStatusEl = document.getElementById('idStatus');
     if (profile.status) {
       idStatusEl.textContent = profile.status;
-      idStatusEl.style.background = profile.status === 'active' ? 'rgba(45,166,120,.35)' : 'rgba(255,255,255,.14)';
+      // High-contrast badge colors on the cream card body — dark text on a tinted background,
+      // never low-opacity white-on-light.
+      if (profile.status === 'active') {
+        idStatusEl.style.background = 'rgba(45,138,112,.16)';
+        idStatusEl.style.color = '#1F6B54';
+      } else {
+        idStatusEl.style.background = 'rgba(11,31,51,.10)';
+        idStatusEl.style.color = 'var(--navy)';
+      }
       idStatusEl.style.display = 'inline-flex';
     } else {
       idStatusEl.style.display = 'none';
