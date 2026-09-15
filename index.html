@@ -7126,14 +7126,15 @@ select.form-input {
           </div>
         </div>
 
-        <!-- Central watermark: subtle bilingual SHAOOR mark in the open area between the
-             member information and the footer — English left, Urdu right, no divider, never
-             overlapping the name or the right-side Member ID panel. -->
-        <div style="position:absolute;left:0;right:0;bottom:24px;display:flex;align-items:baseline;justify-content:center;gap:.35rem;opacity:.13;pointer-events:none;">
-          <img id="idWatermarkLogo" src="" alt="" style="display:none;width:20px;height:20px;object-fit:contain;" />
-          <i id="idWatermarkIcon" class="fas fa-book-open" style="display:none;font-size:.7rem;color:var(--navy);"></i>
-          <span style="color:var(--navy);font-size:.62rem;font-weight:800;letter-spacing:1px;">SHAOOR</span>
-          <span style="font-family:'Noto Nastaliq Urdu',serif;color:var(--gold);font-size:.9rem;font-weight:700;">شعور</span>
+        <!-- Watermark: subtle bilingual SHAOOR mark placed in the empty space to the RIGHT of
+             the member-information column (between the Member ID panel and Founder signature),
+             not in the geometric center of the card, and never overlapping name/ID/society/
+             chapter/QR/photo/signature. English left, Urdu right, no divider. -->
+        <div style="position:absolute;right:8px;width:82px;top:50%;transform:translateY(-50%);display:flex;align-items:baseline;justify-content:center;gap:.18rem;opacity:.13;pointer-events:none;">
+          <img id="idWatermarkLogo" src="" alt="" style="display:none;width:16px;height:16px;object-fit:contain;" />
+          <i id="idWatermarkIcon" class="fas fa-book-open" style="display:none;font-size:.55rem;color:var(--navy);"></i>
+          <span style="color:var(--navy);font-size:.42rem;font-weight:800;letter-spacing:.6px;">SHAOOR</span>
+          <span style="font-family:'Noto Nastaliq Urdu',serif;color:var(--gold);font-size:.62rem;font-weight:700;">شعور</span>
         </div>
 
         <!-- Footer -->
