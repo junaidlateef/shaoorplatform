@@ -5004,25 +5004,6 @@ select.form-input {
         </div>
       </div>
 
-      <!-- Official Document View/Print Modal -->
-      <div class="modal" id="viewDocumentModal">
-        <div class="modal-box" style="max-width:900px;">
-          <div class="modal-head">
-            <h3>Document Preview</h3>
-            <button class="modal-close" onclick="closeModal('viewDocumentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
-          </div>
-          <div class="modal-body">
-          <div style="display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
-            <button class="btn btn-outline" onclick="printGeneratedDocument()"><i class="fas fa-print"></i> Print / PDF</button>
-            <button class="btn btn-outline" onclick="downloadGeneratedDocumentWord()"><i class="fas fa-file-word"></i> Download Word</button>
-          </div>
-          <div id="documentPrintArea" style="background:#fff;color:#1a1a1a;padding:2.2rem 2.5rem;border:1px solid #d9d0bd;border-radius:4px;font-family:Georgia,serif;min-height:600px;position:relative;">
-            <!-- populated dynamically by renderGeneratedDocumentView() -->
-          </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Cert Template Modal -->
       <div class="modal" id="certTemplateModal">
         <div class="modal-content" style="max-width:980px;">
@@ -7358,6 +7339,31 @@ select.form-input {
         </div>
         <button type="submit" class="btn btn-gold" style="justify-content:center;">Issue Certificate</button>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Official Document View/Print Modal — MOVED to top level.
+     ROOT CAUSE (member side): this modal used to live inside #adminDash, which is
+     display:none for anyone who is not in the Admin Dashboard. A logged-in member
+     clicking View ran the whole correct flow (record fetched, real document rendered
+     into #documentPrintArea) but the modal stayed invisible inside a hidden parent,
+     so nothing opened. Markup, IDs, buttons and renderer are unchanged — only the
+     position in the DOM. -->
+<div class="modal" id="viewDocumentModal">
+  <div class="modal-box" style="max-width:900px;">
+    <div class="modal-head">
+      <h3>Document Preview</h3>
+      <button class="modal-close" onclick="closeModal('viewDocumentModal')" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+    <div style="display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="btn btn-outline" onclick="printGeneratedDocument()"><i class="fas fa-print"></i> Print / PDF</button>
+      <button class="btn btn-outline" onclick="downloadGeneratedDocumentWord()"><i class="fas fa-file-word"></i> Download Word</button>
+    </div>
+    <div id="documentPrintArea" style="background:#fff;color:#1a1a1a;padding:2.2rem 2.5rem;border:1px solid #d9d0bd;border-radius:4px;font-family:Georgia,serif;min-height:600px;position:relative;">
+      <!-- populated dynamically by renderGeneratedDocumentView() -->
+    </div>
     </div>
   </div>
 </div>
