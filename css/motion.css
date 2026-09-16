@@ -1,0 +1,145 @@
+/* ===== shaoor-motion-system ===== */
+/* SHAOOR motion language — visual only. GPU: transform/opacity.
+       Does not change IDs, queries, Auth, or document/certificate/card contents. */
+    :root { --shaoor-ease: cubic-bezier(.22,.7,.25,1); --shaoor-t: .28s; }
+
+    @keyframes shaoorEnter {
+      from { opacity: 0; transform: translate3d(0, 14px, 0); }
+      to   { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+    @keyframes shaoorModalIn {
+      from { opacity: 0; transform: translate3d(0, 10px, 0) scale(.985); }
+      to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+    @keyframes shaoorGlowDrift {
+      0%   { opacity: .55; transform: translate3d(0,0,0) scale(1); }
+      50%  { opacity: .85; transform: translate3d(10px,-8px,0) scale(1.04); }
+      100% { opacity: .55; transform: translate3d(0,0,0) scale(1); }
+    }
+
+    /* Hero — cinematic entrance. Reuses existing .hero::after ring; no new overlay. */
+    .hero { isolation: isolate; }
+    .hero::after {
+      animation: shaoorGlowDrift 16s var(--shaoor-ease) infinite;
+    }
+    .institutional-hero-copy { position: relative; z-index: 1; }
+    .institutional-hero-copy::before {
+      content: "";
+      position: absolute;
+      inset: -8% auto auto -6%;
+      width: min(38vw, 340px); height: min(38vw, 340px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,160,106,.12), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: shaoorGlowDrift 18s var(--shaoor-ease) infinite reverse;
+    }
+    .hero-lang-toggle { animation: shaoorEnter .7s var(--shaoor-ease) both; }
+    .hero-badge { animation: shaoorEnter .75s .06s var(--shaoor-ease) both; }
+    .hero-title { animation: shaoorEnter .8s .12s var(--shaoor-ease) both; }
+    .hero-sub   { animation: shaoorEnter .8s .2s var(--shaoor-ease) both; }
+    .hero-btns  { animation: shaoorEnter .8s .28s var(--shaoor-ease) both; }
+    .institutional-hero-copy.hero-lang-swap .hero-badge,
+    .institutional-hero-copy.hero-lang-swap .hero-title,
+    .institutional-hero-copy.hero-lang-swap .hero-sub,
+    .institutional-hero-copy.hero-lang-swap .hero-btns {
+      animation: shaoorEnter .45s var(--shaoor-ease);
+    }
+    .hero-lang-toggle .hero-lang-btn {
+      transition: background var(--shaoor-t), color var(--shaoor-t), border-color var(--shaoor-t), transform var(--shaoor-t);
+    }
+    .hero-lang-toggle .hero-lang-btn:hover:not(.active) { transform: translateY(-1px); }
+
+    /* Navigation */
+    .navbar { transition: background var(--shaoor-t), box-shadow .35s var(--shaoor-ease), border-color var(--shaoor-t); }
+    .nav-links a { transition: color var(--shaoor-t); }
+    .nav-links a::after { transition: width .32s var(--shaoor-ease); }
+    .nav-brand img, .shaoor-nav-logo { transition: transform .35s var(--shaoor-ease), opacity var(--shaoor-t); }
+    .nav-brand:hover img, .nav-brand:hover .shaoor-nav-logo { transform: translateY(-1px); }
+    .theme-btn { transition: transform var(--shaoor-t), border-color var(--shaoor-t), color var(--shaoor-t), background var(--shaoor-t); }
+    .theme-btn:hover { transform: rotate(-12deg) scale(1.04); }
+    .mobile-nav { transition: right .32s var(--shaoor-ease); }
+    .overlay { transition: opacity .28s ease; }
+
+    /* Buttons — press/hover, never a continuous pulse */
+    .btn, .admin-btn, .dash-logout, .art-buy {
+      transition: transform var(--shaoor-t) var(--shaoor-ease), box-shadow var(--shaoor-t), background var(--shaoor-t), border-color var(--shaoor-t), color var(--shaoor-t), opacity var(--shaoor-t);
+    }
+    .btn:hover, .admin-btn:hover { transform: translateY(-1px); }
+    .btn:active, .admin-btn:active, .art-buy:active { transform: translateY(0) scale(.985); }
+    .btn-gold:hover { box-shadow: 0 10px 22px rgba(184,160,106,.22); }
+    .btn i { transition: transform var(--shaoor-t) var(--shaoor-ease); }
+    .btn:hover i { transform: translateX(2px); }
+    [dir="rtl"] .btn:hover i, .lang-ur.btn:hover i { transform: translateX(-2px); }
+
+    /* Public cards */
+    .feature-card, .soc-card, .cab-card, .mem-card, .blog-card, .gallery-item, .ver-box, .an-stat-card, .an-chart-box, .ds-card {
+      transition: transform .32s var(--shaoor-ease), box-shadow .32s var(--shaoor-ease), border-color .32s ease, background .32s ease;
+    }
+    .feature-card:hover, .soc-card:hover, .cab-card:hover, .mem-card:hover, .blog-card:hover, .gallery-item:hover {
+      transform: translateY(-4px);
+    }
+    .gallery-item img, .about-img img, .ml-thumb-wrap img {
+      transition: transform .5s var(--shaoor-ease), opacity .4s ease;
+    }
+    .gallery-item:hover img, .ml-thumb-wrap:hover img { transform: scale(1.03); }
+
+    /* Modals / tabs — shell only, not printed document contents */
+    .modal.open .modal-box {
+      animation: shaoorModalIn .3s var(--shaoor-ease);
+    }
+    .dtab, .admin-nav-btn, .ptab {
+      transition: background var(--shaoor-t), color var(--shaoor-t), border-color var(--shaoor-t), transform var(--shaoor-t);
+    }
+    .admin-nav-btn:hover, .dtab:hover { transform: translateX(2px); }
+    .status-pill { transition: background var(--shaoor-t), color var(--shaoor-t); }
+
+    /* Member dashboard surfaces */
+    #memberDash .container > div {
+      transition: transform .32s var(--shaoor-ease), box-shadow .32s var(--shaoor-ease), border-color .32s ease;
+    }
+    #memberDash .container > div:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Admin: row highlight only — no lift on dense tables */
+    .admin-table tbody tr { transition: background .18s ease; }
+
+    /* Trust surfaces: opening only */
+    #idCardModal.open .id-card-face,
+    #viewCertificateModal.open .certificate-paper,
+    #viewDocumentModal.open #documentPrintArea {
+      animation: shaoorEnter .4s var(--shaoor-ease);
+    }
+
+    @keyframes shaoorSpin { to { transform: rotate(360deg); } }
+    .su-spinner { animation: shaoorSpin .8s linear infinite; }
+
+    @media (max-width: 700px) {
+      .feature-card:hover, .soc-card:hover, .cab-card:hover, .mem-card:hover, .blog-card:hover, .gallery-item:hover,
+      #memberDash .container > div:hover {
+        transform: translateY(-2px);
+      }
+      .institutional-hero-copy::before { width: 180px; height: 180px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero::after, .institutional-hero-copy::before { animation: none !important; }
+      .hero-lang-toggle, .hero-badge, .hero-title, .hero-sub, .hero-btns,
+      .institutional-hero-copy.hero-lang-swap .hero-badge,
+      .institutional-hero-copy.hero-lang-swap .hero-title,
+      .institutional-hero-copy.hero-lang-swap .hero-sub,
+      .institutional-hero-copy.hero-lang-swap .hero-btns,
+      .modal.open .modal-box,
+      #idCardModal.open .id-card-face,
+      #viewCertificateModal.open .certificate-paper,
+      #viewDocumentModal.open #documentPrintArea {
+        animation: none !important;
+      }
+      .btn:hover, .admin-btn:hover, .feature-card:hover, .soc-card:hover,
+      .cab-card:hover, .mem-card:hover, .blog-card:hover, .gallery-item:hover,
+      #memberDash .container > div:hover, .theme-btn:hover, .btn:hover i {
+        transform: none !important;
+      }
+    }

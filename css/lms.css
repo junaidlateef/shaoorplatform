@@ -1,0 +1,138 @@
+.lms-catalog-header { text-align: center; margin-bottom: 2.5rem; }
+    .lms-catalog-header h2 { font-size: 2rem; font-weight: 800; margin-bottom: .5rem; }
+    .lms-filters { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-bottom: 2.5rem; }
+    .lms-filter-btn {
+      padding: .5rem 1.1rem; border-radius: 999px; border: 1px solid var(--teal, #4f8582);
+      background: transparent; cursor: pointer; font-weight: 600; font-size: .85rem;
+      transition: all .2s;
+    }
+    .lms-filter-btn.active, .lms-filter-btn:hover { background: var(--teal, #4f8582); color: #fff; }
+    /* Phase 3A — LMS card visuals aligned to the existing .blog-card design system
+       (same border/shadow/theme tokens as Media/Posts) instead of hardcoded rgba values.
+       Markup structure, business logic and click targets are unchanged. */
+    .lms-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .lms-card {
+      border-radius: var(--radius) !important;
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: var(--shadow) !important;
+      overflow: hidden; transition: all var(--trans);
+      display: flex; flex-direction: column;
+    }
+    .lms-card:hover {
+      transform: translateY(-4px) !important;
+      box-shadow: var(--shadow-lg) !important;
+      border-color: rgba(184,160,106,.30) !important;
+    }
+    .lms-card-thumb {
+      height: 160px; background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.2rem;
+      overflow: hidden; position: relative; flex-shrink: 0;
+    }
+    .lms-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lms-card-body { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
+    .lms-card-title { font-weight: 700; font-size: 1.05rem; color: var(--ink); line-height: 1.4; }
+    .lms-card-desc {
+      font-size: .85rem; color: var(--muted); line-height: 1.5; margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .lms-card-meta { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .78rem; color: var(--muted); }
+    .lms-badge { padding: .2rem .6rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+    .lms-badge-free { background: #e4f5ec; color: #1f8b4c; }
+    .lms-badge-paid { background: #fdeee0; color: #b5651d; }
+    .lms-card-cta {
+      margin-top: auto; text-align: center; padding: .6rem; border-radius: 8px;
+      background: var(--gold, #c9a44c); color: #fff; font-weight: 700; text-decoration: none;
+      font-size: .85rem;
+    }
+    .lms-empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+
+
+.lms-pathways { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin: 2rem 0; }
+    .lms-pathway-card {
+      border: 1px solid rgba(255,255,255,.15); border-radius: 14px; padding: 1.5rem 1.2rem;
+      text-align: center; background: rgba(255,255,255,.04); cursor: pointer; transition: all .2s;
+    }
+    .lms-pathway-card:hover { background: rgba(255,255,255,.09); transform: translateY(-3px); }
+    .lms-pathway-card i { font-size: 1.6rem; color: var(--gold, #c9a44c); margin-bottom: .6rem; display: block; }
+    .lms-pathway-card h4 { font-weight: 700; margin-bottom: .3rem; }
+    .lms-pathway-card p { font-size: .82rem; opacity: .8; margin: 0; }
+    .lms-academy-close {
+      position: sticky; top: 1rem; float: right; margin: 1rem 1.5rem 0 0; z-index: 5;
+      background: rgba(0,0,0,.35); color: #fff; border: none; border-radius: 999px;
+      width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer;
+    }
+    #lmsAcademyOverlay {
+      display: none; position: fixed; inset: 0; z-index: 4000; overflow-y: auto;
+      background: var(--navy, #142f4a);
+    }
+    #lmsAcademyOverlay.active { display: block; }
+
+
+#courseDetail { display: none; }
+    #courseDetail.active { display: block; }
+    .lms-detail-hero {
+      background: linear-gradient(135deg, var(--navy), var(--teal, #4f8582));
+      color: #fff; padding: 3rem 0; text-align: center;
+    }
+    .lms-detail-hero h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: .6rem; }
+    .lms-detail-meta { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin: 1rem 0; }
+    .lms-detail-body { padding: 3rem 0; }
+    .lms-detail-grid { display: grid; grid-template-columns: 2.4fr .9fr; gap: 2rem; align-items: start; }
+    @media (max-width: 820px) { .lms-detail-grid { grid-template-columns: 1fr; } }
+    .lms-detail-section { margin-bottom: 2rem; }
+    .lms-detail-section h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: .8rem; }
+    .lms-detail-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+    .lms-detail-list li { display: flex; gap: .5rem; align-items: flex-start; font-size: .92rem; }
+    .lms-detail-list li i { color: var(--teal, #4f8582); margin-top: .2rem; }
+    .lms-module { border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1.1rem; margin-bottom: .7rem; background: var(--card); }
+    .lms-module-title { font-weight: 700; font-size: .95rem; display: flex; justify-content: space-between; color: var(--ink); }
+    .lms-lesson-row { display:flex; align-items:center; gap:.6rem; padding:.55rem .3rem; border-top:1px solid var(--border); font-size:.85rem; cursor:pointer; color: var(--ink); }
+    .lms-lesson-row:first-of-type { border-top:none; margin-top:.5rem; }
+    .lms-lesson-row.locked { cursor:not-allowed; opacity:.55; }
+    .lms-lesson-row .lms-lesson-icon { width:20px; text-align:center; flex-shrink:0; color:var(--gold); }
+    .lms-lesson-row.completed .lms-lesson-icon { color:#1e8e5a; }
+    .lms-lesson-row.locked .lms-lesson-icon { color:#9aa1a9; }
+    .lms-lesson-row .lms-lesson-title { flex:1; }
+    .lms-lesson-row .lms-lesson-status { font-size:.72rem; color:var(--muted); }
+    .lms-lesson-player { display:none; }
+    .lms-lesson-player.active { display:block; }
+    .lms-player-frame { position:relative; width:100%; padding-top:56.25%; background:var(--navy); border-radius:10px; overflow:hidden; margin-bottom:1rem; }
+    .lms-player-frame iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .lms-player-nav { display:flex; justify-content:space-between; gap:.6rem; margin-top:1rem; flex-wrap:wrap; }
+    .lms-locked-msg { font-size:.85rem; color:#8a6d1f; background:#FBF4E4; border:1px solid #E5D2A3; border-radius:8px; padding:.7rem .9rem; }
+    .lms-quiz-badge { display:inline-flex; align-items:center; gap:.3rem; font-size:.72rem; color:#8a6d1f; background:#FBF4E4; border:1px solid #E5D2A3; border-radius:6px; padding:.15rem .5rem; margin-left:.4rem; }
+    .lms-quiz-panel { display:none; }
+    .lms-quiz-panel.active { display:block; }
+    .lms-quiz-question { border:1px solid var(--border); border-radius:10px; padding:.9rem 1rem; margin-bottom:.8rem; background: var(--card); }
+    .lms-quiz-question h4 { font-size:.9rem; margin:0 0 .6rem; color: var(--ink); }
+    .lms-quiz-option { display:flex; align-items:center; gap:.6rem; padding:.75rem .8rem; min-height:44px; border-radius:6px; font-size:.85rem; cursor:pointer; color: var(--ink); }
+    .lms-quiz-option:hover { background:var(--cream); }
+    .lms-quiz-option.correct { background:#E7F6EC; color:#1e8e5a; }
+    .lms-quiz-option.incorrect { background:#FBEAEA; color:#b3392c; }
+    .lms-quiz-explanation { font-size:.8rem; color:var(--muted); margin-top:.4rem; padding-top:.4rem; border-top:1px dashed var(--border); display:none; }
+    .lms-quiz-explanation.show { display:block; }
+    .lms-quiz-result { text-align:center; padding:1.2rem; border-radius:10px; margin-bottom:1rem; }
+    .lms-quiz-result.pass { background:#E7F6EC; color:#1e8e5a; }
+    .lms-quiz-result.fail { background:#FBEAEA; color:#b3392c; }
+    .lms-sidebar-card {
+      border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem;
+      position: sticky; top: 100px; background: var(--card);
+      max-width: 300px; margin-left: auto; font-size: .88rem; color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+    .lms-sidebar-price { font-size: 1.3rem; font-weight: 800; margin-bottom: .3rem; color: var(--ink); }
+    .lms-back-link { display: inline-flex; align-items: center; gap: .4rem; color: #fff; opacity: .85; margin-bottom: 1rem; cursor: pointer; font-size: .85rem; }
+    .lms-back-link:hover { opacity: 1; }
+    /* Phase 3B — hero thumbnail, same visual language as the course card thumbnail */
+    .lms-detail-thumb {
+      width: 100%; max-width: 760px; aspect-ratio: 16 / 7; margin: 0 auto 1.4rem;
+      border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg);
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal, #4f8582) 100%);
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.4rem;
+    }
+    .lms-detail-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media (max-width: 600px) { .lms-detail-thumb { aspect-ratio: 16 / 9; font-size: 1.8rem; } }

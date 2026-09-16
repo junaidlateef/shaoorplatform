@@ -1,0 +1,8 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "SHAOOR | شعور",
+  "url": "https://shaoorplatform.vercel.app/",
+  "description": "Pakistan's premier arts & culture membership organization spanning Calligraphy, Fine Arts, Textile Art, Islamic Art, Heritage, Photography and Digital Art societies.",
+  "areaServed": "PK"
+}
