@@ -4413,6 +4413,59 @@ select.form-input {
     #mediaLinksGrid { grid-template-columns: 1fr !important; }
   }
 </style>
+
+<style id="shaoor-nav-auth-pass">
+  /* Public nav + language placement. Visual only. Reuses existing tokens. */
+  .public-lang-toggle {
+    display: inline-flex;
+    gap: .2rem;
+    background: var(--cream2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: .15rem;
+    flex-shrink: 0;
+  }
+  .public-lang-toggle .hero-lang-btn,
+  .public-lang-toggle .public-lang-btn {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: .72rem;
+    font-weight: 700;
+    padding: .28rem .7rem;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: .02em;
+    font-family: inherit;
+  }
+  .public-lang-toggle .hero-lang-btn.active,
+  .public-lang-toggle .public-lang-btn.active {
+    background: var(--navy);
+    color: #fff;
+  }
+  [data-theme="dark"] .public-lang-toggle {
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.12);
+  }
+  [data-theme="dark"] .public-lang-toggle .hero-lang-btn,
+  [data-theme="dark"] .public-lang-toggle .public-lang-btn { color: rgba(255,255,255,.65); }
+  [data-theme="dark"] .public-lang-toggle .hero-lang-btn.active,
+  [data-theme="dark"] .public-lang-toggle .public-lang-btn.active {
+    background: var(--gold);
+    color: var(--navy);
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .mobile-nav .public-lang-toggle { margin: .25rem 0 1rem; }
+  @media (max-width: 1100px) {
+    .nav-links a { font-size: .82rem; }
+  }
+</style>
 </head>
 <body>
 
@@ -4435,17 +4488,20 @@ select.form-input {
         <a href="#chapters">Chapters</a>
         <a href="#events">Events</a>
         <a href="#courses">Courses</a>
-        <a href="#membership">Membership</a>
-        <a href="#verification">Verification</a>
+        <a href="#gallery">Gallery</a>
         <a href="#blog">Blog</a>
-        <a href="#contact">Contact</a>
+        <a href="#verification">Verification</a>
       </div>
       <div class="nav-actions">
+        <div class="public-lang-toggle" role="group" aria-label="Language / زبان">
+          <button type="button" class="hero-lang-btn active" id="heroLangEnBtn" aria-pressed="true" onclick="shaoorSetHeroLang('en')">EN</button>
+          <button type="button" class="hero-lang-btn" id="heroLangUrBtn" aria-pressed="false" onclick="shaoorSetHeroLang('ur')">اردو</button>
+        </div>
 <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">
           <i class="fas fa-moon" id="themeIcon"></i>
         </button>
         <button class="btn btn-outline" onclick="openModal('loginModal')">Sign In</button>
-        <a href="#membership" class="btn btn-gold" onclick="openSignupFlow()">Join Us</a>
+        <a href="#membership" class="btn btn-gold" onclick="openSignupFlow()">Join SHAOOR</a>
       </div>
       <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -4462,15 +4518,18 @@ select.form-input {
   <a href="#chapters" onclick="closeMobileNav()">Chapters</a>
   <a href="#events" onclick="closeMobileNav()">Events</a>
   <a href="#courses" onclick="closeMobileNav()">Courses</a>
-  <a href="#membership" onclick="closeMobileNav()">Membership</a>
-  <a href="#verification" onclick="closeMobileNav()">Verification</a>
   <a href="#gallery" onclick="closeMobileNav()">Gallery</a>
   <a href="#blog" onclick="closeMobileNav()">Blog</a>
+  <a href="#verification" onclick="closeMobileNav()">Verification</a>
   <a href="#contact" onclick="closeMobileNav()">Contact</a>
   <a href="#" onclick="closeMobileNav();openModal('policyModal');return false;">Policy | رازداری</a>
-  <div style="margin-top:1.5rem;display:grid;gap:.75rem;">
+  <div class="public-lang-toggle" role="group" aria-label="Language / زبان">
+    <button type="button" class="public-lang-btn active" data-lang="en" aria-pressed="true" onclick="shaoorSetHeroLang('en')">EN</button>
+    <button type="button" class="public-lang-btn" data-lang="ur" aria-pressed="false" onclick="shaoorSetHeroLang('ur')">اردو</button>
+  </div>
+  <div style="margin-top:.5rem;display:grid;gap:.75rem;">
     <button class="btn btn-outline" onclick="closeMobileNav();openModal('loginModal')" style="width:100%;justify-content:center;">Sign In</button>
-    <a href="#membership" class="btn btn-gold" onclick="closeMobileNav()" style="justify-content:center;">Apply Now</a>
+    <a href="#membership" class="btn btn-gold" onclick="closeMobileNav();openSignupFlow()" style="justify-content:center;">Join SHAOOR</a>
   </div>
 </div>
 
@@ -4482,10 +4541,6 @@ select.form-input {
     <div class="container">
       <div class="hero-inner">
         <div class="institutional-hero-copy" id="heroCopy" dir="ltr" lang="en">
-<div class="hero-lang-toggle" role="group" aria-label="Language / زبان">
-  <button type="button" class="hero-lang-btn active" id="heroLangEnBtn" aria-pressed="true" onclick="shaoorSetHeroLang('en')">EN</button>
-  <button type="button" class="hero-lang-btn" id="heroLangUrBtn" aria-pressed="false" onclick="shaoorSetHeroLang('ur')">اردو</button>
-</div>
 <div class="hero-badge"><i class="fas fa-palette"></i> <span id="heroBadgeText">Pakistan's Creative Arts Platform</span></div>
         <h1 class="hero-title" id="heroTitle">WHERE ARTS<br><span class="gold-shimmer">TRANSFORM SOCIETY</span></h1>
         <p class="hero-sub" id="heroSub">Ideas • Culture • Creativity • Community — across Pakistan.</p>
@@ -4567,6 +4622,11 @@ select.form-input {
 
     if (enBtn) { enBtn.classList.toggle('active', lang === 'en'); enBtn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
     if (urBtn) { urBtn.classList.toggle('active', lang === 'ur'); urBtn.setAttribute('aria-pressed', lang === 'ur' ? 'true' : 'false'); }
+    document.querySelectorAll('.public-lang-btn').forEach(function (btn) {
+      var on = btn.getAttribute('data-lang') === lang;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
 
     try { localStorage.setItem('shaoor_hero_lang', lang); } catch (e) {}
   }
@@ -9220,14 +9280,7 @@ select.form-input {
       <button class="modal-close" onclick="closeModal('loginModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.1rem;" role="tablist" aria-label="Sign in as">
-        <button type="button" id="loginTabMember" onclick="switchLoginTab('member')" style="padding:.7rem .5rem;border-radius:10px;border:2px solid var(--gold);background:var(--gold);color:#1a1200;font-weight:700;cursor:pointer;text-align:center;">
-          <i class="fas fa-user"></i><br>Member
-        </button>
-        <button type="button" id="loginTabAdmin" onclick="closeModal('loginModal');openAdmin();" style="padding:.7rem .5rem;border-radius:10px;border:2px solid var(--border);background:transparent;color:var(--text);font-weight:700;cursor:pointer;text-align:center;">
-          <i class="fas fa-shield-halved"></i><br>Admin / Founder
-        </button>
-      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin:-.2rem 0 1rem;">Member sign in. Staff use Admin Login.</p>
       <form class="modal-form" id="loginForm"><input type="text" name="website_url" style="display:none!important;" tabindex="-1" autocomplete="off" />
         <div class="form-group"><label for="lEmail">Email Address</label><input type="email" id="lEmail" class="form-input" required placeholder="your@email.com" /></div>
         <div class="form-group"><label for="lPass">Password</label>
@@ -12921,15 +12974,7 @@ select.form-input {
       lmsPendingEnrollCourseId = null;
       await enrollInCourse(); // resume the enrollment they were trying to do before signing in
     } else {
-      const { data: loginProfile } = await sb.from('profiles').select('role, status, full_name').eq('id', data.user.id).maybeSingle();
-      if (loginProfile && STAFF_ROLES.indexOf(loginProfile.role) !== -1 && loginProfile.status === 'active') {
-        document.getElementById('adminDash').classList.add('open');
-        document.getElementById('dashAdminName').textContent = loginProfile.full_name || loginProfile.role;
-        loadMembersAdmin();
-        loadDashTopStats();
-      } else {
-        await openMemberDashboard(data.user.id);
-      }
+      await openMemberDashboard(data.user.id);
     }
   });
 
