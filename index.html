@@ -4735,8 +4735,13 @@ select.form-input {
         </article>
       </div>
 
+      <div id="blogIndexTools" style="display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-bottom:1.25rem;">
+        <input type="search" id="blogPublicSearch" class="form-input" placeholder="Search articles…" oninput="loadPublicBlog()" style="max-width:280px;" />
+        <select id="blogPublicCategory" class="form-input" onchange="loadPublicBlog()" style="max-width:200px;"><option value="">All categories</option></select>
+      </div>
+      <div id="blogFeaturedWrap"></div>
       <div style="text-align:center;margin-top:2.5rem;">
-        <a href="#contact" class="btn btn-outline">More Articles</a>
+        <a href="#blog" class="btn btn-outline" onclick="document.getElementById('blogPublicSearch')?.focus();return false;">Browse articles</a>
       </div>
     </div>
   </section>
@@ -5539,7 +5544,19 @@ select.form-input {
       <div class="dash-panel" id="dp-blog">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;">
           <h3 style="font-weight:700;">Blog Posts</h3>
-          <button class="btn btn-gold" onclick="openCreateBlogModal()" style="padding:.5rem 1rem;font-size:.9rem;"><i class="fas fa-plus"></i> New Post</button>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
+            <input type="text" id="blogAdminSearch" class="form-input" placeholder="Search…" oninput="loadBlogAdmin()" style="padding:.4rem .7rem;min-width:160px;" />
+            <select id="blogAdminStatus" class="form-input" onchange="loadBlogAdmin()" style="padding:.4rem .7rem;">
+              <option value="">Status: All</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
+            <select id="blogAdminCategory" class="form-input" onchange="loadBlogAdmin()" style="padding:.4rem .7rem;">
+              <option value="">Category: All</option>
+            </select>
+            <button class="btn btn-gold" onclick="openCreateBlogModal()" style="padding:.5rem 1rem;font-size:.9rem;"><i class="fas fa-plus"></i> New Post</button>
+          </div>
         </div>
         <div style="overflow-x:auto;">
           <table class="admin-table">
@@ -8392,17 +8409,17 @@ select.form-input {
   </div>
 </div>
 <div class="modal" id="blogModal" role="dialog" aria-modal="true" aria-labelledby="blogModalTitle">
-  <div class="modal-box" style="max-width:600px;">
+  <div class="modal-box" style="max-width:920px;">
     <div class="modal-head">
-      <h3 id="blogModalTitle">نئی Post</h3>
+      <h3 id="blogModalTitle">New Post</h3>
       <button class="modal-close" onclick="closeModal('blogModal')" aria-label="Close"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
       <form class="modal-form" id="blogForm" novalidate>
         <input type="hidden" id="blogEditId" value="" />
         <input type="hidden" id="blogExistingImageUrl" value="" />
+        <input type="hidden" id="blogBlocksJson" value="" />
 
-        <!-- Featured Image Upload -->
         <div class="form-group">
           <label>Featured Image / تصویر</label>
           <div id="blogImageUploadArea" style="border:2px dashed var(--border);border-radius:10px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;" onclick="document.getElementById('blogImageInput').click()">
@@ -8421,16 +8438,33 @@ select.form-input {
           <input type="text" id="blogTitle" class="form-input" required placeholder="e.g., SHAOOR Expands: New Chapters" />
         </div>
         <div class="form-group">
-          <label for="blogCategory">Category</label>
-          <input type="text" id="blogCategory" class="form-input" placeholder="e.g., Announcement, Community, Artist Spotlight" />
+          <label for="blogSubtitle">Subtitle</label>
+          <input type="text" id="blogSubtitle" class="form-input" placeholder="Optional subtitle" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+          <div class="form-group">
+            <label for="blogCategory">Category</label>
+            <input type="text" id="blogCategory" class="form-input" placeholder="e.g., Announcement, Community" />
+          </div>
+          <div class="form-group">
+            <label for="blogLanguage">Language</label>
+            <select id="blogLanguage" class="form-input">
+              <option value="en">English</option>
+              <option value="ur">اردو (Urdu)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="blogTags">Tags (comma-separated)</label>
+          <input type="text" id="blogTags" class="form-input" placeholder="heritage, exhibition, youth" />
         </div>
         <div class="form-group">
           <label for="blogExcerpt">مختصر تفصیل (Excerpt)</label>
           <textarea id="blogExcerpt" class="form-input" rows="2" placeholder="Card پر دکھنے والا مختصر تعارف"></textarea>
         </div>
         <div class="form-group">
-          <label for="blogContent">مکمل مضمون (Content)</label>
-          <textarea id="blogContent" class="form-input" rows="6" placeholder="پوری تحریر یہاں لکھیں"></textarea>
+          <label for="blogSlug">Slug</label>
+          <input type="text" id="blogSlug" class="form-input" placeholder="auto-generated on first save" />
         </div>
         <div class="form-group">
           <label for="blogStatus">Status *</label>
@@ -8440,9 +8474,61 @@ select.form-input {
             <option value="archived">Archived</option>
           </select>
         </div>
-        <button type="submit" class="btn btn-gold" style="justify-content:center;width:100%;"><i class="fas fa-save"></i> محفوظ کریں</button>
+
+        <div style="border-top:1px solid var(--border);padding-top:.9rem;margin-top:.4rem;">
+          <strong style="font-size:.92rem;">Article body</strong>
+          <p style="font-size:.78rem;color:var(--muted);margin:.25rem 0 .6rem;">Structured blocks. Admin preview uses the same public renderer.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.6rem;">
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('paragraph')">Paragraph</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('h2')">H2</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('h3')">H3</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('ul')">List</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('ol')">Numbered</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('quote')">Quote</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('callout')">Callout</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('image')">Image</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('table')">Table</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('chart')">Chart</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('embed')">Embed</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('cta')">CTA</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('link')">Internal link</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('divider')">Divider</button>
+            <button type="button" class="btn btn-outline" style="padding:.3rem .6rem;font-size:.75rem;" onclick="blogAddBlock('conclusion')">Conclusion</button>
+          </div>
+          <div id="blogBlocksEditor" style="display:flex;flex-direction:column;gap:.65rem;"></div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:.9rem;margin-top:1rem;">
+          <strong style="font-size:.92rem;">Related articles</strong>
+          <div id="blogRelatedPicker" style="margin-top:.5rem;max-height:140px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:.5rem;"></div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:.9rem;margin-top:1rem;">
+          <strong style="font-size:.92rem;">SEO</strong>
+          <div class="form-group" style="margin-top:.5rem;"><label for="blogSeoTitle">SEO title</label><input type="text" id="blogSeoTitle" class="form-input" /></div>
+          <div class="form-group"><label for="blogSeoDesc">Meta description</label><textarea id="blogSeoDesc" class="form-input" rows="2"></textarea></div>
+          <div class="form-group"><label for="blogCanonical">Canonical URL</label><input type="url" id="blogCanonical" class="form-input" placeholder="https://…" /></div>
+          <div class="form-group"><label for="blogOgTitle">OG title</label><input type="text" id="blogOgTitle" class="form-input" /></div>
+          <div class="form-group"><label for="blogOgDesc">OG description</label><textarea id="blogOgDesc" class="form-input" rows="2"></textarea></div>
+          <div class="form-group"><label for="blogOgImage">OG image URL</label><input type="url" id="blogOgImage" class="form-input" /></div>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.85rem;"><input type="checkbox" id="blogNoindex" /> noindex</label>
+        </div>
+
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;">
+          <button type="button" class="btn btn-outline" onclick="previewBlogFromEditor()"><i class="fas fa-eye"></i> Preview</button>
+          <button type="submit" class="btn btn-gold" style="flex:1;justify-content:center;"><i class="fas fa-save"></i> محفوظ کریں</button>
+        </div>
       </form>
     </div>
+  </div>
+</div>
+<div class="modal" id="articleViewModal" role="dialog" aria-modal="true" aria-labelledby="articleViewTitle">
+  <div class="modal-box" style="max-width:860px;">
+    <div class="modal-head">
+      <h3 id="articleViewTitle">Article</h3>
+      <button class="modal-close" onclick="closeArticleView()" aria-label="Close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="articleViewBody"></div>
   </div>
 </div>
 <div class="modal" id="chapterModal" role="dialog" aria-modal="true" aria-labelledby="chapterModalTitle">
@@ -10766,29 +10852,516 @@ select.form-input {
     URL.revokeObjectURL(url);
   };
 
-  /* ══════════════ BLOG POSTS: create / edit / delete / list ══════════════ */
+  /* ════════════ BLOG POSTS: CMS (structured content in blog_posts.content JSON) ════════════ */
   let blogSelectedImageFile = null;
+  let blogEditorBlocks = [];
+  let blogChartInstances = {};
+  const BLOG_PUBLIC_SECTIONS = [
+    { href: '#membership', label: 'Membership' },
+    { href: '#about', label: 'About' },
+    { href: '#societies', label: 'Societies' },
+    { href: '#chapters', label: 'Chapters' },
+    { href: '#events', label: 'Events' },
+    { href: '#courses', label: 'Courses' },
+    { href: '#verification', label: 'Verification' },
+    { href: '#gallery', label: 'Gallery' },
+    { href: '#contact', label: 'Contact' },
+    { href: '#blog', label: 'Blog index' }
+  ];
+
+  function blogUid() {
+    return 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+  function blogArticleUrl(slug) {
+    if (!slug) return window.location.pathname + '#blog';
+    return window.location.origin + window.location.pathname + '?article=' + encodeURIComponent(slug);
+  }
+  function blogParseContent(raw) {
+    const empty = { v: 1, subtitle: '', language: 'en', tags: [], related_ids: [], seo: {}, blocks: [] };
+    if (raw == null || raw === '') return empty;
+    if (typeof raw === 'object') return Object.assign(empty, raw, { blocks: raw.blocks || [] });
+    const s = String(raw).trim();
+    if (!s) return empty;
+    if (s.charAt(0) === '{') {
+      try {
+        const o = JSON.parse(s);
+        if (o && typeof o === 'object') return Object.assign(empty, o, { blocks: Array.isArray(o.blocks) ? o.blocks : [] });
+      } catch (e) { /* legacy plaintext */ }
+    }
+    return Object.assign(empty, { blocks: [{ id: blogUid(), type: 'paragraph', text: s }] });
+  }
+  function blogPlainFromBlocks(blocks) {
+    return (blocks || []).map(function (b) {
+      if (!b) return '';
+      if (b.text) return b.text;
+      if (Array.isArray(b.items)) return b.items.join(' ');
+      if (b.caption) return b.caption;
+      if (b.title) return b.title;
+      return '';
+    }).join(' ').replace(/\s+/g, ' ').trim();
+  }
+  function blogReadingMins(post, parsed) {
+    const text = ((post && post.excerpt) || '') + ' ' + blogPlainFromBlocks(parsed.blocks);
+    const words = text.split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words / 180) || 1);
+  }
+  function blogEscape(s) { return sanitize(s == null ? '' : s); }
+
+  function blogRenderTable(b) {
+    const rows = Array.isArray(b.rows) ? b.rows : [['']];
+    const header = !!b.header;
+    let html = '<div class="blog-table-wrap table-wrapper" style="overflow-x:auto;margin:1rem 0;"><table class="blog-article-table" style="width:100%;border-collapse:collapse;font-size:.9rem;">';
+    if (b.caption) html += '<caption style="text-align:start;padding:.4rem 0;color:var(--muted);font-size:.82rem;">' + blogEscape(b.caption) + '</caption>';
+    rows.forEach(function (row, ri) {
+      const cells = Array.isArray(row) ? row : [row];
+      const tag = (header && ri === 0) ? 'th' : 'td';
+      html += '<tr>';
+      cells.forEach(function (c) {
+        html += '<' + tag + ' style="border:1px solid var(--border);padding:.45rem .6rem;text-align:start;">' + blogEscape(c) + '</' + tag + '>';
+      });
+      html += '</tr>';
+    });
+    html += '</table></div>';
+    return html;
+  }
+  function blogRenderChartPlaceholder(b) {
+    const id = 'blogChart_' + (b.id || blogUid());
+    const desc = b.description || b.caption || b.title || 'Chart';
+    return '<figure class="blog-chart-block" style="margin:1.1rem 0;"><canvas id="' + id + '" height="220" role="img" aria-label="' + blogEscape(desc) + '"></canvas>' +
+      (b.caption || b.title ? '<figcaption style="font-size:.8rem;color:var(--muted);margin-top:.4rem;">' + blogEscape(b.caption || b.title) + '</figcaption>' : '') +
+      '</figure>';
+  }
+  function blogMountCharts(root, blocks) {
+    if (typeof Chart === 'undefined' || !root) return;
+    (blocks || []).forEach(function (b) {
+      if (!b || b.type !== 'chart') return;
+      const el = root.querySelector('#blogChart_' + b.id);
+      if (!el) return;
+      if (blogChartInstances[b.id]) { try { blogChartInstances[b.id].destroy(); } catch (e) {} }
+      const labels = Array.isArray(b.labels) ? b.labels : [];
+      const series = Array.isArray(b.series) && b.series.length ? b.series : [{ label: 'Series', data: [] }];
+      const type = ['bar', 'line', 'pie', 'scatter'].indexOf(b.chartType) >= 0 ? b.chartType : 'bar';
+      const colors = ['#C8A96B', '#F0C75E', '#142F4A', '#205072', '#4A3B72', '#8A6FBF', '#E8B4A0', '#7FA6C9'];
+      const datasets = series.map(function (s, i) {
+        const data = type === 'scatter'
+          ? (s.data || []).map(function (pt) { return (pt && typeof pt === 'object') ? pt : { x: Number(pt), y: Number(pt) }; })
+          : (s.data || []).map(Number);
+        return {
+          label: s.label || ('Series ' + (i + 1)),
+          data: data,
+          backgroundColor: type === 'pie' ? colors : colors[i % colors.length],
+          borderColor: '#0B1F33',
+          borderWidth: type === 'line' ? 2 : 1,
+          tension: .35,
+          fill: type === 'line'
+        };
+      });
+      blogChartInstances[b.id] = new Chart(el.getContext('2d'), {
+        type: type,
+        data: { labels: labels, datasets: datasets },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: type === 'pie' || series.length > 1 } } }
+      });
+    });
+  }
+
+  function renderBlogBlocks(blocks) {
+    return (blocks || []).map(function (b) {
+      if (!b || !b.type) return '';
+      switch (b.type) {
+        case 'h2': return '<h2 style="font-family:var(--ff-display);font-size:1.35rem;margin:1.4rem 0 .6rem;">' + blogEscape(b.text) + '</h2>';
+        case 'h3': return '<h3 style="font-family:var(--ff-display);font-size:1.12rem;margin:1.1rem 0 .45rem;">' + blogEscape(b.text) + '</h3>';
+        case 'paragraph': return '<p style="line-height:1.75;margin:0 0 .9rem;">' + blogEscape(b.text).replace(/\n/g, '<br>') + '</p>';
+        case 'ul':
+        case 'ol': {
+          const tag = b.type === 'ol' ? 'ol' : 'ul';
+          const items = Array.isArray(b.items) ? b.items : String(b.text || '').split('\n');
+          return '<' + tag + ' style="margin:0 0 1rem 1.2rem;line-height:1.7;">' + items.map(function (it) { return '<li>' + blogEscape(it) + '</li>'; }).join('') + '</' + tag + '>';
+        }
+        case 'quote': return '<blockquote style="border-inline-start:3px solid var(--gold);padding:.4rem 0 .4rem 1rem;margin:1rem 0;color:var(--muted);font-style:italic;">' + blogEscape(b.text) + (b.cite ? '<cite style="display:block;margin-top:.4rem;font-size:.82rem;font-style:normal;">' + blogEscape(b.cite) + '</cite>' : '') + '</blockquote>';
+        case 'callout': return '<aside class="blog-callout" style="background:var(--cream2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin:1rem 0;">' + blogEscape(b.text).replace(/\n/g, '<br>') + '</aside>';
+        case 'divider': return '<hr style="border:0;border-top:1px solid var(--border);margin:1.4rem 0;" />';
+        case 'image': {
+          const src = isSafeHttpUrl(b.src) ? b.src : '';
+          if (!src) return '';
+          return '<figure style="margin:1.1rem 0;"><img src="' + blogEscape(src) + '" alt="' + blogEscape(b.alt || '') + '" style="width:100%;height:auto;border-radius:10px;" />' +
+            (b.caption ? '<figcaption style="font-size:.8rem;color:var(--muted);margin-top:.4rem;">' + blogEscape(b.caption) + '</figcaption>' : '') + '</figure>';
+        }
+        case 'table': return blogRenderTable(b);
+        case 'chart': return blogRenderChartPlaceholder(b);
+        case 'embed': {
+          const url = isSafeHttpUrl(b.url) ? b.url : '';
+          if (!url) return '';
+          const yt = (typeof ytEmbedUrl === 'function') ? ytEmbedUrl(url) : null;
+          if (yt) return '<div style="margin:1rem 0;aspect-ratio:16/9;"><iframe src="' + blogEscape(yt) + '" style="width:100%;height:100%;border:0;border-radius:10px;" allowfullscreen loading="lazy" title="Video"></iframe></div>';
+          return '<p><a href="' + blogEscape(url) + '" target="_blank" rel="noopener">' + blogEscape(b.label || url) + '</a></p>';
+        }
+        case 'cta': {
+          const href = b.href || '#membership';
+          const safe = (href.charAt(0) === '#' || isSafeHttpUrl(href) || href.indexOf('?article=') === 0 || href.indexOf(window.location.pathname) === 0) ? href : '#';
+          return '<p style="margin:1.2rem 0;"><a class="btn btn-gold" href="' + blogEscape(safe) + '">' + blogEscape(b.label || 'Learn more') + '</a></p>';
+        }
+        case 'link': {
+          const href = b.href || '#';
+          const safe = (href.charAt(0) === '#' || href.indexOf('?article=') >= 0 || isSafeHttpUrl(href)) ? href : '#';
+          return '<p><a href="' + blogEscape(safe) + '" style="color:var(--gold);font-weight:700;">' + blogEscape(b.label || href) + '</a></p>';
+        }
+        case 'conclusion': return '<section class="blog-conclusion" style="margin-top:1.6rem;padding-top:1rem;border-top:1px solid var(--border);"><h2 style="font-size:1.15rem;margin-bottom:.5rem;">' + blogEscape(b.heading || 'Conclusion') + '</h2><p style="line-height:1.75;">' + blogEscape(b.text).replace(/\n/g, '<br>') + '</p></section>';
+        default: return b.text ? '<p>' + blogEscape(b.text) + '</p>' : '';
+      }
+    }).join('');
+  }
+
+  /* Canonical article renderer — admin preview and public view. */
+  function renderBlogArticle(post, relatedPosts) {
+    const parsed = blogParseContent(post.content);
+    const mins = blogReadingMins(post, parsed);
+    const dateStr = post.published_at ? new Date(post.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    const lang = parsed.language === 'ur' ? 'ur' : 'en';
+    const dir = lang === 'ur' ? 'rtl' : 'ltr';
+    const author = post._author_name || '';
+    const img = isSafeHttpUrl(post.image_url) ? post.image_url : '';
+    const related = (relatedPosts || []).filter(function (r) { return r && r.status === 'published' && r.id !== post.id; });
+    let html = '<article class="blog-article" lang="' + lang + '" dir="' + dir + '" style="max-width:760px;margin:0 auto;">';
+    html += '<nav class="blog-crumb" style="font-size:.8rem;color:var(--muted);margin-bottom:1rem;"><a href="#blog" onclick="closeArticleView();return true;">Blog</a> / ' + blogEscape(post.category || 'Article') + '</nav>';
+    if (post.category) html += '<p class="blog-cat">' + blogEscape(post.category) + '</p>';
+    html += '<h1 id="articleViewTitleText" style="font-family:var(--ff-display);font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.25;margin:.2rem 0 .6rem;">' + blogEscape(post.title) + '</h1>';
+    if (parsed.subtitle) html += '<p style="font-size:1.05rem;color:var(--muted);margin:0 0 1rem;">' + blogEscape(parsed.subtitle) + '</p>';
+    html += '<div class="blog-meta" style="margin-bottom:1.1rem;flex-wrap:wrap;">';
+    if (author) html += '<span>' + blogEscape(author) + '</span>';
+    if (dateStr) html += '<span><i class="far fa-calendar-alt"></i> ' + dateStr + '</span>';
+    html += '<span>' + mins + ' min read</span></div>';
+    if (img) html += '<img src="' + blogEscape(img) + '" alt="' + blogEscape(post.title) + '" style="width:100%;height:auto;max-height:420px;object-fit:cover;border-radius:12px;margin-bottom:1.2rem;" />';
+    html += '<div class="blog-article-body">' + renderBlogBlocks(parsed.blocks) + '</div>';
+    if (related.length) {
+      html += '<aside style="margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);"><h2 style="font-size:1.05rem;margin-bottom:.7rem;">Related</h2><div style="display:grid;gap:.5rem;">';
+      related.forEach(function (r) {
+        html += '<a href="' + blogEscape(blogArticleUrl(r.slug)) + '" onclick="event.preventDefault();openPublicArticle(\'' + blogEscape(r.slug) + '\');" style="color:var(--navy);font-weight:600;">' + blogEscape(r.title) + '</a>';
+      });
+      html += '</div></aside>';
+    }
+    html += '<div style="margin-top:1.4rem;font-size:.85rem;"><a href="' + blogEscape(blogArticleUrl(post.slug)) + '" target="_blank" rel="noopener">Share link</a></div>';
+    html += '</article>';
+    return { html: html, parsed: parsed };
+  }
+
+  function blogApplySeo(post, parsed) {
+    const seo = (parsed && parsed.seo) || {};
+    const title = seo.title || post.title;
+    const desc = seo.description || post.excerpt || '';
+    const url = seo.canonical || blogArticleUrl(post.slug);
+    const ogTitle = seo.og_title || title;
+    const ogDesc = seo.og_description || desc;
+    const ogImg = seo.og_image || post.image_url || '';
+    document.title = title + ' — SHAOOR';
+    var md = document.querySelector('meta[name="description"]');
+    if (md) md.setAttribute('content', desc);
+    var can = document.querySelector('link[rel="canonical"]');
+    if (can) can.setAttribute('href', url);
+    var robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.setAttribute('content', seo.noindex ? 'noindex, follow' : 'index, follow');
+    function setMeta(sel, attr, val) {
+      var el = document.querySelector(sel);
+      if (el && val) el.setAttribute(attr, val);
+    }
+    setMeta('meta[property="og:title"]', 'content', ogTitle);
+    setMeta('meta[property="og:description"]', 'content', ogDesc);
+    setMeta('meta[property="og:url"]', 'content', url);
+    setMeta('meta[name="twitter:title"]', 'content', ogTitle);
+    setMeta('meta[name="twitter:description"]', 'content', ogDesc);
+    var ld = document.getElementById('blogArticleJsonLd');
+    if (!ld) { ld = document.createElement('script'); ld.type = 'application/ld+json'; ld.id = 'blogArticleJsonLd'; document.head.appendChild(ld); }
+    ld.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      description: desc,
+      datePublished: post.published_at || undefined,
+      dateModified: post.updated_at || undefined,
+      image: ogImg || undefined,
+      mainEntityOfPage: url,
+      author: { '@type': 'Organization', name: 'SHAOOR | شعور' }
+    });
+    var bd = document.getElementById('blogBreadcrumbJsonLd');
+    if (!bd) { bd = document.createElement('script'); bd.type = 'application/ld+json'; bd.id = 'blogBreadcrumbJsonLd'; document.head.appendChild(bd); }
+    bd.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: window.location.origin + window.location.pathname },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: window.location.origin + window.location.pathname + '#blog' },
+        { '@type': 'ListItem', position: 3, name: post.title, item: url }
+      ]
+    });
+  }
+
+  async function blogFetchRelated(ids) {
+    if (!ids || !ids.length || !sb) return [];
+    const { data } = await sb.from('blog_posts').select('id, title, slug, status, excerpt, image_url, published_at').in('id', ids);
+    return data || [];
+  }
+  async function blogFetchAuthor(authorId) {
+    if (!authorId || !sb) return '';
+    const { data } = await sb.from('profiles').select('full_name').eq('id', authorId).maybeSingle();
+    return (data && data.full_name) || '';
+  }
+
+  window.closeArticleView = function () {
+    closeModal('articleViewModal');
+    if (new URLSearchParams(window.location.search).get('article')) {
+      history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    }
+  };
+
+  window.openPublicArticle = async function (slug, opts) {
+    opts = opts || {};
+    if (!slug || !sb) return;
+    const { data: post, error } = await sb.from('blog_posts').select('id, title, excerpt, content, category, image_url, published_at, updated_at, slug, status, author_id').eq('slug', slug).maybeSingle();
+    if (error || !post) { showToast('Article not found', 'error'); return; }
+    if (post.status !== 'published' && !opts.allowDraft) { showToast('Article not found', 'error'); return; }
+    post._author_name = await blogFetchAuthor(post.author_id);
+    const parsed = blogParseContent(post.content);
+    const related = await blogFetchRelated(parsed.related_ids);
+    const painted = renderBlogArticle(post, related);
+    const body = document.getElementById('articleViewBody');
+    const titleEl = document.getElementById('articleViewTitle');
+    if (titleEl) titleEl.textContent = post.title;
+    if (body) body.innerHTML = painted.html;
+    openModal('articleViewModal');
+    blogMountCharts(body, painted.parsed.blocks);
+    if (post.status === 'published') blogApplySeo(post, painted.parsed);
+    if (!opts.skipUrl) {
+      const url = window.location.pathname + '?article=' + encodeURIComponent(slug);
+      history.replaceState({ article: slug }, post.title, url);
+    }
+  };
+
+  window.previewBlogFromEditor = async function () {
+    const fake = blogCollectEditorPost();
+    fake.status = fake.status || 'draft';
+    fake.slug = fake.slug || 'preview';
+    fake._author_name = 'Preview';
+    const painted = renderBlogArticle(fake, []);
+    const body = document.getElementById('articleViewBody');
+    const titleEl = document.getElementById('articleViewTitle');
+    if (titleEl) titleEl.textContent = 'Preview';
+    if (body) body.innerHTML = painted.html;
+    openModal('articleViewModal');
+    blogMountCharts(body, painted.parsed.blocks);
+  };
+
+  function blogDefaultBlock(type) {
+    const id = blogUid();
+    switch (type) {
+      case 'h2': case 'h3': case 'paragraph': case 'quote': case 'callout': return { id: id, type: type, text: '' };
+      case 'ul': case 'ol': return { id: id, type: type, items: [''] };
+      case 'image': return { id: id, type: 'image', src: '', alt: '', caption: '' };
+      case 'table': return { id: id, type: 'table', header: true, caption: '', rows: [['', ''], ['', '']] };
+      case 'chart': return { id: id, type: 'chart', chartType: 'bar', title: '', caption: '', labels: ['A', 'B'], series: [{ label: 'Series 1', data: [1, 2] }] };
+      case 'embed': return { id: id, type: 'embed', url: '', label: '' };
+      case 'cta': return { id: id, type: 'cta', href: '#membership', label: 'Join SHAOOR' };
+      case 'link': return { id: id, type: 'link', href: '#blog', label: 'Read more' };
+      case 'divider': return { id: id, type: 'divider' };
+      case 'conclusion': return { id: id, type: 'conclusion', heading: 'Conclusion', text: '' };
+      default: return { id: id, type: 'paragraph', text: '' };
+    }
+  }
+
+  window.blogAddBlock = function (type) {
+    blogSyncEditorFromDom();
+    blogEditorBlocks.push(blogDefaultBlock(type));
+    blogRenderEditor();
+  };
+  window.blogRemoveBlock = function (id) {
+    blogSyncEditorFromDom();
+    blogEditorBlocks = blogEditorBlocks.filter(function (b) { return b.id !== id; });
+    blogRenderEditor();
+  };
+  window.blogMoveBlock = function (id, dir) {
+    blogSyncEditorFromDom();
+    const i = blogEditorBlocks.findIndex(function (b) { return b.id === id; });
+    if (i < 0) return;
+    const j = i + dir;
+    if (j < 0 || j >= blogEditorBlocks.length) return;
+    const t = blogEditorBlocks[i]; blogEditorBlocks[i] = blogEditorBlocks[j]; blogEditorBlocks[j] = t;
+    blogRenderEditor();
+  };
+
+  function blogSyncEditorFromDom() {
+    const host = document.getElementById('blogBlocksEditor');
+    if (!host) return;
+    blogEditorBlocks.forEach(function (b) {
+      const box = host.querySelector('[data-bid="' + b.id + '"]');
+      if (!box) return;
+      const val = function (name) { const el = box.querySelector('[data-f="' + name + '"]'); return el ? el.value : ''; };
+      if (['h2', 'h3', 'paragraph', 'quote', 'callout'].indexOf(b.type) >= 0) b.text = val('text');
+      if (b.type === 'quote') b.cite = val('cite');
+      if (b.type === 'ul' || b.type === 'ol') b.items = val('text').split('\n');
+      if (b.type === 'image') { b.src = val('src'); b.alt = val('alt'); b.caption = val('caption'); }
+      if (b.type === 'embed') { b.url = val('url'); b.label = val('label'); }
+      if (b.type === 'cta' || b.type === 'link') { b.href = val('href'); b.label = val('label'); }
+      if (b.type === 'conclusion') { b.heading = val('heading'); b.text = val('text'); }
+      if (b.type === 'table') {
+        b.caption = val('caption');
+        b.header = box.querySelector('[data-f="header"]') ? box.querySelector('[data-f="header"]').checked : false;
+        const grid = box.querySelector('[data-f="grid"]');
+        if (grid) b.rows = grid.value.split('\n').map(function (line) { return line.split('|'); });
+      }
+      if (b.type === 'chart') {
+        b.chartType = val('chartType') || 'bar';
+        b.title = val('title');
+        b.caption = val('caption');
+        b.labels = val('labels').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        try { b.series = JSON.parse(val('series') || '[]'); } catch (e) { /* keep */ }
+      }
+    });
+  }
+
+  function blogRenderEditor() {
+    const host = document.getElementById('blogBlocksEditor');
+    if (!host) return;
+    host.innerHTML = blogEditorBlocks.map(function (b) {
+      const tools = '<div style="display:flex;gap:.3rem;margin-bottom:.35rem;"><button type="button" class="btn btn-outline" style="padding:.15rem .4rem;font-size:.7rem;" onclick="blogMoveBlock(\'' + b.id + '\',-1)">↑</button><button type="button" class="btn btn-outline" style="padding:.15rem .4rem;font-size:.7rem;" onclick="blogMoveBlock(\'' + b.id + '\',1)">↓</button><button type="button" class="btn btn-outline" style="padding:.15rem .4rem;font-size:.7rem;color:var(--ruby);" onclick="blogRemoveBlock(\'' + b.id + '\')">Remove</button><span style="font-size:.72rem;color:var(--muted);margin-inline-start:.4rem;">' + b.type + '</span></div>';
+      let inner = '';
+      if (['h2', 'h3', 'paragraph', 'quote', 'callout'].indexOf(b.type) >= 0) {
+        inner = '<textarea data-f="text" class="form-input" rows="' + (b.type === 'paragraph' || b.type === 'callout' ? 3 : 2) + '">' + blogEscape(b.text || '') + '</textarea>';
+        if (b.type === 'quote') inner += '<input data-f="cite" class="form-input" placeholder="Cite" value="' + blogEscape(b.cite || '') + '" style="margin-top:.35rem;" />';
+      } else if (b.type === 'ul' || b.type === 'ol') {
+        inner = '<textarea data-f="text" class="form-input" rows="4" placeholder="One item per line">' + blogEscape((b.items || []).join('\n')) + '</textarea>';
+      } else if (b.type === 'image') {
+        inner = '<input data-f="src" class="form-input" placeholder="Image URL (blog-images)" value="' + blogEscape(b.src || '') + '" /><input data-f="alt" class="form-input" placeholder="Alt text" value="' + blogEscape(b.alt || '') + '" style="margin-top:.35rem;" /><input data-f="caption" class="form-input" placeholder="Caption" value="' + blogEscape(b.caption || '') + '" style="margin-top:.35rem;" /><button type="button" class="btn btn-outline" style="margin-top:.35rem;font-size:.75rem;" onclick="blogUploadBlockImage(\'' + b.id + '\')">Upload to blog-images</button><input type="file" id="blogImgFile_' + b.id + '" accept="image/png,image/jpeg,image/webp" style="display:none;" />';
+      } else if (b.type === 'table') {
+        const grid = (b.rows || [['']]).map(function (r) { return (Array.isArray(r) ? r : [r]).join('|'); }).join('\n');
+        inner = '<input data-f="caption" class="form-input" placeholder="Caption" value="' + blogEscape(b.caption || '') + '" /><label style="display:flex;gap:.4rem;align-items:center;font-size:.8rem;margin:.35rem 0;"><input type="checkbox" data-f="header" ' + (b.header ? 'checked' : '') + ' /> Header row</label><textarea data-f="grid" class="form-input" rows="5" placeholder="cell|cell">' + blogEscape(grid) + '</textarea><p style="font-size:.72rem;color:var(--muted);">Use | between columns, new line = new row.</p>';
+      } else if (b.type === 'chart') {
+        inner = '<select data-f="chartType" class="form-input"><option value="bar"' + (b.chartType === 'bar' ? ' selected' : '') + '>Bar</option><option value="line"' + (b.chartType === 'line' ? ' selected' : '') + '>Line</option><option value="pie"' + (b.chartType === 'pie' ? ' selected' : '') + '>Pie</option><option value="scatter"' + (b.chartType === 'scatter' ? ' selected' : '') + '>Scatter</option></select>' +
+          '<input data-f="title" class="form-input" placeholder="Title" value="' + blogEscape(b.title || '') + '" style="margin-top:.35rem;" />' +
+          '<input data-f="caption" class="form-input" placeholder="Caption / accessible description" value="' + blogEscape(b.caption || '') + '" style="margin-top:.35rem;" />' +
+          '<input data-f="labels" class="form-input" placeholder="Labels comma-separated" value="' + blogEscape((b.labels || []).join(', ')) + '" style="margin-top:.35rem;" />' +
+          '<textarea data-f="series" class="form-input" rows="3" style="margin-top:.35rem;" placeholder=\'[{"label":"Series 1","data":[1,2]}]\'>' + blogEscape(JSON.stringify(b.series || [])) + '</textarea>';
+      } else if (b.type === 'embed') {
+        inner = '<input data-f="url" class="form-input" placeholder="https://…" value="' + blogEscape(b.url || '') + '" /><input data-f="label" class="form-input" placeholder="Label" value="' + blogEscape(b.label || '') + '" style="margin-top:.35rem;" />';
+      } else if (b.type === 'cta' || b.type === 'link') {
+        inner = '<input data-f="label" class="form-input" placeholder="Label" value="' + blogEscape(b.label || '') + '" /><input data-f="href" class="form-input" placeholder="#membership or ?article=slug" value="' + blogEscape(b.href || '') + '" style="margin-top:.35rem;" />' +
+          (b.type === 'link' ? '<button type="button" class="btn btn-outline" style="margin-top:.35rem;font-size:.75rem;" onclick="blogPickInternalLink(\'' + b.id + '\')">Insert internal link</button>' : '');
+      } else if (b.type === 'conclusion') {
+        inner = '<input data-f="heading" class="form-input" value="' + blogEscape(b.heading || 'Conclusion') + '" /><textarea data-f="text" class="form-input" rows="3" style="margin-top:.35rem;">' + blogEscape(b.text || '') + '</textarea>';
+      } else if (b.type === 'divider') {
+        inner = '<p style="color:var(--muted);font-size:.8rem;">Divider</p>';
+      }
+      return '<div data-bid="' + b.id + '" style="border:1px solid var(--border);border-radius:10px;padding:.65rem;">' + tools + inner + '</div>';
+    }).join('');
+  }
+
+  window.blogUploadBlockImage = async function (id) {
+    const input = document.getElementById('blogImgFile_' + id);
+    if (!input) return;
+    input.onchange = async function () {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      if (!(await requireStaff())) return;
+      const ext = file.name.split('.').pop();
+      const filePath = 'blog/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+      const { error } = await sb.storage.from('blog-images').upload(filePath, file);
+      if (error) { showToast('Upload failed: ' + error.message, 'error'); return; }
+      const { data: publicUrlData } = sb.storage.from('blog-images').getPublicUrl(filePath);
+      blogSyncEditorFromDom();
+      const b = blogEditorBlocks.find(function (x) { return x.id === id; });
+      if (b) b.src = publicUrlData.publicUrl;
+      blogRenderEditor();
+    };
+    input.click();
+  };
+
+  window.blogPickInternalLink = async function (blockId) {
+    if (!sb) return;
+    const [{ data: posts }, { data: courses }, { data: events }] = await Promise.all([
+      sb.from('blog_posts').select('id, title, slug, status').eq('status', 'published').order('published_at', { ascending: false }).limit(30),
+      sb.from('courses').select('id, title, slug, status').eq('status', 'published').order('title').limit(30),
+      sb.from('events').select('id, title, status').order('event_date', { ascending: false }).limit(30)
+    ]);
+    const choices = [];
+    BLOG_PUBLIC_SECTIONS.forEach(function (s) { choices.push(s.label + ' → ' + s.href); });
+    (posts || []).forEach(function (p) { choices.push('Article: ' + p.title + ' → ?article=' + p.slug); });
+    (courses || []).forEach(function (c) { choices.push('Course: ' + c.title + ' → #courses'); });
+    (events || []).forEach(function (e) { choices.push('Event: ' + e.title + ' → #events'); });
+    const pick = window.prompt('Internal link (copy the part after →):\n' + choices.slice(0, 40).join('\n'));
+    if (!pick) return;
+    const href = pick.indexOf('→') >= 0 ? pick.split('→').pop().trim() : pick.trim();
+    blogSyncEditorFromDom();
+    const b = blogEditorBlocks.find(function (x) { return x.id === blockId; });
+    if (b) { b.href = href; if (!b.label) b.label = pick.split('→')[0].trim(); }
+    blogRenderEditor();
+  };
+
+  async function blogFillRelatedPicker(selectedIds) {
+    const host = document.getElementById('blogRelatedPicker');
+    if (!host || !sb) return;
+    const { data } = await sb.from('blog_posts').select('id, title, status, slug').order('created_at', { ascending: false }).limit(40);
+    const sel = selectedIds || [];
+    host.innerHTML = (data || []).map(function (p) {
+      return '<label style="display:flex;gap:.45rem;align-items:center;font-size:.82rem;padding:.2rem 0;"><input type="checkbox" class="blog-rel" value="' + p.id + '" ' + (sel.indexOf(p.id) >= 0 ? 'checked' : '') + ' /> ' + blogEscape(p.title) + ' <span style="color:var(--muted);">(' + blogEscape(p.status) + ')</span></label>';
+    }).join('') || '<span style="color:var(--muted);font-size:.8rem;">No posts yet</span>';
+  }
+
+  function blogCollectEditorPost() {
+    blogSyncEditorFromDom();
+    const related = Array.from(document.querySelectorAll('.blog-rel:checked')).map(function (el) { return el.value; });
+    const parsed = {
+      v: 1,
+      subtitle: (document.getElementById('blogSubtitle') || {}).value || '',
+      language: (document.getElementById('blogLanguage') || {}).value || 'en',
+      tags: String((document.getElementById('blogTags') || {}).value || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean),
+      related_ids: related,
+      seo: {
+        title: (document.getElementById('blogSeoTitle') || {}).value || '',
+        description: (document.getElementById('blogSeoDesc') || {}).value || '',
+        canonical: (document.getElementById('blogCanonical') || {}).value || '',
+        og_title: (document.getElementById('blogOgTitle') || {}).value || '',
+        og_description: (document.getElementById('blogOgDesc') || {}).value || '',
+        og_image: (document.getElementById('blogOgImage') || {}).value || '',
+        noindex: !!(document.getElementById('blogNoindex') && document.getElementById('blogNoindex').checked)
+      },
+      blocks: blogEditorBlocks
+    };
+    return {
+      title: (document.getElementById('blogTitle') || {}).value || '',
+      excerpt: (document.getElementById('blogExcerpt') || {}).value || '',
+      category: (document.getElementById('blogCategory') || {}).value || '',
+      status: (document.getElementById('blogStatus') || {}).value || 'draft',
+      slug: (document.getElementById('blogSlug') || {}).value || '',
+      image_url: (document.getElementById('blogExistingImageUrl') || {}).value || '',
+      content: JSON.stringify(parsed)
+    };
+  }
 
   function resetBlogImageUI() {
     blogSelectedImageFile = null;
-    document.getElementById('blogExistingImageUrl').value = '';
-    document.getElementById('blogImagePreview').style.display = 'none';
-    document.getElementById('blogImagePreview').src = '';
-    document.getElementById('blogImagePlaceholder').style.display = 'block';
-    document.getElementById('blogImageStatus').textContent = '';
-    document.getElementById('blogImageInput').value = '';
+    const u = document.getElementById('blogExistingImageUrl'); if (u) u.value = '';
+    const preview = document.getElementById('blogImagePreview');
+    const ph = document.getElementById('blogImagePlaceholder');
+    const st = document.getElementById('blogImageStatus');
+    const inp = document.getElementById('blogImageInput');
+    if (preview) { preview.style.display = 'none'; preview.src = ''; }
+    if (ph) ph.style.display = 'block';
+    if (st) st.textContent = '';
+    if (inp) inp.value = '';
   }
 
-  window.openCreateBlogModal = function() {
+  window.openCreateBlogModal = async function () {
+    if (!(await requireStaff())) return;
     document.getElementById('blogForm').reset();
     document.getElementById('blogEditId').value = '';
     document.getElementById('blogModalTitle').textContent = 'نئی Post';
     document.getElementById('blogStatus').value = 'draft';
     resetBlogImageUI();
+    blogEditorBlocks = [blogDefaultBlock('paragraph')];
+    blogRenderEditor();
+    await blogFillRelatedPicker([]);
     openModal('blogModal');
   };
 
-  window.editBlogPost = async function(id) {
+  window.editBlogPost = async function (id) {
+    if (!(await requireStaff())) return;
     const { data: post, error } = await sb.from('blog_posts').select('*').eq('id', id).single();
     if (error || !post) { showToast('Post نہیں ملی: ' + (error?.message || ''), 'error'); return; }
     document.getElementById('blogForm').reset();
@@ -10798,8 +11371,23 @@ select.form-input {
     document.getElementById('blogTitle').value = post.title || '';
     document.getElementById('blogCategory').value = post.category || '';
     document.getElementById('blogExcerpt').value = post.excerpt || '';
-    document.getElementById('blogContent').value = post.content || '';
     document.getElementById('blogStatus').value = post.status || 'draft';
+    document.getElementById('blogSlug').value = post.slug || '';
+    const parsed = blogParseContent(post.content);
+    document.getElementById('blogSubtitle').value = parsed.subtitle || '';
+    document.getElementById('blogLanguage').value = parsed.language || 'en';
+    document.getElementById('blogTags').value = (parsed.tags || []).join(', ');
+    const seo = parsed.seo || {};
+    document.getElementById('blogSeoTitle').value = seo.title || '';
+    document.getElementById('blogSeoDesc').value = seo.description || '';
+    document.getElementById('blogCanonical').value = seo.canonical || '';
+    document.getElementById('blogOgTitle').value = seo.og_title || '';
+    document.getElementById('blogOgDesc').value = seo.og_description || '';
+    document.getElementById('blogOgImage').value = seo.og_image || '';
+    document.getElementById('blogNoindex').checked = !!seo.noindex;
+    blogEditorBlocks = (parsed.blocks && parsed.blocks.length) ? parsed.blocks.map(function (b) { return Object.assign({ id: b.id || blogUid() }, b); }) : [blogDefaultBlock('paragraph')];
+    blogRenderEditor();
+    await blogFillRelatedPicker(parsed.related_ids || []);
     if (post.image_url) {
       document.getElementById('blogExistingImageUrl').value = post.image_url;
       document.getElementById('blogImagePreview').src = post.image_url;
@@ -10846,12 +11434,15 @@ select.form-input {
   }
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('blogForm', async frm => {
+    if (!(await requireStaff())) return;
     const editId = frm.querySelector('#blogEditId').value;
-    const title = frm.querySelector('#blogTitle').value.trim();
-    const category = frm.querySelector('#blogCategory').value.trim() || null;
-    const excerpt = frm.querySelector('#blogExcerpt').value.trim() || null;
-    const content = frm.querySelector('#blogContent').value.trim() || null;
-    const status = frm.querySelector('#blogStatus').value;
+    const collected = blogCollectEditorPost();
+    const title = collected.title.trim();
+    const category = collected.category.trim() || null;
+    const excerpt = collected.excerpt.trim() || null;
+    const content = collected.content;
+    const status = collected.status;
+    let slug = (document.getElementById('blogSlug').value || '').trim();
 
     if (!title) { showToast('براہ کرم عنوان درج کریں', 'error'); return; }
 
@@ -10876,16 +11467,16 @@ select.form-input {
 
     let error;
     if (editId) {
+      if (slug) payload.slug = slug;
       ({ error } = await sb.from('blog_posts').update(payload).eq('id', editId));
     } else {
       const { data: userData } = await sb.auth.getUser();
-      payload.slug = slugify(title) + '-' + Date.now().toString(36);
+      payload.slug = slug || (slugify(title) + '-' + Date.now().toString(36));
       payload.author_id = userData?.user?.id || null;
       if (status === 'published') payload.published_at = new Date().toISOString();
       ({ error } = await sb.from('blog_posts').insert(payload));
     }
 
-    // If updating to published and no published_at yet, set it now
     if (editId && status === 'published') {
       await sb.from('blog_posts')
         .update({ published_at: new Date().toISOString() })
@@ -10898,33 +11489,53 @@ select.form-input {
     showToast('✓ Post محفوظ ہو گئی!');
     closeModal('blogModal');
     loadBlogAdmin();
+    if (typeof loadPublicBlog === 'function') loadPublicBlog();
   }));
 
-  window.deleteBlogPost = async function(id) {
+  window.deleteBlogPost = async function (id) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا یہ Post حذف کرنا چاہتے ہیں؟')) return;
     const { data, error } = await sb.from('blog_posts').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکی: ' + error.message, 'error'); return; }
     if (!data || data.length === 0) { showToast('حذف نہیں ہو سکی — اجازت (RLS policy) موجود نہیں یا ریکارڈ پہلے ہی موجود نہیں۔', 'error'); return; }
     showToast('Post حذف کر دی گئی۔');
     loadBlogAdmin();
+    if (typeof loadPublicBlog === 'function') loadPublicBlog();
   };
 
-  window.loadBlogAdmin = async function() {
+  window.loadBlogAdmin = async function () {
     const tbody = document.getElementById('blogAdminBody');
     if (!tbody || !sb) return;
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;"><i class="fas fa-spinner fa-spin"></i> لوڈ ہو رہا ہے…</td></tr>';
 
     let data, error;
     try {
-      const res = await sb.from('blog_posts').select('id, title, category, image_url, status, published_at').order('created_at', { ascending: false });
+      const res = await sb.from('blog_posts').select('id, title, category, image_url, status, published_at, slug').order('created_at', { ascending: false });
       data = res.data; error = res.error;
-    } catch(e) { error = { message: e.message }; }
+    } catch (e) { error = { message: e.message }; }
 
     if (error) {
       tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ruby);padding:1.5rem;">لوڈ ناکام: ${sanitize(error.message)}</td></tr>`;
       return;
     }
-    if (!data || data.length === 0) {
+    const catSel = document.getElementById('blogAdminCategory');
+    if (catSel && !(catSel.dataset.filled)) {
+      const cats = Array.from(new Set((data || []).map(function (p) { return p.category; }).filter(Boolean)));
+      cats.forEach(function (c) {
+        const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o);
+      });
+      catSel.dataset.filled = '1';
+    }
+    const q = ((document.getElementById('blogAdminSearch') || {}).value || '').toLowerCase();
+    const stF = (document.getElementById('blogAdminStatus') || {}).value || '';
+    const catF = (document.getElementById('blogAdminCategory') || {}).value || '';
+    data = (data || []).filter(function (p) {
+      if (stF && p.status !== stF) return false;
+      if (catF && p.category !== catF) return false;
+      if (q && !(String(p.title || '') + ' ' + String(p.category || '')).toLowerCase().includes(q)) return false;
+      return true;
+    });
+    if (!data.length) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">کوئی Post نہیں ملی۔</td></tr>';
       return;
     }
@@ -10933,7 +11544,7 @@ select.form-input {
     const statusClass = { draft: 'sp-pending', published: 'sp-active', archived: 'sp-listed' };
 
     tbody.innerHTML = data.map(p => {
-      const dateStr = p.published_at ? new Date(p.published_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+      const dateStr = p.published_at ? new Date(p.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
       const st = (p.status || 'draft');
       const thumb = p.image_url
         ? `<img src="${sanitize(p.image_url)}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;" />`
@@ -10947,13 +11558,14 @@ select.form-input {
           <td>${dateStr}</td>
           <td>
             <button onclick="editBlogPost('${p.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Edit</button>
+            <button onclick="openPublicArticle('${sanitize(p.slug || '')}', {allowDraft:true})" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;margin-inline-end:.4rem;">Preview</button>
             <button onclick="deleteBlogPost('${p.id}')" class="btn btn-outline" style="font-size:.75rem;padding:.3rem .7rem;color:var(--ruby);border-color:var(--ruby);">Delete</button>
           </td>
         </tr>`;
     }).join('');
   };
 
-  /* ══════════════ MEDIA LINKS (YouTube / Facebook) — Admin ══════════════ */
+
   let mediaLinkSelectedThumbFile = null;
 
   function resetMediaLinkThumbUI() {
@@ -16541,10 +17153,10 @@ select.form-input {
     try {
       const res = await sb
         .from('blog_posts')
-        .select('id, title, excerpt, category, image_url, published_at, slug')
+        .select('id, title, excerpt, category, image_url, published_at, slug, author_id, content')
         .eq('status', 'published')
         .order('published_at', { ascending: false })
-        .limit(6);
+        .limit(24);
       data = res.data;
       error = res.error;
     } catch(e) { error = { message: e.message }; }
@@ -16561,19 +17173,53 @@ select.form-input {
       return;
     }
 
-    grid.innerHTML = data.map(post => {
+    const catSel = document.getElementById('blogPublicCategory');
+    if (catSel && !catSel.dataset.filled) {
+      const cats = Array.from(new Set(data.map(function (p) { return p.category; }).filter(Boolean)));
+      cats.forEach(function (c) { const o = document.createElement('option'); o.value = c; o.textContent = c; catSel.appendChild(o); });
+      catSel.dataset.filled = '1';
+    }
+    const q = ((document.getElementById('blogPublicSearch') || {}).value || '').toLowerCase();
+    const catF = (document.getElementById('blogPublicCategory') || {}).value || '';
+    let list = data.filter(function (post) {
+      if (catF && post.category !== catF) return false;
+      if (q && !(String(post.title||'')+' '+String(post.excerpt||'')+' '+String(post.category||'')).toLowerCase().includes(q)) return false;
+      return true;
+    });
+
+    const featuredWrap = document.getElementById('blogFeaturedWrap');
+    if (featuredWrap) {
+      const feat = list[0];
+      if (feat && !q && !catF) {
+        const parsed = blogParseContent(feat.content);
+        const mins = blogReadingMins(feat, parsed);
+        const dateStr = feat.published_at ? new Date(feat.published_at).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }) : '';
+        const thumb = feat.image_url ? `<img src="${sanitize(feat.image_url)}" alt="${sanitize(feat.title)}" style="width:100%;height:220px;object-fit:cover;border-radius:12px;" />` : '';
+        featuredWrap.innerHTML = `<article class="blog-card reveal" style="margin-bottom:1.5rem;cursor:pointer;" onclick="openPublicArticle('${sanitize(feat.slug||'')}')">${thumb}<div class="blog-body"><p class="blog-cat">${sanitize(feat.category||'Update')}</p><h3 class="blog-title" style="font-size:1.25rem;">${sanitize(feat.title)}</h3><p class="blog-excerpt">${sanitize(feat.excerpt||'')}</p><div class="blog-meta">${dateStr?`<span>${dateStr}</span>`:''}<span>${mins} min read</span></div></div></article>`;
+        list = list.slice(1, 7);
+      } else {
+        featuredWrap.innerHTML = '';
+        list = list.slice(0, 6);
+      }
+    } else {
+      list = list.slice(0, 6);
+    }
+
+    grid.innerHTML = list.map(post => {
+      const parsed = blogParseContent(post.content);
+      const mins = blogReadingMins(post, parsed);
       const dateStr = post.published_at ? new Date(post.published_at).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }) : '';
       const thumb = post.image_url
         ? `<img src="${sanitize(post.image_url)}" alt="${sanitize(post.title)}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`
         : `<i class="fas fa-newspaper" style="font-size:2rem;color:rgba(255,255,255,.35);"></i>`;
       return `
-        <article class="blog-card reveal">
+        <article class="blog-card reveal" style="cursor:pointer;" onclick="openPublicArticle('${sanitize(post.slug||'')}')">
           <div class="blog-thumb">${thumb}</div>
           <div class="blog-body">
             <p class="blog-cat">${sanitize(post.category || 'Update')}</p>
             <h3 class="blog-title">${sanitize(post.title)}</h3>
             <p class="blog-excerpt">${sanitize(post.excerpt || '')}</p>
-            ${dateStr ? `<div class="blog-meta"><i class="far fa-calendar-alt"></i> ${dateStr}</div>` : ''}
+            <div class="blog-meta">${dateStr ? `<span><i class="far fa-calendar-alt"></i> ${dateStr}</span>` : ''}<span>${mins} min read</span></div>
           </div>
         </article>`;
     }).join('');
@@ -16581,6 +17227,15 @@ select.form-input {
   };
 
   loadPublicBlog();
+
+  (function blogArticleRoute() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('article');
+      if (slug) openPublicArticle(slug, { skipUrl: true });
+    } catch (e) {}
+  })();
+
 
   /* ── CHATBOT: answers ONLY from the real Supabase 'faq' table ── */
   function toggleChat(force) {
