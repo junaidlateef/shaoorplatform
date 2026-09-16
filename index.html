@@ -9707,6 +9707,7 @@ select.form-input {
   });
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('eventForm', async frm => {
+    if (!(await requireStaff())) return;
     const editId = frm.querySelector('#eventEditId').value;
     const title = frm.querySelector('#eventTitle').value.trim();
     const description = frm.querySelector('#eventDescription').value.trim() || null;
@@ -9756,6 +9757,7 @@ select.form-input {
   }));
 
   window.deleteEvent = async function(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا یہ Event حذف کرنا چاہتے ہیں؟')) return;
     const { data, error } = await sb.from('events').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
@@ -9901,6 +9903,7 @@ select.form-input {
   };
 
   window.deleteCourse = async function(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا یہ Course حذف کرنا چاہتے ہیں؟')) return;
     const { data, error } = await sb.from('courses').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
@@ -9953,6 +9956,7 @@ select.form-input {
   };
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('courseForm', async frm => {
+    if (!(await requireStaff())) return;
     const editId = frm.querySelector('#courseEditId').value;
     const title = frm.querySelector('#courseTitle').value.trim();
     let slug = frm.querySelector('#courseSlug').value.trim();
@@ -11597,11 +11601,15 @@ select.form-input {
 
   /* ── MODALS ── */
   function openModal(id) {
-    document.getElementById(id).classList.add('open');
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
   function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('open');
     document.body.style.overflow = '';
   }
   function closeAllModals() {
@@ -11628,6 +11636,37 @@ select.form-input {
     }
     return t;
   })();
+
+  // Staff roles accepted by Admin Login. Frontend checks are defense-in-depth only;
+  // database RLS remains the real authorization boundary.
+  const STAFF_ROLES = ['founder', 'admin', 'general_secretary', 'treasurer', 'media_coordinator', 'verification_officer'];
+  async function requireStaff() {
+    try {
+      const { data: userData } = await sb.auth.getUser();
+      const uid = userData && userData.user && userData.user.id;
+      if (!uid) { showToast('Admin access required', 'error'); return null; }
+      const { data: profile } = await sb.from('profiles').select('id, role, status, full_name').eq('id', uid).maybeSingle();
+      if (!profile || STAFF_ROLES.indexOf(profile.role) === -1 || profile.status !== 'active') {
+        showToast('Admin access required', 'error');
+        return null;
+      }
+      return profile;
+    } catch (e) {
+      showToast('Admin access required', 'error');
+      return null;
+    }
+  }
+  function isSafeHttpUrl(url) {
+    if (!url || typeof url !== 'string') return false;
+    try {
+      const u = new URL(url, window.location.origin);
+      return u.protocol === 'https:' || u.protocol === 'http:';
+    } catch (e) { return false; }
+  }
+  function safeCssUrl(url) {
+    if (!isSafeHttpUrl(url) && !(typeof url === 'string' && url.indexOf('data:image/') === 0)) return '';
+    return String(url).replace(/['"\\]/g, '');
+  }
 
   // ── XSS — Sanitize any input before use ──
   function sanitize(str) {
@@ -11809,7 +11848,15 @@ select.form-input {
       lmsPendingEnrollCourseId = null;
       await enrollInCourse(); // resume the enrollment they were trying to do before signing in
     } else {
-      await openMemberDashboard(data.user.id);
+      const { data: loginProfile } = await sb.from('profiles').select('role, status, full_name').eq('id', data.user.id).maybeSingle();
+      if (loginProfile && STAFF_ROLES.indexOf(loginProfile.role) !== -1 && loginProfile.status === 'active') {
+        document.getElementById('adminDash').classList.add('open');
+        document.getElementById('dashAdminName').textContent = loginProfile.full_name || loginProfile.role;
+        loadMembersAdmin();
+        loadDashTopStats();
+      } else {
+        await openMemberDashboard(data.user.id);
+      }
     }
   });
 
@@ -12153,6 +12200,10 @@ select.form-input {
   function applyCardConfig(cardBox, cfg, brand) {
     cfg = cfg || {};
     const front = cfg.front || {};
+    // Canonical contract is fields.{name,qr,...} + front.*. Live v2 rows also store
+    // identity.*.hidden; applying those hidden flags would blank the production card
+    // (current renderer previously ignored them). Keep identity.hidden as unused v2
+    // dialect. Language/orientation/front/fields from either editor or live still apply.
     const fields = cfg.fields || {};
 
     // Size / orientation (screen preview only — see paperPageCss-based print/PDF for physical size)
@@ -12264,7 +12315,9 @@ select.form-input {
      Used by both the logged-in member's "My ID Card" action AND the public ?verify=MEMBER_ID
      flow, admin preview, print and PDF — this is the single canonical card renderer; do not
      duplicate this logic elsewhere. */
+  var _cardRenderToken = 0;
   async function renderIdCard(profile, templateOverride) {
+    const myCardToken = ++_cardRenderToken;
     document.getElementById('idName').textContent = profile.full_name || '—';
     // profiles.member_id is shown in exactly one place now — the dedicated right-side panel.
     // (The center-column Member ID row was removed per the latest visual correction.)
@@ -12324,11 +12377,12 @@ select.form-input {
         sb.from('card_templates').select('*').eq('is_default', true).eq('is_active', true).limit(1).maybeSingle(),
       sb.from('brand_settings').select('*').limit(1).maybeSingle()
     ]);
+    if (myCardToken !== _cardRenderToken) return;
     window._lastRenderedCardTpl = cardTpl || null;
     let flipBtn = document.getElementById('idCardFlipBtn');
     if (cardTpl && cardBox) {
-      if (cardTpl.front_design_url) {
-        cardBox.style.backgroundImage = "url('" + cardTpl.front_design_url + "')";
+      if (cardTpl.front_design_url && (isSafeHttpUrl(cardTpl.front_design_url) || String(cardTpl.front_design_url).indexOf('data:image/') === 0)) {
+        cardBox.style.backgroundImage = "url('" + safeCssUrl(cardTpl.front_design_url) + "')";
         cardBox.style.backgroundSize = 'cover';
         cardBox.style.backgroundPosition = 'center';
       } else {
@@ -12427,6 +12481,7 @@ select.form-input {
   // member id (admin browsing the table) instead of the logged-in user's own id.
   async function openMemberCardAdmin(memberId) {
     if (!memberId) return;
+    if (!(await requireStaff())) return;
 
     const { data: profile, error } = await sb
       .from('profiles')
@@ -12619,6 +12674,7 @@ select.form-input {
   }));
 
   async function loadCertificatesAdmin() {
+    if (!(await requireStaff())) return;
     const tbody = document.getElementById('certificatesBody');
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading certificates…</td></tr>';
 
@@ -12719,6 +12775,7 @@ select.form-input {
 
   /* ── Delete Application (permanent) ── */
   async function deleteApplication(appId) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا آپ یہ درخواست ہمیشہ کے لیے ڈیلیٹ کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔')) return;
     const { data, error } = await sb.from('applications').delete().eq('id', appId).select('id');
     if (error) {
@@ -12735,6 +12792,7 @@ select.form-input {
 
   /* ── Approve Application ── */
   async function approveApplication(appId) {
+    if (!(await requireStaff())) return;
     const { data: app, error: fetchError } = await sb
       .from('applications')
       .select('email, full_name, phone')
@@ -12765,6 +12823,7 @@ select.form-input {
 
   /* ── Reject Application ── */
   async function rejectApplication(appId) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا یہ درخواست مسترد کرنا چاہتے ہیں?')) return;
 
     const { error } = await sb
@@ -12864,6 +12923,7 @@ select.form-input {
   }
 
   secureSubmit('issueCertificateForm', async frm => {
+    if (!(await requireStaff())) return;
     const member_id = frm.querySelector('#certMemberSelect').value;
     const certificate_title = frm.querySelector('#certTitle').value.trim();
     const certificate_type = frm.querySelector('#certType').value;
@@ -12900,6 +12960,7 @@ select.form-input {
 
   /* ── Admin: revoke a certificate ── */
   async function revokeCertificate(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا آپ واقعی یہ سرٹیفکیٹ منسوخ کرنا چاہتے ہیں؟')) return;
     const { error } = await sb.from('certificates').update({ status: 'revoked' }).eq('id', id);
     if (error) { showToast('منسوخ نہیں ہو سکا: ' + error.message, 'error'); return; }
@@ -13100,24 +13161,29 @@ select.form-input {
     // Reset background image from any previous template before applying this one.
     area.style.backgroundImage = '';
     if (config) {
+      const branding = config.branding || {};
       // Background: an image (existing background_url column) takes precedence over the
       // background color, but both remain independently stored/controllable.
-      if (config.background_url) {
-        area.style.backgroundImage = 'url("' + config.background_url.replace(/"/g, '%22') + '")';
+      const bgUrl = config.background_url || branding.background_url;
+      const bgColor = config.background_color || branding.background_color;
+      const textColor = config.text_color || branding.primary_color;
+      const accentColor = config.accent_color || branding.accent_color;
+      if (bgUrl && (isSafeHttpUrl(bgUrl) || String(bgUrl).indexOf('data:image/') === 0)) {
+        area.style.backgroundImage = 'url("' + safeCssUrl(bgUrl) + '")';
         area.style.backgroundSize = 'cover';
         area.style.backgroundPosition = 'center';
-      } else if (config.background_color) {
-        area.style.background = config.background_color;
+      } else if (bgColor) {
+        area.style.background = bgColor;
       }
-      if (config.text_color) area.style.color = config.text_color;
-      if (config.accent_color) area.style.setProperty('--gold', config.accent_color);
+      if (textColor) area.style.color = textColor;
+      if (accentColor) area.style.setProperty('--gold', accentColor);
     }
     // Certificate size/orientation — driven by the SAME PAPER_SIZES mm table and swap logic
     // as paperPageCss(), so the on-screen shape and the printed @page always agree exactly.
     // 'custom' paper_size keeps the legacy pixel/CSS-length width field; anything else (or no
     // config at all) defaults to real A4 landscape, matching the Template Editor's own default.
-    const paperSize = (config && config.paper_size) || 'a4';
-    const orientation = (config && config.orientation) || 'landscape';
+    const paperSize = (config && (config.paper_size || (config.page_size && String(config.page_size).toLowerCase()))) || 'a4';
+    const orientation = (config && config.orientation) || (config && config.layout) || 'landscape';
     if (paperSize === 'custom' && config && config.width) {
       area.style.width = /^\d+$/.test(String(config.width)) ? config.width + 'px' : config.width;
       area.style.aspectRatio = '';
@@ -13339,25 +13405,33 @@ select.form-input {
 
   var _docDropdownsPopulated = false;
   async function populateDocumentDropdowns() {
-    if (_docDropdownsPopulated) return;
     const memberSel = document.getElementById('docMemberSelect');
     const socSel = document.getElementById('docSocietySelect');
     const chapSel = document.getElementById('docChapterSelect');
     if (memberSel) {
+      const prev = memberSel.value;
+      memberSel.innerHTML = '<option value="">\u2014 No specific member \u2014</option>';
       const { data: members } = await sb.from('profiles').select('id, full_name, member_id').order('full_name');
       (members || []).forEach(m => {
         const opt = document.createElement('option');
         opt.value = m.id; opt.textContent = m.full_name + (m.member_id ? ' (' + m.member_id + ')' : '');
         memberSel.appendChild(opt);
       });
+      if (prev) memberSel.value = prev;
     }
     if (socSel) {
+      const prevS = socSel.value;
+      socSel.innerHTML = '<option value="">\u2014 No specific society \u2014</option>';
       const { data: socs } = await sb.from('societies').select('id, name').order('name');
       (socs || []).forEach(s => { const o = document.createElement('option'); o.value = s.id; o.textContent = s.name; socSel.appendChild(o); });
+      if (prevS) socSel.value = prevS;
     }
     if (chapSel) {
+      const prevC = chapSel.value;
+      chapSel.innerHTML = '<option value="">\u2014 No specific chapter \u2014</option>';
       const { data: chaps } = await sb.from('chapters').select('id, name').order('name');
       (chaps || []).forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; chapSel.appendChild(o); });
+      if (prevC) chapSel.value = prevC;
     }
     // Designation datalist — sourced from real, existing cabinet_members.position values only
     // (never invented labels), so the field behaves like a dropdown of actual designations
@@ -13537,6 +13611,7 @@ select.form-input {
   }
 
   async function editGeneratedDocument(id) {
+    if (!(await requireStaff())) return;
     await populateDocumentDropdowns();
     const { data: d, error } = await sb.from('generated_documents').select('*').eq('id', id).single();
     if (error || !d) { showToast('دستاویز لوڈ نہیں ہو سکی', 'error'); return; }
@@ -13571,6 +13646,7 @@ select.form-input {
   }
 
   async function deleteGeneratedDocument(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا آپ واقعی یہ دستاویز حذف کرنا چاہتے ہیں؟')) return;
     const { error } = await sb.from('generated_documents').delete().eq('id', id);
     if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
@@ -13579,6 +13655,7 @@ select.form-input {
   }
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('documentForm', async frm => {
+    if (!(await requireStaff())) return;
     const id = frm.querySelector('#docId').value || null;
     const document_type = frm.querySelector('#docType').value;
     const signatureKeys = Array.from(frm.querySelector('#docSignatureKeys').selectedOptions).map(o => o.value);
@@ -13935,7 +14012,7 @@ select.form-input {
         <td data-label="Default">${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
         <td data-label="Active">${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
         <td data-label="Actions" class="tpl-actions-cell">
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCertTemplate(${JSON.stringify(t)})'>Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="editCertTemplateById('${t.id}')">Edit</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCertTemplate('${t.id}')">Delete</button>
         </td>
       </tr>`).join('');
@@ -13957,8 +14034,8 @@ select.form-input {
         <td data-label="Default">${t.is_default ? '<span class="badge badge-active">Default</span>' : '—'}</td>
         <td data-label="Active">${t.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge">Inactive</span>'}</td>
         <td data-label="Actions" class="tpl-actions-cell">
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick='editCardTemplate(${JSON.stringify(t)})'>Edit</button>
-          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick='previewCardTemplate(${JSON.stringify(t)})'>Preview</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;" onclick="editCardTemplateById('${t.id}')">Edit</button>
+          <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--teal);" onclick="previewCardTemplateById('${t.id}')">Preview</button>
           <button class="art-buy" style="padding:.3rem .7rem;font-size:.75rem;background:var(--ruby);" onclick="deleteCardTemplate('${t.id}')">Delete</button>
         </td>
       </tr>`).join('');
@@ -14113,6 +14190,12 @@ select.form-input {
     openModal('certTemplateModal');
   }
 
+  async function editCertTemplateById(id) {
+    if (!id) return;
+    const { data: t, error } = await sb.from('certificate_templates').select('*').eq('id', id).maybeSingle();
+    if (error || !t) { showToast('Template load failed', 'error'); return; }
+    return editCertTemplate(t);
+  }
   async function editCertTemplate(t) {
     document.getElementById('ctplId').value = t.id;
     document.getElementById('ctplName').value = t.name || '';
@@ -14139,6 +14222,7 @@ select.form-input {
   }
 
   async function deleteCertTemplate(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('Delete this certificate template?')) return;
     const { error } = await sb.from('certificate_templates').delete().eq('id', id);
     if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
@@ -14147,6 +14231,7 @@ select.form-input {
   }
 
   secureSubmit('certTemplateForm', async frm => {
+    if (!(await requireStaff())) return;
     const id = frm.querySelector('#ctplId').value || null;
     const name = frm.querySelector('#ctplName').value.trim();
     const description = frm.querySelector('#ctplDescription').value.trim() || null;
@@ -14194,6 +14279,18 @@ select.form-input {
   // Admin preview — reuses renderIdCard() (the single canonical renderer) with the ADMIN'S OWN
   // real profile data and the given template, so admin-preview / print / PDF can never drift
   // from the actual member-facing card, and no fake/fabricated member data is ever shown.
+  async function previewCardTemplateById(id) {
+    if (!id) return;
+    const { data: t, error } = await sb.from('card_templates').select('*').eq('id', id).maybeSingle();
+    if (error || !t) { showToast('Template load failed', 'error'); return; }
+    return previewCardTemplate(t);
+  }
+  async function editCardTemplateById(id) {
+    if (!id) return;
+    const { data: t, error } = await sb.from('card_templates').select('*').eq('id', id).maybeSingle();
+    if (error || !t) { showToast('Template load failed', 'error'); return; }
+    return editCardTemplate(t);
+  }
   async function previewCardTemplate(t) {
     const { data: userData } = await sb.auth.getUser();
     const userId = userData?.user?.id;
@@ -14237,6 +14334,7 @@ select.form-input {
   }
 
   async function deleteCardTemplate(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('Delete this card template?')) return;
     const { error } = await sb.from('card_templates').delete().eq('id', id);
     if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
@@ -14245,6 +14343,7 @@ select.form-input {
   }
 
   secureSubmit('cardTemplateForm', async frm => {
+    if (!(await requireStaff())) return;
     const id = frm.querySelector('#crtplId').value || null;
     const name = frm.querySelector('#crtplName').value.trim();
     const description = frm.querySelector('#crtplDescription').value.trim() || null;
@@ -14628,8 +14727,6 @@ select.form-input {
     // visitor — reuses the same renderer the admin/member "view" actions already use.
     const verifyDocToken = ++_docRenderToken;
     await renderGeneratedDocumentView(d, verifyDocToken);
-    document.getElementById('adminDash')?.classList.add('open');
-    document.getElementById('dp-documents')?.classList.add('active');
     openModal('viewDocumentModal');
   })();
 
@@ -14651,7 +14748,15 @@ select.form-input {
       .eq('id', data.session.user.id)
       .maybeSingle();
 
-    if (profile && profile.role === 'member') {
+    if (profile && STAFF_ROLES.indexOf(profile.role) !== -1) {
+      const { data: staffProf } = await sb.from('profiles').select('full_name, role, status').eq('id', data.session.user.id).maybeSingle();
+      if (staffProf && staffProf.status === 'active') {
+        document.getElementById('adminDash').classList.add('open');
+        document.getElementById('dashAdminName').textContent = staffProf.full_name || staffProf.role;
+        loadMembersAdmin();
+        loadDashTopStats();
+      }
+    } else if (profile && profile.role === 'member') {
       openMemberDashboard(data.session.user.id);
     } else if (!profile && oauthPending) {
       // Fresh social signup — openMemberDashboard() creates the missing profile row itself.
@@ -15111,6 +15216,7 @@ select.form-input {
   }
 
   async function loadMembersAdmin() {
+    if (!(await requireStaff())) return;
     const tbody = document.getElementById('membersBody');
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading members…</td></tr>';
@@ -15174,6 +15280,7 @@ select.form-input {
   }
 
   async function setMemberStatus(id, newStatus) {
+    if (!(await requireStaff())) return;
     const label = newStatus === 'active' ? 'approve' : 'suspend';
     if (!confirm('کیا آپ واقعی اس ممبر کو ' + (newStatus === 'active' ? 'approve' : 'suspend') + ' کرنا چاہتے ہیں؟')) return;
 
@@ -15188,6 +15295,7 @@ select.form-input {
 
   /* ── Permanently Delete a Suspended Member (profile + matching application) ── */
   async function deleteMemberPermanently(id, fullName, phone) {
+    if (!(await requireStaff())) return;
     if (!confirm('یہ ممبر SUSPENDED ہے اور شرائط پوری نہیں کرتا۔ کیا آپ اسے مستقل طور پر ڈیٹا فائل سے ڈیلیٹ کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔')) return;
     if (!confirm('آخری تصدیق: پروفائل اور متعلقہ درخواست دونوں ہمیشہ کے لیے حذف ہو جائیں گی۔ جاری رکھیں؟')) return;
 
@@ -15214,6 +15322,7 @@ select.form-input {
   }
 
   async function openEditMember(id) {
+    if (!(await requireStaff())) return;
     const { data: m, error } = await sb
       .from('profiles')
       .select('id, society_id, chapter_id, province')
@@ -15251,6 +15360,7 @@ select.form-input {
   }
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('editMemberForm', async frm => {
+    if (!(await requireStaff())) return;
     const id = frm.querySelector('#editMemberId').value;
     const society_id = frm.querySelector('#editMemberSociety').value || null;
     const chapter_id = frm.querySelector('#editMemberChapter').value || null;
@@ -15389,6 +15499,9 @@ select.form-input {
     if (which === 'member') {
       m.style.background = 'var(--gold)'; m.style.borderColor = 'var(--gold)'; m.style.color = '#1a1200';
       a.style.background = 'transparent'; a.style.borderColor = 'var(--border)'; a.style.color = 'var(--text)';
+    } else if (which === 'admin') {
+      a.style.background = 'var(--gold)'; a.style.borderColor = 'var(--gold)'; a.style.color = '#1a1200';
+      m.style.background = 'transparent'; m.style.borderColor = 'var(--border)'; m.style.color = 'var(--text)';
     }
   }
   function openAdmin() {
@@ -15605,9 +15718,7 @@ select.form-input {
         .eq('id', data.user.id)
         .single();
 
-      const allowedRoles = ['founder', 'admin', 'general_secretary', 'treasurer', 'media_coordinator', 'verification_officer'];
-
-      if (profileError || !profile || !allowedRoles.includes(profile.role) || profile.status !== 'active') {
+      if (profileError || !profile || STAFF_ROLES.indexOf(profile.role) === -1 || profile.status !== 'active') {
         await sb.auth.signOut();
         document.getElementById('adminErrMsg').textContent = 'This account does not have admin access.';
         err.style.display = 'flex'; err.style.alignItems = 'center'; err.style.gap = '.5rem';
@@ -15939,15 +16050,19 @@ select.form-input {
       // simple public iframe embedding at all, so for those we show the admin-provided
       // thumbnail when available, or the existing icon-card fallback otherwise. YouTube/
       // Facebook keep their live iframe unchanged regardless of whether a thumbnail exists.
+      const thumbUrl = item.thumbnail_url && isSafeHttpUrl(item.thumbnail_url) ? item.thumbnail_url : null;
+      // Prefer a stored thumbnail over Facebook's plugin iframe (which often renders
+      // "This Facebook post is no longer available"). YouTube still uses its live embed
+      // unless no embed URL can be built.
       const embed = item.platform === 'youtube' ? ytEmbedUrl(item.url)
-                  : item.platform === 'facebook' ? fbEmbedUrl(item.url)
+                  : (item.platform === 'facebook' && !thumbUrl) ? fbEmbedUrl(item.url)
                   : null;
       const icon = meta.icon;
       const frame = embed
         ? `<iframe src="${embed}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:12px 12px 0 0;" loading="lazy" allowfullscreen></iframe>`
-        : (item.thumbnail_url
+        : (thumbUrl
             ? `<div class="ml-thumb-wrap" style="width:100%;aspect-ratio:16/9;border-radius:12px 12px 0 0;overflow:hidden;">
-                 <img src="${sanitize(item.thumbnail_url)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="mediaLinkThumbError(this,'${item.platform}')" />
+                 <img src="${sanitize(thumbUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="mediaLinkThumbError(this,'${item.platform}')" />
                </div>`
             : mediaLinkThumbFallbackBlock(item.platform));
       // Decode first (repairs old rows saved with &#x2F; instead of /), then only
