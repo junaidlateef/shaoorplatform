@@ -3569,6 +3569,17 @@ html:not([data-theme="dark"]) .hero {
   overflow-x: auto !important;
   padding: .25rem !important;
 }
+.brand-group-title { margin: 1.35rem 0 .35rem; font-weight: 700; font-size: .95rem; letter-spacing: .04em; text-transform: uppercase; color: var(--navy); }
+.brand-group-note { font-size: .75rem; color: var(--muted); margin: 0 0 .75rem; max-width: 52rem; }
+.brand-org-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .75rem; margin-bottom: 1.25rem; }
+.brand-org-card { border: 1px solid var(--border); border-radius: 10px; padding: .7rem; background: #fff; display: flex; gap: .65rem; align-items: center; }
+.brand-org-card img { width: 48px; height: 48px; object-fit: contain; background: #fff; border: 1px solid var(--border); border-radius: 8px; }
+.brand-org-card .empty { width: 48px; height: 48px; border-radius: 8px; border: 1px dashed var(--border); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: .85rem; }
+.ctpl-pv-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: .4rem; margin-bottom: .35rem; }
+.ctpl-pv-head #ctplPvLogo { justify-self: start; }
+.ctpl-pv-head #ctplPvKicker { justify-self: center; align-self: center; }
+.ctpl-pv-head #ctplPvUrdu { justify-self: end; }
+.cert-template-sections { display: flex; flex-direction: column; gap: .15rem; }
 #certificatePrintArea.cert-v2 {
   background: #FDFBF7 !important;
   color: var(--navy) !important;
@@ -3595,8 +3606,26 @@ html:not([data-theme="dark"]) .hero {
   justify-content: space-between !important;
   text-align: center !important;
 }
-#certificatePrintArea.cert-v2 .cert-head { display: flex !important; align-items: center !important; justify-content: center !important; gap: .6rem !important; margin-bottom: .2rem !important; }
-#certificatePrintArea.cert-v2 .cert-logo { height: 3.2em !important; object-fit: contain !important; }
+#certificatePrintArea.cert-v2 .cert-head { display: grid !important; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr) !important; align-items: start !important; gap: .6rem !important; margin-bottom: .35rem !important; text-align: left !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-head { text-align: right !important; }
+#certificatePrintArea.cert-v2 .cert-head-left { display: flex !important; align-items: flex-start !important; justify-content: flex-start !important; }
+#certificatePrintArea.cert-v2 .cert-head-center { display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important; padding-top: .15rem !important; }
+#certificatePrintArea.cert-v2 .cert-head-right { display: flex !important; flex-direction: column !important; align-items: flex-end !important; gap: .15rem !important; text-align: right !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-head-right { align-items: flex-start !important; text-align: left !important; }
+#certificatePrintArea.cert-v2 .cert-logo { height: 5.4em !important; max-width: 9.5em !important; width: auto !important; object-fit: contain !important; object-position: left center !important; }
+#certificatePrintArea.cert-v2 .cert-urdu-mark { font-family: var(--ff-urdu) !important; font-size: 1.7rem !important; font-weight: 700 !important; color: var(--navy) !important; line-height: 1.2 !important; }
+#certificatePrintArea.cert-v2 .cert-issued-block { font-size: .68rem !important; color: var(--muted) !important; line-height: 1.35 !important; }
+#certificatePrintArea.cert-v2 .cert-issued-label { text-transform: uppercase !important; letter-spacing: .08em !important; font-size: .58rem !important; color: var(--gold) !important; font-weight: 700 !important; margin-top: .2rem !important; }
+#certificatePrintArea.cert-v2[dir="rtl"] .cert-issued-label { text-transform: none !important; font-family: var(--ff-urdu) !important; letter-spacing: 0 !important; }
+#certificatePrintArea.cert-v2 .cert-issued-value { color: var(--navy) !important; font-weight: 700 !important; }
+#certificatePrintArea.cert-v2 .cert-org-marks { display: flex !important; justify-content: center !important; align-items: center !important; gap: 1rem !important; margin: .35rem 0 .1rem !important; min-height: 0 !important; }
+#certificatePrintArea.cert-v2 .cert-org-marks:empty { display: none !important; }
+#certificatePrintArea.cert-v2 .cert-org-logo { height: 2.6em !important; max-width: 5.5em !important; width: auto !important; object-fit: contain !important; }
+@media (max-width: 700px) {
+  #certificatePrintArea.cert-v2 .cert-head { grid-template-columns: 1fr !important; justify-items: center !important; text-align: center !important; }
+  #certificatePrintArea.cert-v2 .cert-head-left, #certificatePrintArea.cert-v2 .cert-head-right { align-items: center !important; justify-content: center !important; text-align: center !important; }
+  #certificatePrintArea.cert-v2 .cert-logo { height: 4.2em !important; }
+}
 #certificatePrintArea.cert-v2 .cert-kicker { font-size: .72rem !important; letter-spacing: .16em !important; text-transform: uppercase !important; color: var(--gold) !important; font-weight: 700 !important; }
 #certificatePrintArea.cert-v2 .cert-title { font-family: Georgia, 'Times New Roman', serif !important; font-weight: 800 !important; font-size: 2rem !important; letter-spacing: .07em !important; text-transform: uppercase !important; color: var(--navy) !important; margin: .3rem 0 !important; overflow-wrap: break-word !important; word-break: break-word !important; }
 #certificatePrintArea.cert-v2[dir="rtl"] .cert-title { font-family: var(--ff-urdu) !important; text-transform: none !important; font-size: 2.1rem !important; }
@@ -6046,7 +6075,8 @@ select.form-input {
               </div>
             </div>
 
-            <h4 style="margin:.5rem 0;">Fields, Logo &amp; Seal</h4>
+            <h4 style="margin:.5rem 0;">5-10. Title, Recipient, Body, Date / Number, Signatures, Seal, Society / Chapter</h4>
+            <p style="font-size:.72rem;color:var(--muted);margin:-.2rem 0 .5rem;">Placement only. Images are never uploaded here. Society/Chapter logos appear when the issued certificate has those records and a logo on file.</p>
             <div id="ctplFieldControls"></div>
 
             <div class="form-group">
@@ -6062,18 +6092,26 @@ select.form-input {
           <div style="position:sticky;top:0;">
             <label style="font-size:.8rem;font-weight:700;display:block;margin-bottom:.4rem;">Live Preview</label>
             <div id="ctplPreviewWrap" style="border:1px solid var(--line,#ddd);border-radius:12px;padding:1rem;background:#f4f4f4;overflow:auto;">
-              <div id="ctplPreview" class="certificate-paper" style="position:relative;background:linear-gradient(135deg,var(--navy),#0d1b3d);border-radius:16px;padding:1.5rem;color:#fff;text-align:center;overflow:hidden;width:340px;background-size:cover;background-position:center;">
-                <div style="font-family:var(--ff-display);font-weight:900;letter-spacing:1px;color:var(--gold);font-size:1rem;margin-bottom:.25rem;">SHAOOR | شعور</div>
-                <img id="ctplPvLogo" style="display:none;height:40px;object-fit:contain;margin:0 auto .4rem;" />
-                <div id="ctplPvTitle" style="font-weight:700;font-size:1.1rem;margin-bottom:.25rem;">Certificate Title</div>
-                <div id="ctplPvMember" style="font-size:.85rem;color:rgba(255,255,255,.85);margin-bottom:.25rem;">Recipient Name · MEM-0001</div>
-                <div id="ctplPvBody" style="font-size:.7rem;color:rgba(255,255,255,.75);margin-bottom:.4rem;">has successfully completed the requirements of the program.</div>
-                <div id="ctplPvMeta" style="font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:1rem;">Type: Sample · Issued: 2026-01-01</div>
-                <div id="ctplPvQr" style="background:#fff;display:inline-block;padding:8px;border-radius:8px;width:56px;height:56px;"></div>
-                <div id="ctplPvSig" style="display:flex;justify-content:center;gap:1rem;margin-top:1rem;flex-wrap:wrap;">
-                  <div style="text-align:center;font-size:.65rem;color:rgba(255,255,255,.7);border-top:1px solid rgba(255,255,255,.35);padding-top:.15rem;min-width:60px;">Signature</div>
+              <div id="ctplPreview" class="certificate-paper ctpl-preview-paper" style="position:relative;background:#FDFBF7;border-radius:8px;padding:1rem;color:var(--navy);text-align:center;overflow:hidden;width:340px;background-size:cover;background-position:center;border:2px solid var(--navy);">
+                <div class="ctpl-pv-head">
+                  <img id="ctplPvLogo" style="display:none;height:52px;max-width:90px;object-fit:contain;" alt="" />
+                  <div id="ctplPvKicker" style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;">Official Certificate</div>
+                  <div id="ctplPvUrdu" class="cert-urdu-mark" style="font-size:1.15rem;">شعور</div>
                 </div>
-                <img id="ctplPvSeal" style="display:none;height:44px;width:44px;object-fit:contain;margin:.5rem auto 0;" />
+                <div id="ctplPvTitle" style="font-family:Georgia,serif;font-weight:700;font-size:1rem;margin:.35rem 0 .2rem;letter-spacing:.04em;">Certificate Title</div>
+                <div style="font-size:.68rem;color:var(--muted);">This is to certify that</div>
+                <div id="ctplPvMember" style="font-family:Georgia,serif;font-size:.95rem;font-weight:700;margin:.15rem 0 .25rem;border-bottom:1px solid var(--gold);display:inline-block;padding:0 .4rem .15rem;">Recipient Name</div>
+                <div id="ctplPvBody" style="font-size:.68rem;color:#444;margin-bottom:.3rem;">has successfully completed the requirements of the program.</div>
+                <div id="ctplPvOrgMarks" style="display:flex;justify-content:center;gap:.6rem;align-items:center;min-height:0;">
+                  <img id="ctplPvSocietyLogo" style="display:none;height:28px;max-width:64px;object-fit:contain;" alt="" />
+                  <img id="ctplPvChapterLogo" style="display:none;height:28px;max-width:64px;object-fit:contain;" alt="" />
+                </div>
+                <div id="ctplPvMeta" style="font-size:.65rem;color:var(--muted);margin:.25rem 0;">Issued date · Certificate no.</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:.5rem;gap:.4rem;">
+                  <div id="ctplPvSig" style="display:flex;gap:.5rem;flex-wrap:wrap;"></div>
+                  <img id="ctplPvSeal" style="display:none;height:40px;width:40px;object-fit:contain;" alt="" />
+                  <div id="ctplPvQr" style="background:#fff;display:inline-block;padding:4px;border-radius:6px;width:44px;height:44px;border:1px solid #ddd;"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -6221,23 +6259,34 @@ select.form-input {
           <span id="brandingSavedNote" style="font-size:.78rem;color:var(--muted);"></span>
         </div>
 
-        <form id="brandingForm" style="max-width:760px;">
+        <form id="brandingForm" style="max-width:880px;">
           <div class="form-group">
             <label for="brandOrgName">Organization Name</label>
             <input type="text" id="brandOrgName" class="form-input" placeholder="SHAOOR | شعور" />
           </div>
 
+          <h4 class="brand-group-title">SHAOOR Brand</h4>
+          <p class="brand-group-note">Primary logo is the source of truth for certificates and official documents. Urdu wordmark is rendered as شعور from the organization name — there is no separate Urdu-logo column.</p>
           <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
             <div>
-              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Logo</label>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Primary Logo</label>
               <div style="display:flex;align-items:center;gap:.75rem;">
-                <img id="brandLogoPreview" src="" style="display:none;width:64px;height:64px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
-                <div id="brandLogoPlaceholder" style="width:64px;height:64px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
+                <img id="brandLogoPreview" src="" style="display:none;width:96px;height:72px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandLogoPlaceholder" style="width:96px;height:72px;border-radius:8px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>
                 <input type="file" id="brandLogoInput" accept="image/png,image/jpeg,image/webp" />
               </div>
               <span id="brandLogoStatus" style="font-size:.75rem;color:var(--muted);"></span>
             </div>
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Urdu wordmark</label>
+              <div id="brandUrduPreview" class="cert-urdu-mark" style="font-size:1.8rem;padding:.4rem .8rem;border:1px dashed var(--border);border-radius:8px;background:#fff;">شعور</div>
+              <span style="display:block;font-size:.72rem;color:var(--muted);margin-top:.25rem;">Shown top-right on certificates. Not a separate uploaded file.</span>
+            </div>
+          </div>
 
+          <h4 class="brand-group-title">Official Authority</h4>
+          <p class="brand-group-note">Seal and signatures feed certificates and documents from this row. Only uploaded images appear on issued output.</p>
+          <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
             <div>
               <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Official Seal</label>
               <div style="display:flex;align-items:center;gap:.75rem;">
@@ -6277,6 +6326,42 @@ select.form-input {
                 <input type="file" id="brandSigInput" accept="image/png,image/jpeg,image/webp" />
               </div>
               <span id="brandSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">President Signature</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandPresSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandPresSigPlaceholder" style="width:96px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-signature"></i></div>
+                <input type="file" id="brandPresSigInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandPresSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Society Signature</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandSocSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandSocSigPlaceholder" style="width:96px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-signature"></i></div>
+                <input type="file" id="brandSocSigInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandSocSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Chapter Signature</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandChapSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandChapSigPlaceholder" style="width:96px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-signature"></i></div>
+                <input type="file" id="brandChapSigInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandChapSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
+            </div>
+            <div>
+              <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;">Course Administrator Signature</label>
+              <div style="display:flex;align-items:center;gap:.75rem;">
+                <img id="brandCourseSigPreview" src="" style="display:none;width:96px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border);background:#fff;" alt="" />
+                <div id="brandCourseSigPlaceholder" style="width:96px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-signature"></i></div>
+                <input type="file" id="brandCourseSigInput" accept="image/png,image/jpeg,image/webp" />
+              </div>
+              <span id="brandCourseSigStatus" style="font-size:.75rem;color:var(--muted);"></span>
             </div>
           </div>
 
@@ -6325,6 +6410,10 @@ select.form-input {
               <input type="text" id="brandDefaultAuthority" class="form-input" placeholder="Founder" />
             </div>
           </div>
+
+          <h4 class="brand-group-title">Organization</h4>
+          <p class="brand-group-note">Society and chapter logos live on the existing Societies and Chapters records. Certificates and documents use those logos when the issued record has a society_id / chapter_id. Upload them there — this list is a live preview only.</p>
+          <div id="brandOrgLogos" class="brand-org-grid"></div>
 
           <h4 style="margin:1.25rem 0 .5rem;font-weight:700;">Founder Section (Public Site)</h4>
           <div style="display:flex;gap:1rem;flex-wrap:wrap;">
@@ -8411,24 +8500,37 @@ select.form-input {
         <div class="cert-border-frame"></div>
         <div class="cert-inner">
           <div class="cert-head">
-            <img id="vcLogo" class="cert-logo" style="display:none;" alt="" />
-            <div class="cert-kicker">Official Certificate · Certificate Verification</div>
+            <div class="cert-head-left">
+              <img id="vcLogo" class="cert-logo" style="display:none;" alt="SHAOOR" />
+            </div>
+            <div class="cert-head-center">
+              <div class="cert-kicker" id="vcKicker">Official Certificate</div>
+            </div>
+            <div class="cert-head-right">
+              <div id="vcUrduMark" class="cert-urdu-mark">شعور</div>
+              <div class="cert-issued-block">
+                <div class="cert-issued-label" id="vcIssuedLabel">Issued Date</div>
+                <div id="vcIssueDate" class="cert-issued-value"></div>
+                <div class="cert-issued-label" id="vcCertNoLabel">Certificate No.</div>
+                <div class="cert-issued-value"><b id="vcId">—</b></div>
+              </div>
+            </div>
           </div>
           <div id="vcTitle" class="cert-title">—</div>
-          <div class="cert-presented-label">This certificate is proudly presented to</div>
+          <div class="cert-presented-label" id="vcPresentedLabel">This is to certify that</div>
           <div id="vcMember" class="cert-member">—</div>
           <div id="vcBody" class="cert-body">—</div>
           <div id="vcCourseRow" class="cert-course-row"></div>
+          <div id="vcOrgMarks" class="cert-org-marks">
+            <img id="vcSocietyLogo" class="cert-org-logo" style="display:none;" alt="" />
+            <img id="vcChapterLogo" class="cert-org-logo" style="display:none;" alt="" />
+          </div>
           <div id="vcMeta" class="cert-meta-row">—</div>
           <div class="cert-bottom-grid">
             <div id="vcSignatures" class="cert-sig-area"></div>
             <div class="cert-seal-col">
               <img id="vcSeal" class="cert-seal" style="display:none;" alt="Official Seal" />
-              <div class="cert-verify-text">
-                <div>Certificate No: <b id="vcId">—</b></div>
-                <div id="vcIssueDate"></div>
-                <div id="vcExpiryDate"></div>
-              </div>
+              <div id="vcExpiryDate" class="cert-verify-text"></div>
             </div>
             <div class="cert-verify-area">
               <div id="vcQrCode" class="cert-qr"></div>
@@ -13982,7 +14084,7 @@ select.form-input {
 
   /* ── Admin: load all certificates into the admin table ── */
   /* ── Branding Assets ── */
-  let brandLogoFile = null, brandSealFile = null, brandSigFile = null, brandFounderPhotoFile = null, brandAboutImageFile = null;
+  let brandLogoFile = null, brandSealFile = null, brandSigFile = null, brandPresSigFile = null, brandSocSigFile = null, brandChapSigFile = null, brandCourseSigFile = null, brandFounderPhotoFile = null, brandAboutImageFile = null;
   let brandingRowId = null;
 
   function setBrandPreview(prefix, url) {
@@ -14030,11 +14132,37 @@ select.form-input {
     setBrandPreview('brandLogo', data.logo_url);
     setBrandPreview('brandSeal', data.seal_url);
     setBrandPreview('brandSig', data.founder_signature_url);
+    setBrandPreview('brandPresSig', data.president_signature_url);
+    setBrandPreview('brandSocSig', data.society_signature_url);
+    setBrandPreview('brandChapSig', data.chapter_signature_url);
+    setBrandPreview('brandCourseSig', data.course_admin_signature_url);
     setBrandPreview('brandFounderPhoto', data.founder_photo_url);
     setBrandPreview('brandAboutImage', data.about_image_url);
+    window._brandCache = data;
+    renderBrandOrgLogos();
 
     const note = document.getElementById('brandingSavedNote');
     note.textContent = data.updated_at ? ('آخری بار محفوظ: ' + new Date(data.updated_at).toLocaleString()) : '';
+  }
+
+  async function renderBrandOrgLogos() {
+    const host = document.getElementById('brandOrgLogos');
+    if (!host || !sb) return;
+    const [{ data: societies }, { data: chapters }] = await Promise.all([
+      sb.from('societies').select('id, name, logo_url').order('name'),
+      sb.from('chapters').select('id, name, logo_url').order('name')
+    ]);
+    const card = (kind, row) => {
+      const has = !!(row.logo_url);
+      const img = has
+        ? `<img src="${sanitize(row.logo_url)}" alt="" />`
+        : `<div class="empty"><i class="fas fa-image"></i></div>`;
+      const status = has ? 'Logo on file' : 'No logo yet';
+      return `<div class="brand-org-card">${img}<div><div style="font-weight:700;font-size:.82rem;">${sanitize(row.name || '')}</div><div style="font-size:.7rem;color:var(--muted);">${kind} · ${status}</div></div></div>`;
+    };
+    const soc = (societies || []).map(s => card('Society', s)).join('');
+    const chap = (chapters || []).map(c => card('Chapter', c)).join('');
+    host.innerHTML = (soc + chap) || '<div style="font-size:.8rem;color:var(--muted);">No societies or chapters yet.</div>';
   }
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -14057,6 +14185,10 @@ select.form-input {
       ['brandLogoInput', 'brandLogo', f => brandLogoFile = f],
       ['brandSealInput', 'brandSeal', f => brandSealFile = f],
       ['brandSigInput', 'brandSig', f => brandSigFile = f],
+      ['brandPresSigInput', 'brandPresSig', f => brandPresSigFile = f],
+      ['brandSocSigInput', 'brandSocSig', f => brandSocSigFile = f],
+      ['brandChapSigInput', 'brandChapSig', f => brandChapSigFile = f],
+      ['brandCourseSigInput', 'brandCourseSig', f => brandCourseSigFile = f],
       ['brandFounderPhotoInput', 'brandFounderPhoto', f => brandFounderPhotoFile = f],
       ['brandAboutImageInput', 'brandAboutImage', f => brandAboutImageFile = f],
     ];
@@ -14118,6 +14250,10 @@ select.form-input {
       if (brandLogoFile) payload.logo_url = await uploadBrandAsset(brandLogoFile, 'logo');
       if (brandSealFile) payload.seal_url = await uploadBrandAsset(brandSealFile, 'seal');
       if (brandSigFile) payload.founder_signature_url = await uploadBrandAsset(brandSigFile, 'signature');
+      if (brandPresSigFile) payload.president_signature_url = await uploadBrandAsset(brandPresSigFile, 'signature-president');
+      if (brandSocSigFile) payload.society_signature_url = await uploadBrandAsset(brandSocSigFile, 'signature-society');
+      if (brandChapSigFile) payload.chapter_signature_url = await uploadBrandAsset(brandChapSigFile, 'signature-chapter');
+      if (brandCourseSigFile) payload.course_admin_signature_url = await uploadBrandAsset(brandCourseSigFile, 'signature-course');
       if (brandFounderPhotoFile) payload.founder_photo_url = await uploadBrandAsset(brandFounderPhotoFile, 'founder-photo');
       if (brandAboutImageFile) payload.about_image_url = await uploadBrandAsset(brandAboutImageFile, 'about-image');
     } catch (err) {
@@ -14135,7 +14271,7 @@ select.form-input {
 
     if (error) { showToast('محفوظ نہیں ہو سکا: ' + error.message, 'error'); return; }
 
-    brandLogoFile = null; brandSealFile = null; brandSigFile = null; brandFounderPhotoFile = null; brandAboutImageFile = null;
+    brandLogoFile = null; brandSealFile = null; brandSigFile = null; brandPresSigFile = null; brandSocSigFile = null; brandChapSigFile = null; brandCourseSigFile = null; brandFounderPhotoFile = null; brandAboutImageFile = null;
     showToast('Branding محفوظ ہو گئی');
     await loadBrandingAdmin();
   }));
@@ -14565,8 +14701,8 @@ select.form-input {
     popup.document.close();
   }
 
-  const CERT_FIELD_IDS = { title: 'vcTitle', member: 'vcMember', body: 'vcBody', meta: 'vcMeta', qr: 'vcQrCode', signatures: 'vcSignatures', logo: 'vcLogo', seal: 'vcSeal' };
-  const CERT_PREVIEW_FIELD_IDS = { title: 'ctplPvTitle', member: 'ctplPvMember', body: 'ctplPvBody', meta: 'ctplPvMeta', qr: 'ctplPvQr', signatures: 'ctplPvSig', logo: 'ctplPvLogo', seal: 'ctplPvSeal' };
+  const CERT_FIELD_IDS = { title: 'vcTitle', member: 'vcMember', body: 'vcBody', meta: 'vcMeta', qr: 'vcQrCode', signatures: 'vcSignatures', logo: 'vcLogo', seal: 'vcSeal', society_logo: 'vcSocietyLogo', chapter_logo: 'vcChapterLogo' };
+  const CERT_PREVIEW_FIELD_IDS = { title: 'ctplPvTitle', member: 'ctplPvMember', body: 'ctplPvBody', meta: 'ctplPvMeta', qr: 'ctplPvQr', signatures: 'ctplPvSig', logo: 'ctplPvLogo', seal: 'ctplPvSeal', society_logo: 'ctplPvSocietyLogo', chapter_logo: 'ctplPvChapterLogo' };
 
   // ── Shared paper-size architecture, used by BOTH document print/Word export and certificate
   // PDF export. Standard sizes are real mm dimensions, so @page renders true A4/Legal/Letter —
@@ -14581,8 +14717,8 @@ select.form-input {
   }
   // Config keys an admin can control from the Template Editor. Kept as the single list both the
   // structured editor controls and the JSON textarea serialize against.
-  const CERT_FIELD_KEYS = ['title', 'member', 'body', 'meta', 'qr', 'signatures', 'logo', 'seal'];
-  const CERT_FIELD_LABELS = { title: 'Title', member: 'Member / Recipient Name', body: 'Certificate Statement', meta: 'Metadata', qr: 'QR Code', signatures: 'Signature Area', logo: 'Logo', seal: 'Official Seal' };
+  const CERT_FIELD_KEYS = ['title', 'member', 'body', 'meta', 'qr', 'signatures', 'logo', 'seal', 'society_logo', 'chapter_logo'];
+  const CERT_FIELD_LABELS = { title: 'Title', member: 'Member / Recipient Name', body: 'Certificate Statement', meta: 'Metadata', qr: 'QR Code', signatures: 'Signature Area', logo: 'SHAOOR Logo', seal: 'Official Seal', society_logo: 'Society Logo', chapter_logo: 'Chapter Logo' };
 
   // Generalized so the same layout logic drives both the real certificate (idMap=CERT_FIELD_IDS)
   // and the Template Editor's live preview (idMap=CERT_PREVIEW_FIELD_IDS) — no duplicated logic.
@@ -14619,7 +14755,33 @@ select.form-input {
   /* ── Apply a certificate_templates.config onto the print area, and render signature blocks ── */
   // areaId/idMap let this same function drive both the real certificate (defaults) and the
   // Template Editor's live preview (pass 'ctplPreview' + CERT_PREVIEW_FIELD_IDS).
-  function applyCertificateTemplate(config, brand, areaId, idMap) {
+  function normalizeCertificateConfig(config) {
+    if (!config || typeof config !== 'object') return config || {};
+    const out = Object.assign({}, config);
+    const branding = config.branding || {};
+    const content = config.content || {};
+    const signatures = config.signatures || {};
+    if (!out.orientation) out.orientation = config.layout || config.orientation || 'landscape';
+    if (!out.paper_size && config.page_size) out.paper_size = String(config.page_size).toLowerCase();
+    if (!out.background_color) out.background_color = branding.background_color || null;
+    if (!out.text_color) out.text_color = branding.primary_color || null;
+    if (!out.accent_color) out.accent_color = branding.accent_color || null;
+    if (!out.background_url) out.background_url = branding.background_url || null;
+    out._content = content;
+    out._signatures = signatures;
+    out._brandingFlags = branding;
+    return out;
+  }
+
+  function setCertImg(el, url) {
+    if (!el) return;
+    if (url) { el.src = url; el.style.display = ''; }
+    else { el.removeAttribute('src'); el.style.display = 'none'; }
+  }
+
+  function applyCertificateTemplate(config, brand, areaId, idMap, orgLogos) {
+    config = normalizeCertificateConfig(config);
+    orgLogos = orgLogos || {};
     areaId = areaId || 'certificatePrintArea';
     idMap = idMap || CERT_FIELD_IDS;
     const area = document.getElementById(areaId);
@@ -14685,13 +14847,16 @@ select.form-input {
     // certificates never leaves stale absolute positioning behind.
     applyCertFieldLayout(config && config.fields, idMap);
 
+    const brandingFlags = (config && config._brandingFlags) || {};
+    const showLogo = brandingFlags.show_logo !== false;
+    const showSeal = brandingFlags.show_seal !== false;
     // Logo — sourced from brand.logo_url (never a template-uploaded image); the template only
     // controls its size/position via config.fields.logo.
-    const logoEl = document.getElementById(idMap.logo);
-    if (logoEl) {
-      if (brand && brand.logo_url) { logoEl.src = brand.logo_url; logoEl.style.display = ''; }
-      else { logoEl.removeAttribute('src'); logoEl.style.display = 'none'; }
-    }
+    setCertImg(document.getElementById(idMap.logo), showLogo && brand && brand.logo_url ? brand.logo_url : null);
+    setCertImg(document.getElementById(idMap.society_logo), orgLogos.society_logo_url || null);
+    setCertImg(document.getElementById(idMap.chapter_logo), orgLogos.chapter_logo_url || null);
+    const urduEl = areaId === 'certificatePrintArea' ? document.getElementById('vcUrduMark') : document.getElementById('ctplPvUrdu');
+    if (urduEl) urduEl.style.display = '';
 
     let sigHolder = document.getElementById(idMap.signatures);
     if (!sigHolder && areaId === 'certificatePrintArea') {
@@ -14705,18 +14870,22 @@ select.form-input {
     // Official seal — a distinct authentication mark, kept in its own field (never merged into
     // signatures, never substituting the logo). Sourced from brand.seal_url; the template only
     // controls its size/position via config.fields.seal.
-    const sealEl = document.getElementById(idMap.seal);
-    if (sealEl) {
-      if (brand && brand.seal_url) { sealEl.src = brand.seal_url; sealEl.style.display = ''; }
-      else { sealEl.removeAttribute('src'); sealEl.style.display = 'none'; }
-    }
+    setCertImg(document.getElementById(idMap.seal), showSeal && brand && brand.seal_url ? brand.seal_url : null);
 
-    if (!brand || !sigHolder || areaId !== 'certificatePrintArea') return;
-    const labels = brand.signature_labels || {};
-    // Default left/right split: primary authority (founder/president) on the left,
-    // society/chapter/course administrator on the right — per the certificate spec.
-    // A custom brand.signature_order is still honored for ORDER; grouping (left vs right)
-    // is decided by LEFT_KEYS, so any admin-added key not in that list lands on the right.
+    if (!brand || !sigHolder) return;
+    const labels = Object.assign({}, brand.signature_labels || {});
+    const sigFlags = (config && config._signatures) || {};
+    if (sigFlags.founder_label) labels.founder = sigFlags.founder_label;
+    if (sigFlags.president_label) labels.president = sigFlags.president_label;
+    if (sigFlags.society_label) labels.society = sigFlags.society_label;
+    if (sigFlags.chapter_label) labels.chapter = sigFlags.chapter_label;
+    const flagMap = {
+      founder: sigFlags.show_founder_signature,
+      president: sigFlags.show_president_signature,
+      society: sigFlags.show_society_signature,
+      chapter: sigFlags.show_chapter_signature,
+      course_admin: sigFlags.show_course_admin_signature
+    };
     const order = (brand.signature_order && brand.signature_order.length) ? brand.signature_order
       : ['founder', 'president', 'society', 'chapter', 'course_admin'];
     const urlMap = {
@@ -14727,7 +14896,15 @@ select.form-input {
       course_admin: brand.course_admin_signature_url
     };
     const defaultLabels = { founder: 'Founder', president: 'President', society: 'Society', chapter: 'Chapter', course_admin: 'Course Administrator' };
+    const nameMap = {
+      founder: brand.founder_name || '',
+      president: '',
+      society: orgLogos.society_name || '',
+      chapter: orgLogos.chapter_name || '',
+      course_admin: ''
+    };
     const LEFT_KEYS = ['founder', 'president'];
+    if (areaId === 'certificatePrintArea' || areaId === 'ctplPreview') sigHolder.innerHTML = '';
     const leftWrap = document.createElement('div');
     leftWrap.className = 'cert-sig-group cert-sig-left';
     leftWrap.style.cssText = 'display:flex;gap:1.1rem;flex-wrap:wrap;';
@@ -14736,14 +14913,16 @@ select.form-input {
     rightWrap.style.cssText = 'display:flex;gap:1.1rem;flex-wrap:wrap;';
     sigHolder.appendChild(leftWrap);
     sigHolder.appendChild(rightWrap);
-    // Only signatures that actually have an uploaded URL are rendered.
     order.forEach(key => {
       const url = urlMap[key];
       if (!url) return;
+      if (flagMap[key] === false) return;
       const label = labels[key] || defaultLabels[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+      const name = nameMap[key] || '';
       const block = document.createElement('div');
       block.className = 'cert-sig-block';
-      block.innerHTML = '<img src="' + url + '" alt="" /><div>' + sanitize(label) + '</div>';
+      block.innerHTML = '<img src="' + url + '" alt="" /><div>' + sanitize(name || label) + '</div>' +
+        (name ? '<div>' + sanitize(label) + '</div>' : '');
       (LEFT_KEYS.indexOf(key) !== -1 ? leftWrap : rightWrap).appendChild(block);
     });
   }
@@ -14775,35 +14954,84 @@ select.form-input {
     const [{ data: brand }, tmplRes, socRes, chapRes, courseRes] = await Promise.all([
       sb.from('brand_settings').select('*').limit(1).maybeSingle(),
       c.template_id ? sb.from('certificate_templates').select('config').eq('id', c.template_id).maybeSingle() : Promise.resolve({ data: null }),
-      c.society_id ? sb.from('societies').select('name').eq('id', c.society_id).maybeSingle() : Promise.resolve({ data: null }),
-      c.chapter_id ? sb.from('chapters').select('name').eq('id', c.chapter_id).maybeSingle() : Promise.resolve({ data: null }),
+      c.society_id ? sb.from('societies').select('name, logo_url').eq('id', c.society_id).maybeSingle() : Promise.resolve({ data: null }),
+      c.chapter_id ? sb.from('chapters').select('name, logo_url').eq('id', c.chapter_id).maybeSingle() : Promise.resolve({ data: null }),
       c.course_id ? sb.from('courses').select('title').eq('id', c.course_id).maybeSingle() : Promise.resolve({ data: null })
     ]);
     if (token !== _certRenderToken) return; // stale by the time everything resolved — discard
     const templateConfig = tmplRes && tmplRes.data ? tmplRes.data.config : null;
+    const norm = normalizeCertificateConfig(templateConfig);
+    const content = norm._content || {};
     const isUrCert = !!(templateConfig && templateConfig.language === 'ur');
-
-    document.getElementById('vcTitle').textContent = c.certificate_title;
-    document.getElementById('vcId').textContent = c.certificate_id;
-    document.getElementById('vcMember').textContent = prof ? (prof.full_name + ' · ' + (prof.member_id || '')) : '—';
-    document.getElementById('vcBody').textContent = (c.certificate_body && c.certificate_body.trim()) || defaultCertificateBody(c, isUrCert);
-
-    // Course / program + Society / Chapter, resolved from the actual existing data model
-    // (no invented relationships) — only shown when the certificate actually has them.
+    const memberName = prof ? prof.full_name : '';
+    const memberId = prof ? (prof.member_id || '') : '';
     const courseTitle = (courseRes && courseRes.data && courseRes.data.title) || c.program_name || '';
+    const orgLogos = {
+      society_logo_url: socRes && socRes.data && socRes.data.logo_url,
+      chapter_logo_url: chapRes && chapRes.data && chapRes.data.logo_url,
+      society_name: socRes && socRes.data && socRes.data.name,
+      chapter_name: chapRes && chapRes.data && chapRes.data.name
+    };
+
+    const titleText = (content.show_certificate_title === false)
+      ? ''
+      : (c.certificate_title || content.certificate_title || '');
+    document.getElementById('vcTitle').textContent = titleText || '—';
+    const presented = document.getElementById('vcPresentedLabel');
+    if (presented) presented.textContent = isUrCert ? 'یہ تصدیق کی جاتی ہے کہ' : 'This is to certify that';
+    const kicker = document.getElementById('vcKicker');
+    if (kicker) kicker.textContent = isUrCert ? 'سرکاری سرٹیفکیٹ' : 'Official Certificate';
+    const issuedLabel = document.getElementById('vcIssuedLabel');
+    if (issuedLabel) issuedLabel.textContent = content.issue_date_label || (isUrCert ? 'تاریخ اجراء' : 'Issued Date');
+    const certNoLabel = document.getElementById('vcCertNoLabel');
+    if (certNoLabel) certNoLabel.textContent = content.certificate_id_label || (isUrCert ? 'سرٹیفکیٹ نمبر' : 'Certificate No.');
+    const idEl = document.getElementById('vcId');
+    idEl.textContent = content.show_certificate_id === false ? '' : (c.certificate_id || '—');
+    if (content.show_certificate_id === false && certNoLabel) certNoLabel.style.display = 'none';
+    else if (certNoLabel) certNoLabel.style.display = '';
+
+    const memberEl = document.getElementById('vcMember');
+    if (content.show_recipient_name === false) {
+      memberEl.textContent = '';
+      memberEl.style.display = 'none';
+    } else {
+      memberEl.style.display = '';
+      memberEl.textContent = memberName ? (memberName + (memberId ? ' · ' + memberId : '')) : '—';
+    }
+
+    let bodyText = (c.certificate_body && c.certificate_body.trim()) || '';
+    if (!bodyText && content.body_text && content.body_text.indexOf('{{member_name}}') === -1) {
+      bodyText = content.body_text
+        .replaceAll('{{program_name}}', c.program_name || courseTitle || '')
+        .replaceAll('{{course_name}}', courseTitle || '');
+    }
+    document.getElementById('vcBody').textContent = bodyText || defaultCertificateBody(c, isUrCert);
+
     const orgBits = [];
-    if (socRes && socRes.data && socRes.data.name) orgBits.push(socRes.data.name);
-    if (chapRes && chapRes.data && chapRes.data.name) orgBits.push(chapRes.data.name);
+    if (orgLogos.society_name) orgBits.push(orgLogos.society_name);
+    if (orgLogos.chapter_name) orgBits.push(orgLogos.chapter_name);
     const courseRowEl = document.getElementById('vcCourseRow');
-    courseRowEl.textContent = [courseTitle, orgBits.join(isUrCert ? ' — ' : ' · ')].filter(Boolean).join(isUrCert ? ' · ' : ' · ');
+    const showCourse = content.show_course_name !== false;
+    courseRowEl.textContent = showCourse
+      ? [courseTitle, orgBits.join(isUrCert ? ' — ' : ' · ')].filter(Boolean).join(isUrCert ? ' · ' : ' · ')
+      : orgBits.join(isUrCert ? ' — ' : ' · ');
 
     let metaText = '';
-    if (c.grade) metaText += (isUrCert ? 'گریڈ: ' : 'Grade: ') + c.grade;
-    if (c.duration) metaText += (metaText ? ' · ' : '') + (isUrCert ? 'دورانیہ: ' : 'Duration: ') + c.duration;
+    if (content.show_grade !== false && c.grade) metaText += (isUrCert ? 'گریڈ: ' : 'Grade: ') + c.grade;
+    if (content.show_duration !== false && c.duration) metaText += (metaText ? ' · ' : '') + (isUrCert ? 'دورانیہ: ' : 'Duration: ') + c.duration;
     if (c.completion_date) metaText += (metaText ? ' · ' : '') + (isUrCert ? 'تکمیل: ' : 'Completed: ') + c.completion_date;
     document.getElementById('vcMeta').textContent = metaText;
-    document.getElementById('vcIssueDate').textContent = (isUrCert ? 'اجراء: ' : 'Issued: ') + c.issue_date;
-    document.getElementById('vcExpiryDate').textContent = c.expiry_date ? ((isUrCert ? 'میعاد: ' : 'Expires: ') + c.expiry_date) : '';
+    const issueEl = document.getElementById('vcIssueDate');
+    if (content.show_issue_date === false) {
+      issueEl.textContent = '';
+      if (issuedLabel) issuedLabel.style.display = 'none';
+    } else {
+      if (issuedLabel) issuedLabel.style.display = '';
+      issueEl.textContent = c.issue_date || '';
+    }
+    document.getElementById('vcExpiryDate').textContent = (content.show_expiry_date !== false && c.expiry_date)
+      ? ((content.expiry_date_label || (isUrCert ? 'میعاد' : 'Expires')) + ': ' + c.expiry_date)
+      : '';
 
     const sc = certStatusColor(c.status);
     const badge = document.getElementById('vcStatusBadge');
@@ -14812,9 +15040,14 @@ select.form-input {
     badge.style.color = '#fff';
 
     const verifyUrl = c.qr_code_data || (window.location.origin + window.location.pathname + '?verify_cert=' + encodeURIComponent(c.certificate_id));
-    renderCertQR('vcQrCode', verifyUrl);
+    const qrHost = document.getElementById('vcQrCode');
+    if (content.show_qr_code === false) {
+      if (qrHost) qrHost.innerHTML = '';
+    } else {
+      renderCertQR('vcQrCode', verifyUrl);
+    }
 
-    applyCertificateTemplate(templateConfig, brand);
+    applyCertificateTemplate(templateConfig, brand, 'certificatePrintArea', CERT_FIELD_IDS, orgLogos);
 
     openModal('viewCertificateModal');
   }
@@ -15246,11 +15479,16 @@ select.form-input {
     const spacing = (extra.header_spacing != null && extra.header_spacing !== '') ? extra.header_spacing : 13;
     const justify = logoAlign === 'center' ? 'center' : (logoAlign === 'right' ? 'flex-end' : 'flex-start');
     const orgLogo = brand && brand.logo_url
-      ? `<img src="${brand.logo_url}" style="max-width:${logoWidth}px;max-height:${Math.round(logoWidth * 0.6)}px;object-fit:contain;" />`
+      ? `<img src="${brand.logo_url}" style="max-width:${logoWidth}px;max-height:${Math.round(logoWidth * 0.75)}px;object-fit:contain;" />`
       : '';
-    const rightLogo = (chapter && chapter.logo_url)
-      ? `<img src="${chapter.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />`
-      : (society && society.logo_url ? `<img src="${society.logo_url}" style="height:56px;max-width:120px;object-fit:contain;" />` : '');
+    const urduMark = `<div style="font-family:var(--ff-urdu);font-size:1.35rem;font-weight:700;color:var(--navy);line-height:1.2;">شعور</div>`;
+    const socLogo = (society && society.logo_url)
+      ? `<img src="${society.logo_url}" style="height:44px;max-width:96px;object-fit:contain;" alt="" />`
+      : '';
+    const chapLogo = (chapter && chapter.logo_url)
+      ? `<img src="${chapter.logo_url}" style="height:44px;max-width:96px;object-fit:contain;" alt="" />`
+      : '';
+    const rightLogo = `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem;">${urduMark}<div style="display:flex;gap:.4rem;align-items:center;justify-content:flex-end;">${socLogo}${chapLogo}</div></div>`;
     // Only the actual uploaded SHAOOR logo carries the brand mark here — the previously
     // duplicated "شعور" text line that sat beneath the organization name has been removed
     // per the "clean header, one visual identity" requirement. The organization name/title
@@ -15297,11 +15535,16 @@ select.form-input {
       founder: brand.founder_signature_url, president: brand.president_signature_url,
       society: brand.society_signature_url, chapter: brand.chapter_signature_url
     };
+    const nameFor = { founder: brand.founder_name || '', president: '', society: (window._docSocietyName || ''), chapter: (window._docChapterName || '') };
     const blocks = selectedKeys.filter(k => urlMap[k]).map(k => {
       const label = labels[k] || (k.charAt(0).toUpperCase() + k.slice(1));
+      const shownName = nameFor[k] || '';
+      const caption = shownName
+        ? `${sanitize(shownName)}<br>${sanitize(authorityLabel || label)}`
+        : sanitize(authorityLabel || label);
       return `<div style="text-align:center;">
         <img src="${urlMap[k]}" style="height:44px;object-fit:contain;display:block;margin:0 auto .3rem;" />
-        <div style="font-size:.72rem;border-top:1px solid #999;padding-top:.2rem;min-width:120px;${isUr ? 'font-family:var(--ff-urdu);font-size:.85rem;' : ''}">${sanitize(authorityLabel || label)}</div>
+        <div style="font-size:.72rem;border-top:1px solid #999;padding-top:.2rem;min-width:120px;${isUr ? 'font-family:var(--ff-urdu);font-size:.85rem;' : ''}">${caption}</div>
       </div>`;
     }).join('');
     // Official seal — a separate authentication mark, not a signature. Rendered alongside
@@ -15380,6 +15623,8 @@ select.form-input {
     if (token !== _docRenderToken) return false; // a newer document view/download has since started
     const society = societyRes.data;
     const chapter = chapterRes.data;
+    window._docSocietyName = society && society.name;
+    window._docChapterName = chapter && chapter.name;
     const sigKeys = (d.extra && d.extra.signature_keys) || [];
     // Existing documents saved before this language field existed have no extra.language —
     // they must keep rendering exactly as before, so default safely to English.
@@ -15603,12 +15848,15 @@ select.form-input {
     const preview = document.getElementById('ctplPreview');
     if (!preview) return;
     const config = ctplCurrentConfig();
-    // Fake brand so logo/seal/signature placeholders are visible in the preview regardless of
-    // whether real brand_settings values are loaded — purely cosmetic, never saved anywhere.
-    const fakeBrand = { logo_url: window._brandCache?.logo_url, seal_url: window._brandCache?.seal_url, signature_order: [], signature_labels: {} };
+    const brand = window._brandCache || {};
     preview.style.width = '340px';
     preview.style.aspectRatio = '';
-    applyCertificateTemplate(config, fakeBrand, 'ctplPreview', CERT_PREVIEW_FIELD_IDS);
+    applyCertificateTemplate(config, brand, 'ctplPreview', CERT_PREVIEW_FIELD_IDS, {
+      society_logo_url: window._brandOrgPreview && window._brandOrgPreview.society_logo_url,
+      chapter_logo_url: window._brandOrgPreview && window._brandOrgPreview.chapter_logo_url,
+      society_name: window._brandOrgPreview && window._brandOrgPreview.society_name,
+      chapter_name: window._brandOrgPreview && window._brandOrgPreview.chapter_name
+    });
   }
 
   function wireCtplColorPickers() {
@@ -15648,6 +15896,7 @@ select.form-input {
   async function openCertTemplateModal() {
     document.getElementById('certTemplateForm').reset();
     document.getElementById('ctplId').value = '';
+    window._editingCertTemplateConfig = null;
     document.getElementById('ctplPaperSize').value = 'a4';
     document.getElementById('ctplOrientation').value = 'landscape';
     document.getElementById('ctplLanguage').value = 'en';
@@ -15655,7 +15904,19 @@ select.form-input {
     populateCtplFieldControls({});
     document.getElementById('ctplFieldsJson').value = '';
     wireCtplColorPickers();
-    if (!window._brandCache) { const { data } = await sb.from('brand_settings').select('logo_url, seal_url').limit(1).maybeSingle(); window._brandCache = data || {}; }
+    if (!window._brandCache) { const { data } = await sb.from('brand_settings').select('*').limit(1).maybeSingle(); window._brandCache = data || {}; }
+    if (!window._brandOrgPreview) {
+      const [{ data: s }, { data: ch }] = await Promise.all([
+        sb.from('societies').select('name, logo_url').not('logo_url', 'is', null).limit(1),
+        sb.from('chapters').select('name, logo_url').not('logo_url', 'is', null).limit(1)
+      ]);
+      window._brandOrgPreview = {
+        society_logo_url: s && s[0] && s[0].logo_url,
+        society_name: s && s[0] && s[0].name,
+        chapter_logo_url: ch && ch[0] && ch[0].logo_url,
+        chapter_name: ch && ch[0] && ch[0].name
+      };
+    }
     renderCtplPreview();
     openModal('certTemplateModal');
   }
@@ -15679,6 +15940,14 @@ select.form-input {
     document.getElementById('ctplOrientation').value = cfg.orientation || 'landscape';
     document.getElementById('ctplWidth').value = cfg.width || '';
     document.getElementById('ctplLanguage').value = cfg.language || 'en';
+    window._editingCertTemplateConfig = cfg;
+    if (cfg.paper_size || cfg.page_size) document.getElementById('ctplPaperSize').value = cfg.paper_size || String(cfg.page_size).toLowerCase();
+    if (cfg.orientation || cfg.layout) document.getElementById('ctplOrientation').value = cfg.orientation || cfg.layout;
+    if (cfg.branding) {
+      if (!document.getElementById('ctplBgColor').value && cfg.branding.background_color) document.getElementById('ctplBgColor').value = cfg.branding.background_color;
+      if (!document.getElementById('ctplTextColor').value && cfg.branding.primary_color) document.getElementById('ctplTextColor').value = cfg.branding.primary_color;
+      if (!document.getElementById('ctplAccentColor').value && cfg.branding.accent_color) document.getElementById('ctplAccentColor').value = cfg.branding.accent_color;
+    }
     document.getElementById('ctplFieldsJson').value = cfg.fields ? JSON.stringify(cfg.fields, null, 2) : '';
     document.getElementById('ctplIsDefault').checked = !!t.is_default;
     document.getElementById('ctplIsActive').checked = !!t.is_active;
@@ -15686,7 +15955,19 @@ select.form-input {
     populateCtplFieldControls(cfg.fields || {});
     wireCtplColorPickers();
     document.getElementById('ctplWidthGroup').style.display = document.getElementById('ctplPaperSize').value === 'custom' ? '' : 'none';
-    if (!window._brandCache) { const { data } = await sb.from('brand_settings').select('logo_url, seal_url').limit(1).maybeSingle(); window._brandCache = data || {}; }
+    if (!window._brandCache) { const { data } = await sb.from('brand_settings').select('*').limit(1).maybeSingle(); window._brandCache = data || {}; }
+    if (!window._brandOrgPreview) {
+      const [{ data: s }, { data: ch }] = await Promise.all([
+        sb.from('societies').select('name, logo_url').not('logo_url', 'is', null).limit(1),
+        sb.from('chapters').select('name, logo_url').not('logo_url', 'is', null).limit(1)
+      ]);
+      window._brandOrgPreview = {
+        society_logo_url: s && s[0] && s[0].logo_url,
+        society_name: s && s[0] && s[0].name,
+        chapter_logo_url: ch && ch[0] && ch[0].logo_url,
+        chapter_name: ch && ch[0] && ch[0].name
+      };
+    }
     renderCtplPreview();
     openModal('certTemplateModal');
   }
@@ -15722,7 +16003,7 @@ select.form-input {
     const width = frm.querySelector('#ctplPaperSize').value === 'custom' ? (frm.querySelector('#ctplWidth').value.trim() || null) : null;
     const orientation = frm.querySelector('#ctplOrientation').value || 'landscape';
     const paper_size = frm.querySelector('#ctplPaperSize').value || 'a4';
-    const config = {
+    const editorConfig = {
       background_color: frm.querySelector('#ctplBgColor').value.trim() || null,
       text_color: frm.querySelector('#ctplTextColor').value.trim() || null,
       accent_color: frm.querySelector('#ctplAccentColor').value.trim() || null,
@@ -15732,6 +16013,19 @@ select.form-input {
       language: frm.querySelector('#ctplLanguage').value || 'en',
       fields: fields || undefined
     };
+    let config = editorConfig;
+    if (id && window._editingCertTemplateConfig && typeof window._editingCertTemplateConfig === 'object') {
+      config = Object.assign({}, window._editingCertTemplateConfig, editorConfig);
+      if (config.branding) {
+        config.branding = Object.assign({}, config.branding, {
+          accent_color: editorConfig.accent_color || config.branding.accent_color,
+          primary_color: editorConfig.text_color || config.branding.primary_color,
+          background_color: editorConfig.background_color || config.branding.background_color
+        });
+      }
+      if (editorConfig.orientation) { config.layout = editorConfig.orientation; config.orientation = editorConfig.orientation; }
+      if (editorConfig.paper_size) { config.page_size = String(editorConfig.paper_size).toUpperCase(); config.paper_size = editorConfig.paper_size; }
+    }
     const payload = { name, description, background_url, is_default, is_active, config };
 
     let error;
