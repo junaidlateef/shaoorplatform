@@ -4546,6 +4546,87 @@ select.form-input {
   html[dir="rtl"] .admin-table th,
   html[dir="rtl"] .admin-table td { text-align: right; }
 </style>
+
+<style id="shaoor-org-info-pass">
+  .org-how {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .org-how-step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.15rem 1.1rem 1.2rem;
+    min-width: 0;
+  }
+  .org-how-step .n {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--navy); color: #fff; font-size: .78rem; font-weight: 800;
+    margin-bottom: .55rem;
+  }
+  .org-how-step h3 { font-size: .95rem; font-weight: 800; margin-bottom: .35rem; }
+  .org-how-step p { font-size: .84rem; color: var(--muted); line-height: 1.55; margin: 0; }
+
+  .faq-list { max-width: 760px; margin: 0 auto; display: grid; gap: .65rem; }
+  .faq-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 1rem 1.15rem;
+    font-weight: 700;
+    font-size: .95rem;
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    align-items: flex-start;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after { content: "+"; color: var(--gold); font-weight: 800; }
+  .faq-item[open] summary::after { content: "–"; }
+  .faq-item .faq-a {
+    padding: 0 1.15rem 1.1rem;
+    color: var(--muted);
+    font-size: .9rem;
+    line-height: 1.65;
+  }
+  .faq-empty { text-align: center; color: var(--muted); padding: 2rem 1rem; }
+
+  footer .foot-links a { display: inline-block; }
+  .foot-legal { font-size: .8rem; color: rgba(255,255,255,.45); line-height: 1.55; }
+  @media (max-width: 900px) {
+    .org-how { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .org-how { grid-template-columns: 1fr; }
+  }
+  .org-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.15rem;
+    align-items: stretch;
+  }
+  .org-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.4rem 1.3rem 1.5rem;
+    min-width: 0;
+  }
+  .org-panel h3 { font-size: 1.05rem; font-weight: 800; margin: .35rem 0 .5rem; }
+  .org-panel p { font-size: .9rem; color: var(--muted); line-height: 1.6; margin: 0 0 1rem; }
+  .org-panel ul { margin: 0 0 1.1rem; padding-left: 1.1rem; color: var(--muted); font-size: .88rem; line-height: 1.55; }
+  .org-kicker { font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+  @media (max-width: 700px) {
+    .org-split { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
@@ -4564,12 +4645,14 @@ select.form-input {
       </a>
       <div class="nav-links" id="navLinks">
         <a href="#about">About</a>
+        <a href="#how-shaoor">How it works</a>
         <a href="#societies">Societies</a>
         <a href="#chapters">Chapters</a>
         <a href="#events">Events</a>
         <a href="#courses">Courses</a>
         <a href="#gallery">Gallery</a>
         <a href="#blog">Blog</a>
+        <a href="#faq">FAQ</a>
         <a href="#verification">Verification</a>
       </div>
       <div class="nav-actions">
@@ -4594,12 +4677,15 @@ select.form-input {
 <div class="mobile-nav" id="mobileNav" role="dialog" aria-label="Mobile navigation">
   <button class="mob-close" onclick="closeMobileNav()" aria-label="Close menu"><i class="fas fa-times"></i></button>
   <a href="#about" onclick="closeMobileNav()">About</a>
+  <a href="#how-shaoor" onclick="closeMobileNav()">How it works</a>
   <a href="#societies" onclick="closeMobileNav()">Societies</a>
   <a href="#chapters" onclick="closeMobileNav()">Chapters</a>
   <a href="#events" onclick="closeMobileNav()">Events</a>
   <a href="#courses" onclick="closeMobileNav()">Courses</a>
   <a href="#gallery" onclick="closeMobileNav()">Gallery</a>
   <a href="#blog" onclick="closeMobileNav()">Blog</a>
+  <a href="#faq" onclick="closeMobileNav()">FAQ</a>
+  <a href="#support" onclick="closeMobileNav()">Support</a>
   <a href="#verification" onclick="closeMobileNav()">Verification</a>
   <a href="#contact" onclick="closeMobileNav()">Contact</a>
   <a href="#" onclick="closeMobileNav();openModal('policyModal');return false;">Policy | رازداری</a>
@@ -4790,6 +4876,91 @@ select.form-input {
         </div>
       </div>
     </div>
+
+  <section class="section" id="how-shaoor" style="background:var(--cream2);">
+    <div class="container">
+      <div class="sec-head reveal">
+        <p class="sec-label">How SHAOOR Works</p>
+        <h2 class="sec-title">Membership, learning, and public records</h2>
+        <p class="sec-sub">SHAOOR publishes only what is on record. Empty cabinets, unpaid courses, and unpublished events stay empty until staff add them.</p>
+      </div>
+      <div class="org-how">
+        <div class="org-how-step reveal">
+          <span class="n">1</span>
+          <h3>Apply</h3>
+          <p>Submit the official registration form. Choose a society and membership tier.</p>
+        </div>
+        <div class="org-how-step reveal">
+          <span class="n">2</span>
+          <h3>Review</h3>
+          <p>Applications are reviewed within 3–5 working days. Approval is not automatic.</p>
+        </div>
+        <div class="org-how-step reveal">
+          <span class="n">3</span>
+          <h3>Membership</h3>
+          <p>Approved members receive a SHAOOR identity and access to published programmes.</p>
+        </div>
+        <div class="org-how-step reveal">
+          <span class="n">4</span>
+          <h3>Learn</h3>
+          <p>Published courses may be free or paid. Paid enrolments stay pending until SHAOOR confirms payment. There is no public checkout on this site.</p>
+        </div>
+        <div class="org-how-step reveal">
+          <span class="n">5</span>
+          <h3>Verify</h3>
+          <p>Anyone can confirm a Member ID, certificate, or official document through the public portal.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="support" style="background:var(--cream);">
+    <div class="container">
+      <div class="sec-head reveal">
+        <p class="sec-label">Support & Collaborate</p>
+        <h2 class="sec-title">Contribute without invented partners or prices</h2>
+        <p class="sec-sub">SHAOOR does not currently publish a donation gateway, sponsor list, or partnership roster. Support and collaboration go through the official contact channels.</p>
+      </div>
+      <div class="org-split">
+        <div class="org-panel reveal">
+          <p class="org-kicker">Support</p>
+          <h3>Donations and contributions</h3>
+          <p>There is no online payment form for donations. If you wish to contribute, write to SHAOOR with the subject Support / Contribution. Staff will reply with the official process.</p>
+          <ul>
+            <li>No published donation amounts or bank details on this page</li>
+            <li>No third-party checkout is connected</li>
+            <li>Course fees, when a course is marked paid, are confirmed by SHAOOR after enrolment</li>
+          </ul>
+          <a class="btn btn-gold" href="#contact" onclick="setContactSubject('Support / Contribution')">Contact SHAOOR about support</a>
+        </div>
+        <div class="org-panel reveal">
+          <p class="org-kicker">Collaborate</p>
+          <h3>Partnerships and institutions</h3>
+          <p>SHAOOR does not list unpublished collaborators. If you represent an institution, chapter, or media outlet, use Contact with Partnership Opportunity or Media Request.</p>
+          <ul>
+            <li>No invented partner logos or names</li>
+            <li>Chapter and society seats appear only when appointed</li>
+            <li>Events and courses appear only when published</li>
+          </ul>
+          <a class="btn btn-outline" href="#contact" onclick="setContactSubject('Partnership Opportunity')">Propose a collaboration</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq" style="background:var(--cream2);">
+    <div class="container">
+      <div class="sec-head reveal">
+        <p class="sec-label">Information</p>
+        <h2 class="sec-title">Frequently asked questions</h2>
+        <p class="sec-sub">Answers published by SHAOOR. If a question is not listed, use Contact or WhatsApp.</p>
+      </div>
+      <div class="faq-list" id="faqList">
+        <div class="faq-empty"><i class="fas fa-spinner fa-spin"></i> Loading published questions…</div>
+      </div>
+    </div>
+  </section>
+
   </section>
 
   <!-- SOCIETIES -->
@@ -5366,6 +5537,7 @@ select.form-input {
               <option>Membership Inquiry</option>
               <option>Event Participation</option>
               <option>Partnership Opportunity</option>
+              <option>Support / Contribution</option>
               <option>Media Request</option>
               <option>Other</option>
             </select>
@@ -5380,7 +5552,7 @@ select.form-input {
     </div>
   </section>
 
-  <!-- ═══ ADMIN LOGIN ═══ -->
+  <!-- ═ ADMIN LOGIN ═ -->
   <div class="admin-page" id="adminPage">
     <button class="admin-close-btn" onclick="closeAdmin()" aria-label="Close"><i class="fas fa-times"></i></button>
     <div class="admin-box">
@@ -6313,7 +6485,7 @@ select.form-input {
         <i class="fas fa-graduation-cap"></i> LEARN • CREATE • GROW
       </div>
       <h2>SHAOOR Learning Academy</h2>
-      <p style="max-width:640px;margin:0 auto;opacity:.85;">A dedicated professional learning space for Pakistan's arts and culture community — structured courses, guided lessons, and recognized certification.</p>
+      <p style="max-width:640px;margin:0 auto;opacity:.85;">Published courses only. Free courses open after sign-in. Paid courses stay pending until SHAOOR confirms payment — this site does not take card payments.</p>
 
       <div class="lms-pathways" id="lmsHomePathways">
         <div class="lms-pathway-card" onclick="openLearningAcademy('beginner');">
@@ -9320,30 +9492,36 @@ select.form-input {
         <a href="mailto:shaoor.platform@yahoo.com" class="foot-email"><i class="fas fa-envelope"></i> shaoor.platform@yahoo.com</a>
       </div>
       <div>
-        <div class="foot-head">Platform</div>
+        <div class="foot-head">Organisation</div>
         <ul class="foot-links">
-          <li><a href="#about">About SHAOOR</a></li>
+          <li><a href="#about">About</a></li>
           <li><a href="#societies">Societies</a></li>
+          <li><a href="#chapters">Chapters</a></li>
           <li><a href="#cabinet">Central Cabinet</a></li>
-          <li><a href="#blog">Blog & News</a></li>
+          <li><a href="#how-shaoor">How it works</a></li>
+          <li><a href="#support">Support & Collaborate</a></li>
         </ul>
       </div>
       <div>
-        <div class="foot-head">Features</div>
+        <div class="foot-head">Programmes</div>
         <ul class="foot-links">
-          <li><a href="#membership">Membership</a></li>
           <li><a href="#events">Events</a></li>
+          <li><a href="#courses">Courses</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#blog">Blog</a></li>
           <li><a href="#verification">Verification</a></li>
-          <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
-      <div class="foot-newsletter">
-        <div class="foot-head">Stay in the Loop</div>
-        <p>ہر دو ہفتے میں SHAOOR کی تازہ خبریں اپنے ای میل پر پائیں۔</p>
-        <div class="foot-form">
-          <input type="email" class="foot-input" placeholder="Email address" />
-          <button class="foot-sub" onclick="showToast('Thank you! You\'re subscribed.')">Subscribe</button>
-        </div>
+      <div>
+        <div class="foot-head">Public information</div>
+        <ul class="foot-links">
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#membership">Join SHAOOR</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#" onclick="openModal('policyModal');return false;">Privacy Policy</a></li>
+          <li><a href="#" onclick="openModal('termsModal');return false;">Terms of Use</a></li>
+        </ul>
+        <p class="foot-legal" style="margin-top:1rem;">Leadership, events, and documents are shown only when published. SHAOOR does not list unpublished appointments or invented statistics.</p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -17838,6 +18016,47 @@ select.form-input {
     }).join('');
     initReveal();
   };
+
+
+  window.setContactSubject = function(subject) {
+    var sel = document.getElementById('cSubject');
+    if (sel) {
+      var found = false;
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === subject || sel.options[i].text === subject) { sel.selectedIndex = i; found = true; break; }
+      }
+      if (!found) {
+        var opt = document.createElement('option');
+        opt.value = subject; opt.textContent = subject; sel.appendChild(opt); sel.value = subject;
+      }
+    }
+  };
+
+  window.loadPublicFaq = async function() {
+    const list = document.getElementById('faqList');
+    if (!list) return;
+    if (!sb) {
+      list.innerHTML = '<div class="faq-empty">سرور سے رابطہ نہیں ہو سکا۔</div>';
+      return;
+    }
+    try {
+      const { data, error } = await sb.from('faq').select('question, answer').order('created_at', { ascending: true });
+      if (error) {
+        list.innerHTML = '<div class="faq-empty">سوالات لوڈ نہیں ہو سکے۔ <a href="#contact">Contact</a> استعمال کریں۔</div>';
+        return;
+      }
+      if (!data || data.length === 0) {
+        list.innerHTML = '<div class="faq-empty">ابھی کوئی سوال شائع نہیں ہوا۔</div>';
+        return;
+      }
+      list.innerHTML = data.map(function (row) {
+        return '<details class="faq-item"><summary>' + sanitize(row.question || '') + '</summary><div class="faq-a">' + sanitize(row.answer || '') + '</div></details>';
+      }).join('');
+    } catch (e) {
+      list.innerHTML = '<div class="faq-empty">سوالات لوڈ نہیں ہو سکے۔</div>';
+    }
+  };
+  loadPublicFaq();
 
   loadPublicBlog();
 
