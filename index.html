@@ -6135,7 +6135,7 @@ select.form-input {
         }
 
         document.getElementById('cdCategory').innerHTML =
-          '<i class="fas fa-palette"></i> ' + (course.category || 'Course');
+          '<i class="fas fa-palette"></i> ' + sanitize(course.category || 'Course');
         document.getElementById('cdTitle').textContent = course.title || 'Untitled Course';
         document.getElementById('cdDescription').textContent = course.description || '';
         document.getElementById('cdLevel').textContent = course.level || '—';
@@ -10182,6 +10182,7 @@ select.form-input {
   };
 
   window.deleteModule = async function (id) {
+    if (!(await requireStaff())) return;
     if (!confirm('یہ Module حذف کریں؟ اس کے تمام lessons/quiz بھی متاثر ہو سکتے ہیں۔')) return;
     var res = await sb.from('course_modules').delete().eq('id', id).select('id');
     if (res.error) { showToast('حذف نہیں ہو سکا: ' + res.error.message, 'error'); return; }
@@ -10191,6 +10192,7 @@ select.form-input {
   };
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('moduleForm', async function (frm) {
+    if (!(await requireStaff())) return;
     var editId = frm.querySelector('#moduleEditId').value;
     var title = frm.querySelector('#moduleTitleInput').value.trim();
     var orderVal = frm.querySelector('#moduleOrderInput').value;
@@ -10274,6 +10276,7 @@ select.form-input {
   };
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('lessonForm', async function (frm) {
+    if (!(await requireStaff())) return;
     var editId = frm.querySelector('#lessonEditId').value;
     var title = frm.querySelector('#lessonTitleInput').value.trim();
     var description = frm.querySelector('#lessonDescInput').value.trim() || null;
@@ -10361,6 +10364,7 @@ select.form-input {
   };
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('quizForm', async function (frm) {
+    if (!(await requireStaff())) return;
     var editId = frm.querySelector('#quizEditId').value;
     var title = frm.querySelector('#quizTitleInput').value.trim() || 'Module Quiz';
     var passing_score = parseFloat(frm.querySelector('#quizPassingInput').value) || 70;
@@ -10443,6 +10447,7 @@ select.form-input {
   };
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('finalAssessmentForm', async function (frm) {
+    if (!(await requireStaff())) return;
     var editId = frm.querySelector('#finalAssessmentEditId').value;
     var title = frm.querySelector('#faTitleInput').value.trim() || 'Final Assessment';
     var assessment_type = frm.querySelector('#faTypeInput').value;
@@ -10679,6 +10684,7 @@ select.form-input {
   };
 
   window.deleteLiveSession = async function(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('کیا یہ Live Session حذف کرنا چاہتے ہیں؟')) return;
     const { data, error } = await sb.from('course_live_sessions').delete().eq('id', id).select('id');
     if (error) { showToast('حذف نہیں ہو سکا: ' + error.message, 'error'); return; }
@@ -10728,6 +10734,7 @@ select.form-input {
   };
 
   window.addEventListener('DOMContentLoaded', () => secureSubmit('liveSessionForm', async frm => {
+    if (!(await requireStaff())) return;
     const editId = frm.querySelector('#liveSessionEditId').value;
     const course_id = frm.querySelector('#liveSessionCourse').value;
     const title = frm.querySelector('#liveSessionTitle').value.trim();
@@ -11096,7 +11103,7 @@ select.form-input {
 
   async function blogFetchRelated(ids) {
     if (!ids || !ids.length || !sb) return [];
-    const { data } = await sb.from('blog_posts').select('id, title, slug, status, excerpt, image_url, published_at').in('id', ids);
+    const { data } = await sb.from('blog_posts').select('id, title, slug, status, excerpt, image_url, published_at').in('id', ids).eq('status', 'published');
     return data || [];
   }
   async function blogFetchAuthor(authorId) {
@@ -11115,7 +11122,14 @@ select.form-input {
   window.openPublicArticle = async function (slug, opts) {
     opts = opts || {};
     if (!slug || !sb) return;
-    const { data: post, error } = await sb.from('blog_posts').select('id, title, excerpt, content, category, image_url, published_at, updated_at, slug, status, author_id').eq('slug', slug).maybeSingle();
+    // Public path: database filter on published. Draft preview is staff-only (defense-in-depth;
+    // RLS remains the real boundary).
+    if (opts.allowDraft) {
+      if (!(await requireStaff())) return;
+    }
+    let q = sb.from('blog_posts').select('id, title, excerpt, content, category, image_url, published_at, updated_at, slug, status, author_id').eq('slug', slug);
+    if (!opts.allowDraft) q = q.eq('status', 'published');
+    const { data: post, error } = await q.maybeSingle();
     if (error || !post) { showToast('Article not found', 'error'); return; }
     if (post.status !== 'published' && !opts.allowDraft) { showToast('Article not found', 'error'); return; }
     post._author_name = await blogFetchAuthor(post.author_id);
@@ -13665,6 +13679,7 @@ select.form-input {
   }
 
   async function approveEnrollment(id) {
+    if (!(await requireStaff())) return;
     const { error } = await sb.from('course_enrollments').update({ status: 'active', payment_status: 'paid' }).eq('id', id);
     if (error) { showToast('منظوری ناکام: ' + error.message, 'error'); return; }
     showToast('✓ Enrollment approved');
@@ -13672,6 +13687,7 @@ select.form-input {
   }
 
   async function suspendEnrollment(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('Suspend this enrollment? The student will lose access until reactivated.')) return;
     const { error } = await sb.from('course_enrollments').update({ status: 'suspended' }).eq('id', id);
     if (error) { showToast('ناکام: ' + error.message, 'error'); return; }
@@ -13680,6 +13696,7 @@ select.form-input {
   }
 
   async function deleteEnrollment(id) {
+    if (!(await requireStaff())) return;
     if (!confirm('Permanently delete this enrollment? This cannot be undone — the student will need to re-enroll.')) return;
     const { data, error } = await sb.from('course_enrollments').delete().eq('id', id).select('id');
     if (error) { showToast('حذف ناکام: ' + error.message, 'error'); return; }
