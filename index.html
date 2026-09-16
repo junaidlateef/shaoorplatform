@@ -3974,6 +3974,199 @@ select.form-input {
     .nav-actions .btn { padding: .45rem .8rem !important; font-size: .82rem !important; }
   }
 </style>
+
+<style id="shaoor-about-platform-pass">
+  /* About / Societies / Chapters / Cabinet / Events — presentation only.
+     Reuses existing tokens, motion, and IDs. No new data architecture. */
+  #about .about-copy { max-width: 40rem; }
+  #about .about-copy .sec-title { letter-spacing: -0.02em; }
+  #about .about-copy p { text-wrap: pretty; }
+  .about-img { min-height: 280px; }
+  .about-img img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .values-list.about-pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .9rem 1.1rem;
+    margin-top: 1.75rem;
+  }
+  .about-pillars .val-item {
+    align-items: flex-start;
+    padding: .85rem .95rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+  }
+  .about-pillars .val-text strong { font-size: .92rem; }
+  .about-pillars .val-text span { display: block; line-height: 1.55; }
+
+  .founder-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) 1fr;
+    gap: 3rem;
+    align-items: center;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .founder-portrait { text-align: center; }
+  .founder-photo-wrap {
+    width: 210px; height: 210px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    padding: 5px;
+    background: linear-gradient(145deg, var(--gold2), rgba(184,160,106,.25));
+    box-shadow: 0 18px 40px rgba(0,0,0,.28);
+  }
+  .founder-photo-wrap img,
+  .founder-photo-wrap #founderImgPlaceholder {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 0;
+    margin: 0;
+  }
+  #founderImgPlaceholder {
+    background: rgba(11,31,51,.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #founderQuote {
+    max-width: 38rem;
+  }
+
+  .soc-grid { align-items: stretch; }
+  .soc-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 100%;
+  }
+  .soc-card .soc-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .soc-card .soc-desc { flex: 1; }
+  .soc-desc-empty {
+    font-style: italic;
+    color: rgba(255,255,255,.42) !important;
+  }
+  .soc-card .soc-link, .soc-card .soc-coming { margin-top: auto; }
+  .soc-thumb, .soc-thumb-placeholder { height: 168px; }
+
+  .chapter-empty {
+    color: rgba(255,255,255,.55);
+    font-size: .88rem;
+    line-height: 1.55;
+    padding: .85rem 1rem;
+    border: 1px dashed rgba(255,255,255,.16);
+    border-radius: 10px;
+    background: rgba(255,255,255,.03);
+  }
+  .chapter-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .societies-in-chapter {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: .75rem;
+    margin: 1.1rem 0 1.4rem;
+  }
+  .seats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: .75rem;
+  }
+  .apply-seat-btn {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .85rem 1.1rem;
+  }
+
+  .cabinet-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2.4rem 1.2rem;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--muted);
+  }
+  .cabinet-empty strong { display: block; color: var(--ink); margin: .4rem 0 .25rem; font-size: 1rem; }
+
+  #evFilterBar { align-items: center; }
+  .events-board { overflow: visible; box-shadow: none; }
+  .events-board-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.15rem;
+  }
+  .ev-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .ev-card-media {
+    height: 168px;
+    background: linear-gradient(135deg, var(--navy), #1a2a4a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,.4);
+    overflow: hidden;
+  }
+  .ev-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ev-card-body { padding: 1.05rem 1.15rem 1.2rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; min-width: 0; }
+  .ev-card-title { font-size: 1.05rem; font-weight: 700; color: var(--ink); line-height: 1.35; word-break: break-word; }
+  .ev-card-desc { font-size: .86rem; color: var(--muted); line-height: 1.55; }
+  .ev-card-meta { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .ev-chip {
+    display: inline-flex; align-items: center; gap: .35rem;
+    font-size: .74rem; font-weight: 600;
+    padding: .22rem .6rem; border-radius: 999px;
+    background: var(--cream2); color: var(--ink); border: 1px solid var(--border);
+  }
+  .ev-card-foot { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: auto; padding-top: .4rem; }
+  .ev-action-idle { color: var(--muted); font-size: .8rem; font-weight: 600; }
+  .events-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2.4rem 1rem;
+    color: var(--muted);
+  }
+  .badge-gray { background: #e5e7eb; color: #374151; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  [data-theme="dark"] .badge-gray { background: rgba(148,163,184,.2); color: #e5e7eb; }
+  [data-theme="dark"] .badge-red { background: rgba(153,27,27,.28); color: #fecaca; }
+  [data-theme="dark"] .ev-chip { background: rgba(255,255,255,.05); color: #EDE9DF; }
+
+  html[dir="rtl"] .about-copy, html[dir="rtl"] #founderQuote { text-align: right; }
+  html[dir="rtl"] #founderQuote { border-left: 0; border-right: 3px solid var(--gold); padding-left: 0; padding-right: 1.25rem; }
+  html[dir="rtl"] .ev-card-title, html[dir="rtl"] .soc-name { line-height: 1.7; }
+
+  @media (max-width: 900px) {
+    .founder-layout { grid-template-columns: 1fr; gap: 1.75rem; text-align: center; }
+    .founder-layout blockquote { text-align: start; }
+    #founderQuote { margin-left: auto; margin-right: auto; }
+  }
+  @media (max-width: 640px) {
+    .values-list.about-pillars { grid-template-columns: 1fr; }
+    .events-board-grid { grid-template-columns: 1fr; }
+    .cabinet-grid { grid-template-columns: 1fr !important; }
+    .soc-grid { grid-template-columns: 1fr !important; }
+    .founder-photo-wrap { width: 176px; height: 176px; }
+    #evFilterBar .dtab { font-size: .78rem; }
+  }
+</style>
 </head>
 <body>
 
@@ -4171,16 +4364,16 @@ select.form-input {
   <section class="section" id="about" style="background:var(--cream);">
     <div class="container">
       <div class="about-grid">
-        <div class="about-img" style="padding:0;overflow:hidden;border-radius:var(--radius);">
+        <div class="about-img reveal-left" style="padding:0;overflow:hidden;border-radius:var(--radius);">
           <img id="aboutImg" src="" alt="SHAOOR" style="width:100%;height:100%;object-fit:cover;object-position:top;display:none;" /><div id="aboutImgPlaceholder" style="width:100%;height:100%;min-height:320px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy),#1a2a4a);color:rgba(255,255,255,.5);font-size:3rem;"><i class="fas fa-palette"></i></div>
         </div>
-        <div>
+        <div class="about-copy reveal">
           <p class="sec-label">About SHAOOR</p>
           <h2 class="sec-title">Art. Heritage. Youth.</h2>
           <p id="aboutIntro" style="font-size:1.05rem;line-height:1.8;color:var(--muted);margin-bottom:1.25rem;">SHAOOR is a Pakistan-wide creative arts platform built by young people from different cities — united by one belief: <strong style="color:var(--ink);">every creator deserves a stage.</strong></p>
           <p id="aboutPara1" style="font-size:.95rem;line-height:1.75;color:var(--muted);margin-bottom:1.25rem;">We provide structured training, exhibitions, mentorship, and a verified member community — across 7 creative societies and 6 provincial chapters.</p>
           <p id="aboutPara2" style="font-size:.95rem;line-height:1.75;color:var(--muted);margin-bottom:1.75rem;">SHAOOR also honours Pakistan's great artists of the past, bringing their legacy to the new generation before it is lost to time.</p>
-          <div class="values-list">
+          <div class="values-list about-pillars">
             <div class="val-item"><div class="val-icon"><i class="fas fa-chalkboard-teacher"></i></div><div class="val-text"><strong>Training</strong><span>Regular workshops and mentorship across all 7 societies.</span></div></div>
             <div class="val-item"><div class="val-icon"><i class="fas fa-map-marked-alt"></i></div><div class="val-text"><strong>Chapters</strong><span>Punjab, KPK, Sindh, Balochistan, Kashmir & Gilgit-Baltistan.</span></div></div>
             <div class="val-item"><div class="val-icon"><i class="fas fa-images"></i></div><div class="val-text"><strong>Events Gallery</strong><span>Photos & reports from SHAOOR events, exhibitions and workshops.</span></div></div>
@@ -4194,14 +4387,16 @@ select.form-input {
   <!-- FOUNDER -->
   <section class="section" id="founder" style="background:var(--navy);padding:4rem 0;">
     <div class="container">
-      <div style="display:grid;grid-template-columns:280px 1fr;gap:3rem;align-items:center;max-width:900px;margin:0 auto;">
-        <div style="text-align:center;">
+      <div class="founder-layout">
+        <div class="founder-portrait reveal-left">
+          <div class="founder-photo-wrap">
           <img id="founderImg" src="" alt="Founder" style="width:200px;height:200px;border-radius:50%;object-fit:cover;object-position:top;border:4px solid var(--gold);margin:0 auto 1rem;display:none;" /><div id="founderImgPlaceholder" style="width:200px;height:200px;border-radius:50%;border:4px dashed var(--gold);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:3rem;"><i class="fas fa-user"></i></div>
+          </div>
           <div id="founderName" style="font-family:var(--ff-display);font-size:1.2rem;font-weight:800;color:#fff;">Fatima tu Zahra</div>
           <div id="founderTitle" style="color:var(--gold2);font-size:.85rem;font-weight:600;margin-top:.25rem;">Founding Director</div>
           <div id="founderSub" style="color:rgba(255,255,255,.5);font-size:.8rem;margin-top:.2rem;">GPGC Sahiwal · Chemistry Graduate</div>
         </div>
-        <div>
+        <div class="reveal-right">
           <p class="sec-label" style="color:var(--gold2);">The Founder's Vision</p>
           <h2 style="font-family:var(--ff-display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:1rem;">The Woman Behind SHAOOR</h2>
           <blockquote id="founderQuote" style="border-left:3px solid var(--gold);padding-left:1.25rem;font-family:var(--ff-display);font-size:1.15rem;font-style:italic;color:rgba(255,255,255,.8);line-height:1.65;margin-bottom:1.25rem;">"SHAOOR is not just a platform — it's a movement to reclaim our cultural identity through art. Every artist has a story, and this platform is for them to tell it."</blockquote>
@@ -4214,7 +4409,7 @@ select.form-input {
   <!-- SOCIETIES -->
   <section class="section soc-bg" id="societies">
     <div class="container">
-      <div class="sec-head">
+      <div class="sec-head reveal">
         <p class="sec-label">Societies & Chapters</p>
         <h2 class="sec-title">Our Creative Disciplines</h2>
         <p class="sec-sub">From ancient calligraphic traditions to contemporary digital expression — every art form has a home in SHAOOR.</p>
@@ -4265,7 +4460,7 @@ select.form-input {
             <div style="color:rgba(255,255,255,.5);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
           </div>
           <div class="apply-seat-btn">
-            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
+            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" rel="noopener noreferrer" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
             <span style="font-size:.82rem;color:rgba(255,255,255,.4);">Cabinet appointments are reviewed by the Central SHAOOR Board</span>
           </div>
         </div>
@@ -4289,7 +4484,7 @@ select.form-input {
             <div style="color:rgba(255,255,255,.5);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
           </div>
           <div class="apply-seat-btn">
-            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
+            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" rel="noopener noreferrer" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
             <span style="font-size:.82rem;color:rgba(255,255,255,.4);">Cabinet appointments are reviewed by the Central SHAOOR Board</span>
           </div>
         </div>
@@ -4313,7 +4508,7 @@ select.form-input {
             <div style="color:rgba(255,255,255,.5);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
           </div>
           <div class="apply-seat-btn">
-            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
+            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" rel="noopener noreferrer" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
             <span style="font-size:.82rem;color:rgba(255,255,255,.4);">Cabinet appointments are reviewed by the Central SHAOOR Board</span>
           </div>
         </div>
@@ -4337,7 +4532,7 @@ select.form-input {
             <div style="color:rgba(255,255,255,.5);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
           </div>
           <div class="apply-seat-btn">
-            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
+            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" rel="noopener noreferrer" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
             <span style="font-size:.82rem;color:rgba(255,255,255,.4);">Cabinet appointments are reviewed by the Central SHAOOR Board</span>
           </div>
         </div>
@@ -4361,7 +4556,7 @@ select.form-input {
             <div style="color:rgba(255,255,255,.5);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
           </div>
           <div class="apply-seat-btn">
-            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
+            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" rel="noopener noreferrer" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
             <span style="font-size:.82rem;color:rgba(255,255,255,.4);">Cabinet appointments are reviewed by the Central SHAOOR Board</span>
           </div>
         </div>
@@ -4385,7 +4580,7 @@ select.form-input {
             <div style="color:rgba(255,255,255,.5);font-size:.85rem;">لوڈ ہو رہا ہے…</div>
           </div>
           <div class="apply-seat-btn">
-            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
+            <a href="https://forms.gle/Wn4FsKknP5VTn7gy6" target="_blank" rel="noopener noreferrer" class="btn btn-gold"><i class="fas fa-chair"></i> Apply for a Cabinet Seat</a>
             <span style="font-size:.82rem;color:rgba(255,255,255,.4);">Cabinet appointments are reviewed by the Central SHAOOR Board</span>
           </div>
         </div>
@@ -4405,7 +4600,7 @@ select.form-input {
   <!-- CENTRAL CABINET -->
   <div class="society-cabinet-wrap" id="cabinet">
     <div class="container">
-      <div class="sec-head">
+      <div class="sec-head reveal">
         <p class="sec-label">Official Leadership</p>
         <h2 class="sec-title">Central Cabinet</h2>
         <p class="sec-sub">The leadership team guiding SHAOOR's vision and operations across Pakistan.</p>
@@ -4422,7 +4617,7 @@ select.form-input {
 <!-- EVENTS -->
   <section class="section" id="events" style="background:var(--cream);">
     <div class="container">
-      <div class="sec-head">
+      <div class="sec-head reveal">
         <p class="sec-label">Upcoming Events</p>
         <h2 class="sec-title">Creative Gatherings & Workshops</h2>
         <p class="sec-sub">Join our community events to learn, create, and connect with fellow artists and enthusiasts.</p>
@@ -4437,36 +4632,20 @@ select.form-input {
         <button class="dtab" onclick="filterEvents('completed',this)">Completed</button>
       </div>
 
-      <div class="events-table-wrap" id="eventsTableWrap">
-        <table class="ev-table" id="eventsTable">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Event Name</th>
-              <th>Society / Chapter</th>
-              <th>Format</th>
-              <th>Date</th>
-              <th>Venue</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="eventsTableBody">
-            <tr>
-              <td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted);">
-                <i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>
-                Events لوڈ ہو رہے ہیں…
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="events-table-wrap events-board" id="eventsTableWrap">
+        <div class="events-board-grid" id="eventsTableBody">
+          <div class="events-state">
+            <i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>
+            Events لوڈ ہو رہے ہیں…
+          </div>
+        </div>
       </div>
 
       <!-- No events state -->
       <div id="eventsEmptyState" style="display:none;text-align:center;padding:3rem 1rem;">
-        <div style="background:var(--cream2);border:1px solid var(--border);border-radius:10px;padding:2rem;max-width:420px;margin:0 auto;">
-          <i class="fas fa-calendar-times" style="font-size:2rem;color:var(--muted);margin-bottom:.75rem;display:block;"></i>
-          <p style="color:var(--ink);font-weight:600;margin-bottom:.3rem;">کوئی Event نہیں ملا</p>
+        <div style="background:var(--card);border:1px dashed var(--border);border-radius:14px;padding:2rem;max-width:440px;margin:0 auto;">
+          <i class="fas fa-calendar-times" style="font-size:2rem;color:var(--gold);margin-bottom:.75rem;display:block;"></i>
+          <p style="color:var(--ink);font-weight:700;margin-bottom:.3rem;">کوئی Event نہیں ملا</p>
           <p style="color:var(--muted);font-size:.85rem;">ابھی کوئی event اس filter میں موجود نہیں۔</p>
         </div>
       </div>
@@ -11902,7 +12081,7 @@ select.form-input {
       .order('position');
 
     if (error || !seats || seats.length === 0) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:1.5rem;">ابھی کوئی نشست شامل نہیں کی گئی۔</div>';
+      grid.innerHTML = '<div class="cabinet-empty"><i class="fas fa-users" style="font-size:1.4rem;color:var(--gold);"></i><strong>ابھی کوئی نشست شامل نہیں کی گئی۔</strong><span>Central Cabinet appointments will appear here when published by SHAOOR.</span></div>';
       return;
     }
 
@@ -11928,8 +12107,19 @@ select.form-input {
   async function loadPublicChaptersData() {
     const { data: chapters, error } = await sb.from('chapters').select('*');
     if (error) { console.error('chapters load error', error); return; }
+    function chapterProvinceKey(value) {
+      const raw = String(value || '').trim().toLowerCase();
+      if (!raw) return '';
+      if (raw === 'punjab') return 'punjab';
+      if (raw === 'kpk' || raw === 'khyber pakhtunkhwa' || raw === 'khyber-pakhtunkhwa') return 'kpk';
+      if (raw === 'sindh') return 'sindh';
+      if (raw === 'balochistan') return 'balochistan';
+      if (raw === 'kashmir' || raw === 'azad kashmir' || raw === 'ajk') return 'kashmir';
+      if (raw === 'gilgit' || raw === 'gilgit-baltistan' || raw === 'gb') return 'gilgit';
+      return raw.replace(/\s+/g, '-');
+    }
     for (const prov of CHAPTER_PROVINCES) {
-      const chapter = (chapters || []).find(c => c.province === prov);
+      const chapter = (chapters || []).find(c => chapterProvinceKey(c.province) === prov || chapterProvinceKey(c.name) === prov);
       await renderChapterPanelPublic(prov, chapter);
     }
   }
@@ -11947,8 +12137,8 @@ select.form-input {
     if (!chapter) {
       if (taglineEl) taglineEl.textContent = 'یہ Chapter ابھی رجسٹرڈ نہیں۔';
       if (badgeEl) badgeEl.innerHTML = '<i class="fas fa-hourglass-half"></i> Coming Soon';
-      if (dslEl) dslEl.innerHTML = '<div style="color:rgba(255,255,255,.5);font-size:.85rem;">ابھی کوئی Society شامل نہیں۔</div>';
-      if (seatsGridEl) seatsGridEl.innerHTML = '<div style="color:rgba(255,255,255,.5);font-size:.85rem;">ابھی کوئی نشست شامل نہیں۔</div>';
+      if (dslEl) dslEl.innerHTML = '<div class="chapter-empty">No societies are listed for this chapter yet.</div>';
+      if (seatsGridEl) seatsGridEl.innerHTML = '<div class="chapter-empty">Cabinet seats will appear here when appointments are published.</div>';
       return;
     }
 
@@ -11963,7 +12153,7 @@ select.form-input {
     const { data: links } = await sb.from('chapter_societies').select('society_id, societies(name)').eq('chapter_id', chapter.id);
     if (dslEl) {
       if (!links || links.length === 0) {
-        dslEl.innerHTML = '<div style="color:rgba(255,255,255,.5);font-size:.85rem;">ابھی کوئی Society شامل نہیں۔</div>';
+        dslEl.innerHTML = '<div class="chapter-empty">No societies are listed for this chapter yet.</div>';
       } else {
         dslEl.innerHTML = links.map(l => '<div class="sic-card"><div class="sic-icon">🎨</div><div class="sic-name">' + sanitize(l.societies?.name || '—') + '</div></div>').join('');
       }
@@ -11973,7 +12163,7 @@ select.form-input {
     if (seatsGridEl) {
       const active = (seats || []).filter(s => s.status !== 'inactive');
       if (active.length === 0) {
-        seatsGridEl.innerHTML = '<div style="color:rgba(255,255,255,.5);font-size:.85rem;">ابھی کوئی کابینہ نشست شامل نہیں۔</div>';
+        seatsGridEl.innerHTML = '<div class="chapter-empty">Cabinet seats will appear here when appointments are published.</div>';
       } else {
         seatsGridEl.innerHTML = active.map(s => {
           const filled = !!(s.profiles && s.profiles.full_name);
@@ -16952,11 +17142,11 @@ select.form-input {
     const tbody = document.getElementById('eventsTableBody');
     if (!tbody) return;
     if (!sb) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted);">سرور سے رابطہ نہیں ہو سکا۔</td></tr>';
+      tbody.innerHTML = '<div class="events-state">سرور سے رابطہ نہیں ہو سکا۔</div>';
       return;
     }
 
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:var(--muted);"><i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>Events لوڈ ہو رہے ہیں…</td></tr>';
+    tbody.innerHTML = '<div class="events-state"><i class="fas fa-spinner fa-spin" style="font-size:1.3rem;display:block;margin-bottom:.5rem;"></i>Events لوڈ ہو رہے ہیں…</div>';
 
     let data, error;
     try {
@@ -16974,12 +17164,12 @@ select.form-input {
       const msg = error?.message || JSON.stringify(error);
       console.error('Events load failed:', msg);
       tbody.innerHTML = `
-        <tr><td colspan="8" style="text-align:center;padding:2rem;">
+        <div class="events-state">
           <div style="color:var(--muted);font-size:.88rem;margin-bottom:.75rem;">Events لوڈ نہیں ہو سکے: ${sanitize(msg)}</div>
           <button onclick="loadPublicEvents()" class="btn btn-outline" style="font-size:.82rem;">
             <i class="fas fa-redo"></i> دوبارہ کوشش کریں
           </button>
-        </td></tr>`;
+        </div>`;
       return;
     }
 
@@ -16994,6 +17184,15 @@ select.form-input {
     allEventsCache = data;
     renderEventsTable(data);
   };
+
+  function usablePublicImage(url) {
+    if (typeof isSafeHttpUrl !== 'function' || !isSafeHttpUrl(url)) return '';
+    try {
+      const path = new URL(url).pathname.replace(/\/+$/, '');
+      if (/\/object\/public\/[^/]+$/.test(path)) return '';
+      return url;
+    } catch (e) { return ''; }
+  }
 
   function renderEventsTable(events) {
     const tbody = document.getElementById('eventsTableBody');
@@ -17015,40 +17214,47 @@ select.form-input {
       'cancelled': { label: 'Cancelled', cls: 'badge-red' },
     };
     const formatIcon = {
-      'online':    '<i class="fas fa-wifi" style="color:var(--teal);margin-right:.35rem;"></i>',
-      'in-person': '<i class="fas fa-map-marker-alt" style="color:var(--ruby);margin-right:.35rem;"></i>',
-      'hybrid':    '<i class="fas fa-layer-group" style="color:var(--gold);margin-right:.35rem;"></i>',
-      'virtual':   '<i class="fas fa-video" style="color:var(--indigo);margin-right:.35rem;"></i>',
-      'submission':'<i class="fas fa-paper-plane" style="color:var(--gold);margin-right:.35rem;"></i>',
+      'online':    '<i class="fas fa-wifi"></i>',
+      'in-person': '<i class="fas fa-map-marker-alt"></i>',
+      'hybrid':    '<i class="fas fa-layer-group"></i>',
+      'virtual':   '<i class="fas fa-video"></i>',
+      'submission':'<i class="fas fa-paper-plane"></i>',
     };
 
     tbody.innerHTML = events.map(ev => {
       const st = statusMap[ev.status] || { label: ev.status || '—', cls: 'badge-blue' };
-      const icon = formatIcon[(ev.format || '').toLowerCase()] || '<i class="fas fa-calendar" style="color:var(--muted);margin-right:.35rem;"></i>';
+      const icon = formatIcon[(ev.format || '').toLowerCase()] || '<i class="fas fa-calendar"></i>';
       const dateStr = ev.event_date ? new Date(ev.event_date).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
-      const actionBtn = ev.register_url
-        ? `<a href="${sanitize(ev.register_url)}" target="_blank" class="btn btn-gold" style="padding:.35rem .85rem;font-size:.78rem;"><i class="fas fa-external-link-alt"></i> Register</a>`
-        : `<span style="color:var(--muted);font-size:.8rem;">—</span>`;
-
-      const imgCell = ev.image_url
-        ? `<img src="${sanitize(ev.image_url)}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;" loading="lazy" />`
-        : `<div style="width:56px;height:56px;border-radius:8px;background:var(--cream2);display:flex;align-items:center;justify-content:center;color:var(--muted);"><i class="fas fa-image"></i></div>`;
-
+      const safeReg = (typeof isSafeHttpUrl === 'function' && isSafeHttpUrl(ev.register_url)) ? ev.register_url : '';
+      const actionBtn = safeReg
+        ? `<a href="${sanitize(safeReg)}" target="_blank" rel="noopener noreferrer" class="btn btn-gold" style="padding:.4rem .9rem;font-size:.78rem;"><i class="fas fa-external-link-alt"></i> Register</a>`
+        : `<span class="ev-action-idle">Registration not open</span>`;
+      const imgUrl = usablePublicImage(ev.image_url);
+      const imgCell = imgUrl
+        ? `<img src="${sanitize(imgUrl)}" alt="${sanitize(ev.title || '')}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ev-card-media-fallback',innerHTML:'<i class=\'fas fa-image\'></i>'}))" />`
+        : `<i class="fas fa-image"></i>`;
+      const place = [ev.society, ev.chapter].filter(Boolean).join(' · ') || 'SHAOOR';
+      const venue = ev.venue || ((ev.format || '').toLowerCase() === 'online' ? 'Online' : '');
       return `
-        <tr data-status="${(ev.status||'').toLowerCase()}">
-          <td>${imgCell}</td>
-          <td>
-            <strong style="color:var(--ink);font-size:.92rem;">${sanitize(ev.title || '—')}</strong>
-            ${ev.description ? `<br><span style="color:var(--muted);font-size:.78rem;">${sanitize(ev.description.substring(0,80))}${ev.description.length>80?'…':''}</span>` : ''}
-          </td>
-          <td style="font-size:.88rem;">${sanitize(ev.society || ev.chapter || 'All Societies')}</td>
-          <td style="font-size:.88rem;">${icon}${sanitize(ev.format || '—')}</td>
-          <td style="font-size:.88rem;white-space:nowrap;">${dateStr}</td>
-          <td style="font-size:.88rem;">${sanitize(ev.venue || '—')}</td>
-          <td><span class="badge ${st.cls}">${st.label}</span></td>
-          <td>${actionBtn}</td>
-        </tr>`;
+        <article class="ev-card reveal" data-status="${sanitize((ev.status||'').toLowerCase())}">
+          <div class="ev-card-media">${imgCell}</div>
+          <div class="ev-card-body">
+            <div class="ev-card-meta">
+              <span class="badge ${st.cls}">${sanitize(st.label)}</span>
+              <span class="ev-chip">${icon} ${sanitize(ev.format || '—')}</span>
+            </div>
+            <h3 class="ev-card-title">${sanitize(ev.title || '—')}</h3>
+            ${ev.description ? `<p class="ev-card-desc">${sanitize(ev.description)}</p>` : ''}
+            <div class="ev-card-meta">
+              <span class="ev-chip"><i class="fas fa-map-pin"></i> ${sanitize(place)}</span>
+              <span class="ev-chip"><i class="fas fa-calendar-day"></i> ${dateStr}</span>
+              ${venue ? `<span class="ev-chip"><i class="fas fa-map-marker-alt"></i> ${sanitize(venue)}</span>` : ''}
+            </div>
+            <div class="ev-card-foot">${actionBtn}</div>
+          </div>
+        </article>`;
     }).join('');
+    if (typeof initReveal === 'function') initReveal();
   }
 
   window.filterEvents = function(filter, btn) {
@@ -17078,32 +17284,35 @@ select.form-input {
       if (error) { console.error('Public societies load error:', error); return; }
 
       if (!socs || socs.length === 0) {
-        grid.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,.5);grid-column:1/-1;">فی الحال کوئی Society شامل نہیں۔</p>';
+        grid.innerHTML = '<p class="chapter-empty" style="grid-column:1/-1;text-align:center;">فی الحال کوئی Society شامل نہیں۔</p>';
         return;
       }
 
       grid.innerHTML = socs.map(s => {
         const isComingSoon = (s.status || '').toLowerCase() === 'archived';
-        const thumb = s.logo_url
-          ? `<div class="soc-thumb"><img src="${sanitize(s.logo_url)}" alt="${sanitize(s.name)}" loading="lazy" /></div>`
-          : `<div class="soc-thumb-placeholder"><i class="fas fa-palette" style="font-size:2.5rem;color:rgba(201,151,43,.35);"></i></div>`;
-        const desc = s.description
+        const hasDesc = !!(s.description && String(s.description).trim());
+        const desc = hasDesc
           ? sanitize(s.description)
-          : 'اس Society کی تفصیل جلد شامل کی جائے گی۔';
+          : 'Profile coming soon';
         const footer = isComingSoon
           ? `<span class="soc-coming"><i class="fas fa-clock"></i> Launching Soon</span>`
           : `<a href="#contact" class="soc-link">Explore <i class="fas fa-arrow-right"></i></a>`;
+        const logo = usablePublicImage(s.logo_url);
+        const thumbSafe = logo
+          ? `<div class="soc-thumb"><img src="${sanitize(logo)}" alt="${sanitize(s.name)}" loading="lazy" /></div>`
+          : `<div class="soc-thumb-placeholder"><i class="fas fa-palette" style="font-size:2.5rem;color:rgba(201,151,43,.35);"></i></div>`;
 
         return `
-        <div class="soc-card" ${isComingSoon ? 'style="opacity:.7;"' : ''}>
-          ${thumb}
+        <div class="soc-card reveal" ${isComingSoon ? 'style="opacity:.7;"' : ''}>
+          ${thumbSafe}
           <div class="soc-body">
             <h3 class="soc-name">${sanitize(s.name)}</h3>
-            <p class="soc-desc">${desc}</p>
+            <p class="soc-desc${hasDesc ? '' : ' soc-desc-empty'}">${desc}</p>
             ${footer}
           </div>
         </div>`;
       }).join('');
+      if (typeof initReveal === 'function') initReveal();
     } catch (e) {
       console.error('loadPublicSocieties error:', e);
     }
@@ -17154,7 +17363,8 @@ select.form-input {
       console.error('loadChapterSocieties error:', e);
     }
   };
-  loadChapterSocieties();
+  /* Disabled auto-run: loadPublicChaptersData already fills .societies-in-chapter.
+     A second injector was appending duplicate society cards. */
 
 
   /* ── PUBLIC BLOG — Supabase ── */
