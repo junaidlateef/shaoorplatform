@@ -4627,6 +4627,47 @@ select.form-input {
     .org-split { grid-template-columns: 1fr; }
   }
 </style>
+
+<style id="shaoor-visual-i18n-pass">
+  html { color-scheme: light; }
+  body { letter-spacing: .01em; }
+  .section { padding: 4.5rem 0; }
+  .sec-label { letter-spacing: .16em; }
+  .org-how {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .org-how-step {
+    box-shadow: var(--shadow);
+    border-color: rgba(11,31,51,.08);
+  }
+  .org-how-step .n { background: linear-gradient(160deg, var(--navy), var(--navy2)); }
+  .org-panel {
+    box-shadow: var(--shadow);
+    border-color: rgba(11,31,51,.08);
+  }
+  .pay-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .75rem;
+    margin: 1rem 0;
+  }
+  .pay-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .9rem 1rem;
+    background: var(--cream);
+    min-width: 0;
+  }
+  .pay-card strong { display: block; font-size: .82rem; margin-bottom: .25rem; color: var(--navy); }
+  .pay-card span { font-size: .84rem; color: var(--ink); word-break: break-word; }
+  .sub-form { display: grid; gap: .7rem; margin-top: 1rem; }
+  .sub-form .form-input, .sub-form .form-textarea { width: 100%; }
+  .pay-empty { font-size: .84rem; color: var(--muted); font-style: italic; }
+  html[dir="rtl"] .org-how-step, html[dir="rtl"] .org-panel, html[dir="rtl"] .faq-item summary { text-align: right; }
+  html[dir="rtl"] .org-panel ul { padding-left: 0; padding-right: 1.1rem; }
+  @media (max-width: 1100px) { .org-how { grid-template-columns: repeat(3, minmax(0, 1fr)); } .pay-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 700px) { .org-how { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
 
@@ -4788,6 +4829,16 @@ select.form-input {
 
     if (enBtn) { enBtn.classList.toggle('active', lang === 'en'); enBtn.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false'); }
     if (urBtn) { urBtn.classList.toggle('active', lang === 'ur'); urBtn.setAttribute('aria-pressed', lang === 'ur' ? 'true' : 'false'); }
+    document.documentElement.setAttribute('lang', lang === 'ur' ? 'ur' : 'en');
+    document.documentElement.setAttribute('dir', lang === 'ur' ? 'rtl' : 'ltr');
+    document.querySelectorAll('[data-i18n-en]').forEach(function (el) {
+      var en = el.getAttribute('data-i18n-en');
+      var ur = el.getAttribute('data-i18n-ur') || en;
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = (lang === 'ur' ? ur : en);
+      else el.textContent = (lang === 'ur' ? ur : en);
+    });
+    if (typeof window.renderPublicFaq === 'function') window.renderPublicFaq();
+    if (typeof window.renderPublicPayments === 'function') window.renderPublicPayments();
     document.querySelectorAll('.public-lang-btn').forEach(function (btn) {
       var on = btn.getAttribute('data-lang') === lang;
       btn.classList.toggle('active', on);
@@ -4917,32 +4968,39 @@ select.form-input {
   <section class="section" id="support" style="background:var(--cream);">
     <div class="container">
       <div class="sec-head reveal">
-        <p class="sec-label">Support & Collaborate</p>
-        <h2 class="sec-title">Contribute without invented partners or prices</h2>
-        <p class="sec-sub">SHAOOR does not currently publish a donation gateway, sponsor list, or partnership roster. Support and collaboration go through the official contact channels.</p>
+        <p class="sec-label" data-i18n-en="Support & Collaborate" data-i18n-ur="تعاون اور شراکت">Support & Collaborate</p>
+        <h2 class="sec-title" data-i18n-en="Official contribution channels" data-i18n-ur="سرکاری تعاون کے ذرائع">Official contribution channels</h2>
+        <p class="sec-sub" data-i18n-en="JazzCash, EasyPaisa and bank details appear only after SHAOOR staff publish them. Submissions are received, then approved in Admin." data-i18n-ur="جاز کیش، ایزی پیسہ اور بینک تفصیل صرف تب نظر آتی ہے جب انتظامیہ انہیں شائع کرے۔ درخواستیں پہلے موصول ہوتی ہیں، پھر ایڈمن منظور کرتا ہے۔">JazzCash, EasyPaisa and bank details appear only after SHAOOR staff publish them. Submissions are received, then approved in Admin.</p>
       </div>
-      <div class="org-split">
+      <div id="publicPayBox" class="pay-empty" data-i18n-en="Payment accounts are not published yet. You may still submit a contribution record below." data-i18n-ur="ادائیگی کے اکاؤنٹ ابھی شائع نہیں ہوئے۔ آپ نیچے تعاون کی درخواست بھیج سکتے ہیں۔">Payment accounts are not published yet. You may still submit a contribution record below.</div>
+      <div class="org-split" style="margin-top:1.25rem;">
         <div class="org-panel reveal">
-          <p class="org-kicker">Support</p>
-          <h3>Donations and contributions</h3>
-          <p>There is no online payment form for donations. If you wish to contribute, write to SHAOOR with the subject Support / Contribution. Staff will reply with the official process.</p>
-          <ul>
-            <li>No published donation amounts or bank details on this page</li>
-            <li>No third-party checkout is connected</li>
-            <li>Course fees, when a course is marked paid, are confirmed by SHAOOR after enrolment</li>
-          </ul>
-          <a class="btn btn-gold" href="#contact" onclick="setContactSubject('Support / Contribution')">Contact SHAOOR about support</a>
+          <p class="org-kicker" data-i18n-en="Donate" data-i18n-ur="عطیہ">Donate</p>
+          <h3 data-i18n-en="Send a contribution" data-i18n-ur="تعاون بھیجیں">Send a contribution</h3>
+          <p data-i18n-en="Use the published accounts if shown, then upload proof. Staff will mark the record received, then approved." data-i18n-ur="شائع شدہ اکاؤنٹ استعمال کریں، پھر ثبوت اپ لوڈ کریں۔ عملہ پہلے وصولی درج کرے گا، پھر منظوری دے گا۔">Use the published accounts if shown, then upload proof. Staff will mark the record received, then approved.</p>
+          <form class="sub-form" id="donateForm">
+            <input class="form-input" id="donName" required placeholder="Full name" data-i18n-en="Full name" data-i18n-ur="پورا نام" />
+            <input class="form-input" id="donEmail" type="email" placeholder="Email" />
+            <input class="form-input" id="donPhone" placeholder="Phone / JazzCash / EasyPaisa number used" data-i18n-en="Phone / JazzCash / EasyPaisa number used" data-i18n-ur="فون / جاز کیش / ایزی پیسہ نمبر" />
+            <input class="form-input" id="donAmount" placeholder="Amount (optional note)" data-i18n-en="Amount (optional note)" data-i18n-ur="رقم (اختیاری)" />
+            <textarea class="form-textarea" id="donMsg" rows="3" placeholder="Message"></textarea>
+            <input type="file" id="donProof" accept="image/png,image/jpeg,image/webp,application/pdf" />
+            <button type="submit" class="btn btn-gold" data-i18n-en="Submit contribution" data-i18n-ur="تعاون جمع کروائیں">Submit contribution</button>
+          </form>
         </div>
         <div class="org-panel reveal">
-          <p class="org-kicker">Collaborate</p>
-          <h3>Partnerships and institutions</h3>
-          <p>SHAOOR does not list unpublished collaborators. If you represent an institution, chapter, or media outlet, use Contact with Partnership Opportunity or Media Request.</p>
-          <ul>
-            <li>No invented partner logos or names</li>
-            <li>Chapter and society seats appear only when appointed</li>
-            <li>Events and courses appear only when published</li>
-          </ul>
-          <a class="btn btn-outline" href="#contact" onclick="setContactSubject('Partnership Opportunity')">Propose a collaboration</a>
+          <p class="org-kicker" data-i18n-en="Collaborate" data-i18n-ur="شراکت">Collaborate</p>
+          <h3 data-i18n-en="Propose a partnership" data-i18n-ur="شراکت کی تجویز">Propose a partnership</h3>
+          <p data-i18n-en="Institutions and media may submit a proposal. Names and logos are not shown until Admin approves." data-i18n-ur="ادارے اور میڈیا تجویز بھیج سکتے ہیں۔ نام اور لوگو ایڈمن کی منظوری کے بعد ہی شائع ہوں گے۔">Institutions and media may submit a proposal. Names and logos are not shown until Admin approves.</p>
+          <form class="sub-form" id="collabForm">
+            <input class="form-input" id="colName" required placeholder="Full name" />
+            <input class="form-input" id="colOrg" placeholder="Organisation" data-i18n-en="Organisation" data-i18n-ur="ادارہ" />
+            <input class="form-input" id="colEmail" type="email" placeholder="Email" />
+            <input class="form-input" id="colPhone" placeholder="Phone" />
+            <textarea class="form-textarea" id="colMsg" rows="3" required placeholder="Proposal" data-i18n-en="Proposal" data-i18n-ur="تجویز"></textarea>
+            <input type="file" id="colProof" accept="image/png,image/jpeg,image/webp,application/pdf" />
+            <button type="submit" class="btn btn-outline" data-i18n-en="Submit proposal" data-i18n-ur="تجویز جمع کروائیں">Submit proposal</button>
+          </form>
         </div>
       </div>
     </div>
@@ -4951,9 +5009,9 @@ select.form-input {
   <section class="section" id="faq" style="background:var(--cream2);">
     <div class="container">
       <div class="sec-head reveal">
-        <p class="sec-label">Information</p>
-        <h2 class="sec-title">Frequently asked questions</h2>
-        <p class="sec-sub">Answers published by SHAOOR. If a question is not listed, use Contact or WhatsApp.</p>
+        <p class="sec-label" data-i18n-en="Information" data-i18n-ur="معلومات">Information</p>
+        <h2 class="sec-title" data-i18n-en="Frequently asked questions" data-i18n-ur="عمومی سوالات">Frequently asked questions</h2>
+        <p class="sec-sub" data-i18n-en="English by default. Press اردو in the navigation for formal Urdu." data-i18n-ur="انگریزی طے شدہ ہے۔ نیویگیشن میں اردو دبائیں تو رسمی اردو نظر آئے گی۔">English by default. Press اردو in the navigation for formal Urdu.</p>
       </div>
       <div class="faq-list" id="faqList">
         <div class="faq-empty"><i class="fas fa-spinner fa-spin"></i> Loading published questions…</div>
@@ -5619,6 +5677,7 @@ select.form-input {
       <div class="admin-nav-group">Platform</div>
       <button class="admin-nav-btn" onclick="switchDashTab('analytics',this);loadAnalyticsAdmin();"><i class="fas fa-chart-line"></i> Analytics</button>
       <button class="admin-nav-btn" onclick="switchDashTab('branding',this);loadBrandingAdmin();"><i class="fas fa-palette"></i> Branding</button>
+      <button class="admin-nav-btn" onclick="switchDashTab('payments',this);loadPlatformSettingsAdmin();loadPublicSubmissionsAdmin();"><i class="fas fa-university"></i> Payments & Inbox</button>
       <div style="margin-top:auto;padding-top:1rem;">
         <button class="admin-nav-btn" onclick="adminLogout()" style="color:rgba(252,165,165,.7);"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -6128,6 +6187,32 @@ select.form-input {
           </div>
           <button type="submit" class="btn btn-gold" style="font-size:.85rem;">محفوظ کریں</button>
         </form>
+      </div>
+
+      <div class="dash-panel" id="dp-payments">
+        <div class="admin-panel-head"><div><h3>Payments & Inbox</h3><span class="admin-panel-kicker">JazzCash, EasyPaisa and bank details stay hidden on the public site until Published is on. Submissions arrive as Received, then Approve.</span></div></div>
+        <form id="platformPaymentsForm" style="max-width:720px;display:grid;gap:.75rem;margin-bottom:2rem;">
+          <label style="display:flex;gap:.5rem;align-items:center;"><input type="checkbox" id="payPublished" /> Publish payment details on the public site</label>
+          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+            <div class="form-group"><label>JazzCash number</label><input class="form-input" id="payJazzNumber" /></div>
+            <div class="form-group"><label>JazzCash account name</label><input class="form-input" id="payJazzName" /></div>
+            <div class="form-group"><label>EasyPaisa number</label><input class="form-input" id="payEasyNumber" /></div>
+            <div class="form-group"><label>EasyPaisa account name</label><input class="form-input" id="payEasyName" /></div>
+            <div class="form-group"><label>Bank name</label><input class="form-input" id="payBankName" /></div>
+            <div class="form-group"><label>Account title</label><input class="form-input" id="payBankTitle" /></div>
+            <div class="form-group"><label>Account number</label><input class="form-input" id="payBankNumber" /></div>
+            <div class="form-group"><label>IBAN</label><input class="form-input" id="payBankIban" /></div>
+          </div>
+          <div class="form-group"><label>Payment instructions</label><textarea class="form-textarea" id="payInstructions" rows="3"></textarea></div>
+          <button type="submit" class="btn btn-gold">Save payment details</button>
+        </form>
+        <h3 style="font-weight:700;margin-bottom:.75rem;">Received submissions</h3>
+        <div class="admin-table-wrap" style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead><tr><th>Type</th><th>Name</th><th>Contact</th><th>Note</th><th>Status</th><th>Proof</th><th>Action</th></tr></thead>
+            <tbody id="publicSubmissionsBody"><tr><td colspan="7" class="admin-empty">Loading…</td></tr></tbody>
+          </table>
+        </div>
       </div>
 
       <div class="dash-panel" id="dp-branding">
@@ -9713,7 +9798,7 @@ select.form-input {
     </div>
     <div class="modal-body" style="max-height:70vh;overflow-y:auto;">
 
-      <div style="background:var(--gold-soft);border:1px solid var(--gold);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.88rem;">
+            <div style="background:var(--gold-soft);border:1px solid var(--gold);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.88rem;">
         <strong style="color:var(--gold);">آخری تازہ کاری:</strong> ستمبر ۲۰۲۶ — یہ پالیسی SHAOOR کے تمام اراکین اور زائرین پر لاگو ہوتی ہے۔
       </div>
 
