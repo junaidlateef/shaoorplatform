@@ -11310,11 +11310,11 @@ select.form-input {
   async function blogFillRelatedPicker(selectedIds) {
     const host = document.getElementById('blogRelatedPicker');
     if (!host || !sb) return;
-    const { data } = await sb.from('blog_posts').select('id, title, status, slug').order('created_at', { ascending: false }).limit(40);
+    const { data } = await sb.from('blog_posts').select('id, title, status, slug').eq('status', 'published').order('created_at', { ascending: false }).limit(40);
     const sel = selectedIds || [];
     host.innerHTML = (data || []).map(function (p) {
-      return '<label style="display:flex;gap:.45rem;align-items:center;font-size:.82rem;padding:.2rem 0;"><input type="checkbox" class="blog-rel" value="' + p.id + '" ' + (sel.indexOf(p.id) >= 0 ? 'checked' : '') + ' /> ' + blogEscape(p.title) + ' <span style="color:var(--muted);">(' + blogEscape(p.status) + ')</span></label>';
-    }).join('') || '<span style="color:var(--muted);font-size:.8rem;">No posts yet</span>';
+      return '<label style="display:flex;gap:.45rem;align-items:center;font-size:.82rem;padding:.2rem 0;"><input type="checkbox" class="blog-rel" value="' + p.id + '" ' + (sel.indexOf(p.id) >= 0 ? 'checked' : '') + ' /> ' + blogEscape(p.title) + '</label>';
+    }).join('') || '<span style="color:var(--muted);font-size:.8rem;">No published posts yet</span>';
   }
 
   function blogCollectEditorPost() {
