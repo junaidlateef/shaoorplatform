@@ -15872,19 +15872,14 @@ select.form-input {
     const certId = params.get('verify_cert');
     if (!certId) return;
 
-    const { data: c, error } = await sb
-      .from('certificates')
-      .select('certificate_id, certificate_title, certificate_type, issue_date, expiry_date, status, qr_code_data, template_id, course_id, completion_date, grade, duration, program_name, society_id, chapter_id, certificate_body, member_id')
-      .eq('certificate_id', certId)
-      .single();
+    const { data: c, error } = await sb.rpc('verify_certificate_id', { p_certificate_id: certId });
 
     if (error || !c) {
       showToast('یہ سرٹیفکیٹ موجود نہیں: ' + certId, 'error');
       return;
     }
 
-    const { data: prof, error: profError } = await sb.from('profiles').select('full_name, member_id').eq('id', c.member_id).single();
-    if (profError) console.error('[Certificate verify] profile fetch failed for member_id', c.member_id, profError);
+    const prof = c.member_name ? { full_name: c.member_name } : null;
 
     if (c.status === 'active') {
       showToast('✓ سرٹیفکیٹ تصدیق شدہ' + (prof ? ' — ' + prof.full_name : ''));
@@ -15893,11 +15888,6 @@ select.form-input {
     } else {
       showToast('⚠ اس سرٹیفکیٹ کی میعاد ختم ہو چکی ہے', 'error');
     }
-
-    // Show the actual certificate (with its assigned template applied) to the public visitor,
-    // not just a status toast — reuses the same renderer the admin "view" action uses.
-    const verifyToken = ++_certRenderToken;
-    await renderCertificateView(c, prof, verifyToken);
   })();
 
   /* ── Public verification: if URL has ?verify_doc=DOCUMENT_NUMBER, look it up and show result.
@@ -16242,11 +16232,7 @@ select.form-input {
       return;
     }
 
-    const { data: profile, error } = await sb
-      .from('profiles')
-      .select('full_name, member_id, status, societies!profiles_society_id_fkey(name)')
-      .eq('member_id', v)
-      .single();
+    const { data: profile, error } = await sb.rpc('verify_member_id', { p_member_id: v });
 
     if (error || !profile) {
       r.className = 'ver-result ver-invalid';
@@ -16255,7 +16241,7 @@ select.form-input {
       return;
     }
 
-    const societyName = profile.societies ? profile.societies.name : '—';
+    const societyName = profile.society_name || '—';
     const isActive = profile.status === 'active';
 
     r.className = 'ver-result ver-valid';
@@ -16294,11 +16280,7 @@ select.form-input {
       return;
     }
 
-    const { data: c, error } = await sb
-      .from('certificates')
-      .select('certificate_id, certificate_title, status, member_id')
-      .eq('certificate_id', v)
-      .single();
+    const { data: c, error } = await sb.rpc('verify_certificate_id', { p_certificate_id: v });
 
     if (error || !c) {
       r.className = 'ver-result ver-invalid';
@@ -16307,8 +16289,7 @@ select.form-input {
       return;
     }
 
-    const { data: prof } = await sb.from('profiles').select('full_name').eq('id', c.member_id).single();
-    const memberName = prof ? prof.full_name : '';
+    const memberName = c.member_name || '';
 
     if (c.status === 'active') {
       r.className = 'ver-result ver-valid';
